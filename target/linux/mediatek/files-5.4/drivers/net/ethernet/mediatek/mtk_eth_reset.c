@@ -206,7 +206,6 @@ void mtk_dma_monitor(struct timer_list *t)
 	u32 is_oq0_stuck = (mtk_r32(eth, MTK_PSE_OQ_STA(0)) & 0x1FF) != 0;
 	u32 is_cdm1_busy = (mtk_r32(eth, MTK_FE_CDM1_FSM) & 0xFFFF0000) != 0;
 	u32 is_adma_busy = ((mtk_r32(eth, MTK_ADMA_RX_DBG0) & 0x1F) == 0) &&
-			   ((mtk_r32(eth, MTK_ADMA_RX_DBG1) & 0x3F0000) == 0) &&
 			   ((mtk_r32(eth, MTK_ADMA_RX_DBG0) & 0x40) == 0);
 
 	if (cur_wdidx == prev_wdidx && is_wtx_busy &&
