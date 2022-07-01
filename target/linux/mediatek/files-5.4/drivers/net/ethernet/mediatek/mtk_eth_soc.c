@@ -2941,8 +2941,11 @@ static int mtk_hw_init(struct mtk_eth *eth, u32 type)
 		/* PSE Free Queue Flow Control  */
 		mtk_w32(eth, 0x01fa01f4, PSE_FQFC_CFG2);
 
-		/* PSE should not drop port8 and port9 packets */
-		mtk_w32(eth, 0x00000300, PSE_DROP_CFG);
+		/* PSE should not drop port8 and port9 packets from WDMA Tx */
+		mtk_w32(eth, 0x00000300, PSE_NO_DROP_CFG);
+
+		/* PSE should drop p8 and p9 packets when WDMA Rx ring full*/
+		mtk_w32(eth, 0x00000300, PSE_PPE0_DROP);
 
 		/* PSE config input queue threshold */
 		mtk_w32(eth, 0x001a000e, PSE_IQ_REV(1));
