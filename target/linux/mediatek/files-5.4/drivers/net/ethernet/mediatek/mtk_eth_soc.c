@@ -2586,7 +2586,7 @@ static int mtk_start_dma(struct mtk_eth *eth)
 				MTK_NDP_CO_PRO | MTK_MUTLI_CNT |
 				MTK_RESV_BUF | MTK_WCOMP_EN |
 				MTK_DMAD_WR_WDONE | MTK_CHK_DDONE_EN |
-				MTK_RX_2B_OFFSET | MTK_PKT_RX_WDONE, MTK_QDMA_GLO_CFG);
+				MTK_RX_2B_OFFSET, MTK_QDMA_GLO_CFG);
 		}
 		else
 			mtk_w32(eth,
