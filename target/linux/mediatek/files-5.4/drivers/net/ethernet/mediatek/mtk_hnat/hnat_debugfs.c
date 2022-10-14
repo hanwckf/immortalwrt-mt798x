@@ -2189,6 +2189,208 @@ static const struct file_operations hnat_version_fops = {
 	.release = single_release,
 };
 
+static u32 hnat_get_ppe_hash(u32 sip, u32 dip, u32 sport, u32 dport)
+{
+	u32 hv1 = sport << 16 | dport;
+	u32 hv2 = dip;
+	u32 hv3 = sip;
+	u32 hash;
+
+	hash = (hv1 & hv2) | ((~hv1) & hv3);
+	hash = (hash >> 24) | ((hash & 0xffffff) << 8);
+	hash ^= hv1 ^ hv2 ^ hv3;
+	hash ^= hash >> 16;
+	hash <<= 2;
+	hash &= hnat_priv->foe_etry_num - 1;
+
+	return hash;
+}
+
+static u32 hnat_char2hex(const char c)
+{
+	switch (c) {
+	case '0'...'9':
+		return 0x0 + (c - '0');
+	case 'a'...'f':
+		return 0xa + (c - 'a');
+	case 'A'...'F':
+		return 0xa + (c - 'A');
+	default:
+		pr_info("MAC format error\n");
+		return 0;
+	}
+}
+
+static void hnat_parse_mac(char *str, char *mac)
+{
+	int i;
+
+	for (i = 0; i < ETH_ALEN; i++) {
+		mac[i] = (hnat_char2hex(str[i * 3]) << 4) +
+			 (hnat_char2hex(str[i * 3 + 1]));
+	}
+}
+
+static void hnat_static_entry_help(void)
+{
+	pr_info("-------------------- Usage --------------------\n");
+#if defined(CONFIG_MEDIATEK_NETSYS_V3)
+	pr_info("echo $0 $1 $2 ... $15 > /sys/kernel/debug/hnat/static_entry\n\n");
+#else
+	pr_info("echo $0 $1 $2 ... $12 > /sys/kernel/debug/hnat/static_entry\n\n");
+#endif
+
+	pr_info("-------------------- Parameters --------------------\n");
+	pr_info("$0:	HASH		OCT\n");
+	pr_info("$1:	INFO1		HEX\n");
+	pr_info("$2:	ING SIPv4	HEX\n");
+	pr_info("$3:	ING DIPv4	HEX\n");
+	pr_info("$4:	ING SP		HEX\n");
+	pr_info("$5:	ING DP		HEX\n");
+	pr_info("$6:	INFO2		HEX\n");
+	pr_info("$7:	EG SIPv4	HEX\n");
+	pr_info("$8:	EG DIPv4	HEX\n");
+	pr_info("$9:	EG SP		HEX\n");
+	pr_info("$10:	EG DP		HEX\n");
+	pr_info("$11:	DMAC		STR (00:11:22:33:44:55)\n");
+	pr_info("$12:	SMAC		STR (00:11:22:33:44:55)\n");
+#if defined(CONFIG_MEDIATEK_NETSYS_V3)
+	pr_info("$13:	TPORT IDX	HEX\n");
+	pr_info("$14:	TOPS ENTRY	HEX\n");
+	pr_info("$15:	CDRT IDX	HEX\n");
+#endif
+}
+
+static int hnat_static_entry_read(struct seq_file *m, void *private)
+{
+	hnat_static_entry_help();
+
+	return 0;
+}
+
+static int hnat_static_entry_open(struct inode *inode, struct file *file)
+{
+	return single_open(file, hnat_static_entry_read, file->private_data);
+}
+
+static ssize_t hnat_static_entry_write(struct file *file,
+				       const char __user *buffer,
+				       size_t count, loff_t *data)
+{
+	struct foe_entry *foe, entry = { 0 };
+	char buf[256], dmac_str[18], smac_str[18], dmac[6], smac[6];
+	int len = count, hash, coll = 0;
+	u32 ppe_id = 0;
+#if defined(CONFIG_MEDIATEK_NETSYS_V3)
+	u32 tport_id, tops_entry, cdrt_id;
+#endif
+
+	if (len >= sizeof(buf) || copy_from_user(buf, buffer, len)) {
+		pr_info("Input handling fail!\n");
+		len = sizeof(buf) - 1;
+		return -EFAULT;
+	}
+
+	buf[len] = '\0';
+#if defined(CONFIG_MEDIATEK_NETSYS_V3)
+	sscanf(buf, "%d %x %x %x %hx %hx %x %x %x %hx %hx %s %s %x %x %x",
+	       &hash,
+	       &entry.ipv4_hnapt.info_blk1,
+	       &entry.ipv4_hnapt.sip,
+	       &entry.ipv4_hnapt.dip,
+	       &entry.ipv4_hnapt.sport,
+	       &entry.ipv4_hnapt.dport,
+	       &entry.ipv4_hnapt.info_blk2,
+	       &entry.ipv4_hnapt.new_sip,
+	       &entry.ipv4_hnapt.new_dip,
+	       &entry.ipv4_hnapt.new_sport,
+	       &entry.ipv4_hnapt.new_dport,
+	       dmac_str, smac_str, &tport_id, &tops_entry, &cdrt_id);
+
+	entry.ipv4_hnapt.tport_id = tport_id;
+	entry.ipv4_hnapt.tops_entry = tops_entry;
+	entry.ipv4_hnapt.cdrt_id = cdrt_id;
+
+	if ((hash > 8192) || (hash < -1) || (hash % 4 != 0) ||
+	    (tport_id > 16) || (tport_id < 0) ||
+	    (tops_entry > 64) || (tops_entry < 0) ||
+	    (cdrt_id > 255) || (cdrt_id < 0) ||
+	    (entry.ipv4_hnapt.sport > 65535) ||
+	    (entry.ipv4_hnapt.sport < 0) ||
+	    (entry.ipv4_hnapt.dport > 65535) ||
+	    (entry.ipv4_hnapt.dport < 0) ||
+	    (entry.ipv4_hnapt.new_sport > 65535) ||
+	    (entry.ipv4_hnapt.new_sport < 0) ||
+	    (entry.ipv4_hnapt.new_dport > 65535) ||
+	    (entry.ipv4_hnapt.new_dport < 0)) {
+		hnat_static_entry_help();
+		return -EINVAL;
+	}
+#else
+	sscanf(buf, "%d %x %x %x %hx %hx %x %x %x %hx %hx %s %s",
+	       &hash,
+	       &entry.ipv4_hnapt.info_blk1,
+	       &entry.ipv4_hnapt.sip,
+	       &entry.ipv4_hnapt.dip,
+	       &entry.ipv4_hnapt.sport,
+	       &entry.ipv4_hnapt.dport,
+	       &entry.ipv4_hnapt.info_blk2,
+	       &entry.ipv4_hnapt.new_sip,
+	       &entry.ipv4_hnapt.new_dip,
+	       &entry.ipv4_hnapt.new_sport,
+	       &entry.ipv4_hnapt.new_dport,
+	       dmac_str, smac_str);
+
+	if ((hash > 8192) || (hash < -1) || (hash % 4 != 0) ||
+	    (entry.ipv4_hnapt.sport > 65535) ||
+	    (entry.ipv4_hnapt.sport < 0) ||
+	    (entry.ipv4_hnapt.dport > 65535) ||
+	    (entry.ipv4_hnapt.dport < 0) ||
+	    (entry.ipv4_hnapt.new_sport > 65535) ||
+	    (entry.ipv4_hnapt.new_sport < 0) ||
+	    (entry.ipv4_hnapt.new_dport > 65535) ||
+	    (entry.ipv4_hnapt.new_dport < 0)) {
+		hnat_static_entry_help();
+		return -EINVAL;
+	}
+#endif
+
+	hnat_parse_mac(smac_str, smac);
+	hnat_parse_mac(dmac_str, dmac);
+	entry.ipv4_hnapt.dmac_hi = swab32(*((u32 *)dmac));
+	entry.ipv4_hnapt.dmac_lo = swab16(*((u16 *)&dmac[4]));
+	entry.ipv4_hnapt.smac_hi = swab32(*((u32 *)smac));
+	entry.ipv4_hnapt.smac_lo = swab16(*((u16 *)&smac[4]));
+
+	if (hash == -1) {
+		hash = hnat_get_ppe_hash(entry.ipv4_hnapt.sip,
+					 entry.ipv4_hnapt.dip,
+					 entry.ipv4_hnapt.sport,
+					 entry.ipv4_hnapt.dport);
+	}
+
+	foe = &hnat_priv->foe_table_cpu[ppe_id][hash];
+	while ((foe->ipv4_hnapt.bfib1.state == BIND) && (coll < 4)) {
+		hash++;
+		coll++;
+		foe = &hnat_priv->foe_table_cpu[ppe_id][hash];
+	};
+	memcpy(foe, &entry, sizeof(entry));
+
+	debug_level = 7;
+	entry_detail(ppe_id, hash);
+
+	return len;
+}
+
+static const struct file_operations hnat_static_fops = {
+	.open = hnat_static_entry_open,
+	.read = seq_read,
+	.llseek = seq_lseek,
+	.write = hnat_static_entry_write,
+	.release = single_release,
+};
+
 int get_ppe_mib(u32 ppe_id, int index, u64 *pkt_cnt, u64 *byte_cnt)
 {
 	struct mtk_hnat *h = hnat_priv;
@@ -2306,7 +2508,7 @@ int hnat_init_debugfs(struct mtk_hnat *h)
 		h->regset[i]->base = h->ppe_base[i];
 
 		snprintf(name, sizeof(name), "regdump%ld", i);
-		file = debugfs_create_regset32(name, S_IRUGO,
+		file = debugfs_create_regset32(name, 0444,
 					       root, h->regset[i]);
 		if (!file) {
 			dev_notice(h->dev, "%s:err at %d\n", __func__, __LINE__);
@@ -2315,39 +2517,41 @@ int hnat_init_debugfs(struct mtk_hnat *h)
 		}
 	}
 
-	debugfs_create_file("all_entry", S_IRUGO, root, h, &hnat_debug_fops);
-	debugfs_create_file("external_interface", S_IRUGO, root, h,
+	debugfs_create_file("all_entry", 0444, root, h, &hnat_debug_fops);
+	debugfs_create_file("external_interface", 0444, root, h,
 			    &hnat_ext_fops);
-	debugfs_create_file("whnat_interface", S_IRUGO, root, h,
+	debugfs_create_file("whnat_interface", 0444, root, h,
 			    &hnat_whnat_fops);
-	debugfs_create_file("cpu_reason", S_IFREG | S_IRUGO, root, h,
+	debugfs_create_file("cpu_reason", 0444, root, h,
 			    &cpu_reason_fops);
-	debugfs_create_file("hnat_entry", S_IRUGO | S_IRUGO, root, h,
+	debugfs_create_file("hnat_entry", 0444, root, h,
 			    &hnat_entry_fops);
-	debugfs_create_file("hnat_setting", S_IRUGO | S_IRUGO, root, h,
+	debugfs_create_file("hnat_setting", 0444, root, h,
 			    &hnat_setting_fops);
-	debugfs_create_file("mcast_table", S_IRUGO | S_IRUGO, root, h,
+	debugfs_create_file("mcast_table", 0444, root, h,
 			    &hnat_mcast_fops);
-	debugfs_create_file("hook_toggle", S_IRUGO | S_IRUGO, root, h,
+	debugfs_create_file("hook_toggle", 0444, root, h,
 			    &hnat_hook_toggle_fops);
-	debugfs_create_file("mape_toggle", S_IRUGO | S_IRUGO, root, h,
+	debugfs_create_file("mape_toggle", 0444, root, h,
 			    &hnat_mape_toggle_fops);
-	debugfs_create_file("qos_toggle", S_IRUGO | S_IRUGO, root, h,
+	debugfs_create_file("qos_toggle", 0444, root, h,
 			    &hnat_qos_toggle_fops);
-	debugfs_create_file("hnat_version", S_IRUGO | S_IRUGO, root, h,
+	debugfs_create_file("hnat_version", 0444, root, h,
 			    &hnat_version_fops);
-	debugfs_create_file("hnat_ppd_if", S_IRUGO | S_IRUGO, root, h,
+	debugfs_create_file("hnat_ppd_if", 0444, root, h,
 			    &hnat_ppd_if_fops);
+	debugfs_create_file("static_entry", 0444, root, h,
+			    &hnat_static_fops);
 
 	for (i = 0; i < hnat_priv->data->num_of_sch; i++) {
 		snprintf(name, sizeof(name), "qdma_sch%ld", i);
-		debugfs_create_file(name, S_IRUGO, root, (void *)i,
+		debugfs_create_file(name, 0444, root, (void *)i,
 				    &hnat_sched_fops);
 	}
 
 	for (i = 0; i < MTK_QDMA_TX_NUM; i++) {
 		snprintf(name, sizeof(name), "qdma_txq%ld", i);
-		debugfs_create_file(name, S_IRUGO, root, (void *)i,
+		debugfs_create_file(name, 0444, root, (void *)i,
 				    &hnat_queue_fops);
 	}
 
