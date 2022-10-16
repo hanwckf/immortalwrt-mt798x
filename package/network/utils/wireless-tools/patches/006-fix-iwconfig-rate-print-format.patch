@@ -1,0 +1,45 @@
+Index: wireless_tools.29/iwlib.c
+===================================================================
+--- wireless_tools.29.orig/iwlib.c	2007-06-30 07:43:31.000000000 +0800
++++ wireless_tools.29/iwlib.c	2020-09-25 15:35:01.105434143 +0800
+@@ -1129,7 +1129,7 @@ iw_channel_to_freq(int				channel,
+ void
+ iw_print_bitrate(char *	buffer,
+		 int	buflen,
+-		 int	bitrate)
++		 unsigned long long	bitrate)
+ {
+   double	rate = bitrate;
+   char		scale;
+--- wireless_tools.29.orig/iwlib.h
++++ wireless_tools.29.orig/iwlib.h
+@@ -346,7 +346,7 @@ int
+ void
+ 	iw_print_bitrate(char *	buffer,
+ 			 int	buflen,
+-			 int	bitrate);
++			 unsigned long long	bitrate);
+ /* ---------------------- POWER SUBROUTINES ----------------------- */
+ int
+ 	iw_dbm2mwatt(int	in);
+--- wireless_tools.29.orig/wireless.21.h
++++ wireless_tools.29.orig/wireless.21.h
+@@ -669,7 +669,7 @@
+  */
+ struct	iw_param
+ {
+-  __s32		value;		/* The value of the parameter itself */
++  __u64		value;		/* The value of the parameter itself */
+   __u8		fixed;		/* Hardware should not use auto select */
+   __u8		disabled;	/* Disable the feature */
+   __u16		flags;		/* Various specifc flags (if any) */
+@@ -1005,7 +1005,7 @@ struct	iw_range
+ 
+ 	/* Rates */
+ 	__u8		num_bitrates;	/* Number of entries in the list */
+-	__s32		bitrate[IW_MAX_BITRATES];	/* list, in bps */
++	__u64		bitrate[IW_MAX_BITRATES];	/* list, in bps */
+ 
+ 	/* RTS threshold */
+ 	__s32		min_rts;	/* Minimal RTS threshold */
+
