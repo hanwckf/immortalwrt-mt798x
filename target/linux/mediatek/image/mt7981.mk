@@ -171,3 +171,37 @@ define Device/mt7981-fpga-sd
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
 endef
 TARGET_DEVICES += mt7981-fpga-sd
+
+define Device/mt7981-360-t7
+  DEVICE_VENDOR := MediaTek
+  DEVICE_MODEL := 360 T7
+  DEVICE_DTS := mt7981-360-t7
+  DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
+  SUPPORTED_DEVICES := 360,t7
+  UBINIZE_OPTS := -E 5
+  BLOCKSIZE := 128k
+  PAGESIZE := 2048
+  IMAGE_SIZE := 36864k
+  KERNEL_IN_UBI := 1
+  IMAGES += factory.bin
+  IMAGE/factory.bin := append-ubi | check-size $$$$(IMAGE_SIZE)
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+endef
+TARGET_DEVICES += mt7981-360-t7
+
+define Device/mt7981-360-t7-108M
+  DEVICE_VENDOR := MediaTek
+  DEVICE_MODEL := 360 T7 (with 108M ubi)
+  DEVICE_DTS := mt7981-360-t7-108M
+  DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
+  SUPPORTED_DEVICES := 360,t7
+  UBINIZE_OPTS := -E 5
+  BLOCKSIZE := 128k
+  PAGESIZE := 2048
+  IMAGE_SIZE := 110592k
+  KERNEL_IN_UBI := 1
+  IMAGES += factory.bin
+  IMAGE/factory.bin := append-ubi | check-size $$$$(IMAGE_SIZE)
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+endef
+TARGET_DEVICES += mt7981-360-t7-108M
