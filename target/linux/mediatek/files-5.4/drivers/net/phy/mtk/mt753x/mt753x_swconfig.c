@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+// SPDX-License-Identifier: GPL-2.0
 /*
  * Copyright (c) 2018 MediaTek Inc.
  * Author: Weijie Gao <weijie.gao@mediatek.com>
@@ -358,10 +358,17 @@ static void mt753x_port_isolation(struct gsw_mt753x *gsw)
 
 	mt753x_reg_write(gsw, PCR(gsw->cpu_port), PORT_MATRIX_M);
 
-	for (i = 0; i < MT753X_NUM_PORTS; i++)
-		mt753x_reg_write(gsw, PVC(i),
-				 (0x8100 << STAG_VPID_S) |
-				 (VA_TRANSPARENT_PORT << VLAN_ATTR_S));
+	for (i = 0; i < MT753X_NUM_PORTS; i++) {
+		u32 pvc_mode = 0x8100 << STAG_VPID_S;
+
+		if ((gsw->port5_cfg.stag_on && i == 5) ||
+		    (gsw->port6_cfg.stag_on && i == 6))
+			pvc_mode |= PVC_PORT_STAG;
+		else
+			pvc_mode |= (VA_TRANSPARENT_PORT << VLAN_ATTR_S);
+
+		mt753x_reg_write(gsw, PVC(i), pvc_mode);
+	}
 }
 
 static int mt753x_apply_config(struct switch_dev *dev)

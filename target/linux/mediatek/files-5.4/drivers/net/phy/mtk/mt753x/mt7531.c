@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+// SPDX-License-Identifier: GPL-2.0
 /*
  * Copyright (c) 2018 MediaTek Inc.
  * Author: Zhanguo Ju <zhanguo.ju@mediatek.com>
@@ -7,6 +7,10 @@
 #include <linux/kernel.h>
 #include <linux/delay.h>
 #include <linux/hrtimer.h>
+#include <linux/of_platform.h>
+#include <linux/mfd/syscon.h>
+#include <linux/regmap.h>
+#include <linux/of_address.h>
 
 #include "mt753x.h"
 #include "mt753x_regs.h"
@@ -19,7 +23,10 @@
 #define PCS_CONTROL_1(p)		SGMII_REG(p, 0x00)
 #define SGMII_MODE(p)			SGMII_REG(p, 0x20)
 #define QPHY_PWR_STATE_CTRL(p)		SGMII_REG(p, 0xe8)
+#define ANA_CKBG(p)			SGMII_REG(p, 0x100)
+#define ANA_DA_FORCE_MODE1(p)		SGMII_REG(p, 0x110)
 #define PHYA_CTRL_SIGNAL3(p)		SGMII_REG(p, 0x128)
+#define PHYA_ANA_SYSPLL(p)		SGMII_REG(p, 0x158)
 
 /* Fields of PCS_CONTROL_1 */
 #define SGMII_LINK_STATUS		BIT(18)
@@ -41,6 +48,12 @@
 /* Fields of QPHY_PWR_STATE_CTRL */
 #define PHYA_PWD			BIT(4)
 
+/* Fields of ANA_CKBG */
+#define SSUSB_PLL_SSC_EN		BIT(21)
+
+/* Fields of ANA_DA_FORCE_MODE1 */
+#define FORCE_PLL_SSC_EN		BIT(30)
+
 /* Fields of PHYA_CTRL_SIGNAL3 */
 #define RG_TPHY_SPEED_S			2
 #define RG_TPHY_SPEED_M			0x0c
@@ -48,6 +61,9 @@
 /* Values of RG_TPHY_SPEED */
 #define RG_TPHY_SPEED_1000		0
 #define RG_TPHY_SPEED_2500		1
+
+/* Fields of PHYA_ANA_SYSPLL */
+#define RG_VUSB10_ON			BIT(29)
 
 /* Unique fields of (M)HWSTRAP for MT7531 */
 #define XTAL_FSEL_S			7
@@ -69,6 +85,7 @@
 #define PHY_DEV1F_REG_10D		0x10d
 #define PHY_DEV1F_REG_268		0x268
 #define PHY_DEV1F_REG_269		0x269
+#define PHY_DEV1F_REG_26A		0x26A
 #define PHY_DEV1F_REG_403		0x403
 
 /* Fields of PHY_DEV1F_REG_403 */
@@ -94,14 +111,16 @@
 /* Fields of PHY_EXT_REG_17 */
 #define PHY_LINKDOWN_POWER_SAVING_EN	BIT(4)
 
-/* PHY Token Ring Register 0x10 bitmap of define */
-#define PHY_TR_REG_10			0x10
+/* PHY PMA Register 0x17 bitmap of define */
+#define SLV_DSP_READY_TIME_S		15
+#define SLV_DSP_READY_TIME_M		(0xff << SLV_DSP_READY_TIME_S)
 
-/* PHY Token Ring Register 0x12 bitmap of define */
-#define PHY_TR_REG_12			0x12
+/* PHY PMA Register 0x18 bitmap of define */
+#define ENABLE_RANDOM_UPDATE_TRIGGER	BIT(8)
 
 /* PHY DEV 0x1e Register bitmap of define */
 #define PHY_DEV1E			0x1e
+#define PHY_TX_MLT3_BASE		0x0
 #define PHY_DEV1E_REG_13		0x13
 #define PHY_DEV1E_REG_14		0x14
 #define PHY_DEV1E_REG_41		0x41
@@ -109,7 +128,9 @@
 #define PHY_DEV1E_REG_0C6		0x0c6
 #define PHY_DEV1E_REG_0FE		0x0fe
 #define PHY_DEV1E_REG_123		0x123
+#define PHY_DEV1E_REG_141		0x141
 #define PHY_DEV1E_REG_189		0x189
+#define PHY_DEV1E_REG_234		0x234
 
 /* Fields of PHY_DEV1E_REG_0C6 */
 #define PHY_POWER_SAVING_S		8
@@ -118,6 +139,16 @@
 
 /* Fields of PHY_DEV1E_REG_189 */
 #define DESCRAMBLER_CLEAR_EN		0x1
+
+/* Fields of PHY_DEV1E_REG_234 */
+#define TR_OPEN_LOOP_EN			BIT(0)
+
+/* Port debug count register */
+#define DBG_CNT_BASE			0x3018
+#define DBG_CNT_PORT_BASE		0x100
+#define DBG_CNT(p)			(DBG_CNT_BASE + \
+					(p) * DBG_CNT_PORT_BASE)
+#define DIS_CLR				BIT(31)
 
 /* Values of XTAL_FSEL_S */
 #define XTAL_40MHZ			0
@@ -138,6 +169,7 @@
 
 /* TOP Signals Status Register */
 #define TOP_SIG_SR			0x780c
+#define PAD_MCM_SMI_EN			BIT(0)
 #define PAD_DUAL_SGMII_EN		BIT(1)
 
 /* RGMII and SGMII PLL clock */
@@ -180,6 +212,12 @@
 #define GP_MODE_M			0x06
 #define GP_CLK_EN			BIT(0)
 
+#define CPGC_CTRL			0xB0
+#define COL_EN				BIT(0)
+#define COL_CLK_EN			BIT(1)
+#define COL_RST_N			BIT(2)
+#define COL_BUSY			BIT(3)
+
 /* Values of GP_MODE */
 #define GP_MODE_RGMII			0
 #define GP_MODE_MII			1
@@ -205,10 +243,6 @@
 #define TXVLD_DA_271			0x271
 #define TXVLD_DA_272			0x272
 #define TXVLD_DA_273			0x273
-
-/* DSP Channel and NOD_ADDR*/
-#define DSP_CH				0x2
-#define DSP_NOD_ADDR			0xD
 
 /* gpio pinmux pins and functions define */
 static int gpio_int_pins[] = {0};
@@ -362,6 +396,30 @@ static int mt7531_set_port_sgmii_an_mode(struct gsw_mt753x *gsw, u32 port,
 	return 0;
 }
 
+static void mt7531_sgmii_ssc(struct gsw_mt753x *gsw, u32 port, int enable)
+{
+	u32 val;
+	u32 port_base = port - 5;
+
+	if (enable) {
+		val = mt753x_reg_read(gsw, ANA_CKBG(port_base));
+		val |= SSUSB_PLL_SSC_EN;
+		mt753x_reg_write(gsw, ANA_CKBG(port_base), val);
+
+		val = mt753x_reg_read(gsw, ANA_DA_FORCE_MODE1(port_base));
+		val |= FORCE_PLL_SSC_EN;
+		mt753x_reg_write(gsw, ANA_DA_FORCE_MODE1(port_base), val);
+	} else {
+		val = mt753x_reg_read(gsw, ANA_CKBG(port_base));
+		val &= ~SSUSB_PLL_SSC_EN;
+		mt753x_reg_write(gsw, ANA_CKBG(port_base), val);
+
+		val = mt753x_reg_read(gsw, ANA_DA_FORCE_MODE1(port_base));
+		val &= ~FORCE_PLL_SSC_EN;
+		mt753x_reg_write(gsw, ANA_DA_FORCE_MODE1(port_base), val);
+	}
+}
+
 static int mt7531_set_port_rgmii(struct gsw_mt753x *gsw, u32 port)
 {
 	u32 val;
@@ -433,6 +491,8 @@ static int mt7531_mac_port_setup(struct gsw_mt753x *gsw, u32 port,
 			mt7531_set_port_sgmii_force_mode(gsw, port, port_cfg);
 		else
 			mt7531_set_port_sgmii_an_mode(gsw, port, port_cfg);
+
+		mt7531_sgmii_ssc(gsw, port, port_cfg->ssc_on);
 		break;
 	default:
 		if (port_cfg->enabled)
@@ -449,16 +509,33 @@ static int mt7531_mac_port_setup(struct gsw_mt753x *gsw, u32 port,
 
 static void mt7531_core_pll_setup(struct gsw_mt753x *gsw)
 {
-	u32 hwstrap;
 	u32 val;
+	u32 top_sig;
+	u32 hwstrap;
+	u32 xtal;
 
-	val = mt753x_reg_read(gsw, TOP_SIG_SR);
-	if (val & PAD_DUAL_SGMII_EN)
+	val = mt753x_reg_read(gsw, CHIP_REV);
+	top_sig = mt753x_reg_read(gsw, TOP_SIG_SR);
+	hwstrap = mt753x_reg_read(gsw, HWSTRAP);
+	if ((val & CHIP_REV_M) > 0)
+		xtal = (top_sig & PAD_MCM_SMI_EN) ? XTAL_40MHZ : XTAL_25MHZ;
+	else
+		xtal = (hwstrap & XTAL_FSEL_M) >> XTAL_FSEL_S;
+
+	/* dump HW strap and XTAL */
+	dev_info(gsw->dev, "HWSTRAP=0x%x XTAL=%dMHz\n", hwstrap,
+		 (xtal == XTAL_25MHZ) ? 25 : 40);
+
+	/* Only BE needs additional setting */
+	if (top_sig & PAD_DUAL_SGMII_EN)
 		return;
 
-	hwstrap = mt753x_reg_read(gsw, HWSTRAP);
+	/* Disable Port5 SGMII clearly */
+	val = mt753x_reg_read(gsw, PHYA_ANA_SYSPLL(0));
+	val &= ~RG_VUSB10_ON;
+	mt753x_reg_write(gsw, PHYA_ANA_SYSPLL(0), val);
 
-	switch ((hwstrap & XTAL_FSEL_M) >> XTAL_FSEL_S) {
+	switch (xtal) {
 	case XTAL_25MHZ:
 		/* Step 1 : Disable MT7531 COREPLL */
 		val = mt753x_reg_read(gsw, PLLGP_EN);
@@ -609,6 +686,24 @@ static int mt7531_sw_detect(struct gsw_mt753x *gsw, struct chip_rev *crev)
 	return -ENODEV;
 }
 
+static int mt7988_sw_detect(struct gsw_mt753x *gsw, struct chip_rev *crev)
+{
+	const char *model;
+	struct device_node *np;
+
+	np = of_find_compatible_node(NULL, NULL, "mediatek,mt7988-switch");
+	if (!np)
+		return -ENODEV;
+
+	of_node_put(np);
+
+	crev->rev = 0;
+	crev->name = "MT7988";
+	gsw->direct_access = true;
+
+	return 0;
+}
+
 static void pinmux_set_mux_7531(struct gsw_mt753x *gsw, u32 pin, u32 mode)
 {
 	u32 val;
@@ -645,6 +740,10 @@ static void mt7531_phy_pll_setup(struct gsw_mt753x *gsw)
 {
 	u32 hwstrap;
 	u32 val;
+
+	val = mt753x_reg_read(gsw, CHIP_REV);
+	if ((val & CHIP_REV_M) > 0)
+		return;
 
 	hwstrap = mt753x_reg_read(gsw, HWSTRAP);
 
@@ -703,17 +802,38 @@ static void mt7531_phy_pll_setup(struct gsw_mt753x *gsw)
 	gsw->mmd_write(gsw, 0, PHY_DEV1F, PHY_DEV1F_REG_10D, 0x14);
 }
 
+/* 12 registers for TX_MLT3 waveform tuning.
+ *    012 345 678 9ab
+ *  1    __
+ *     _/  \_
+ *  0_/      \
+ *            \_    _/
+ * -1           \__/
+ */
+static void mt7531_phy_100m_eye_diag_setting(struct gsw_mt753x *gsw, u32 port)
+{
+	gsw->mmd_write(gsw, port, PHY_DEV1E, PHY_TX_MLT3_BASE + 0x0, 0x187);
+	gsw->mmd_write(gsw, port, PHY_DEV1E, PHY_TX_MLT3_BASE + 0x1, 0x1c9);
+	gsw->mmd_write(gsw, port, PHY_DEV1E, PHY_TX_MLT3_BASE + 0x2, 0x1c6);
+	gsw->mmd_write(gsw, port, PHY_DEV1E, PHY_TX_MLT3_BASE + 0x3, 0x182);
+	gsw->mmd_write(gsw, port, PHY_DEV1E, PHY_TX_MLT3_BASE + 0x4, 0x208);
+	gsw->mmd_write(gsw, port, PHY_DEV1E, PHY_TX_MLT3_BASE + 0x5, 0x205);
+	gsw->mmd_write(gsw, port, PHY_DEV1E, PHY_TX_MLT3_BASE + 0x6, 0x384);
+	gsw->mmd_write(gsw, port, PHY_DEV1E, PHY_TX_MLT3_BASE + 0x7, 0x3cb);
+	gsw->mmd_write(gsw, port, PHY_DEV1E, PHY_TX_MLT3_BASE + 0x8, 0x3c4);
+	gsw->mmd_write(gsw, port, PHY_DEV1E, PHY_TX_MLT3_BASE + 0x9, 0x30a);
+	gsw->mmd_write(gsw, port, PHY_DEV1E, PHY_TX_MLT3_BASE + 0xa, 0x00b);
+	gsw->mmd_write(gsw, port, PHY_DEV1E, PHY_TX_MLT3_BASE + 0xb, 0x002);
+}
+
 static void mt7531_phy_setting(struct gsw_mt753x *gsw)
 {
 	int i;
 	u32 val;
 
-	/* Adjust DAC TX Delay */
-	gsw->mmd_write(gsw, 0, PHY_DEV1F, PHY_DEV1F_REG_44, 0xc0);
-
 	for (i = 0; i < MT753X_NUM_PHYS; i++) {
-		/* Disable EEE */
-		gsw->mmd_write(gsw, i, PHY_DEV07, PHY_DEV07_REG_03C, 0);
+		if (!gsw->direct_access)
+			mt7531_phy_100m_eye_diag_setting(gsw, i);
 
 		/* Enable HW auto downshift */
 		gsw->mii_write(gsw, i, 0x1f, 0x1);
@@ -721,32 +841,42 @@ static void mt7531_phy_setting(struct gsw_mt753x *gsw)
 		val |= PHY_EN_DOWN_SHFIT;
 		gsw->mii_write(gsw, i, PHY_EXT_REG_14, val);
 
-		/* Increase SlvDPSready time */
-		gsw->mii_write(gsw, i, 0x1f, 0x52b5);
-		gsw->mii_write(gsw, i, PHY_TR_REG_10, 0xafae);
-		gsw->mii_write(gsw, i, PHY_TR_REG_12, 0x2f);
-		gsw->mii_write(gsw, i, PHY_TR_REG_10, 0x8fae);
-		gsw->mii_write(gsw, i, 0x1f, 0);
+		/* Decrease SlvDPSready time */
+		val = mt753x_tr_read(gsw, i, PMA_CH, PMA_NOD, PMA_17);
+		val &= ~SLV_DSP_READY_TIME_M;
+		val |= 0xc << SLV_DSP_READY_TIME_S;
+		mt753x_tr_write(gsw, i, PMA_CH, PMA_NOD, PMA_17, val);
 
-		/* Adjust 100_mse_threshold */
-		gsw->mmd_write(gsw, i, PHY_DEV1E, PHY_DEV1E_REG_123, 0xffff);
-
-		/* Disable mcc */
-		gsw->mmd_write(gsw, i, PHY_DEV1E, PHY_DEV1E_REG_A6, 0x300);
+		/* Enable Random Update Mechanism */
+		val = mt753x_tr_read(gsw, i, PMA_CH, PMA_NOD, PMA_18);
+		val |= ENABLE_RANDOM_UPDATE_TRIGGER;
+		mt753x_tr_write(gsw, i, PMA_CH, PMA_NOD, PMA_18, val);
 
 		/* PHY link down power saving enable */
 		val = gsw->mii_read(gsw, i, PHY_EXT_REG_17);
 		val |= PHY_LINKDOWN_POWER_SAVING_EN;
 		gsw->mii_write(gsw, i, PHY_EXT_REG_17, val);
 
-		val = gsw->mmd_read(gsw, i, PHY_DEV1E, PHY_DEV1E_REG_0C6);
-		val &= ~PHY_POWER_SAVING_M;
-		val |= PHY_POWER_SAVING_TX << PHY_POWER_SAVING_S;
-		gsw->mmd_write(gsw, i, PHY_DEV1E, PHY_DEV1E_REG_0C6, val);
+		if (!gsw->direct_access) {
+			val = gsw->mmd_read(gsw, i, PHY_DEV1E,
+					    PHY_DEV1E_REG_0C6);
+			val &= ~PHY_POWER_SAVING_M;
+			val |= PHY_POWER_SAVING_TX << PHY_POWER_SAVING_S;
+			gsw->mmd_write(gsw, i, PHY_DEV1E, PHY_DEV1E_REG_0C6,
+				       val);
+		}
 
-		/* Set TX Pair delay selection */
-		gsw->mmd_write(gsw, i, PHY_DEV1E, PHY_DEV1E_REG_13, 0x404);
-		gsw->mmd_write(gsw, i, PHY_DEV1E, PHY_DEV1E_REG_14, 0x404);
+		/* Timing Recovery for GbE slave mode */
+		mt753x_tr_write(gsw, i, PMA_CH, PMA_NOD, PMA_01, 0x6fb90a);
+		mt753x_tr_write(gsw, i, DSP_CH, DSP_NOD, DSP_06, 0x2ebaef);
+		val = gsw->mmd_read(gsw, i, PHY_DEV1E, PHY_DEV1E_REG_234);
+		val |= TR_OPEN_LOOP_EN;
+		gsw->mmd_write(gsw, i, PHY_DEV1E, PHY_DEV1E_REG_234, val);
+
+		/* Enable Asymmetric Pause Capability */
+		val = gsw->mii_read(gsw, i, MII_ADVERTISE);
+		val |= ADVERTISE_PAUSE_ASYM;
+		gsw->mii_write(gsw, i, MII_ADVERTISE, val);
 	}
 }
 
@@ -764,52 +894,78 @@ static void mt7531_adjust_line_driving(struct gsw_mt753x *gsw, u32 port)
 	/* Adjust Line driver current for different mode */
 	gsw->mmd_write(gsw, port, PHY_DEV1F, TXVLD_DA_272, 0xc6b);
 
-	/* Adjust Line driver amplitude for 10BT */
+	/* Adjust Line driver gain for 10BT from 1000BT calibration result */
 	gsw->mmd_write(gsw, port, PHY_DEV1F, TXVLD_DA_273, 0x3000);
 
 	/* Adjust RX Echo path filter */
-	gsw->mmd_write(gsw, port, PHY_DEV1E, PHY_DEV1E_REG_0FE, 0x2);
+	if (!gsw->direct_access)
+		gsw->mmd_write(gsw, port, PHY_DEV1E, PHY_DEV1E_REG_0FE, 0x2);
 
 	/* Adjust RX HVGA bias current */
 	gsw->mmd_write(gsw, port, PHY_DEV1E, PHY_DEV1E_REG_41, 0x3333);
 
 	/* Adjust TX class AB driver 1 */
-	gsw->mmd_write(gsw, port, PHY_DEV1F, PHY_DEV1F_REG_268, 0x388);
+	gsw->mmd_write(gsw, port, PHY_DEV1F, PHY_DEV1F_REG_268, 0x384);
 
 	/* Adjust TX class AB driver 2 */
-	gsw->mmd_write(gsw, port, PHY_DEV1F, PHY_DEV1F_REG_269, 0x4448);
+	gsw->mmd_write(gsw, port, PHY_DEV1F, PHY_DEV1F_REG_269, 0x1114);
+
+	/* Adjust DAC delay for TX Pairs */
+	gsw->mmd_write(gsw, port, PHY_DEV1E, PHY_DEV1E_REG_13, 0x404);
+	gsw->mmd_write(gsw, port, PHY_DEV1E, PHY_DEV1E_REG_14, 0x404);
+
+	/* Adjust DAC digital delay for TX Delay */
+	gsw->mmd_write(gsw, port, PHY_DEV1F, PHY_DEV1F_REG_44, 0xc0);
+
+	/* Adjust Line driver compensation cap for stability concern due to
+	 * increase current.
+	 */
+	gsw->mmd_write(gsw, port, PHY_DEV1F, PHY_DEV1F_REG_26A, 0x3333);
 }
 
 static void mt7531_eee_setting(struct gsw_mt753x *gsw, u32 port)
 {
-	u32 tr_reg_control;
 	u32 val;
+
+	/* Disable EEE */
+	gsw->mmd_write(gsw, port, PHY_DEV07, PHY_DEV07_REG_03C, 0);
 
 	/* Disable generate signal to clear the scramble_lock when lpi mode */
 	val = gsw->mmd_read(gsw, port, PHY_DEV1E, PHY_DEV1E_REG_189);
 	val &= ~DESCRAMBLER_CLEAR_EN;
 	gsw->mmd_write(gsw, port, PHY_DEV1E, PHY_DEV1E_REG_189, val);
 
-	/* roll back CR*/
-	gsw->mii_write(gsw, port, 0x1f, 0x52b5);
+	/* Roll back EEE Slave Mode */
 	gsw->mmd_write(gsw, port, 0x1e, 0x2d1, 0);
-	tr_reg_control = (1 << 15) | (0 << 13) | (DSP_CH << 11) |
-			 (DSP_NOD_ADDR << 7) | (0x8 << 1);
-	gsw->mii_write(gsw, port, 17, 0x1b);
-	gsw->mii_write(gsw, port, 18, 0);
-	gsw->mii_write(gsw, port, 16, tr_reg_control);
-	tr_reg_control = (1 << 15) | (0 << 13) | (DSP_CH << 11) |
-			 (DSP_NOD_ADDR << 7) | (0xf << 1);
-	gsw->mii_write(gsw, port, 17, 0);
-	gsw->mii_write(gsw, port, 18, 0);
-	gsw->mii_write(gsw, port, 16, tr_reg_control);
+	mt753x_tr_write(gsw, port, DSP_CH, DSP_NOD, DSP_08, 0x1b);
+	mt753x_tr_write(gsw, port, DSP_CH, DSP_NOD, DSP_0f, 0);
+	mt753x_tr_write(gsw, port, DSP_CH, DSP_NOD, DSP_10, 0x5000);
 
-	tr_reg_control = (1 << 15) | (0 << 13) | (DSP_CH << 11) |
-			 (DSP_NOD_ADDR << 7) | (0x10 << 1);
-	gsw->mii_write(gsw, port, 17, 0x500);
-	gsw->mii_write(gsw, port, 18, 0);
-	gsw->mii_write(gsw, port, 16, tr_reg_control);
-	gsw->mii_write(gsw, port, 0x1f, 0);
+	/* Adjust 100_mse_threshold */
+	gsw->mmd_write(gsw, port, PHY_DEV1E, PHY_DEV1E_REG_123, 0xffff);
+
+	/* Disable mcc */
+	gsw->mmd_write(gsw, port, PHY_DEV1E, PHY_DEV1E_REG_A6, 0x300);
+}
+
+static void mt7531_afifo_reset(struct gsw_mt753x *gsw, int enable)
+{
+	int p;
+	u32 val;
+
+	if (enable) {
+		for (p = 0; p < MT753X_NUM_PORTS; p++) {
+			val = mt753x_reg_read(gsw, DBG_CNT(p));
+			val &= ~DIS_CLR;
+			mt753x_reg_write(gsw, DBG_CNT(p), val);
+		}
+	} else {
+		for (p = 0; p < MT753X_NUM_PORTS; p++) {
+			val = mt753x_reg_read(gsw, DBG_CNT(p));
+			val |= DIS_CLR;
+			mt753x_reg_write(gsw, DBG_CNT(p), val);
+		}
+	}
 }
 
 static int mt7531_sw_init(struct gsw_mt753x *gsw)
@@ -824,6 +980,9 @@ static int mt7531_sw_init(struct gsw_mt753x *gsw)
 	gsw->mmd_read = mt753x_mmd_read;
 	gsw->mmd_write = mt753x_mmd_write;
 
+	gsw->hw_phy_cal = of_property_read_bool(gsw->dev->of_node,
+						"mediatek,hw_phy_cal");
+
 	for (i = 0; i < MT753X_NUM_PHYS; i++) {
 		val = gsw->mii_read(gsw, i, MII_BMCR);
 		val |= BMCR_ISOLATE;
@@ -836,7 +995,7 @@ static int mt7531_sw_init(struct gsw_mt753x *gsw)
 
 	/* Switch soft reset */
 	mt753x_reg_write(gsw, SYS_CTRL, SW_SYS_RST | SW_REG_RST);
-	usleep_range(10, 20);
+	udelay(20);
 
 	/* Enable MDC input Schmitt Trigger */
 	val = mt753x_reg_read(gsw, SMT0_IOLB);
@@ -845,14 +1004,110 @@ static int mt7531_sw_init(struct gsw_mt753x *gsw)
 	/* Set 7531 gpio pinmux */
 	mt7531_set_gpio_pinmux(gsw);
 
-	/* Global mac control settings */
-	mt753x_reg_write(gsw, GMACCR,
-			 (15 << MTCC_LMT_S) | (11 << MAX_RX_JUMBO_S) |
-			 RX_PKT_LEN_MAX_JUMBO);
-
 	mt7531_core_pll_setup(gsw);
+
 	mt7531_mac_port_setup(gsw, 5, &gsw->port5_cfg);
 	mt7531_mac_port_setup(gsw, 6, &gsw->port6_cfg);
+
+	/* Global mac control settings */
+	mt753x_reg_write(gsw, GMACCR,
+			 (15 << MTCC_LMT_S) | (15 << MAX_RX_JUMBO_S) |
+			 RX_PKT_LEN_MAX_JUMBO);
+
+	/* Enable Collision Poll */
+	val = mt753x_reg_read(gsw, CPGC_CTRL);
+	val |= COL_CLK_EN;
+	mt753x_reg_write(gsw, CPGC_CTRL, val);
+	val |= COL_RST_N;
+	mt753x_reg_write(gsw, CPGC_CTRL, val);
+	val |= COL_EN;
+	mt753x_reg_write(gsw, CPGC_CTRL, val);
+
+	/* Disable AFIFO reset for extra short IPG */
+	mt7531_afifo_reset(gsw, 0);
+
+	return 0;
+}
+
+static int mt7988_sw_init(struct gsw_mt753x *gsw)
+{
+	struct device_node *switch_node = NULL;
+	struct platform_device *pdev;
+	int i;
+	u32 val;
+	u32 pmcr;
+	u32 speed;
+
+	switch_node = of_find_node_by_name(NULL, "switch0");
+	if (switch_node == NULL) {
+		dev_err(&pdev->dev, "switch node invaild\n");
+		return -ENOENT;
+	}
+
+	gsw->base = of_iomap(switch_node, 0);
+	if (IS_ERR(gsw->base)) {
+		dev_err(&pdev->dev, "switch ioremap failed\n");
+		return -EIO;
+	}
+
+	pdev = container_of(gsw->dev, struct platform_device, dev);
+	gsw->sysctrl_base = syscon_regmap_lookup_by_phandle(pdev->dev.of_node,
+							"mediatek,sysctrl");
+	if (IS_ERR(gsw->sysctrl_base)) {
+		dev_err(&pdev->dev, "no sysctl regmap found\n");
+		return -ENODEV;
+	}
+
+	/* reset control */
+	regmap_write(gsw->sysctrl_base, ETH_RESET, 0x200);
+	udelay(20);
+	regmap_write(gsw->sysctrl_base, ETH_RESET, 0);
+	udelay(20);
+
+	gsw->phy_base = (gsw->smi_addr + 1) & MT753X_SMI_ADDR_MASK;
+
+	gsw->mii_read = mt753x_mii_read;
+	gsw->mii_write = mt753x_mii_write;
+	gsw->mmd_read = mt753x_mmd_read;
+	gsw->mmd_write = mt753x_mmd_write;
+
+	for (i = 0; i < MT753X_NUM_PHYS; i++) {
+		val = gsw->mii_read(gsw, i, MII_BMCR);
+		val |= BMCR_ISOLATE;
+		gsw->mii_write(gsw, i, MII_BMCR, val);
+	}
+
+	speed = MAC_SPD_1000;
+	pmcr = (IPG_96BIT_WITH_SHORT_IPG << IPG_CFG_S) |
+		MAC_MODE | MAC_TX_EN | MAC_RX_EN | BKOFF_EN |
+		BACKPR_EN | FORCE_MODE_LNK | FORCE_LINK | FORCE_MODE_SPD |
+		FORCE_MODE_DPX | FORCE_MODE_RX_FC | FORCE_MODE_TX_FC |
+		FORCE_RX_FC | FORCE_TX_FC | (speed << FORCE_SPD_S) | FORCE_DPX;
+
+	mt753x_reg_write(gsw, PMCR(6), pmcr);
+
+	/* Global mac control settings */
+	mt753x_reg_write(gsw, GMACCR,
+			 (15 << MTCC_LMT_S) | (15 << MAX_RX_JUMBO_S) |
+			 RX_PKT_LEN_MAX_JUMBO);
+
+	/* Enable Collision Poll */
+	val = mt753x_reg_read(gsw, CPGC_CTRL);
+	val |= COL_CLK_EN;
+	mt753x_reg_write(gsw, CPGC_CTRL, val);
+	val |= COL_RST_N;
+	mt753x_reg_write(gsw, CPGC_CTRL, val);
+	val |= COL_EN;
+	mt753x_reg_write(gsw, CPGC_CTRL, val);
+
+	/* Disable AFIFO reset for extra short IPG */
+	mt7531_afifo_reset(gsw, 0);
+
+	/* PHY force slave 1G*/
+	for (i = 0; i < MT753X_NUM_PHYS; i++) {
+		gsw->mii_write(gsw, i, MII_CTRL1000, 0x1200);
+		gsw->mii_write(gsw, i, MII_BMCR, 0x140);
+	}
 
 	return 0;
 }
@@ -862,11 +1117,22 @@ static int mt7531_sw_post_init(struct gsw_mt753x *gsw)
 	int i;
 	u32 val;
 
-	mt7531_phy_pll_setup(gsw);
+	/* Let internal PHYs only Tx constant data in configure stage. */
+	for (i = 0; i < MT753X_NUM_PHYS; i++)
+		gsw->mmd_write(gsw, i, PHY_DEV1E, PHY_DEV1E_REG_141, 0x200);
 
-	/* Internal PHYs are disabled by default. SW should enable them.
-	 * Note that this may already be enabled in bootloader stage.
+	/* Internal PHYs might be enabled by HW Bootstrapping, or bootloader.
+	 * Turn off PHYs before setup PHY PLL.
 	 */
+	val = gsw->mmd_read(gsw, 0, PHY_DEV1F, PHY_DEV1F_REG_403);
+	val |= PHY_EN_BYPASS_MODE;
+	val |= POWER_ON_OFF;
+	gsw->mmd_write(gsw, 0, PHY_DEV1F, PHY_DEV1F_REG_403, val);
+
+	if (!gsw->direct_access)
+		mt7531_phy_pll_setup(gsw);
+
+	/* Enable Internal PHYs before phy setting */
 	val = gsw->mmd_read(gsw, 0, PHY_DEV1F, PHY_DEV1F_REG_403);
 	val |= PHY_EN_BYPASS_MODE;
 	val &= ~POWER_ON_OFF;
@@ -880,27 +1146,22 @@ static int mt7531_sw_post_init(struct gsw_mt753x *gsw)
 		gsw->mii_write(gsw, i, MII_BMCR, val);
 	}
 
-	for (i = 0; i < MT753X_NUM_PHYS; i++)
+	for (i = 0; i < MT753X_NUM_PHYS; i++) {
 		mt7531_adjust_line_driving(gsw, i);
-
-	for (i = 0; i < MT753X_NUM_PHYS; i++)
 		mt7531_eee_setting(gsw, i);
+	}
 
-	val = mt753x_reg_read(gsw, CHIP_REV);
-	val &= CHIP_REV_M;
-	if (val == CHIP_REV_E1) {
+	/* Restore internal PHYs normal Tx function after configure stage. */
+	for (i = 0; i < MT753X_NUM_PHYS; i++)
+		gsw->mmd_write(gsw, i, PHY_DEV1E, PHY_DEV1E_REG_141, 0x0);
+
+	if (!gsw->direct_access)
 		mt7531_internal_phy_calibration(gsw);
-	} else {
-		val = mt753x_reg_read(gsw, GBE_EFUSE);
-		if (val & GBE_SEL_EFUSE_EN) {
-			val = gsw->mmd_read(gsw, 0, PHY_DEV1F,
-					    PHY_DEV1F_REG_403);
-			val &= ~GBE_EFUSE_SETTING;
-			gsw->mmd_write(gsw, 0, PHY_DEV1F, PHY_DEV1F_REG_403,
-				       val);
-		} else {
-			mt7531_internal_phy_calibration(gsw);
-		}
+
+	/* PHY force slave disable, restart AN*/
+	for (i = 0; i < MT753X_NUM_PHYS; i++) {
+		gsw->mii_write(gsw, i, MII_CTRL1000, 0x200);
+		gsw->mii_write(gsw, i, MII_BMCR, 0x1240);
 	}
 
 	return 0;
@@ -910,6 +1171,13 @@ struct mt753x_sw_id mt7531_id = {
 	.model = MT7531,
 	.detect = mt7531_sw_detect,
 	.init = mt7531_sw_init,
+	.post_init = mt7531_sw_post_init
+};
+
+struct mt753x_sw_id mt7988_id = {
+	.model = MT7988,
+	.detect = mt7988_sw_detect,
+	.init = mt7988_sw_init,
 	.post_init = mt7531_sw_post_init
 };
 

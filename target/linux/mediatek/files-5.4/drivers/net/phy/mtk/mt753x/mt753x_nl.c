@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+// SPDX-License-Identifier: GPL-2.0
 /*
  * Copyright (c) 2018 MediaTek Inc.
  * Author: Sirui Zhao <Sirui.Zhao@mediatek.com>
@@ -23,7 +23,6 @@ struct mt753x_nl_cmd_item {
 
 static int mt753x_nl_response(struct sk_buff *skb, struct genl_info *info);
 
-/*
 static const struct nla_policy mt753x_nl_cmd_policy[] = {
 	[MT753X_ATTR_TYPE_MESG] = { .type = NLA_STRING },
 	[MT753X_ATTR_TYPE_PHY] = { .type = NLA_S32 },
@@ -33,7 +32,6 @@ static const struct nla_policy mt753x_nl_cmd_policy[] = {
 	[MT753X_ATTR_TYPE_DEV_ID] = { .type = NLA_S32 },
 	[MT753X_ATTR_TYPE_DEVAD] = { .type = NLA_S32 },
 };
-*/
 
 static const struct genl_ops mt753x_nl_ops[] = {
 	{
@@ -60,6 +58,7 @@ static struct genl_family mt753x_nl_family = {
 	.maxattr =	MT753X_NR_ATTR_TYPE,
 	.ops =		mt753x_nl_ops,
 	.n_ops =	ARRAY_SIZE(mt753x_nl_ops),
+	.policy =	mt753x_nl_cmd_policy,
 };
 
 static int mt753x_nl_list_devs(char *buff, int size)
@@ -363,7 +362,7 @@ static int mt753x_nl_response(struct sk_buff *skb, struct genl_info *info)
 	return ret;
 }
 
-int __init mt753x_nl_init(void)
+int mt753x_nl_init(void)
 {
 	int ret;
 
@@ -376,7 +375,7 @@ int __init mt753x_nl_init(void)
 	return 0;
 }
 
-void __exit mt753x_nl_exit(void)
+void mt753x_nl_exit(void)
 {
 	genl_unregister_family(&mt753x_nl_family);
 }

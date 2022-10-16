@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
+/* SPDX-License-Identifier: GPL-2.0 */
 /*
  * Copyright (c) 2018 MediaTek Inc.
  * Author: Weijie Gao <weijie.gao@mediatek.com>
@@ -8,6 +8,9 @@
 #define _MT753X_REGS_H_
 
 #include <linux/bitops.h>
+
+/* ethernet wrap register */
+#define ETH_RESET		0x8
 
 /* Values of Egress TAG Control */
 #define ETAG_CTRL_UNTAG			0
@@ -291,4 +294,54 @@
 #define HWSTRAP				0x7800
 #define MHWSTRAP			0x7804
 
+/* Internal GPHY Page Control Register */
+#define PHY_CL22_PAGE_CTRL		0x1f
+#define PHY_TR_PAGE			0x52b5
+
+/* Internal GPHY Token Ring Access Registers */
+#define PHY_TR_CTRL			0x10
+#define PHY_TR_LOW_DATA			0x11
+#define PHY_TR_HIGH_DATA		0x12
+
+/* Fields of PHY_TR_CTRL */
+#define PHY_TR_PKT_XMT_STA		BIT(15)
+#define PHY_TR_WR_S			13
+#define PHY_TR_CH_ADDR_S		11
+#define PHY_TR_NODE_ADDR_S		7
+#define PHY_TR_DATA_ADDR_S		1
+
+enum phy_tr_wr {
+	PHY_TR_WRITE = 0,
+	PHY_TR_READ = 1,
+};
+
+/* Helper macro for GPHY Token Ring Access */
+#define PHY_TR_LOW_VAL(x)		((x) & 0xffff)
+#define PHY_TR_HIGH_VAL(x)		(((x) & 0xff0000) >> 16)
+
+/* Token Ring Channels */
+#define PMA_CH				0x1
+#define DSP_CH				0x2
+
+/* Token Ring Nodes */
+#define PMA_NOD				0xf
+#define DSP_NOD				0xd
+
+/* Token Ring register range */
+enum tr_pma_reg_addr {
+	PMA_MIN = 0x0,
+	PMA_01  = 0x1,
+	PMA_17  = 0x17,
+	PMA_18  = 0x18,
+	PMA_MAX = 0x3d,
+};
+
+enum tr_dsp_reg_addr {
+	DSP_MIN = 0x0,
+	DSP_06  = 0x6,
+	DSP_08  = 0x8,
+	DSP_0f  = 0xf,
+	DSP_10  = 0x10,
+	DSP_MAX = 0x3e,
+};
 #endif /* _MT753X_REGS_H_ */

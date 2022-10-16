@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+// SPDX-License-Identifier: GPL-2.0
 /*
  * Copyright (c) 2018 MediaTek Inc.
  * Author: Weijie Gao <weijie.gao@mediatek.com>
@@ -64,6 +64,13 @@
 #define XTAL_20MHZ			1
 #define XTAL_40MHZ			2
 #define XTAL_25MHZ			3
+
+/* Top single control CR define */
+#define TOP_SIG_CTRL			0x7808
+
+/* TOP_SIG_CTRL Register bitmap of define */
+#define OUTPUT_INTR_S			16
+#define OUTPUT_INTR_M			0x30000
 
 #define P6ECR				0x7830
 #define P6_INTF_MODE_TRGMII		BIT(0)
@@ -600,6 +607,12 @@ static int mt7530_sw_init(struct gsw_mt753x *gsw)
 	mt753x_reg_write(gsw, GMACCR,
 			 LATE_COL_DROP | (15 << MTCC_LMT_S) |
 			 (2 << MAX_RX_JUMBO_S) | RX_PKT_LEN_MAX_JUMBO);
+
+	/* Output INTR selected */
+	val = mt753x_reg_read(gsw, TOP_SIG_CTRL);
+	val &= ~OUTPUT_INTR_M;
+	val |= (3 << OUTPUT_INTR_S);
+	mt753x_reg_write(gsw, TOP_SIG_CTRL, val);
 
 	mt7530_core_pll_setup(gsw);
 	mt7530_mac_port_setup(gsw);

@@ -36,8 +36,8 @@ enum mt753x_attr {
 #define MT753X_NR_ATTR_TYPE		(__MT753X_ATTR_TYPE_MAX - 1)
 
 #ifdef __KERNEL__
-int __init mt753x_nl_init(void);
-void __exit mt753x_nl_exit(void);
+int mt753x_nl_init(void);
+void mt753x_nl_exit(void);
 #endif /* __KERNEL__ */
 
 #endif /* _MT753X_NL_H_ */
