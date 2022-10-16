@@ -554,6 +554,16 @@ define Device/Build/kernel
     ifdef CONFIG_IB
       install: $$(KDIR_KERNEL_IMAGE)
     endif
+    ifneq ($$(filter squashfs,$(2)),)
+      # Force squashfs to be built before generating kernel image
+      ROOTFS/squashfs/$(1) := \
+	$(KDIR)/root.squashfs$$(strip \
+		$$(if $$(FS_OPTIONS/squashfs),+fs=$$(call param_mangle,$$(FS_OPTIONS/squashfs))) \
+	)$$(strip \
+		$(if $(TARGET_PER_DEVICE_ROOTFS),+pkg=$$(ROOTFS_ID/$(1))) \
+	)
+      $$(KDIR_KERNEL_IMAGE): $$(ROOTFS/squashfs/$(1))
+    endif
     $$(KDIR_KERNEL_IMAGE): $(KDIR)/$$(KERNEL_NAME) $(CURDIR)/Makefile $$(KERNEL_DEPENDS) image_prepare
 	@rm -f $$@
 	$$(call concat_cmd,$$(KERNEL))
@@ -638,7 +648,7 @@ endef
 
 define Device/Build
   $(if $(CONFIG_TARGET_ROOTFS_INITRAMFS),$(call Device/Build/initramfs,$(1)))
-  $(call Device/Build/kernel,$(1))
+  $(call Device/Build/kernel,$(1),$$(filter $(TARGET_FILESYSTEMS),$$(FILESYSTEMS)))
 
   $$(eval $$(foreach compile,$$(COMPILE), \
     $$(call Device/Build/compile,$$(compile),$(1))))
