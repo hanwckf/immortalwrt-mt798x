@@ -1,0 +1,11 @@
+#!/bin/sh
+
+proto=`uci -q get network.$INTERFACE.proto`
+
+if [ "$proto" = l2tp ] || [ "$proto" = pptp ]; then
+	if [ "$ACTION" = ifup ]; then
+		echo 0 > /sys/kernel/debug/hnat/hook_toggle
+	elif [ "$ACTION" = ifdown ]; then
+		echo 1 > /sys/kernel/debug/hnat/hook_toggle
+	fi
+fi

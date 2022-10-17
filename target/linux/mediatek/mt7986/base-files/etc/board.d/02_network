@@ -1,0 +1,70 @@
+#!/bin/sh
+
+. /lib/functions.sh
+. /lib/functions/uci-defaults.sh
+. /lib/functions/system.sh
+
+mediatek_setup_interfaces()
+{
+	local board="$1"
+
+	case $board in
+	*fpga*)
+		ucidef_set_interfaces_lan_wan "eth0" "eth1"
+		ucidef_add_switch "switch0" \
+			"0:lan" "1:lan" "2:lan" "3:lan" "4:wan" "6u@eth0" "5u@eth1"
+		;;
+	*gsw*)
+		ucidef_set_interfaces_lan_wan "eth0" "eth1"
+		ucidef_add_switch "switch0" \
+			"0:lan" "1:lan" "2:lan" "3:lan" "4:lan" "5:lan" "6u@eth0"
+		;;
+	*)
+		ucidef_set_interfaces_lan_wan "lan0 lan1 lan2 lan3 lan4 lan5" eth1
+		;;
+	esac
+}
+
+mediatek_setup_macs()
+{
+	local board="$1"
+	local part_name="Factory"
+	local lan_mac=""
+	local wan_mac=""
+	local lan_mac_offset=""
+	local wan_mac_offset=""
+
+	case $board in
+	*)
+		lan_mac_offset="0x2A"
+		wan_mac_offset="0x24"
+		;;
+	esac
+
+	lan_mac=$(mtd_get_mac_binary $part_name $lan_mac_offset)
+	wan_mac=$(mtd_get_mac_binary $part_name $wan_mac_offset)
+
+	case "$lan_mac" in
+		00:00:00:00:00:00);;
+		ff:ff:ff:ff:ff:ff);;
+		*)
+		[ -n "$lan_mac" ] && ucidef_set_interface_macaddr "lan" "$lan_mac"
+	;;
+	esac
+
+	case "$wan_mac" in
+		00:00:00:00:00:00);;
+		ff:ff:ff:ff:ff:ff);;
+		*)
+		[ -n "$wan_mac" ] && ucidef_set_interface_macaddr "wan" "$wan_mac"
+	;;
+	esac
+}
+
+board_config_update
+board=$(board_name)
+mediatek_setup_interfaces $board
+mediatek_setup_macs $board
+board_config_flush
+
+exit 0
