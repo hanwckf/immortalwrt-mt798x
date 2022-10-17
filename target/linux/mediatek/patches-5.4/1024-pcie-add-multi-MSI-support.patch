@@ -1,0 +1,64 @@
+diff --git a/drivers/pci/controller/pcie-mediatek.c b/drivers/pci/controller/pcie-mediatek.c
+index 2a54fa7a3..132b3204c 100644
+--- a/drivers/pci/controller/pcie-mediatek.c
++++ b/drivers/pci/controller/pcie-mediatek.c
+@@ -446,24 +446,24 @@ static int mtk_pcie_irq_domain_alloc(struct irq_domain *domain, unsigned int vir
+ 				     unsigned int nr_irqs, void *args)
+ {
+ 	struct mtk_pcie_port *port = domain->host_data;
+-	unsigned long bit;
++	int bit, i;
+ 
+-	WARN_ON(nr_irqs != 1);
+ 	mutex_lock(&port->lock);
+ 
+-	bit = find_first_zero_bit(port->msi_irq_in_use, MTK_MSI_IRQS_NUM);
+-	if (bit >= MTK_MSI_IRQS_NUM) {
++	bit = bitmap_find_free_region(port->msi_irq_in_use, MTK_MSI_IRQS_NUM,
++							order_base_2(nr_irqs));
++	if (bit < 0) {
+ 		mutex_unlock(&port->lock);
+ 		return -ENOSPC;
+ 	}
+ 
+-	__set_bit(bit, port->msi_irq_in_use);
+-
+ 	mutex_unlock(&port->lock);
+ 
+-	irq_domain_set_info(domain, virq, bit, &mtk_msi_bottom_irq_chip,
+-			    domain->host_data, handle_edge_irq,
+-			    NULL, NULL);
++	for (i = 0; i < nr_irqs; i++) {
++		irq_domain_set_info(domain, virq + i, bit + i,
++				    &mtk_msi_bottom_irq_chip, domain->host_data,
++				    handle_edge_irq, NULL, NULL);
++	}
+ 
+ 	return 0;
+ }
+@@ -501,7 +501,7 @@ static struct irq_chip mtk_msi_irq_chip = {
+ 
+ static struct msi_domain_info mtk_msi_domain_info = {
+ 	.flags	= (MSI_FLAG_USE_DEF_DOM_OPS | MSI_FLAG_USE_DEF_CHIP_OPS |
+-		   MSI_FLAG_PCI_MSIX),
++		   MSI_FLAG_PCI_MSIX | MSI_FLAG_MULTI_PCI_MSI),
+ 	.chip	= &mtk_msi_irq_chip,
+ };
+ 
+@@ -633,14 +633,14 @@ static void mtk_pcie_intr_handler(struct irq_desc *desc)
+ 		if (status & MSI_STATUS){
+ 			unsigned long imsi_status;
+ 
++			/* Clear MSI interrupt status */
++			writel(MSI_STATUS, port->base + PCIE_INT_STATUS);
+ 			while ((imsi_status = readl(port->base + PCIE_IMSI_STATUS))) {
+ 				for_each_set_bit(bit, &imsi_status, MTK_MSI_IRQS_NUM) {
+ 					virq = irq_find_mapping(port->inner_domain, bit);
+ 					generic_handle_irq(virq);
+ 				}
+ 			}
+-			/* Clear MSI interrupt status */
+-			writel(MSI_STATUS, port->base + PCIE_INT_STATUS);
+ 		}
+ 	}
+ 

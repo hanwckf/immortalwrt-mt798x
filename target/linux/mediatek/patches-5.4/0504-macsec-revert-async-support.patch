@@ -1,0 +1,12 @@
+--- a/drivers/net/macsec.c
++++ b/drivers/net/macsec.c
+@@ -1309,8 +1309,7 @@
+ 	struct crypto_aead *tfm;
+ 	int ret;
+ 
+-	/* Pick a sync gcm(aes) cipher to ensure order is preserved. */
+-	tfm = crypto_alloc_aead("gcm(aes)", 0, CRYPTO_ALG_ASYNC);
++	tfm = crypto_alloc_aead("gcm(aes)", 0, 0);
+ 
+ 	if (IS_ERR(tfm))
+ 		return tfm;
