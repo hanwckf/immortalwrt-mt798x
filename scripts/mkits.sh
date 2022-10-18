@@ -113,6 +113,12 @@ if [ -f "${ROOTFS_FILE}" ]; then
 		};
 	};
 "
+
+	ROOTFS_EXTRA_INFO="
+	rootfs_crc32 = \"${ROOTFS_CRC32}\";
+	rootfs_size = \"${ROOTFS_SIZE}\";
+	image_time = \"$(date +%s)\";
+"
 fi
 
 # Conditionally create script information
@@ -171,6 +177,8 @@ DATA="/dts-v1/;
 / {
 	description = \"${ARCH_UPPER} OpenWrt FIT (Flattened Image Tree)\";
 	#address-cells = <1>;
+
+${ROOTFS_EXTRA_INFO}
 
 	images {
 		kernel-1 {
