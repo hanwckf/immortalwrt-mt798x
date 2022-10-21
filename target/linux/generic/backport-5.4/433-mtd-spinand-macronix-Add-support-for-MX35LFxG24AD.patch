@@ -1,0 +1,58 @@
+From ee4e0eafa43cfd9008722fe15e17b8bf62fb6e8d Mon Sep 17 00:00:00 2001
+From: YouChing Lin <ycllin@mxic.com.tw>
+Date: Thu, 10 Dec 2020 11:22:09 +0800
+Subject: [PATCH] mtd: spinand: macronix: Add support for MX35LFxG24AD
+
+The Macronix MX35LF1G24AD(/2G24AD/4G24AD) are 3V, 1G/2G/4Gbit serial
+SLC NAND flash device (without on-die ECC).
+
+Validated by read, erase, read back, write, read back on Xilinx Zynq
+PicoZed FPGA board which included Macronix SPI Host(drivers/spi/spi-mxic.c)
+& S/W BCH ecc(drivers/mtd/nand/ecc-sw-bch.c) with bug fixing patch
+(mtd: nand: ecc-bch: Fix the size of calc_buf/code_buf of the BCH).
+
+Signed-off-by: YouChing Lin <ycllin@mxic.com.tw>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Link: https://lore.kernel.org/linux-mtd/1607570529-22341-3-git-send-email-ycllin@mxic.com.tw
+---
+ drivers/mtd/nand/spi/macronix.c | 27 +++++++++++++++++++++++++++
+ 1 file changed, 27 insertions(+)
+
+diff --git a/drivers/mtd/nand/spi/macronix.c b/drivers/mtd/nand/spi/macronix.c
+index 3786b1b03b3b4b..6701aaa21a49df 100644
+--- a/drivers/mtd/nand/spi/macronix.c
++++ b/drivers/mtd/nand/spi/macronix.c
+@@ -139,6 +139,33 @@ static const struct spinand_info macronix_spinand_table[] = {
+ 		     0,
+ 		     SPINAND_ECCINFO(&mx35lfxge4ab_ooblayout,
+ 				     mx35lf1ge4ab_ecc_get_status)),
++	SPINAND_INFO("MX35LF1G24AD",
++		     SPINAND_ID(SPINAND_READID_METHOD_OPCODE_DUMMY, 0x14),
++		     NAND_MEMORG(1, 2048, 128, 64, 1024, 20, 1, 1, 1),
++		     NAND_ECCREQ(8, 512),
++		     SPINAND_INFO_OP_VARIANTS(&read_cache_variants,
++					      &write_cache_variants,
++					      &update_cache_variants),
++		     0,
++		     SPINAND_ECCINFO(&mx35lfxge4ab_ooblayout, NULL)),
++	SPINAND_INFO("MX35LF2G24AD",
++		     SPINAND_ID(SPINAND_READID_METHOD_OPCODE_DUMMY, 0x24),
++		     NAND_MEMORG(1, 2048, 128, 64, 2048, 40, 1, 1, 1),
++		     NAND_ECCREQ(8, 512),
++		     SPINAND_INFO_OP_VARIANTS(&read_cache_variants,
++					      &write_cache_variants,
++					      &update_cache_variants),
++		     0,
++		     SPINAND_ECCINFO(&mx35lfxge4ab_ooblayout, NULL)),
++	SPINAND_INFO("MX35LF4G24AD",
++		     SPINAND_ID(SPINAND_READID_METHOD_OPCODE_DUMMY, 0x35),
++		     NAND_MEMORG(1, 4096, 256, 64, 2048, 40, 2, 1, 1),
++		     NAND_ECCREQ(8, 512),
++		     SPINAND_INFO_OP_VARIANTS(&read_cache_variants,
++					      &write_cache_variants,
++					      &update_cache_variants),
++		     0,
++		     SPINAND_ECCINFO(&mx35lfxge4ab_ooblayout, NULL)),
+ 	SPINAND_INFO("MX31LF1GE4BC",
+ 		     SPINAND_ID(SPINAND_READID_METHOD_OPCODE_DUMMY, 0x1e),
+ 		     NAND_MEMORG(1, 2048, 64, 64, 1024, 20, 1, 1, 1),
