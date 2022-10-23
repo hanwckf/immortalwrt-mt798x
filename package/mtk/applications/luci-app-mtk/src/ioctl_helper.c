@@ -16,7 +16,6 @@
 #define PACKED  __attribute__ ((packed))
 #define USHORT  unsigned short
 #define UCHAR   unsigned char
-#define UCHAR   unsigned char
 typedef struct PACKED _WSC_CONFIGURED_VALUE {
 	USHORT WscConfigured; // 1 un-configured; 2 configured
 	UCHAR   WscSsid[32 + 1];
@@ -57,46 +56,43 @@ typedef struct  _WSC_PROFILE
 	WSC_CREDENTIAL  	Profile[8];			 // Support up to 8 profiles
 }   WSC_PROFILE, *PWSC_PROFILE;
 
-typedef union _MACHTTRANSMIT_SETTING {
-	struct  {
-		unsigned short  MCS:6;  // MCS
-		unsigned short  rsv:1;
-		unsigned short  BW:2;   //channel bandwidth 20MHz or 40 MHz
-		unsigned short  ShortGI:1;
-		unsigned short  STBC:1; //SPACE
-		unsigned short  eTxBF:1;
-		unsigned short  iTxBF:1;
-		unsigned short  MODE:3; // Use definition MODE_xxx.
+typedef union _HTTRANSMIT_SETTING {
+	struct {
+		USHORT MCS:6;
+		USHORT ldpc:1;
+		USHORT BW:2;
+		USHORT ShortGI:1;
+		USHORT STBC:1;
+		USHORT eTxBF:1;
+		USHORT iTxBF:1;
+		USHORT MODE:3;
 	} field;
-	unsigned short      word;
-} MACHTTRANSMIT_SETTING;
+	USHORT word;
+} HTTRANSMIT_SETTING, *PHTTRANSMIT_SETTING;
 
 typedef struct _RT_802_11_MAC_ENTRY {
 	unsigned char           ApIdx;
 	unsigned char           Addr[6];
-	unsigned char           Aid;
+	unsigned short          Aid;
 	unsigned char           Psm;     // 0:PWR_ACTIVE, 1:PWR_SAVE
 	unsigned char           MimoPs;  // 0:MMPS_STATIC, 1:MMPS_DYNAMIC, 3:MMPS_Enabled
 	signed char             AvgRssi0;
 	signed char             AvgRssi1;
 	signed char             AvgRssi2;
-	signed char             AvgRssi3;
 	unsigned int            ConnectedTime;
-	MACHTTRANSMIT_SETTING   TxRate;
+	HTTRANSMIT_SETTING      TxRate;
 	unsigned int            LastRxRate;
 	short                   StreamSnr[3];
 	short                   SoundingRespSnr[3];
-#if 0
-	short                   TxPER;
-	short                   reserved;
-#endif
+	//short                   TxPER;
+	//short                   reserved;
 } RT_802_11_MAC_ENTRY;
 
-#define MAX_NUMBER_OF_MAC               554
+#define MAX_NUMBER_OF_MAC               544
 
 typedef struct _RT_802_11_MAC_TABLE {
 	unsigned long            Num;
-	RT_802_11_MAC_ENTRY      Entry[MAX_NUMBER_OF_MAC]; //MAX_LEN_OF_MAC_TABLE = 32
+	RT_802_11_MAC_ENTRY      Entry[MAX_NUMBER_OF_MAC];
 } RT_802_11_MAC_TABLE;
 
 #define IF_NAMESIZE	 16
@@ -167,7 +163,7 @@ int scanResult(lua_State *L)
 	snprintf(wrq.ifr_name, sizeof(wrq.ifr_name), "%s", interface);
 	snprintf(data, data_len, "%s", tmp_idx);
 	wrq.u.data.length = data_len;
-	wrq.u.data.pointer = (caddr_t)data;
+	wrq.u.data.pointer = data;
 	wrq.u.data.flags = 0;
 	if (ioctl(socket_id, RTPRIV_IOCTL_GSITESURVEY, &wrq) < 0) {
 		fprintf(stderr, "ioctl -> RTPRIV_IOCTL_GSITESURVEY Fail !");
@@ -715,15 +711,17 @@ int StaInfo(lua_State *L)
 		"HE5G", "HE2G", "HE_SU", "HE_EXT_SU", "HE_TRIG", "HE_MU"};
 	const char *interface = luaL_checkstring(L, 1);
 
-	table = (RT_802_11_MAC_TABLE *)calloc(1, sizeof(RT_802_11_MAC_TABLE));
+	table = (RT_802_11_MAC_TABLE *)malloc(sizeof(RT_802_11_MAC_TABLE));
 	if (!table)
 		return -ENOMEM;
+
+	memset(table, 0, sizeof(RT_802_11_MAC_TABLE));
 
 	s = socket(AF_INET, SOCK_DGRAM, 0);
 
 	snprintf(iwr.ifr_name, IFNAMSIZ, "%s", interface);
 
-	iwr.u.data.pointer = (caddr_t) &table;
+	iwr.u.data.pointer = table;
 
 	if (s < 0) {
 		free(table);
@@ -737,7 +735,6 @@ int StaInfo(lua_State *L)
 	}
 
 	close(s);
-
 
 	/* Creates parent table of size table.Num array elements: */
 	lua_createtable(L, table->Num, 0);
@@ -841,10 +838,6 @@ int StaInfo(lua_State *L)
 		snprintf(tmpBuff, sizeof(tmpBuff), "%d", (int)(pe->AvgRssi2));
 		lua_pushstring(L, tmpBuff);
 		lua_setfield(L, -2, "AvgRssi2");
-
-		snprintf(tmpBuff, sizeof(tmpBuff), "%d", (int)(pe->AvgRssi3));
-		lua_pushstring(L, tmpBuff);
-		lua_setfield(L, -2, "AvgRssi3");
 
 		// Per Stream SNR
 		snprintf(tmpBuff, sizeof(tmpBuff), "%0.1f", pe->StreamSnr[0]*0.25);
