@@ -234,7 +234,7 @@ comment "Engine/Hardware Support"
 config OPENSSL_ENGINE
 	bool "Enable engine support"
 	default y
-	select PACKAGE_libopenssl-devcrypto
+	#select PACKAGE_libopenssl-devcrypto
 	help
 		This enables alternative cryptography implementations,
 		most commonly for interfacing with external crypto devices,
