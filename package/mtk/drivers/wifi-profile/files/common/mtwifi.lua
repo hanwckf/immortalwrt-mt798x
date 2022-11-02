@@ -22,40 +22,47 @@ end
 
 function add_vif_into_lan(vif)
     local mtkwifi = require("mtkwifi")
-    local brvifs = mtkwifi.__trim( mtkwifi.read_pipe("uci get network.lan.ifname"))
+    local brvifs = string.split(mtkwifi.__trim((mtkwifi.read_pipe("ls /sys/class/net/br-lan/brif/"))))
 
-    if not string.match(brvifs, esc(vif)) then
-        nixio.syslog("debug", "add "..vif.." into lan")
-        brvifs = brvifs.." "..vif
-        --os.execute("uci set network.lan.ifname=\""..brvifs.."\"") --netifd will down vif form /etc/config/network
-        --os.execute("uci commit")
-        --os.execute("ubus call network.interface.lan add_device \"{\\\"name\\\":\\\""..vif.."\\\"}\"")
-        os.execute("brctl addif br-lan "..vif) -- double insurance for rare failure
-	if mtkwifi.exists("/proc/sys/net/ipv6/conf/"..vif.."/disable_ipv6") then
-            os.execute("echo 1 > /proc/sys/net/ipv6/conf/"..vif.."/disable_ipv6")
-	end
-    else
-        nixio.syslog("debug", vif.." is already added into lan")
+    for _,v in ipairs(brvifs) do
+        if v == vif then
+            nixio.syslog("debug", vif.." is already added into lan")
+            return
+        end
     end
+
+    nixio.syslog("debug", "add "..vif.." into lan")
+    os.execute("brctl addif br-lan "..vif)
+	if mtkwifi.exists("/proc/sys/net/ipv6/conf/"..vif.."/disable_ipv6") then
+        os.execute("echo 1 > /proc/sys/net/ipv6/conf/"..vif.."/disable_ipv6")
+	end
+
     brvifs = string.split(mtkwifi.__trim((mtkwifi.read_pipe("ls /sys/class/net/br-lan/brif/"))))
-    for _,vif in ipairs(brvifs) do
-        nixio.syslog("debug", "brvif = "..vif)
+    for _,v in ipairs(brvifs) do
+        nixio.syslog("debug", "brvif = "..v)
     end
 end
 
 function del_vif_from_lan(vif)
     local mtkwifi = require("mtkwifi")
-    local brvifs = mtkwifi.__trim(mtkwifi.read_pipe("uci get network.lan.ifname"))
-    if string.match(brvifs, esc(vif)) then
-        brvifs = mtkwifi.__trim(string.gsub(brvifs, esc(vif), ""))
-        nixio.syslog("debug", "del "..vif.." from lan")
-        --os.execute("uci set network.lan.ifname=\""..brvifs.."\"")
-        --os.execute("uci commit")
-        --os.execute("ubus call network.interface.lan remove_device \"{\\\"name\\\":\\\""..vif.."\\\"}\"")
-        if mtkwifi.exists("/proc/sys/net/ipv6/conf/"..vif.."/disable_ipv6") then
-            os.execute("echo 0 > /proc/sys/net/ipv6/conf/"..vif.."/disable_ipv6")
+
+    if mtkwifi.exists("/sys/class/net/br-lan/brif/") == false then
+        return
+    end
+
+    local brvifs = string.split(mtkwifi.__trim((mtkwifi.read_pipe("ls /sys/class/net/br-lan/brif/"))))
+    for _,v in ipairs(brvifs) do
+        if v == vif then
+            nixio.syslog("debug", "del "..vif.." from lan")
+            if mtkwifi.exists("/proc/sys/net/ipv6/conf/"..vif.."/disable_ipv6") then
+                os.execute("echo 0 > /proc/sys/net/ipv6/conf/"..vif.."/disable_ipv6")
+            end
+            os.execute("brctl delif br-lan "..vif)
         end
-        os.execute("brctl delif br-lan "..vif)
+    end
+    brvifs = string.split(mtkwifi.__trim((mtkwifi.read_pipe("ls /sys/class/net/br-lan/brif/"))))
+    for _,v in ipairs(brvifs) do
+        nixio.syslog("debug", "brvif = "..v)
     end
 end
 
@@ -127,10 +134,11 @@ function mtwifi_down(devname)
             return
         end
         if not mtkwifi.exists("/sys/class/net/"..dev.main_ifname) then
-            nixio.syslog("err", "mtwifi_down: main_ifname "..dev.main_ifname.." missing, quit!")
+            -- nixio.syslog("err", "mtwifi_down: main_ifname "..dev.main_ifname.." missing, quit!")
             return
         end
-        os.execute("iwpriv "..dev.main_ifname.." set hw_nat_register=0")
+        -- hw_nat_register is only compatible with legacy WHNAT
+        -- os.execute("iwpriv "..dev.main_ifname.." set hw_nat_register=0")
         for _,vif in ipairs(string.split(mtkwifi.read_pipe("ls /sys/class/net"), "\n"))
         do
             if vif == dev.main_ifname
