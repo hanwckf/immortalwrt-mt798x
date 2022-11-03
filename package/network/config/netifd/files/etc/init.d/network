@@ -30,7 +30,7 @@ reload_service() {
 
 	init_switch
 	ubus call network reload || rv=1
-	/sbin/wifi reload_legacy
+	/sbin/wifi up
 	return $rv
 }
 
