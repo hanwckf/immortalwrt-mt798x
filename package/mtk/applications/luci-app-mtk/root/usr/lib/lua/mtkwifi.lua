@@ -735,7 +735,7 @@ mtkwifi.CountryRegionList_2G_All = {
 }
 
 mtkwifi.ChannelList_6G_All = {
-    {channel= 0  , text="Channel 0 (Auto )", region={}},
+    {channel= 0  , text="Channel Auto", region={}},
     {channel= 1  , text="Channel  1   (5.955 GHz)", region={[0]=1, [1]=1, [5]=1, [6]=1, [7]=1}},
     {channel= 5  , text="Channel  5   (5.975 GHz)", region={[0]=1, [1]=1, [5]=1, [6]=1, [7]=1}},
     {channel= 9  , text="Channel  9   (5.995 GHz)", region={[0]=1, [1]=1, [5]=1, [6]=1, [7]=1}},
@@ -798,7 +798,7 @@ mtkwifi.ChannelList_6G_All = {
 }
 
 mtkwifi.ChannelList_5G_All = {
-    {channel=0,  text="Channel 0 (Auto )", region={}},
+    {channel=0,  text="Channel Auto", region={}},
     {channel= 36, text="Channel  36 (5.180 GHz)", region={[0]=1, [1]=1, [2]=1, [6]=1, [7]=1, [9]=1, [10]=1, [11]=1, [12]=1, [13]=1, [14]=1, [17]=1, [18]=1, [20]=1, [21]=1, [30]=1, [32]=1, [33]=1, [34]=1, [35]=1, [36]=1, [37]=1}},
     {channel= 40, text="Channel  40 (5.200 GHz)", region={[0]=1, [1]=1, [2]=1, [6]=1, [7]=1, [9]=1, [10]=1, [11]=1, [12]=1, [13]=1, [14]=1, [17]=1, [18]=1, [20]=1, [21]=1, [30]=1, [32]=1, [33]=1, [34]=1, [35]=1, [36]=1, [37]=1}},
     {channel= 44, text="Channel  44 (5.220 GHz)", region={[0]=1, [1]=1, [2]=1, [6]=1, [7]=1, [9]=1, [10]=1, [11]=1, [12]=1, [13]=1, [14]=1, [17]=1, [18]=1, [20]=1, [21]=1, [30]=1, [32]=1, [33]=1, [34]=1, [35]=1, [36]=1, [37]=1}},
@@ -829,21 +829,21 @@ mtkwifi.ChannelList_5G_All = {
 }
 
 mtkwifi.ChannelList_2G_All = {
-    {channel=0, text="Channel 0 (Auto )", region={}},
-    {channel= 1, text="Channel  1 (2412 GHz)", region={[0]=1, [1]=1, [5]=1, [31]=1, [32]=1, [33]=1}},
-    {channel= 2, text="Channel  2 (2417 GHz)", region={[0]=1, [1]=1, [5]=1, [31]=1, [32]=1, [33]=1}},
-    {channel= 3, text="Channel  3 (2422 GHz)", region={[0]=1, [1]=1, [5]=1, [6]=1, [31]=1, [32]=1, [33]=1}},
-    {channel= 4, text="Channel  4 (2427 GHz)", region={[0]=1, [1]=1, [5]=1, [6]=1, [31]=1, [32]=1, [33]=1}},
-    {channel= 5, text="Channel  5 (2432 GHz)", region={[0]=1, [1]=1, [5]=1, [6]=1, [7]=1, [31]=1, [32]=1, [33]=1}},
-    {channel= 6, text="Channel  6 (2437 GHz)", region={[0]=1, [1]=1, [5]=1, [6]=1, [7]=1, [31]=1, [32]=1, [33]=1}},
-    {channel= 7, text="Channel  7 (2442 GHz)", region={[0]=1, [1]=1, [5]=1, [6]=1, [7]=1, [31]=1, [32]=1, [33]=1}},
-    {channel= 8, text="Channel  8 (2447 GHz)", region={[0]=1, [1]=1, [5]=1, [6]=1, [7]=1, [31]=1, [32]=1, [33]=1}},
-    {channel= 9, text="Channel  9 (2452 GHz)", region={[0]=1, [1]=1, [5]=1, [6]=1, [7]=1, [31]=1, [32]=1, [33]=1}},
-    {channel=10, text="Channel 10 (2457 GHz)", region={[0]=1, [1]=1, [2]=1, [3]=1, [5]=1, [7]=1, [31]=1, [32]=1, [33]=1}},
-    {channel=11, text="Channel 11 (2462 GHz)", region={[0]=1, [1]=1, [2]=1, [3]=1, [5]=1, [7]=1, [31]=1, [32]=1, [33]=1}},
-    {channel=12, text="Channel 12 (2467 GHz)", region={[1]=1, [3]=1, [5]=1, [7]=1, [31]=1, [32]=1, [33]=1}},
-    {channel=13, text="Channel 13 (2472 GHz)", region={[1]=1, [3]=1, [5]=1, [7]=1, [31]=1, [32]=1, [33]=1}},
-    {channel=14, text="Channel 14 (2477 GHz)", region={[4]=1, [5]=1, [31]=1, [33]=1}}
+    {channel=0, text="Channel Auto", region={}},
+    {channel= 1, text="Channel  1 (2.412 GHz)", region={[0]=1, [1]=1, [5]=1, [31]=1, [32]=1, [33]=1}},
+    {channel= 2, text="Channel  2 (2.417 GHz)", region={[0]=1, [1]=1, [5]=1, [31]=1, [32]=1, [33]=1}},
+    {channel= 3, text="Channel  3 (2.422 GHz)", region={[0]=1, [1]=1, [5]=1, [6]=1, [31]=1, [32]=1, [33]=1}},
+    {channel= 4, text="Channel  4 (2.427 GHz)", region={[0]=1, [1]=1, [5]=1, [6]=1, [31]=1, [32]=1, [33]=1}},
+    {channel= 5, text="Channel  5 (2.432 GHz)", region={[0]=1, [1]=1, [5]=1, [6]=1, [7]=1, [31]=1, [32]=1, [33]=1}},
+    {channel= 6, text="Channel  6 (2.437 GHz)", region={[0]=1, [1]=1, [5]=1, [6]=1, [7]=1, [31]=1, [32]=1, [33]=1}},
+    {channel= 7, text="Channel  7 (2.442 GHz)", region={[0]=1, [1]=1, [5]=1, [6]=1, [7]=1, [31]=1, [32]=1, [33]=1}},
+    {channel= 8, text="Channel  8 (2.447 GHz)", region={[0]=1, [1]=1, [5]=1, [6]=1, [7]=1, [31]=1, [32]=1, [33]=1}},
+    {channel= 9, text="Channel  9 (2.452 GHz)", region={[0]=1, [1]=1, [5]=1, [6]=1, [7]=1, [31]=1, [32]=1, [33]=1}},
+    {channel=10, text="Channel 10 (2.457 GHz)", region={[0]=1, [1]=1, [2]=1, [3]=1, [5]=1, [7]=1, [31]=1, [32]=1, [33]=1}},
+    {channel=11, text="Channel 11 (2.462 GHz)", region={[0]=1, [1]=1, [2]=1, [3]=1, [5]=1, [7]=1, [31]=1, [32]=1, [33]=1}},
+    {channel=12, text="Channel 12 (2.467 GHz)", region={[1]=1, [3]=1, [5]=1, [7]=1, [31]=1, [32]=1, [33]=1}},
+    {channel=13, text="Channel 13 (2.472 GHz)", region={[1]=1, [3]=1, [5]=1, [7]=1, [31]=1, [32]=1, [33]=1}},
+    {channel=14, text="Channel 14 (2.477 GHz)", region={[4]=1, [5]=1, [31]=1, [33]=1}}
 }
 
 mtkwifi.ChannelList_5G_2nd_80MHZ_ALL = {
@@ -1704,7 +1704,7 @@ function mtkwifi.get_referer_url()
         end
     end
     if not to_url or to_url == "" then
-        to_url = luci.dispatcher.build_url("admin", "mtk", "wifi")
+        to_url = luci.dispatcher.build_url("admin", "network", "wifi")
     end
     return to_url
 end

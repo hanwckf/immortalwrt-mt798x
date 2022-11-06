@@ -25,7 +25,7 @@ local url = "/"..table.concat(request,'/',5)
             location = url;
         }
         else{
-            location = '<%=luci.dispatcher.build_url("admin", "mtk", "wifi")%>';
+            location = '<%=luci.dispatcher.build_url("admin", "network", "wifi")%>';
         }
     }
 
@@ -38,7 +38,7 @@ local url = "/"..table.concat(request,'/',5)
                 return;
             }
             else if(r.status == "REBOOT"){
-                visit_url('<%=luci.dispatcher.build_url("admin", "mtk", "wifi", "apply_reboot")%>');
+                visit_url('<%=luci.dispatcher.build_url("admin", "network", "wifi", "apply_reboot")%>');
                 return;
             }
         }
@@ -58,7 +58,7 @@ local url = "/"..table.concat(request,'/',5)
 
     function get_apply_status(remNumTries)
     {
-        XHR.get('<%=luci.dispatcher.build_url("admin", "mtk", "wifi", "get_apply_status")%>', null, 
+        XHR.get('<%=luci.dispatcher.build_url("admin", "network", "wifi", "get_apply_status")%>', null, 
             function(x)
             {
                 console.log(x);

@@ -50,73 +50,50 @@ function debug_write(...)
 end
 
 function index()
-    -- if not nixio.fs.access("/etc/wireless") then
-    --     return
-    -- end
+    entry({"admin", "network", "wifi"}, template("admin_mtk/mtk_wifi_overview"), _("Wireless"), 1)
+    entry({"admin", "network", "wifi", "chip_cfg_view"}, template("admin_mtk/mtk_wifi_chip_cfg")).leaf = true
+    entry({"admin", "network", "wifi", "chip_cfg"}, call("chip_cfg")).leaf = true
+    entry({"admin", "network", "wifi", "dev_cfg_view"}, template("admin_mtk/mtk_wifi_dev_cfg")).leaf = true
+    entry({"admin", "network", "wifi", "dev_cfg"}, call("dev_cfg")).leaf = true
+    entry({"admin", "network", "wifi", "dev_cfg_raw"}, call("dev_cfg_raw")).leaf = true
+    entry({"admin", "network", "wifi", "vif_cfg_view"}, template("admin_mtk/mtk_wifi_vif_cfg")).leaf = true
+    entry({"admin", "network", "wifi", "vif_cfg"}, call("vif_cfg")).leaf = true
+    entry({"admin", "network", "wifi", "vif_add_view"}, template("admin_mtk/mtk_wifi_vif_cfg")).leaf = true
+    entry({"admin", "network", "wifi", "vif_add"}, call("vif_cfg")).leaf = true
+    entry({"admin", "network", "wifi", "vif_del"}, call("vif_del")).leaf = true
+    entry({"admin", "network", "wifi", "vif_disable"}, call("vif_disable")).leaf = true
+    entry({"admin", "network", "wifi", "vif_enable"}, call("vif_enable")).leaf = true
+    entry({"admin", "network", "wifi", "get_station_list"}, call("get_station_list"))
+    entry({"admin", "network", "wifi", "get_country_region_list"}, call("get_country_region_list")).leaf = true
+    entry({"admin", "network", "wifi", "get_channel_list"}, call("get_channel_list"))
+    entry({"admin", "network", "wifi", "get_HT_ext_channel_list"}, call("get_HT_ext_channel_list"))
+    entry({"admin", "network", "wifi", "get_5G_2nd_80Mhz_channel_list"}, call("get_5G_2nd_80Mhz_channel_list"))
+    entry({"admin", "network", "wifi", "reset"}, call("reset_wifi")).leaf = true
+    entry({"admin", "network", "wifi", "reload"}, call("reload_wifi")).leaf = true
+    entry({"admin", "network", "wifi", "get_raw_profile"}, call("get_raw_profile"))
+    entry({"admin", "network", "wifi", "apcli_cfg_view"}, template("admin_mtk/mtk_wifi_apcli")).leaf = true
+    entry({"admin", "network", "wifi", "apcli_cfg"}, call("apcli_cfg")).leaf = true
+    entry({"admin", "network", "wifi", "apcli_disconnect"}, call("apcli_disconnect")).leaf = true
+    entry({"admin", "network", "wifi", "apcli_connect"}, call("apcli_connect")).leaf = true
 
-    entry({"admin", "mtk"}, firstchild(), _("MTK"), 80)
-    entry({"admin", "mtk", "test"}, call("test"))
-    entry({"admin", "mtk", "wifi"}, template("admin_mtk/mtk_wifi_overview"), _("WiFi configuration"), 1)
-    entry({"admin", "mtk", "wifi", "chip_cfg_view"}, template("admin_mtk/mtk_wifi_chip_cfg")).leaf = true
-    entry({"admin", "mtk", "wifi", "chip_cfg"}, call("chip_cfg")).leaf = true
-    entry({"admin", "mtk", "wifi", "dev_cfg_view"}, template("admin_mtk/mtk_wifi_dev_cfg")).leaf = true
-    entry({"admin", "mtk", "wifi", "dev_cfg"}, call("dev_cfg")).leaf = true
-    entry({"admin", "mtk", "wifi", "dev_cfg_raw"}, call("dev_cfg_raw")).leaf = true
-    entry({"admin", "mtk", "wifi", "vif_cfg_view"}, template("admin_mtk/mtk_wifi_vif_cfg")).leaf = true
-    entry({"admin", "mtk", "wifi", "vif_cfg"}, call("vif_cfg")).leaf = true
-    entry({"admin", "mtk", "wifi", "vif_add_view"}, template("admin_mtk/mtk_wifi_vif_cfg")).leaf = true
-    entry({"admin", "mtk", "wifi", "vif_add"}, call("vif_cfg")).leaf = true
-    entry({"admin", "mtk", "wifi", "vif_del"}, call("vif_del")).leaf = true
-    entry({"admin", "mtk", "wifi", "vif_disable"}, call("vif_disable")).leaf = true
-    entry({"admin", "mtk", "wifi", "vif_enable"}, call("vif_enable")).leaf = true
-    entry({"admin", "mtk", "wifi", "get_station_list"}, call("get_station_list"))
-    entry({"admin", "mtk", "wifi", "get_country_region_list"}, call("get_country_region_list")).leaf = true
-    entry({"admin", "mtk", "wifi", "get_channel_list"}, call("get_channel_list"))
-    entry({"admin", "mtk", "wifi", "get_HT_ext_channel_list"}, call("get_HT_ext_channel_list"))
-    entry({"admin", "mtk", "wifi", "get_5G_2nd_80Mhz_channel_list"}, call("get_5G_2nd_80Mhz_channel_list"))
-    entry({"admin", "mtk", "wifi", "reset"}, call("reset_wifi")).leaf = true
-    entry({"admin", "mtk", "wifi", "reload"}, call("reload_wifi")).leaf = true
-    entry({"admin", "mtk", "wifi", "get_raw_profile"}, call("get_raw_profile"))
-    entry({"admin", "mtk", "wifi", "apcli_cfg_view"}, template("admin_mtk/mtk_wifi_apcli")).leaf = true
-    entry({"admin", "mtk", "wifi", "apcli_cfg"}, call("apcli_cfg")).leaf = true
-    entry({"admin", "mtk", "wifi", "apcli_disconnect"}, call("apcli_disconnect")).leaf = true
-    entry({"admin", "mtk", "wifi", "apcli_connect"}, call("apcli_connect")).leaf = true
-    entry({"admin", "mtk", "netmode", "net_cfg"}, call("net_cfg"))
-    entry({"admin", "mtk", "wifi", "get_wps_info"}, call("get_WPS_Info")).leaf = true
-    entry({"admin", "mtk", "wifi", "get_wifi_pin"}, call("get_wifi_pin")).leaf = true
-    entry({"admin", "mtk", "wifi", "set_wifi_gen_pin"}, call("set_wifi_gen_pin")).leaf = true
-    entry({"admin", "mtk", "wifi", "set_wifi_wps_oob"}, call("set_wifi_wps_oob")).leaf = true
-    entry({"admin", "mtk", "wifi", "set_wifi_do_wps"}, call("set_wifi_do_wps")).leaf = true
-    entry({"admin", "mtk", "wifi", "get_wps_security"}, call("get_wps_security")).leaf = true
-    entry({"admin", "mtk", "wifi", "apcli_get_wps_status"}, call("apcli_get_wps_status")).leaf = true;
-    entry({"admin", "mtk", "wifi", "apcli_do_enr_pin_wps"}, call("apcli_do_enr_pin_wps")).leaf = true;
-    entry({"admin", "mtk", "wifi", "apcli_do_enr_pbc_wps"}, call("apcli_do_enr_pbc_wps")).leaf = true;
-    entry({"admin", "mtk", "wifi", "apcli_cancel_wps"}, call("apcli_cancel_wps")).leaf = true;
-    entry({"admin", "mtk", "wifi", "apcli_wps_gen_pincode"}, call("apcli_wps_gen_pincode")).leaf = true;
-    entry({"admin", "mtk", "wifi", "apcli_wps_get_pincode"}, call("apcli_wps_get_pincode")).leaf = true;
-    entry({"admin", "mtk", "wifi", "apcli_scan"}, call("apcli_scan")).leaf = true;
-    entry({"admin", "mtk", "wifi", "sta_info"}, call("sta_info")).leaf = true;
-    entry({"admin", "mtk", "wifi", "get_apcli_conn_info"}, call("get_apcli_conn_info")).leaf = true;
-    entry({"admin", "mtk", "wifi", "apply_power_boost_settings"}, call("apply_power_boost_settings")).leaf = true;
-    entry({"admin", "mtk", "wifi", "apply_reboot"}, template("admin_mtk/mtk_wifi_apply_reboot")).leaf = true;
-    entry({"admin", "mtk", "wifi", "reboot"}, call("exec_reboot")).leaf = true;
-    entry({"admin", "mtk", "wifi", "get_bssid_num"}, call("get_bssid_num")).leaf = true;
-    entry({"admin", "mtk", "wifi", "loading"}, template("admin_mtk/mtk_wifi_loading")).leaf = true;
-    entry({"admin", "mtk", "wifi", "get_apply_status"}, call("get_apply_status")).leaf = true;
-    entry({"admin", "mtk", "wifi", "reset_to_defaults"}, call("reset_to_defaults")).leaf = true;
-    local mtkwifi = require("mtkwifi")
-    -- local profiles = mtkwifi.search_dev_and_profile()
-    -- for devname,profile in pairs(profiles) do
-    --     local cfgs = mtkwifi.load_profile(profile)
-    --     if cfgs["VOW_Airtime_Fairness_En"] then
-    --         entry({"admin", "mtk", "vow"}, template("admin_mtk/mtk_vow"), _("VoW / ATF / ATC"), 4)
-    --         break
-    --     end
-    -- end
-end
-
-function test()
-    http.write_json(http.formvalue())
+    entry({"admin", "network", "wifi", "set_wifi_wps_oob"}, call("set_wifi_wps_oob")).leaf = true
+    entry({"admin", "network", "wifi", "set_wifi_do_wps"}, call("set_wifi_do_wps")).leaf = true
+    entry({"admin", "network", "wifi", "get_wps_security"}, call("get_wps_security")).leaf = true
+    entry({"admin", "network", "wifi", "apcli_do_enr_pin_wps"}, call("apcli_do_enr_pin_wps")).leaf = true;
+    entry({"admin", "network", "wifi", "apcli_do_enr_pbc_wps"}, call("apcli_do_enr_pbc_wps")).leaf = true;
+    entry({"admin", "network", "wifi", "apcli_cancel_wps"}, call("apcli_cancel_wps")).leaf = true;
+    entry({"admin", "network", "wifi", "apcli_wps_gen_pincode"}, call("apcli_wps_gen_pincode")).leaf = true;
+    
+    entry({"admin", "network", "wifi", "apcli_scan"}, call("apcli_scan")).leaf = true;
+    entry({"admin", "network", "wifi", "sta_info"}, call("sta_info")).leaf = true;
+    entry({"admin", "network", "wifi", "get_apcli_conn_info"}, call("get_apcli_conn_info")).leaf = true;
+    entry({"admin", "network", "wifi", "apply_power_boost_settings"}, call("apply_power_boost_settings")).leaf = true;
+    entry({"admin", "network", "wifi", "apply_reboot"}, template("admin_mtk/mtk_wifi_apply_reboot")).leaf = true;
+    entry({"admin", "network", "wifi", "reboot"}, call("exec_reboot")).leaf = true;
+    entry({"admin", "network", "wifi", "get_bssid_num"}, call("get_bssid_num")).leaf = true;
+    entry({"admin", "network", "wifi", "loading"}, template("admin_mtk/mtk_wifi_loading")).leaf = true;
+    entry({"admin", "network", "wifi", "get_apply_status"}, call("get_apply_status")).leaf = true;
+    entry({"admin", "network", "wifi", "reset_to_defaults"}, call("reset_to_defaults")).leaf = true;
 end
 
 function exec_reboot()
@@ -172,7 +149,7 @@ local __mtkwifi_reload = function (devname)
             local diff = mtkwifi.diff_profile(profile)
             __process_settings_before_apply(dev, profile, diff)
 
-            if diff.BssidNum or diff.WHNAT or diff.E2pAccessMode or diff.HT_RxStream or diff.HT_TxStream or diff.HE_LDPC or diff.WdsEnable then
+            if diff.BssidNum or diff.WHNAT or diff.E2pAccessMode or diff.HT_RxStream or diff.HT_TxStream or diff.WdsEnable then
                 -- Addition or deletion of a vif requires re-installation of the driver.
                 -- Change in WHNAT setting also requires re-installation of the driver.
                 -- Driver will be re-installed by "wifi restart" command.
@@ -282,10 +259,10 @@ function chip_cfg(devname)
 
     if http.formvalue("__apply") then
         mtkwifi.__run_in_child_env(__mtkwifi_reload, devname)
-        local url_to_visit_after_reload = luci.dispatcher.build_url("admin", "mtk", "wifi", "chip_cfg_view",devname)
-        luci.http.redirect(luci.dispatcher.build_url("admin", "mtk", "wifi", "loading",url_to_visit_after_reload))
+        local url_to_visit_after_reload = luci.dispatcher.build_url("admin", "network", "wifi", "chip_cfg_view",devname)
+        luci.http.redirect(luci.dispatcher.build_url("admin", "network", "wifi", "loading",url_to_visit_after_reload))
     else
-        luci.http.redirect(luci.dispatcher.build_url("admin", "mtk", "wifi", "chip_cfg_view",devname))
+        luci.http.redirect(luci.dispatcher.build_url("admin", "network", "wifi", "chip_cfg_view",devname))
     end
 
 end
@@ -348,18 +325,6 @@ function dev_cfg(devname)
             cfgs.PERCENTAGEenable=0
         end
     end
- 
-    local IndividualTWTSupport = tonumber(http.formvalue("IndividualTWTSupport"))
-    if IndividualTWTSupport == 0 then
-        cfgs.TWTResponder=0
-        cfgs.TWTRequired=0
-    elseif IndividualTWTSupport == 1 then
-        cfgs.TWTResponder=1
-        cfgs.TWTRequired=0
-    else
-        cfgs.TWTResponder=1
-        cfgs.TWTRequired=1
-    end
 
     local mimo = http.formvalue("__mimo")
     if mimo == "0" then
@@ -406,10 +371,10 @@ function dev_cfg(devname)
 
     if http.formvalue("__apply") then
         mtkwifi.__run_in_child_env(__mtkwifi_reload, devname)
-        local url_to_visit_after_reload = luci.dispatcher.build_url("admin", "mtk", "wifi", "dev_cfg_view",devname)
-        luci.http.redirect(luci.dispatcher.build_url("admin", "mtk", "wifi", "loading",url_to_visit_after_reload))
+        local url_to_visit_after_reload = luci.dispatcher.build_url("admin", "network", "wifi", "dev_cfg_view",devname)
+        luci.http.redirect(luci.dispatcher.build_url("admin", "network", "wifi", "loading",url_to_visit_after_reload))
     else
-        luci.http.redirect(luci.dispatcher.build_url("admin", "mtk", "wifi", "dev_cfg_view",devname))
+        luci.http.redirect(luci.dispatcher.build_url("admin", "network", "wifi", "dev_cfg_view",devname))
     end
 end
 
@@ -423,7 +388,7 @@ function dev_cfg_raw(devname)
     local cfgs = mtkwifi.load_profile(nil, raw)
     __mtkwifi_save_profile(cfgs, profiles[devname], false)
 
-    luci.http.redirect(luci.dispatcher.build_url("admin", "mtk", "wifi", "dev_cfg_view", devname))
+    luci.http.redirect(luci.dispatcher.build_url("admin", "network", "wifi", "dev_cfg_view", devname))
 end
 
 function __delete_mbss_para(cfgs, vif_idx)
@@ -529,17 +494,17 @@ function vif_del(dev, vif)
             debug_write(profile.." cannot be found!")
         end
     end
-    luci.http.redirect(luci.dispatcher.build_url("admin", "mtk", "wifi"))
+    luci.http.redirect(luci.dispatcher.build_url("admin", "network", "wifi"))
 end
 
 function vif_disable(iface)
     os.execute("ifconfig "..iface.." down")
-    luci.http.redirect(luci.dispatcher.build_url("admin", "mtk", "wifi"))
+    luci.http.redirect(luci.dispatcher.build_url("admin", "network", "wifi"))
 end
 
 function vif_enable(iface)
     os.execute("ifconfig "..iface.." up")
-    luci.http.redirect(luci.dispatcher.build_url("admin", "mtk", "wifi"))
+    luci.http.redirect(luci.dispatcher.build_url("admin", "network", "wifi"))
 end
 
 
@@ -870,11 +835,11 @@ function vif_cfg(dev, vif)
     if http.formvalue("__action") == "vif_cfg_view" then
         vif_idx = devs[devname]["vifs"][vifname].vifidx
         debug_write("vif_idx=", vif_idx, devname, vifname)
-        to_url = luci.dispatcher.build_url("admin", "mtk", "wifi", "vif_cfg_view", devname, vifname)
+        to_url = luci.dispatcher.build_url("admin", "network", "wifi", "vif_cfg_view", devname, vifname)
     elseif http.formvalue("__action") == "vif_add_view" then
         cfgs.BssidNum = tonumber(cfgs.BssidNum) + 1
         vif_idx = tonumber(cfgs.BssidNum)
-        to_url = luci.dispatcher.build_url("admin", "mtk", "wifi")
+        to_url = luci.dispatcher.build_url("admin", "network", "wifi")
         -- initializing ; separated parameters for the new interface
         cfgs = initialize_multiBssParameters(cfgs, vif_idx)
     end
@@ -911,150 +876,10 @@ function vif_cfg(dev, vif)
     __mtkwifi_save_profile(cfgs, profile, false)
     if http.formvalue("__apply") then
         mtkwifi.__run_in_child_env(__mtkwifi_reload, devname)
-        luci.http.redirect(luci.dispatcher.build_url("admin", "mtk", "wifi", "loading",to_url))
+        luci.http.redirect(luci.dispatcher.build_url("admin", "network", "wifi", "loading",to_url))
     else
         luci.http.redirect(to_url)
     end
-end
-
-function get_WPS_Info(devname, ifname)
-    local devs = mtkwifi.get_all_devs()
-    local ssid_index = devs[devname]["vifs"][ifname].vifidx
-    local profile = devs[devname].profile
-    assert(profile)
-
-    local cfgs = mtkwifi.load_profile(profile)
-
-    -- Create the applied settings backup file if it does not exist.
-    if not mtkwifi.exists(mtkwifi.__profile_applied_settings_path(profile)) then
-        os.execute("cp -f "..profile.." "..mtkwifi.__profile_applied_settings_path(profile))
-    end
-    local applied_cfgs = mtkwifi.load_profile(mtkwifi.__profile_applied_settings_path(profile))
-
-    local WPS_details = {}
-    WPS_details = c_getCurrentWscProfile(ifname)
-
-    if type(WPS_details) ~= "table" then
-        WPS_details["DRIVER_RSP"] = "NO"
-    else
-        WPS_details["DRIVER_RSP"] = "YES"
-        local isCfgsChanged = false  -- To indicate that the settings have been changed by External Registrar.
-        local isBasicTabUpdateRequired = false
-
-        if type(WPS_details["SSID"]) == "string" then
-            if applied_cfgs["SSID"..ssid_index] ~= WPS_details["SSID"] then
-                cfgs["SSID"..ssid_index] = WPS_details["SSID"]
-                isCfgsChanged = true
-                isBasicTabUpdateRequired = true
-            end
-        else
-            WPS_details["SSID"] = cfgs["SSID"..ssid_index]
-        end
-
-        if type(WPS_details["AuthMode"]) == "string" then
-            local auth_mode_ioctl = WPS_details["AuthMode"]:gsub("%W",""):upper()
-            local auth_mode_applied = mtkwifi.token_get(applied_cfgs.AuthMode, ssid_index, "")
-            if auth_mode_applied ~= auth_mode_ioctl then
-                cfgs.AuthMode = mtkwifi.token_set(cfgs.AuthMode, ssid_index, auth_mode_ioctl)
-                isCfgsChanged = true
-                isBasicTabUpdateRequired = true
-            end
-        else
-            WPS_details["AuthMode"] = mtkwifi.token_get(cfgs.AuthMode, ssid_index, "")
-        end
-
-        if type(WPS_details["EncType"]) == "string" then
-            local enc_type_ioctl = WPS_details["EncType"]:upper()
-            local enc_type_applied = mtkwifi.token_get(applied_cfgs.EncrypType, ssid_index, "")
-            if enc_type_applied ~= enc_type_ioctl then
-                cfgs.EncrypType = mtkwifi.token_set(cfgs.EncrypType, ssid_index, enc_type_ioctl)
-                isCfgsChanged = true
-                isBasicTabUpdateRequired = true
-            end
-        else
-            WPS_details["EncType"] = mtkwifi.token_get(cfgs.EncrypType, ssid_index, "")
-        end
-
-        if type(WPS_details["WscWPAKey"]) == "string" then
-            if applied_cfgs["WPAPSK"..ssid_index] ~= WPS_details["WscWPAKey"] then
-                cfgs["WPAPSK"..ssid_index] = WPS_details["WscWPAKey"]
-                isCfgsChanged = true
-                isBasicTabUpdateRequired = true
-            end
-        else
-            WPS_details["WscWPAKey"] = cfgs["WPAPSK"..ssid_index]
-        end
-
-        if type(WPS_details["DefKey"]) == "number" then
-            local def_key_applied = tonumber(mtkwifi.token_get(applied_cfgs.DefaultKeyID, ssid_index, ""))
-            if def_key_applied ~= WPS_details["DefKey"] then
-                cfgs.DefaultKeyID = mtkwifi.token_set(cfgs.DefaultKeyID, ssid_index, WPS_details["DefKey"])
-                isCfgsChanged = true
-            end
-        else
-            WPS_details["DefKey"] = tonumber(mtkwifi.token_get(cfgs.DefaultKeyID, ssid_index, 0)) or ""
-        end
-
-        if type(WPS_details["Conf"]) == "number" then
-            local wsc_conf_status_applied = tonumber(mtkwifi.token_get(applied_cfgs.WscConfStatus, ssid_index, ""))
-            if wsc_conf_status_applied ~= WPS_details["Conf"] then
-                cfgs.WscConfStatus = mtkwifi.token_set(cfgs.WscConfStatus, ssid_index, WPS_details["Conf"])
-                isCfgsChanged = true
-            end
-        else
-            WPS_details["Conf"] = mtkwifi.token_get(cfgs.WscConfStatus, ssid_index, "")
-        end
-
-        WPS_details["IS_BASIC_TAB_UPDATE_REQUIRED"] = isBasicTabUpdateRequired
-
-        if isCfgsChanged then
-            -- Driver updates the *.dat file for following scenarios,
-            --     1. When WPS Conf Status is not configured i.e. WscConfStatus is not set as 2,
-            --        and connection with a station is established i.e. where station acts as an External Registrar.
-            --     2. When below settings are changed through External Registrar irrespective of WPS Conf Status
-            -- Update mtkwifi.__profile_applied_settings_path(profile) file with the
-            -- new settings to avoid display of "reload to apply changes" message.
-            applied_cfgs["WPAPSK"] = cfgs["WPAPSK"]
-            applied_cfgs["SSID"] = cfgs["SSID"]
-            applied_cfgs["SSID"..ssid_index] = cfgs["SSID"..ssid_index]
-            applied_cfgs["AuthMode"] = cfgs["AuthMode"]
-            applied_cfgs["EncrypType"] = cfgs["EncrypType"]
-            applied_cfgs["WPAPSK"..ssid_index] = cfgs["WPAPSK"..ssid_index]
-            applied_cfgs["DefaultKeyID"] = cfgs["DefaultKeyID"]
-            applied_cfgs["WscConfStatus"] = cfgs["WscConfStatus"]
-            mtkwifi.save_profile(applied_cfgs, mtkwifi.__profile_applied_settings_path(profile))
-        end
-    end
-    http.write_json(WPS_details)
-end
-
-function get_wifi_pin(ifname)
-    local pin = ""
-    pin = c_getApPin(ifname)
-    http.write_json(pin)
-end
-
-function set_wifi_gen_pin(ifname,devname)
-    local devs = mtkwifi.get_all_devs()
-    local ssid_index = devs[devname]["vifs"][ifname].vifidx
-    local profile = devs[devname].profile
-    assert(profile)
-
-    local cfgs = mtkwifi.load_profile(profile)
-
-    os.execute("iwpriv "..ifname.." set WscGenPinCode")
-
-    pin = c_getApPin(ifname)
-    cfgs["WscVendorPinCode"]=pin["genpincode"]
-
-    --existing c code... done nothing for this segment as it read flash data and write to related .dat file.
-    -- no concept of nvram zones here
-    --if (nvram == RT2860_NVRAM)
-    --    do_system("ralink_init make_wireless_config rt2860");
-    --else
-    --    do_system("ralink_init make_wireless_config rtdev");
-    __mtkwifi_save_profile(cfgs, profile, true)
-    http.write_json(pin)
 end
 
 function set_wifi_wps_oob(devname, ifname)
@@ -1104,8 +929,8 @@ function set_wifi_wps_oob(devname, ifname)
     os.execute("iwpriv "..ifname.." set WscConfStatus=1")
     debug_write("iwpriv "..ifname.." set WscConfStatus=1")
 
-    local url_to_visit_after_reload = luci.dispatcher.build_url("admin", "mtk", "wifi", "vif_cfg_view", devname, ifname)
-    luci.http.redirect(luci.dispatcher.build_url("admin", "mtk", "wifi", "loading",url_to_visit_after_reload))
+    local url_to_visit_after_reload = luci.dispatcher.build_url("admin", "network", "wifi", "vif_cfg_view", devname, ifname)
+    luci.http.redirect(luci.dispatcher.build_url("admin", "network", "wifi", "loading",url_to_visit_after_reload))
 end
 
 function set_wifi_do_wps(ifname, devname, wsc_pin_code_w)
@@ -1158,45 +983,6 @@ function get_wps_security(ifname, devname)
     output["IEEE8021X"] = mtkwifi.token_get(cfgs.IEEE8021X,ssid_index)
 
     http.write_json(output)
-end
-
-function apcli_get_wps_status(ifname, devname)
-    local output = {}
-    local  ssid_index = 0
-    local devs = mtkwifi.get_all_devs()
-    local profile = devs[devname].profile
-    assert(profile)
-
-    -- apcli interface has a different structure as compared to other vifs
-    ssid_index = devs[devname][ifname].vifidx
-    output = c_apcli_get_wps_status(ifname)
-    if (output.wps_port_secured == "YES") then
-        local cfgs = mtkwifi.load_profile(profile)
-        cfgs.ApCliSsid = mtkwifi.token_set(cfgs.ApCliSsid, ssid_index, output.enr_SSID)
-        cfgs.ApCliEnable = mtkwifi.token_set(cfgs.ApCliEnable, ssid_index, "1")
-        cfgs.ApCliAuthMode = mtkwifi.token_set(cfgs.ApCliAuthMode, ssid_index, output.enr_AuthMode)
-        cfgs.ApCliEncrypType = mtkwifi.token_set(cfgs.ApCliEncrypType, ssid_index, output.enr_EncrypType)
-        cfgs.ApCliDefaultKeyID = mtkwifi.token_set(cfgs.ApCliDefaultKeyID, ssid_index, output.enr_DefaultKeyID)
-        cfgs.Channel = mtkwifi.read_pipe("iwconfig "..ifname.." | grep Channel | cut -d = -f 2 | cut -d \" \" -f 1")
-        debug_write("iwconfig "..ifname.." | grep Channel | cut -d = -f 2 | cut -d \" \" -f 1")
-
-        if(output.enr_EncrypType == "WEP") then
-            for i = 1, 4 do
-                cfgs["ApCliKey"..i.."Type"] = mtkwifi.token_set(cfgs["ApCliKey"..i.."Type"], ssid_index, output["Key"..i.."Type"])
-            end
-            if(ssid_index == "0") then
-                cfgs["ApCliKey"..output.enr_DefaultKeyID.."Str"] = output.enr_KeyStr
-            else
-                cfgs["ApCliKey"..output.enr_DefaultKeyID.."Str"..ssid_index] = output.enr_KeyStr
-            end
-        elseif(output.enr_EncrypType == "TKIP") or (output.enr_EncrypType == "AES") or (output.enr_EncrypType == "TKIPAES") then
-            if(output.enr_AuthMode ~= "WPAPSKWPA2PSK") then
-                cfgs["ApCliWPAPSK"] = output.enr_WPAPSK
-            end
-        end
-        __mtkwifi_save_profile(cfgs, profile, true)
-    end
-    http.write_json(output);
 end
 
 function string.tohex(str)
@@ -1316,11 +1102,6 @@ function apcli_wps_gen_pincode(ifname)
     http.write_json(ret_value)
 end
 
-function apcli_wps_get_pincode(ifname)
-    local output = c_apcli_wps_get_pincode(ifname)
-    http.write_json(output)
-end
-
 function get_apcli_conn_info(ifname)
     local rsp = {}
     if not ifname then
@@ -1377,7 +1158,7 @@ function reset_wifi(devname)
     else
         os.execute("cp -rf /rom/etc/wireless /etc/")
     end
-    return luci.http.redirect(luci.dispatcher.build_url("admin", "mtk", "wifi"))
+    return luci.http.redirect(luci.dispatcher.build_url("admin", "network", "wifi"))
 end
 
 function reload_wifi(devname)
@@ -1387,8 +1168,8 @@ function reload_wifi(devname)
         os.execute("rm -rf /tmp/mtk/wifi/"..string.match(path, "([^/]+)\.dat")..".last")
     end
     mtkwifi.__run_in_child_env(__mtkwifi_reload, devname)
-    local url_to_visit_after_reload = luci.dispatcher.build_url("admin", "mtk", "wifi")
-    luci.http.redirect(luci.dispatcher.build_url("admin", "mtk", "wifi", "loading",url_to_visit_after_reload))
+    local url_to_visit_after_reload = luci.dispatcher.build_url("admin", "network", "wifi")
+    luci.http.redirect(luci.dispatcher.build_url("admin", "network", "wifi", "loading",url_to_visit_after_reload))
 end
 
 function get_raw_profile()
@@ -1543,10 +1324,6 @@ function get_5G_2nd_80Mhz_channel_list()
     http.write_json(ch_list)
 end
 
-function net_cfg()
-    http.write_json(http.formvalue())
-end
-
 function apcli_cfg(dev, vif)
     local devname = dev
     debug_write(devname)
@@ -1626,10 +1403,10 @@ function apcli_cfg(dev, vif)
     ]=]
     if http.formvalue("__apply") then
         mtkwifi.__run_in_child_env(__mtkwifi_reload, devname)
-        local url_to_visit_after_reload = luci.dispatcher.build_url("admin", "mtk", "wifi", "apcli_cfg_view", dev, vif)
-        luci.http.redirect(luci.dispatcher.build_url("admin", "mtk", "wifi", "loading",url_to_visit_after_reload))
+        local url_to_visit_after_reload = luci.dispatcher.build_url("admin", "network", "wifi", "apcli_cfg_view", dev, vif)
+        luci.http.redirect(luci.dispatcher.build_url("admin", "network", "wifi", "loading",url_to_visit_after_reload))
     else
-        luci.http.redirect(luci.dispatcher.build_url("admin", "mtk", "wifi", "apcli_cfg_view", dev, vif))
+        luci.http.redirect(luci.dispatcher.build_url("admin", "network", "wifi", "apcli_cfg_view", dev, vif))
     end
 end
 
@@ -1671,7 +1448,7 @@ function apcli_connect(dev, vif)
     end
     os.execute("iwpriv "..vifname.." set ApCliSsid=\""..mtkwifi.__handleSpecialChars(cfgs.ApCliSsid).."\"")
     os.execute("iwpriv "..vifname.." set ApCliEnable=1")
-    luci.http.redirect(luci.dispatcher.build_url("admin", "mtk", "wifi"))
+    luci.http.redirect(luci.dispatcher.build_url("admin", "network", "wifi"))
 end
 
 function apcli_disconnect(dev, vif)
@@ -1692,7 +1469,7 @@ function apcli_disconnect(dev, vif)
     os.execute("iwpriv "..vifname.." set ApCliEnable=0")
     os.execute("ifconfig "..vifname.." down")
     os.execute("brctl delif br-lan "..vifname)
-    luci.http.redirect(luci.dispatcher.build_url("admin", "mtk", "wifi"))
+    luci.http.redirect(luci.dispatcher.build_url("admin", "network", "wifi"))
 end
 
 function apply_power_boost_settings()
@@ -1790,6 +1567,6 @@ end
 
 function reset_to_defaults(devname)
     mtkwifi.__run_in_child_env(exec_reset_to_defaults_cmd, devname)
-    luci.http.redirect(luci.dispatcher.build_url("admin", "mtk", "wifi", "loading",mtkwifi.get_referer_url()))
+    luci.http.redirect(luci.dispatcher.build_url("admin", "network", "wifi", "loading",mtkwifi.get_referer_url()))
 end
 

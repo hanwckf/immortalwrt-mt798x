@@ -55,7 +55,6 @@ local appliedMapModeDiff
 
 </style>
 
-<script src="/luci-static/resources/monCon.js"></script>
 <script type="text/javascript" src="<%=resource%>/cbi.js?v=git-17.250.41546-90ac861"></script>
 <script type="text/javascript">
 
@@ -115,12 +114,12 @@ function hi(to, devname, vifname)
     <big><strong>Please wait while the request is being processed.</strong></big>
 </div>
 <div id="apcli_body_div">
-    <form method="post" name="cbi" action="<%=luci.dispatcher.build_url("admin", "mtk", "wifi", "apcli_cfg", devname, vifname)%>" enctype="multipart/form-data" onreset="return cbi_validate_reset(this);" onsubmit="return validate_all() && cbi_validate_form(this, 'Some fields are invalid, cannot save values!')" autocomplete="off">
+    <form method="post" name="cbi" action="<%=luci.dispatcher.build_url("admin", "network", "wifi", "apcli_cfg", devname, vifname)%>" enctype="multipart/form-data" onreset="return cbi_validate_reset(this);" onsubmit="return validate_all() && cbi_validate_form(this, 'Some fields are invalid, cannot save values!')" autocomplete="off">
         <fieldset class="cbi-section">
             <legend>ApCli Configurations - <%=vifname and devname.."@"..vifname or devname%>
                 <%local diff = mtkwifi.diff_profile(dev.profile)%>
                 <%if next(diff) ~= nil then%>
-                    <span style="color:red;">( <a href="javascript:location.href='<%=luci.dispatcher.build_url("admin", "mtk", "wifi", "reload", devname)%>'">Click here</a> to apply changes)</span>
+                    <span style="color:red;">( <a href="javascript:location.href='<%=luci.dispatcher.build_url("admin", "network", "wifi", "reload", devname)%>'">Click here</a> to apply changes)</span>
                 <%end%>
             </legend>
             <ul class="cbi-tabmenu">
@@ -560,7 +559,7 @@ function hi(to, devname, vifname)
         document.getElementById("apcli_body_div").style.display="none";
         document.getElementById("BusyText_ApCli").style.display="";
 
-        XHR.get('<%=luci.dispatcher.build_url("admin", "mtk", "wifi", "apcli_scan")%>/' + vifname, null,
+        XHR.get('<%=luci.dispatcher.build_url("admin", "network", "wifi", "apcli_scan")%>/' + vifname, null,
             function(x)
             {
                 console.log(x);
@@ -1182,7 +1181,7 @@ function hi(to, devname, vifname)
 
     function apcli_get_wps_status(vifname, devname)
     {
-        XHR.get('<%=luci.dispatcher.build_url("admin",  "mtk",  "wifi", "apcli_get_wps_status")%>/' + vifname + "/" + devname, null, 
+        XHR.get('<%=luci.dispatcher.build_url("admin",  "network",  "wifi", "apcli_get_wps_status")%>/' + vifname + "/" + devname, null, 
             function(x)
             {
                 console.log(x);
@@ -1205,7 +1204,7 @@ function hi(to, devname, vifname)
 
     function apcli_do_enr_pin_wps(pin_ap_ssid, vifname, devname)
     {
-        XHR.get('<%=luci.dispatcher.build_url("admin",  "mtk",  "wifi",  "apcli_do_enr_pin_wps")%>/' + vifname + '/' + devname + '/' + pin_ap_ssid, null, 
+        XHR.get('<%=luci.dispatcher.build_url("admin",  "network",  "wifi",  "apcli_do_enr_pin_wps")%>/' + vifname + '/' + devname + '/' + pin_ap_ssid, null, 
             function(x)
             {
                 console.log(x);
@@ -1228,7 +1227,7 @@ function hi(to, devname, vifname)
 
     function apcli_do_enr_pbc_wps(vifname, devname)
     {
-        XHR.get('<%=luci.dispatcher.build_url("admin",  "mtk",  "wifi",  "apcli_do_enr_pbc_wps")%>/' + vifname + '/' + devname, null, 
+        XHR.get('<%=luci.dispatcher.build_url("admin",  "network",  "wifi",  "apcli_do_enr_pbc_wps")%>/' + vifname + '/' + devname, null, 
             function(x)
             {
                 console.log(x);
@@ -1252,7 +1251,7 @@ function hi(to, devname, vifname)
 
     function apcli_cancel_wps(vifname)
     {
-        XHR.get('<%=luci.dispatcher.build_url("admin",  "mtk",  "wifi",  "apcli_cancel_wps")%>/' + vifname, null, 
+        XHR.get('<%=luci.dispatcher.build_url("admin",  "network",  "wifi",  "apcli_cancel_wps")%>/' + vifname, null, 
             function(x)
             {
                 console.log(x);
@@ -1274,7 +1273,7 @@ function hi(to, devname, vifname)
 
     function apcli_wps_gen_pincode(vifname)
     {
-        XHR.get('<%=luci.dispatcher.build_url("admin",  "mtk",  "wifi",  "apcli_wps_gen_pincode")%>/' + vifname, null, 
+        XHR.get('<%=luci.dispatcher.build_url("admin",  "network",  "wifi",  "apcli_wps_gen_pincode")%>/' + vifname, null, 
             function(x)
             {
                 console.log(x);
@@ -1300,7 +1299,7 @@ function hi(to, devname, vifname)
 
     function apcli_wps_get_pincode(vifname)
     {
-        XHR.get('<%=luci.dispatcher.build_url("admin",  "mtk",  "wifi",  "apcli_wps_get_pincode")%>/' + vifname, null, 
+        XHR.get('<%=luci.dispatcher.build_url("admin",  "network",  "wifi",  "apcli_wps_get_pincode")%>/' + vifname, null, 
             function(x)
             {
                 console.log(x);
@@ -1345,7 +1344,7 @@ function hi(to, devname, vifname)
 
     function get_site_survey(vifname, mode)
     {
-        XHR.get('<%=luci.dispatcher.build_url("admin",  "mtk",  "wifi",  "apcli_scan")%>/' + vifname, null, 
+        XHR.get('<%=luci.dispatcher.build_url("admin",  "network",  "wifi",  "apcli_scan")%>/' + vifname, null, 
             function(x)
             {
                 console.log(x);
@@ -1624,14 +1623,14 @@ function hi(to, devname, vifname)
                 "Please click on 'OK' button to wait for the device.\n" +
                 "or click on 'Cancel' button to configure the settings available in current web-page.");
             if (u == true) {
-                location = '<%=luci.dispatcher.build_url("admin", "mtk", "wifi", "loading")%>' + window.location.pathname;
+                location = '<%=luci.dispatcher.build_url("admin", "network", "wifi", "loading")%>' + window.location.pathname;
             }
         }
     }
 
     function get_apply_status()
     {
-        XHR.get('<%=luci.dispatcher.build_url("admin", "mtk", "wifi", "get_apply_status")%>', null,
+        XHR.get('<%=luci.dispatcher.build_url("admin", "network", "wifi", "get_apply_status")%>', null,
             function(x)
             {
                 console.log(x);
@@ -1641,7 +1640,6 @@ function hi(to, devname, vifname)
     }
 
     window.onload = function() {
-        MonCon.ping();
         get_apply_status();
         <% if cfgs.ApCliEnable == "1" then %>
             toggle_apcli(true);

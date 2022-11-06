@@ -51,7 +51,6 @@ else
 end
 %>
 
-<script src="/luci-static/resources/monCon.js"></script>
 <script type="text/javascript" src="<%=resource%>/cbi.js?v=git-17.250.41546-90ac861"></script>
 <script type="text/javascript">
 
@@ -157,7 +156,7 @@ function hi(to, WPS_state, devname, vifname)
 
 </script>
 
-<form method="post" name="cbi" action="<%=luci.dispatcher.build_url("admin", "mtk", "wifi", "vif_cfg", devname, vifname)%>" enctype="multipart/form-data" onsubmit="return validate_all('<%=vifidx%>','<%=cfgs["HT_DisallowTKIP"]%>') && chk_WPS_ACL('<%=tostring(mtkwifi.__any_wsc_enabled(WscValue)) %>')" autocomplete="off">
+<form method="post" name="cbi" action="<%=luci.dispatcher.build_url("admin", "network", "wifi", "vif_cfg", devname, vifname)%>" enctype="multipart/form-data" onsubmit="return validate_all('<%=vifidx%>','<%=cfgs["HT_DisallowTKIP"]%>') && chk_WPS_ACL('<%=tostring(mtkwifi.__any_wsc_enabled(WscValue)) %>')" autocomplete="off">
 <% if not dev or not vif then%>
     <fieldset class="cbi-section">
         <legend>Interface Not Exist - <%=vifname and devname.."@"..vifname or devname%>
@@ -174,7 +173,7 @@ function hi(to, WPS_state, devname, vifname)
     <fieldset class="cbi-section">
         <legend>Interface Configurations - <%=vifname and devname.."@"..vifname or devname%>
             <%if next(diff) ~= nil then%>
-                <span style="color:red;">( <a href="javascript:location.href='<%=luci.dispatcher.build_url("admin", "mtk", "wifi", "reload", dev.devname)%>'">Click here</a> to apply changes)</span>
+                <span style="color:red;">( <a href="javascript:location.href='<%=luci.dispatcher.build_url("admin", "network", "wifi", "reload", dev.devname)%>'">Click here</a> to apply changes)</span>
             <%end%>
         </legend>
         <div class="alert-message" id="BusyText_VIF" style="display:none;">
@@ -1256,7 +1255,7 @@ AA:BB:CC:DD:EE:FF
 
         function InitStaList(devname, vifname)
         {
-            XHR.poll(10, "<%=luci.dispatcher.build_url("admin",  "mtk",  "wifi",  "sta_info")%>/" + vifname + '/' + devname, null, 
+            XHR.poll(10, "<%=luci.dispatcher.build_url("admin",  "network",  "wifi",  "sta_info")%>/" + vifname + '/' + devname, null, 
                 function(x)
                 {
                     try{
@@ -1488,7 +1487,7 @@ AA:BB:CC:DD:EE:FF
 
         function checkSecurity(devname, vifname)
         {
-            XHR.get('<%=luci.dispatcher.build_url("admin",  "mtk",  "wifi",  "get_wps_security")%>/' + vifname + '/' + devname, null, 
+            XHR.get('<%=luci.dispatcher.build_url("admin",  "network",  "wifi",  "get_wps_security")%>/' + vifname + '/' + devname, null, 
                 function(x)
                 {
                     console.log(x);
@@ -1559,7 +1558,7 @@ AA:BB:CC:DD:EE:FF
         function startWpsPinMode(vifname, devname, enrollee_pin)
         {
             disable_all_link_btns();
-            XHR.get('<%=luci.dispatcher.build_url("admin", "mtk", "wifi", "set_wifi_do_wps")%>/' + vifname + '/' + devname + '/' + enrollee_pin, null, 
+            XHR.get('<%=luci.dispatcher.build_url("admin", "network", "wifi", "set_wifi_do_wps")%>/' + vifname + '/' + devname + '/' + enrollee_pin, null, 
                 function(x)
                 {
                     console.log(x);
@@ -1571,7 +1570,7 @@ AA:BB:CC:DD:EE:FF
         function startWpsPbcMode(vifname, devname)
         {
             disable_all_link_btns();
-            XHR.get('<%=luci.dispatcher.build_url("admin", "mtk", "wifi", "set_wifi_do_wps")%>/' + vifname + '/' + devname + '/' + 'nopin', null, 
+            XHR.get('<%=luci.dispatcher.build_url("admin", "network", "wifi", "set_wifi_do_wps")%>/' + vifname + '/' + devname + '/' + 'nopin', null, 
                 function(x)
                 {
                     console.log(x);
@@ -1625,7 +1624,7 @@ AA:BB:CC:DD:EE:FF
         {
             // Make AJAX request only if the refreshWpsAjaxFlag is false by which server will not be overloaded!
             if(refreshWpsAjaxFlag == false){
-                XHR.get('<%=luci.dispatcher.build_url("admin", "mtk", "wifi", "get_wps_info")%>/' + devname + '/' + vifname, null,
+                XHR.get('<%=luci.dispatcher.build_url("admin", "network", "wifi", "get_wps_info")%>/' + devname + '/' + vifname, null,
                     function(x)
                     {
                         var ret = true;
@@ -1662,7 +1661,7 @@ AA:BB:CC:DD:EE:FF
         {
             if(document.getElementById("PIN").value == "")
             {
-                XHR.get('<%=luci.dispatcher.build_url("admin", "mtk", "wifi", "get_wifi_pin")%>/' + vifname, null,
+                XHR.get('<%=luci.dispatcher.build_url("admin", "network", "wifi", "get_wifi_pin")%>/' + vifname, null,
                     function(x)
                     {
                         console.log(x);
@@ -1682,7 +1681,7 @@ AA:BB:CC:DD:EE:FF
         function wpsGenPinCode(vifname, devname)
         {
             disable_all_link_btns();
-            XHR.get('<%=luci.dispatcher.build_url("admin", "mtk", "wifi", "set_wifi_gen_pin")%>/' + vifname + '/' + devname, null, 
+            XHR.get('<%=luci.dispatcher.build_url("admin", "network", "wifi", "set_wifi_gen_pin")%>/' + vifname + '/' + devname, null, 
                 function(x)
                 {
                     console.log(x);
@@ -1704,7 +1703,7 @@ AA:BB:CC:DD:EE:FF
         {
             disable_all_link_btns();
             WPS_deInit();
-            location.href = '<%=luci.dispatcher.build_url("admin", "mtk", "wifi", "set_wifi_wps_oob")%>/' + devname + '/' + vifname;
+            location.href = '<%=luci.dispatcher.build_url("admin", "network", "wifi", "set_wifi_wps_oob")%>/' + devname + '/' + vifname;
         }
 
         function update_vif_settings(output)
@@ -2654,7 +2653,7 @@ AA:BB:CC:DD:EE:FF
 
     function get_al_mac(devRole, jsTopoInfo)
     {
-        XHR.get('<%=luci.dispatcher.build_url("admin", "mtk", "multi_ap", "get_al_mac")%>' + '/' + devRole, null, 
+        XHR.get('<%=luci.dispatcher.build_url("admin", "network", "multi_ap", "get_al_mac")%>' + '/' + devRole, null, 
             function(x)
             {
                 console.log(x);
@@ -2677,7 +2676,7 @@ AA:BB:CC:DD:EE:FF
 
     function get_run_time_topology(devRole)
     {
-        XHR.get('<%=luci.dispatcher.build_url("admin", "mtk", "multi_ap", "get_runtime_topology")%>', null, 
+        XHR.get('<%=luci.dispatcher.build_url("admin", "network", "multi_ap", "get_runtime_topology")%>', null, 
             function(x)
             {
                 try{
@@ -2711,14 +2710,14 @@ AA:BB:CC:DD:EE:FF
                 "Please click on 'OK' button to wait for the device.\n" +
                 "or click on 'Cancel' button to configure the settings available in current web-page.");
             if (u == true) {
-                location = '<%=luci.dispatcher.build_url("admin", "mtk", "wifi", "loading")%>' + window.location.pathname;
+                location = '<%=luci.dispatcher.build_url("admin", "network", "wifi", "loading")%>' + window.location.pathname;
             }
         }
     }
 
     function get_apply_status()
     {
-        XHR.get('<%=luci.dispatcher.build_url("admin", "mtk", "wifi", "get_apply_status")%>', null,
+        XHR.get('<%=luci.dispatcher.build_url("admin", "network", "wifi", "get_apply_status")%>', null,
             function(x)
             {
                 console.log(x);
@@ -2728,7 +2727,6 @@ AA:BB:CC:DD:EE:FF
     }
 
     window.onload = function(){
-        MonCon.ping();
         <% if not dev.wdsBand or dev.wdsBand == dev.dbdcBandName then %>
             updateWdsPhyMode("<%=string.split(cfgs.WirelessMode,";")[1]%>");
         <% end %>
