@@ -31,30 +31,6 @@ local appliedMapModeDiff
 
 <script type="text/javascript" src="<%=resource%>/cbi.js?v=git-17.250.41546-90ac861"></script>
 <script type="text/javascript">
-function hi(to) {
-    var a;
-    var x;
-    var tabs = new Array();
-    tabs.push("basic");
-    tabs.push("adv");
-<% if dev.isPowerBoostSupported then%>
-    tabs.push("power_boost");
-<% end %>
-    tabs.push("other");
-    for (x in tabs)
-    {
-        if (tabs[x] != to) {
-            a = document.getElementById('dev-cfg' + '-tab-' + tabs[x]);
-            a.className = "cbi-tab-disabled";
-            a = document.getElementById('dev-cfg' + '-' + tabs[x]);
-            a.style.display = "none";
-        }
-    }
-    a = document.getElementById('dev-cfg' + '-tab-' + to);
-    a.className = "cbi-tab";
-    a = document.getElementById('dev-cfg' + '-' + to);
-    a.style.display = "";
-}
 </script>
 
 <form method="post" name="cbi" action="<%=luci.dispatcher.build_url("admin", "network", "wifi", "dev_cfg", devname)%>" enctype="multipart/form-data" onreset="return cbi_validate_reset(this)" onsubmit="return cbi_validate_form(this, 'Some fields are invalid, cannot save values!') && ValidateAllSettings()" autocomplete="false">
@@ -65,46 +41,32 @@ function hi(to) {
                 <span style="color:red;">( <a href="javascript:location.href='<%=luci.dispatcher.build_url("admin", "network", "wifi", "reload", dev.devname)%>'">Click here</a> to apply changes)</span>
             <%end%>
         </legend>
-        <ul class="cbi-tabmenu">
-            <li class="cbi-tab" id="dev-cfg-tab-basic">
-                <a href="javascript:hi('basic');this.blur(); ">Basic</a>
-            </li>
-            <li class="cbi-tab-disabled" id="dev-cfg-tab-adv">
-                <a href="javascript:hi('adv');this.blur(); ">Advanced</a>
-            </li>
-<% if dev.isPowerBoostSupported then%>
-            <li class="cbi-tab-disabled" id="dev-cfg-tab-power_boost">
-                <a href="javascript:this.blur(); hi('power_boost')">Power Boost</a>
-            </li>
-<% end %>
-            <li class="cbi-tab-disabled" id="dev-cfg-tab-other">
-                <a href="javascript:this.blur(); hi('other')">Others</a>
-            </li>
-        </ul>
 
         <table id="dev-cfg-basic" class="cbi-section-table">
-            <tbody id="EASY_MESH_DEV_SETTINGS_TBODY" style="display:none">
-                <tr>
-                    <td>Channel</td>
-                    <td>
-                        <span id="EASY_MESH_CHANNEL_SPAN"></span>
-                    </td>
-                    <td></td>
-                </tr>
-            </tbody>
-
-            <tbody id="DEV_CFG_BASIC_SETTINGS">
-                <tr><th></th><td></td><td></td></tr>
-                <tr>
-                    <td>Channel</td>
-                    <td>
-                        <select style="width:auto; min-width:180px;" name="Channel" id="Channel" onchange="Channel_onchange(this.value)" <% if cfgs.ApCliEnable == "1" then %> disabled="disabled" <% end %>>
-                        </select>
-                    </td>
-                    <td><% if cfgs.ApCliEnable == "1" then %> APClient/Repeater Mode. <% end %></td>
-                </tr>
-            </tbody>
-
+            <tr>
+                <td>Channel</td>
+                <td>
+                    <select style="width:auto; min-width:180px;" name="Channel" id="Channel" onchange="Channel_onchange(this.value)" <% if cfgs.ApCliEnable == "1" then %> disabled="disabled" <% end %>>
+                    </select>
+                </td>
+                <td><% if cfgs.ApCliEnable == "1" then %> APClient/Repeater Mode. <% end %></td>
+            </tr>
+            <tr id="HT_EXTCHA_TR" style="display:none">
+                <td>40MHz HT Ext Channel</td>
+                <td>
+                    <select style="width:auto; min-width:180px;" name="HT_EXTCHA" id="HT_EXTCHA" <% if cfgs.ApCliEnable == "1" or dev.__bw ~= "40" or dev.__bw ~= "60" then %> disabled="disabled" <% end %>>
+                    </select>
+                </td>
+                <td><% if cfgs.ApCliEnable == "1" then %> APClient/Repeater Mode. <% end %></td>
+            </tr>
+            <tr id="VHT_Sec80_Channel_TR" style="display:none">
+                <td>80MHz Second VHT Channel</td>
+                <td>
+                    <select style="width:auto; min-width:180px; " name="VHT_Sec80_Channel" id="VHT_Sec80_Channel" <% if cfgs.ApCliEnable == "1" or dev.__bw ~= "161" then %> disabled="disabled" <% end %>>
+                    </select>
+                </td>
+                <td><% if cfgs.ApCliEnable == "1" then %> APClient/Repeater Mode. <% end %></td>
+            </tr>
            <% if string.split(cfgs.WirelessMode,";")[1] == "16" or string.split(cfgs.WirelessMode,";")[1] == "17" or string.split(cfgs.WirelessMode,";")[1] == "18" then %>
                 <tr>
                     <td>BSS color</td>
@@ -138,41 +100,6 @@ function hi(to) {
                 </tr>
             <% end %>
 
-        </table>
-        <table id="dev-cfg-adv" class="cbi-section-table" style="display:none">
-            <!--
-            <tr>
-                <td style="width:300px;">SSID Broadcast</td>
-                <td>
-                    <select style="width:auto">
-                        <option value="1">Enable</option>
-                        <option value="0">Disable</option>
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <td>AP Isolation</td>
-                <td>
-                    <select style="width:auto">
-                        <option value="1">Enable</option>
-                        <option value="0">Disable</option>
-                    </select>
-                </td>
-            </tr>
-            -->
-            <!--
-            <tr>
-                <td>Extension Channel</td>
-                <td>
-                    <select style="width:auto">
-                        <option value="">Legacy</option>
-                        <option value="n">N</option>
-                        <option value="ac">AC</option>
-                        <option value="dbdc">DBDC</option>
-                    </select>
-                </td>
-            </tr>
-            -->
             <input type="hidden" id="WirelessMode" value="<%=string.split(cfgs.WirelessMode,";")[1]%>">
             <tr>
                 <td>Country Code</td>
@@ -210,22 +137,6 @@ function hi(to) {
                     </select>
                 </td>
                 <td><span id="__chBwMsg"></span></td>
-            </tr>
-            <tr>
-                <td>40MHz HT Ext Channel</td>
-                <td>
-                    <select style="width:auto; min-width:180px;" name="HT_EXTCHA" id="HT_EXTCHA" <% if cfgs.ApCliEnable == "1" or dev.__bw ~= "40" or dev.__bw ~= "60" then %> disabled="disabled" <% end %>>
-                    </select>
-                </td>
-                <td><% if cfgs.ApCliEnable == "1" then %> APClient/Repeater Mode. <% end %></td>
-            </tr>
-            <tr>
-                <td>80MHz Second VHT Channel</td>
-                <td>
-                    <select style="width:auto; min-width:180px;" name="VHT_Sec80_Channel" id="VHT_Sec80_Channel" <% if cfgs.ApCliEnable == "1" or dev.__bw ~= "161" then %> disabled="disabled" <% end %>>
-                    </select>
-                </td>
-                <td><% if cfgs.ApCliEnable == "1" then %> APClient/Repeater Mode. <% end %></td>
             </tr>
             <tr>
                 <td>HT TX Stream</td>
@@ -288,78 +199,35 @@ function hi(to) {
                     <td></td>
                 </tr>
             <% end %>
+            <% if cfgs.MUTxRxEnable then %>
             <tr>
-                <td>Current Band</td>
+                <td>Beam Forming &amp; MIMO <%=dev.__mimo%></td>
                 <td>
-                    <span><%=mtkwifi.band(string.split(cfgs.WirelessMode,";")[1])%></span>
+                    <select name="__mimo" autocomplete="off" >
+                        <option value="0"<% if tonumber(dev.__mimo) == 0 then %> selected="selected"<% end %>> ETxBF (SU) </option>
+                        <option value="1"<% if tonumber(dev.__mimo) == 1 then %> selected="selected"<% end %>> ITxBF (SU) </option>
+                        <option value="2"<% if tonumber(dev.__mimo) == 2 then %> selected="selected"<% end %>> ITxBF+ETxBF (SU) </option>
+                        <% if not dev.mimoBand or dev.mimoBand == dev.dbdcBandName then %>
+                            <option value="3"<% if tonumber(dev.__mimo) == 3 then %> selected="selected"<% end %>> MU (SU ETxBF+MU-MIMO) </option>
+                            <option value="4"<% if tonumber(dev.__mimo) == 4 then %> selected="selected"<% end %>> ITxBF+MU (I+E+MU) </option>
+                        <% end %>
+                            <option value="5"<% if tonumber(dev.__mimo) == 5 then %> selected="selected"<% end %>> Disable TxBF (SU BF and MU-MIMO) </option>
+                    </select>
                 </td>
                 <td></td>
             </tr>
+            <% end %>
+            <% if string.split(cfgs.WirelessMode,";")[1] == "16" or string.split(cfgs.WirelessMode,";")[1] == "17" or string.split(cfgs.WirelessMode,";")[1] == "18" then %>
+            <tr>
+                <td>Spatial Reuse</td>
+                <td>
+                    <input type="radio" name="SREnable" value="1" <% if cfgs.SREnable == "1" then %> checked="checked"<% end %>/> Enable
+                    <input type="radio" name="SREnable" value="0" <% if cfgs.SREnable == "0" then %> checked="checked"<% end %>/> Disable
+                </td>
+                <td></td>
+            </tr>
+            <% end %>
         </table>
-
-        <table id="dev-cfg-other" class="cbi-section-table" style="display:none">
-            <tr><th></th><td></td><td></td></tr>
-                <% if cfgs.MUTxRxEnable then %>
-                    <tr>
-                        <td>Beam Forming &amp; MIMO <%=dev.__mimo%></td>
-                        <td>
-                            <select name="__mimo" autocomplete="off" >
-                                <option value="0"<% if tonumber(dev.__mimo) == 0 then %> selected="selected"<% end %>> ETxBF (SU) </option>
-                                <option value="1"<% if tonumber(dev.__mimo) == 1 then %> selected="selected"<% end %>> ITxBF (SU) </option>
-                                <option value="2"<% if tonumber(dev.__mimo) == 2 then %> selected="selected"<% end %>> ITxBF+ETxBF (SU) </option>
-                                <% if not dev.mimoBand or dev.mimoBand == dev.dbdcBandName then %>
-                                    <option value="3"<% if tonumber(dev.__mimo) == 3 then %> selected="selected"<% end %>> MU (SU ETxBF+MU-MIMO) </option>
-                                    <option value="4"<% if tonumber(dev.__mimo) == 4 then %> selected="selected"<% end %>> ITxBF+MU (I+E+MU) </option>
-                                <% end %>
-                                    <option value="5"<% if tonumber(dev.__mimo) == 5 then %> selected="selected"<% end %>> Disable TxBF (SU BF and MU-MIMO) </option>
-                            </select>
-                        </td>
-                        <td></td>
-                    </tr>
-                <% end %>
-                <% if string.split(cfgs.WirelessMode,";")[1] == "16" or string.split(cfgs.WirelessMode,";")[1] == "17" or string.split(cfgs.WirelessMode,";")[1] == "18" then %>
-                    <tr>
-                        <td>Spatial Reuse</td>
-                        <td>
-                            <input type="radio" name="SREnable" value="1" <% if cfgs.SREnable == "1" then %> checked="checked"<% end %>/> Enable
-                            <input type="radio" name="SREnable" value="0" <% if cfgs.SREnable == "0" then %> checked="checked"<% end %>/> Disable
-                        </td>
-                        <td></td>
-                    </tr>
-                <% end %>
-        </table>
-
-        <% if dev.isPowerBoostSupported then%>
-            <table id="dev-cfg-power_boost" class="cbi-section-table" style="display:none">
-                <tr>
-                    <td colspan="3">Power Boost</td>
-                    <td colspan="2">
-                        <input type="radio" id="pbEnable" name="PowerUpenable" value="1" onClick="togglePowerBoost(1)" <% if cfgs.PowerUpenable == "1" then %> checked <% end %>>Enable
-                    </td>
-                    <td colspan="2">
-                        <input type="radio" id="pbDisable" name="PowerUpenable" value="0" onClick="togglePowerBoost(0)" <% if cfgs.PowerUpenable ~= "1" then %> checked <% end %>>Disable
-                    </td>
-                </tr>
-                <tr id="__applyPbRow" <% if cfgs.PowerUpenable ~= "1" then %> style="display:none" <% end %>>
-                    <td colspan="7" style="text-align:center">
-                        <input type="button" id="__applyPb" class="cbi-button cbi-button-apply" value="Save and Apply Power Boost Settings Only" onclick="applyPowerBoostSettings(this)" <% if cfgs.PowerUpenable ~= "1" then %> disabled <% end %>>
-                    </td>
-                </tr>
-                <tr id="__pbLoadingRow" style="display:none">
-                    <td colspan="7" style="text-align:center">
-                        <img src="<%=resource%>/icons/loading.gif" alt="<%:Loading%>" style="vertical-align:middle;" />
-                    &nbsp;&nbsp;&nbsp; Please wait while the Power Boost settings are being applied.
-                    </td>
-                </tr>
-                <input type="hidden" id="PowerUpCckOfdm" name="PowerUpCckOfdm" value="<%=cfgs.PowerUpCckOfdm%>">
-                <input type="hidden" id="PowerUpHT20" name="PowerUpHT20" value="<%=cfgs.PowerUpHT20%>">
-                <input type="hidden" id="PowerUpHT40" name="PowerUpHT40" value="<%=cfgs.PowerUpHT40%>">
-                <input type="hidden" id="PowerUpVHT20" name="PowerUpVHT20" value="<%=cfgs.PowerUpVHT20%>">
-                <input type="hidden" id="PowerUpVHT40" name="PowerUpVHT40" value="<%=cfgs.PowerUpVHT40%>">
-                <input type="hidden" id="PowerUpVHT80" name="PowerUpVHT80" value="<%=cfgs.PowerUpVHT80%>">
-                <input type="hidden" id="PowerUpVHT160" name="PowerUpVHT160" value="<%=cfgs.PowerUpVHT160%>">
-            </table>
-        <% end %>
     </fieldset>
     <div class="cbi-page-actions">
 
@@ -390,189 +258,6 @@ function hi(to) {
 </form-->
 
 <script type="text/javascript">
-    <% if dev.isPowerBoostSupported then%>
-        function ValidatePowerBoost()
-        {
-            var pbDatName = ["PowerUpCckOfdm","PowerUpHT20","PowerUpHT40","PowerUpVHT20","PowerUpVHT40","PowerUpVHT80","PowerUpVHT160"];
-            var rateName = {
-                PowerUpCckOfdm:["CCK_1M2M","CCK_5M11M","OFDM_6M_9M","OFDM_12M_18M","OFDM_24M_36M","OFDM_48M","OFDM_54M"],
-                PowerUpHT20:["HT20_MCS0","None","HT20_MCS1_2","HT20_MCS3_4","HT20_MCS5","HT20_MCS6","HT20_MCS7"],
-                PowerUpHT40:["HT40_MCS0","HT40_MCS32","HT40_MCS1_2","HT40_MCS3_4","HT40_MCS5","HT40_MCS6","HT40_MCS7"],
-                PowerUpVHT20:["VHT20_MCS0","VHT20_MCS1_2","VHT20_MCS3_4","VHT20_MCS5_6","VHT20_MCS7","VHT20_MCS8","VHT20_MCS9"],
-                PowerUpVHT40:["VHT40_BPSK","VHT40_QPSK","VHT40_16QAM","VHT40_64QAM_MSC5_6","VHT40_64QAM_MSC7","VHT40_64QAM_MSC8","VHT40_64QAM_MSC9"],
-                PowerUpVHT80:["VHT80_BPSK","VHT80_QPSK","VHT80_16QAM","VHT80_64QAM_MSC5_6","VHT80_64QAM_MSC7","VHT80_64QAM_MSC8","VHT80_64QAM_MSC9"],
-                PowerUpVHT160:["VHT160_BPSK","VHT160_QPSK","VHT160_16QAM","VHT160_64QAM_MSC5_6","VHT160_64QAM_MSC7","VHT160_64QAM_MSC8","VHT160_64QAM_MSC9"]
-            };
-            if(document.getElementById("pbDisable").checked){
-                return true;
-            }
-            for (var mIdx = 0; mIdx < pbDatName.length; mIdx++){
-                var pbMergedStr = "";
-                for(var rIdx=0; rIdx < rateName[pbDatName[mIdx]].length ; rIdx++){
-                    inp = document.getElementById(rateName[pbDatName[mIdx]][rIdx]);
-                    var inpVal = Number(inp.value);
-                    if(isNaN(inpVal) || !/(^-[1-9]$|^\d$|^[1-9][0-9]$)/.test(inp.value)){
-                        alert(rateName[pbDatName[mIdx]][rIdx] + " in Power Boost settings is incorrect!\nPlease enter an integer number between -9 to 99 inclusive.");
-                        inp.focus();
-                        inp.select();
-                        return false;
-                    }
-                    pbMergedStr += inpVal;
-                    if(rIdx != rateName[pbDatName[mIdx]].length - 1){
-                        pbMergedStr += ":";
-                    }
-                }
-                document.getElementById(pbDatName[mIdx]).value = pbMergedStr;
-            }
-            return true;
-        }
-
-        function togglePowerBoost(flag)
-        {
-            var pbApplyBtnRow = document.getElementById("__applyPbRow");
-            var pbApplyBtn = document.getElementById("__applyPb");
-            var modName = ["CCK_OFDM","HT20","HT40","VHT20","VHT40","VHT80","VHT160"];
-            var rateName = {
-                CCK_OFDM:["CCK_1M2M","CCK_5M11M","OFDM_6M_9M","OFDM_12M_18M","OFDM_24M_36M","OFDM_48M","OFDM_54M"],
-                HT20:["HT20_MCS0","None","HT20_MCS1_2","HT20_MCS3_4","HT20_MCS5","HT20_MCS6","HT20_MCS7"],
-                HT40:["HT40_MCS0","HT40_MCS32","HT40_MCS1_2","HT40_MCS3_4","HT40_MCS5","HT40_MCS6","HT40_MCS7"],
-                VHT20:["VHT20_MCS0","VHT20_MCS1_2","VHT20_MCS3_4","VHT20_MCS5_6","VHT20_MCS7","VHT20_MCS8","VHT20_MCS9"],
-                VHT40:["VHT40_BPSK","VHT40_QPSK","VHT40_16QAM","VHT40_64QAM_MSC5_6","VHT40_64QAM_MSC7","VHT40_64QAM_MSC8","VHT40_64QAM_MSC9"],
-                VHT80:["VHT80_BPSK","VHT80_QPSK","VHT80_16QAM","VHT80_64QAM_MSC5_6","VHT80_64QAM_MSC7","VHT80_64QAM_MSC8","VHT80_64QAM_MSC9"],
-                VHT160:["VHT160_BPSK","VHT160_QPSK","VHT160_16QAM","VHT160_64QAM_MSC5_6","VHT160_64QAM_MSC7","VHT160_64QAM_MSC8","VHT160_64QAM_MSC9"]
-            };
-            if(flag == "1"){
-                for (var mIdx = 0; mIdx < modName.length; mIdx++){
-                    for(var rIdx = 0; rIdx < rateName[modName[mIdx]].length ; rIdx++){
-                        document.getElementById(rateName[modName[mIdx]][rIdx]).disabled = false;
-                    }
-                    document.getElementById("pb_text_row_hdng_" + modName[mIdx]).style.display = "";
-                    document.getElementById("pb_text_row_sub_hdng_" + modName[mIdx]).style.display = "";
-                    document.getElementById("pb_input_row_" + modName[mIdx]).style.display = "";
-                }
-                pbApplyBtnRow.style.display = "";
-                pbApplyBtn.disabled = false;
-            }
-            else{
-                for (var mIdx = 0; mIdx < modName.length; mIdx++){
-                    for(var rIdx = 0; rIdx < rateName[modName[mIdx]].length ; rIdx++){
-                        document.getElementById(rateName[modName[mIdx]][rIdx]).disabled = true;
-                    }
-                    document.getElementById("pb_text_row_hdng_" + modName[mIdx]).style.display = "none";
-                    document.getElementById("pb_text_row_sub_hdng_" + modName[mIdx]).style.display = "none";
-                    document.getElementById("pb_input_row_" + modName[mIdx]).style.display = "none";
-                }
-                pbApplyBtnRow.style.display = "none";
-                pbApplyBtn.disabled = true;
-            }
-        }
-
-        function initPowerBoost()
-        {
-            var row1,row2,cell,inp;
-            var pbValArr = [];
-            var isPbEnabled = ("<%=cfgs.PowerUpenable%>" == "1") ? true : false;
-            var pbTableId = document.getElementById('dev-cfg-power_boost');
-            var modName = ["CCK_OFDM","HT20","HT40","VHT20","VHT40","VHT80","VHT160"];
-            var rateName = {
-                CCK_OFDM:["CCK_1M2M","CCK_5M11M","OFDM_6M_9M","OFDM_12M_18M","OFDM_24M_36M","OFDM_48M","OFDM_54M"],
-                HT20:["HT20_MCS0","None","HT20_MCS1_2","HT20_MCS3_4","HT20_MCS5","HT20_MCS6","HT20_MCS7"],
-                HT40:["HT40_MCS0","HT40_MCS32","HT40_MCS1_2","HT40_MCS3_4","HT40_MCS5","HT40_MCS6","HT40_MCS7"],
-                VHT20:["VHT20_MCS0","VHT20_MCS1_2","VHT20_MCS3_4","VHT20_MCS5_6","VHT20_MCS7","VHT20_MCS8","VHT20_MCS9"],
-                VHT40:["VHT40_BPSK","VHT40_QPSK","VHT40_16QAM","VHT40_64QAM_MSC5_6","VHT40_64QAM_MSC7","VHT40_64QAM_MSC8","VHT40_64QAM_MSC9"],
-                VHT80:["VHT80_BPSK","VHT80_QPSK","VHT80_16QAM","VHT80_64QAM_MSC5_6","VHT80_64QAM_MSC7","VHT80_64QAM_MSC8","VHT80_64QAM_MSC9"],
-                VHT160:["VHT160_BPSK","VHT160_QPSK","VHT160_16QAM","VHT160_64QAM_MSC5_6","VHT160_64QAM_MSC7","VHT160_64QAM_MSC8","VHT160_64QAM_MSC9"]
-            };
-            var pbObj = {
-                PBCCK:"<%=cfgs.PowerUpCckOfdm%>",
-                PBHT20:"<%=cfgs.PowerUpHT20%>",
-                PBHT40:"<%=cfgs.PowerUpHT40%>",
-                PBVHT20:"<%=cfgs.PowerUpVHT20%>",
-                PBVHT40:"<%=cfgs.PowerUpVHT40%>",
-                PBVHT80:"<%=cfgs.PowerUpVHT80%>",
-                PBVHT160:"<%=cfgs.PowerUpVHT160%>"
-            };
-            for(var k in pbObj){
-                pbValArr.push(pbObj[k].split(":"));
-            }
-            // Build Power Boost rows
-            for (var mIdx = 0; mIdx < modName.length; mIdx++){
-                row_txt = pbTableId.insertRow(pbTableId.rows.length - 2); //Last two rows are reserved for Apply button and Loading image
-                row_txt.id = "pb_text_row_hdng_" + modName[mIdx];
-                cell = row_txt.insertCell(-1);
-                cell.colSpan = rateName[modName[mIdx]].length;
-                cell.innerHTML = "<strong>" + modName[mIdx] + "</strong>";
-                cell.style.textAlign = "center";
-                if(!isPbEnabled){
-                    row_txt.style.display="none";
-                }
-                row_txt = pbTableId.insertRow(pbTableId.rows.length - 2);
-                row_inp = pbTableId.insertRow(pbTableId.rows.length - 2);
-                row_txt.id = "pb_text_row_sub_hdng_" + modName[mIdx];
-                row_inp.id = "pb_input_row_" + modName[mIdx];
-
-                for(var rIdx=0; rIdx < rateName[modName[mIdx]].length ; rIdx++){
-                    cell = row_txt.insertCell(-1);
-                    cell.innerHTML = rateName[modName[mIdx]][rIdx];
-                    cell = row_inp.insertCell(-1);
-                    inp = document.createElement("INPUT");
-                    inp.setAttribute("type", "text");
-                    inp.id = rateName[modName[mIdx]][rIdx];
-                    inp.value = (pbValArr[mIdx][rIdx] && pbValArr[mIdx][rIdx] != "") ? pbValArr[mIdx][rIdx] : "0";
-                    inp.size = 2;
-                    cell.appendChild(inp);
-                    if(!isPbEnabled){
-                        row_txt.style.display="none";
-                        row_inp.style.display="none";
-                        inp.disabled=true;
-                    }
-                }
-            }
-        }
-
-        function applyPowerBoostSettings(pbApplyBtn)
-        {
-            pbApplyBtn.disabled = true;
-            if(ValidatePowerBoost()){
-                var userPbSettingsWithDevName = {
-                    "__devname":"<%=devname%>",
-                    "PowerUpenable":document.getElementById("pbDisable").checked ? "0" : "1",
-                    "PowerUpCckOfdm":document.getElementById("PowerUpCckOfdm").value,
-                    "PowerUpHT20":document.getElementById("PowerUpHT20").value,
-                    "PowerUpHT40":document.getElementById("PowerUpHT40").value,
-                    "PowerUpVHT20":document.getElementById("PowerUpVHT20").value,
-                    "PowerUpVHT40":document.getElementById("PowerUpVHT40").value,
-                    "PowerUpVHT80":document.getElementById("PowerUpVHT80").value,
-                    "PowerUpVHT160":document.getElementById("PowerUpVHT160").value
-                };
-                var pbLodingRow = document.getElementById("__pbLoadingRow");
-                pbLodingRow.style.display = "";
-                (new XHR()).post("<%=luci.dispatcher.build_url("admin", "network", "wifi", "apply_power_boost_settings")%>",
-                    userPbSettingsWithDevName,
-                    function(x) {
-                        try{
-                            var res = JSON.parse(x.response);
-                            if(res["status"] == "SUCCESS"){
-                                alert("Power Boost Settings have been applied successfully.");
-                            }else{
-                                alert("Failed to apply Power Boost settings!\nError: "+res["status"]);
-                            }
-                        }
-                        catch(e){
-                                alert("Failed to apply Power Boost settings!\nError: Incorrect response received!");
-                        }
-                        finally{
-                            pbLodingRow.style.display = "none";
-                            pbApplyBtn.disabled = false;
-                        }
-                    }
-                );
-            }
-            else{
-                pbApplyBtn.disabled = false;
-            }
-        }
-    <% end %>
 
     function CountryCode_onchange(){
         var wMode = document.getElementById('WirelessMode').value;
@@ -634,7 +319,7 @@ function hi(to) {
             FR:[0,3,4,5,7,9,10,11,12,13,14,15,16,17,19,20,21,30,31,32,34,36,37],
             TW:[0,1,4,7,9,10,11,12,13,14,15,16,19,20,21,22,30,31,32,33,34,36,37],
             IE:[0,3,4,5,7,9,10,11,12,13,14,15,16,17,19,20,21,30,31,32,34,36,37],
-            CN:[12,13,14,15,37],
+            CN:[1,7,9,11,12,13,14,15,18,19,20,21,22,30,31,32,33,36,37],
             NONE:[]
         };
         document.getElementById("__cRegionMsg").innerHTML = "";
@@ -855,16 +540,18 @@ function hi(to) {
 
         initList(select, list, ch2, "channel");
 
-        if (select.length > 0)
+        if (select.length > 0) {
+            document.getElementById("VHT_Sec80_Channel_TR").style.display = "";
             select.disabled = false;
-        else
-            alert("[Warning] No 80Mhz Second VHT Channels are available as per selected Channel "+ch+" and CountryRegion "+cr+" !");
+        }
     }
 
     function get5G2nd80MhzChannelList(bw, ch) {
+        document.getElementById("VHT_Sec80_Channel_TR").style.display = "none";
         var ch_5g_2nd = document.getElementById('VHT_Sec80_Channel');
 
         ch_5g_2nd.disabled = true;
+        
 
         if (ch == "0")
             return;
@@ -897,13 +584,15 @@ function hi(to) {
 
         initList(select, list, ch2, "val");
 
-        if (select.length > 0)
+        if (select.length > 0) {
+            document.getElementById("HT_EXTCHA_TR").style.display = "";
             select.disabled = false;
-        else
-            alert("[Warning] No 40MHz HT Extended Channels are available as per selected Channel "+ch+" and CountryRegion "+cr+" !");
+        }
     }
 
     function getHTExtChannel(bw, ch) {
+        document.getElementById("HT_EXTCHA_TR").style.display = "none";
+
         var ch_2g_ext = document.getElementById('HT_EXTCHA');
 
         ch_2g_ext.disabled = true;
@@ -1090,11 +779,6 @@ function hi(to) {
         if( !ValidateAdvancedSettings() ){
             return false;
         }
-        <% if dev.isPowerBoostSupported then%>
-            if( !ValidatePowerBoost() ){
-                return false;
-            }
-        <% end %>
         return true;
     }
 
@@ -1133,9 +817,6 @@ function hi(to) {
         var cr = GetCountryRegion(mode);
         getCountryRegionList(mode, cr);
         get_apply_status();
-        <% if dev.isPowerBoostSupported then%>
-            initPowerBoost();
-        <% end %>
     }
 
 </script>

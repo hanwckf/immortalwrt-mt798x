@@ -55,19 +55,19 @@ typedef struct _RT_802_11_MAC_TABLE {
 	RT_802_11_MAC_ENTRY      Entry[MAX_NUMBER_OF_MAC];
 } RT_802_11_MAC_TABLE;
 
-#define IF_NAMESIZE	 16
-#define SIOCIWFIRSTPRIV	0x8BE0
+#define IF_NAMESIZE			16
+#define SIOCIWFIRSTPRIV			0x8BE0
 #define RT_PRIV_IOCTL				(SIOCIWFIRSTPRIV + 0x0E)
-
 #define RTPRIV_IOCTL_GET_MAC_TABLE_STRUCT	(SIOCIWFIRSTPRIV + 0x1F)
-
-#define OID_GET_WMODE	0x099E
-#define RTPRIV_IOCTL_GSITESURVEY                                        (SIOCIWFIRSTPRIV + 0x0D)
+#define RTPRIV_IOCTL_GSITESURVEY		(SIOCIWFIRSTPRIV + 0x0D)
+#define OID_GET_WMODE			0x099E
+#define OID_GET_CPU_TEMPERATURE		0x09A1
 
 int get_macaddr(lua_State *L);
 int convert_string_display(lua_State *L);
 int StaInfo(lua_State *L);
 int getWMOde(lua_State *L);
+int getTempature(lua_State *L);
 int scanResult(lua_State *L);
 
 int luaopen_ioctl_helper(lua_State *L)
@@ -76,6 +76,7 @@ int luaopen_ioctl_helper(lua_State *L)
 	lua_register(L,"c_convert_string_display",convert_string_display);
 	lua_register(L,"c_StaInfo",StaInfo);
 	lua_register(L,"c_getWMode",getWMOde);
+	lua_register(L,"c_getTempature",getTempature);
 	lua_register(L,"c_scanResult",scanResult);
 	return 0;
 }
@@ -122,6 +123,41 @@ int scanResult(lua_State *L)
 	return 1;
 }
 
+static unsigned int get_temp(const char *interface)
+{
+	int socket_id;
+	struct iwreq wrq;
+	unsigned int tempature = 0;
+	socket_id = socket(AF_INET, SOCK_DGRAM, 0);
+	if (socket_id < 0) {
+		perror("socket() failed");
+		return socket_id;
+	}
+
+	snprintf(wrq.ifr_name, sizeof(wrq.ifr_name), "%s", interface);
+	wrq.u.data.length = sizeof(tempature);
+	wrq.u.data.pointer = &tempature;
+	wrq.u.data.flags = OID_GET_CPU_TEMPERATURE;
+	if( ioctl(socket_id, RT_PRIV_IOCTL, &wrq) == -1)
+		fprintf(stderr, "%s: ioctl fail\n", __func__);
+	close(socket_id);
+
+	return tempature;
+}
+
+int getTempature(lua_State *L)
+{
+	char tempstr[5] = {0};
+	const char *interface = luaL_checkstring(L, 1);
+	snprintf(tempstr, sizeof(tempstr), "%d", get_temp(interface));
+	lua_newtable(L);
+	lua_pushstring(L, "tempature");  /* push key */
+	lua_pushstring(L, tempstr);  /* push value */
+	lua_settable(L, -3);
+	/* Returning one table which is already on top of Lua stack. */
+	return 1;
+}
+
 static unsigned int get_w_mode(const char *interface)
 {
 	int socket_id;
@@ -135,7 +171,7 @@ static unsigned int get_w_mode(const char *interface)
 
 	snprintf(wrq.ifr_name, sizeof(wrq.ifr_name), "%s", interface);
 	wrq.u.data.length = sizeof(data);
-	wrq.u.data.pointer = (caddr_t) &data;
+	wrq.u.data.pointer = &data;
 	wrq.u.data.flags = OID_GET_WMODE;
 	if( ioctl(socket_id, RT_PRIV_IOCTL, &wrq) == -1)
 		fprintf(stderr, "%s: ioctl fail\n", __func__);

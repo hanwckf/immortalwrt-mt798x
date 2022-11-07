@@ -1381,34 +1381,32 @@ function mtkwifi.get_all_devs()
             devs[i].vifs = mtkwifi.__setup_vifs(cfgs, devname, devs[i].mainidx, devs[i].subidx)
             devs[i].apcli = mtkwifi.__setup_apcli(cfgs, devname, devs[i].mainidx, devs[i].subidx)
 
-            if mtkwifi.exists("cat /etc/wireless/"..devs[i].maindev.."/version") then
-                local version = mtkwifi.read_pipe("cat /etc/wireless/"..devs[i].maindev.."/version 2>/dev/null")
-                devs[i].version = (type(version) == "string" and version ~= "") and version or "Unknown: Empty version file!"
-            else
-                local vif_name = nil
-                if devs[i].apcli and devs[i].apcli["state"] == "up" then
-                    vif_name = devs[i].apcli["vifname"]
-                elseif devs[i].vifs then
-                    for _,vif in ipairs(devs[i].vifs) do
-                        if vif["state"] == "up" then
-                            vif_name = vif["vifname"]
-                            break
-                        end
+            local vif_name = nil
+            if devs[i].apcli and devs[i].apcli["state"] == "up" then
+                vif_name = devs[i].apcli["vifname"]
+            elseif devs[i].vifs then
+                for _,vif in ipairs(devs[i].vifs) do
+                    if vif["state"] == "up" then
+                        vif_name = vif["vifname"]
+                        break
                     end
                 end
-                if not vif_name then
-                    if tonumber(cfgs.BssidNum) >= 1 then
-                        devs[i].version = "Enable an interface to get the driver version."
-                    elseif devs[i].apcli and devs[i].apcli["state"] ~= "up" then
-                        devs[i].version = "Enable ApCli interface i.e. "..devs[i].apcli["vifname"].." to get the driver version."
-                    else
-                        devs[i].version = "Add an interface to get the driver version."
-                    end
+            end
+            if not vif_name then
+                if tonumber(cfgs.BssidNum) >= 1 then
+                    errmsg = "Enable an interface to get information."
+                elseif devs[i].apcli and devs[i].apcli["state"] ~= "up" then
+                    errmsg = "Enable ApCli interface i.e. "..devs[i].apcli["vifname"].." to get information."
                 else
-                    local version = mtkwifi.read_pipe("iwpriv "..vif_name.." get_driverinfo")
-                    version = version and version:match("Driver version: (.-)\n") or ""
-                    devs[i].version = version ~= "" and version or "Unknown: Incorrect response from version command!"
+                    errmsg = "Add an interface to get information."
                 end
+                devs[i].version = errmsg
+                devs[i].tempature = errmsg
+            else
+                local version = mtkwifi.read_pipe("iwpriv "..vif_name.." get_driverinfo")
+                version = version and version:match("Driver version: (.-)\n") or ""
+                devs[i].version = version ~= "" and version or "Unknown: Incorrect response from version command!"
+                devs[i].tempature = c_getTempature(vif_name)['tempature']
             end
 
             -- Setup reverse indices by devname

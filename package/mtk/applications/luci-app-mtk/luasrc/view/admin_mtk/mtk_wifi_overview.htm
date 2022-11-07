@@ -56,7 +56,8 @@ local chipname
                                         <span style="color:red;">* FATAL ERROR: Incorrect Profile Settings</span>
                                     <%end%>
                                     <br>
-                                    <span> Driver version: <%=dev.version%></span>
+                                    <span> Driver version: <%=dev.version%> <br/></span>
+                                    <span> Tempature: <%=dev.tempature%>&#176;</span>
                                 </td>
                                 <td style="width:310px;text-align:left">
                                     <div id="ActionBtns_<%=string.split(dev.devname,".")[1]%>">
@@ -77,6 +78,8 @@ local chipname
                                         <span style="color:red;">* need reload to apply changes</span>
                                     <%end%>
                                 <br>
+                                <%local cfgs = mtkwifi.load_profile(dev.profile)%>
+                                <span> Current Band: <%=mtkwifi.band(string.split(cfgs.WirelessMode,";")[1])%> <br/> </span>
                                 <span> Work mode: <% if dev.ApCliEnable == "1" then %> APCli <% else %> AP <% end %></span>
                             </td>
                             <td style="width:310px;text-align:right">
