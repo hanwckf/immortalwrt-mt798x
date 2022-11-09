@@ -33,20 +33,14 @@ end
 
 local cfgs = mtkwifi.load_profile(dev.profile)
 local diff = mtkwifi.diff_profile(dev.profile)
-local WscValue = mtkwifi.token_get(cfgs["WscConfMode"], vifidx, "0") or "0"
-local appliedWscValue = diff["WscConfMode"] and mtkwifi.token_get(diff["WscConfMode"][2], vifidx) or nil
-
-local map_cfgs
-local first_card_cfgs = mtkwifi.load_profile(mtkwifi.detect_first_card())
-local appliedMapModeDiff
 
 local AuthModes = {}
 local EncryptionTypeLists = {}
 if string.split(cfgs.WirelessMode,";")[1] == "18" then
-    AuthModes = (WscValue == "0") and dev.AuthModeList_6G or dev.WpsEnableAuthModeList_6G
+    AuthModes = dev.AuthModeList_6G
     EncryptionTypeLists = dev.EncryptionTypeList_6G
 else
-    AuthModes = (WscValue == "0") and dev.AuthModeList or dev.WpsEnableAuthModeList
+    AuthModes = dev.AuthModeList
     EncryptionTypeLists = dev.EncryptionTypeList
 end
 %>
@@ -54,10 +48,7 @@ end
 <script type="text/javascript" src="<%=resource%>/cbi.js?v=git-17.250.41546-90ac861"></script>
 <script type="text/javascript">
 
-var refreshWpsTimerId;
-var refreshWpsAjaxFlag = false;
-
-function hi(to, WPS_state, devname, vifname)
+function hi(to, devname, vifname)
 {
     var a;
     var x;
@@ -66,18 +57,7 @@ function hi(to, WPS_state, devname, vifname)
     <% if string.split(cfgs.WirelessMode,";")[1] == "16" or string.split(cfgs.WirelessMode,";")[1] == "17" or string.split(cfgs.WirelessMode,";")[1] == "18" then %>
         tables.push("vif-cfg-he_mu");
     <% end %>
-    tables.push("vif-cfg-WPS");
-    tables.push("vif-cfg-WPS-Summary");
     tables.push("vif-cfg-basic-AC");
-    <% if map_cfgs then %>
-        <% if (not dev.wdsBand or dev.wdsBand == dev.dbdcBandName) and first_card_cfgs.MapMode ~= "1" then %>
-            tables.push("vif-cfg-wds");
-        <% end %>
-    <% else %>
-        <% if not dev.wdsBand or dev.wdsBand == dev.dbdcBandName then %>
-            tables.push("vif-cfg-wds");
-        <% end %>
-    <% end %>
 
     <% if request[4] == "vif_cfg_view" then%>
         tables.push("vif-cfg-station");
@@ -88,24 +68,8 @@ function hi(to, WPS_state, devname, vifname)
     <% if string.split(cfgs.WirelessMode,";")[1] == "16" or string.split(cfgs.WirelessMode,";")[1] == "17" or string.split(cfgs.WirelessMode,";")[1] == "18" then %>
         tabs.push("vif-cfg-tab-he_mu");
     <% end %>
-    tabs.push("vif-cfg-tab-WPS");
-    <% if map_cfgs then %>
-        <% if (not dev.wdsBand or dev.wdsBand == dev.dbdcBandName) and first_card_cfgs.MapMode ~= "1" then %>
-            tabs.push("vif-cfg-tab-wds");
-        <% end %>
-    <% else %>
-        <% if not dev.wdsBand or dev.wdsBand == dev.dbdcBandName then %>
-            tabs.push("vif-cfg-tab-wds");
-        <% end %>
-    <% end %>
-    <% if map_cfgs then %>
-        <% if request[4] == "vif_cfg_view" and cfgs.MapMode == "0" then%>
-            tabs.push("vif-cfg-tab-station");
-        <% end %>
-    <% else %>
-        <% if request[4] == "vif_cfg_view" then%>
-            tabs.push("vif-cfg-tab-station");
-        <% end %>
+    <% if request[4] == "vif_cfg_view" then%>
+        tabs.push("vif-cfg-tab-station");
     <% end %>
 
     document.getElementById("__activeTab").value = to;
@@ -135,16 +99,6 @@ function hi(to, WPS_state, devname, vifname)
         }
     }
 
-    <%if (tostring(mtkwifi.__any_wsc_enabled(WscValue)) == "1") and (not appliedWscValue or (WscValue == appliedWscValue)) then%>
-        //Clear WPS refresh timer
-        WPS_deInit();
-        if(to == "WPS"){
-            checkSecurity(devname, vifname);
-            wpsGetPinCode(vifname);
-            WPS_init(devname, vifname, 1000);
-        }
-    <%end%>
-
     <% if request[4] == "vif_cfg_view" then%>
         //Clear station list timer
         XHR.halt();
@@ -156,7 +110,7 @@ function hi(to, WPS_state, devname, vifname)
 
 </script>
 
-<form method="post" name="cbi" action="<%=luci.dispatcher.build_url("admin", "network", "wifi", "vif_cfg", devname, vifname)%>" enctype="multipart/form-data" onsubmit="return validate_all('<%=vifidx%>','<%=cfgs["HT_DisallowTKIP"]%>') && chk_WPS_ACL('<%=tostring(mtkwifi.__any_wsc_enabled(WscValue)) %>')" autocomplete="off">
+<form method="post" name="cbi" action="<%=luci.dispatcher.build_url("admin", "network", "wifi", "vif_cfg", devname, vifname)%>" enctype="multipart/form-data" onsubmit="return validate_all('<%=vifidx%>','<%=cfgs["HT_DisallowTKIP"]%>')" autocomplete="off">
 <% if not dev or not vif then%>
     <fieldset class="cbi-section">
         <legend>Interface Not Exist - <%=vifname and devname.."@"..vifname or devname%>
@@ -182,41 +136,17 @@ function hi(to, WPS_state, devname, vifname)
         </div>
         <ul class="cbi-tabmenu">
             <li class="cbi-tab" id="vif-cfg-tab-basic">
-                <a href="javascript:hi('basic', <%="'"..WscValue.."', '"..devname.."', '"..vifname.."'"%>);this.blur(); ">Basic</a>
+                <a href="javascript:hi('basic', <%="'"..devname.."', '"..vifname.."'"%>);this.blur(); ">Basic</a>
             </li>
             <% if string.split(cfgs.WirelessMode,";")[1] == "16" or string.split(cfgs.WirelessMode,";")[1] == "17" or string.split(cfgs.WirelessMode,";")[1] == "18" then %>
                 <li class="cbi-tab-disabled" id="vif-cfg-tab-he_mu">
-                    <a href="javascript:hi('he_mu', <%="'"..WscValue.."', '"..devname.."', '"..vifname.."'"%>);this.blur(); ">HE_MU</a>
+                    <a href="javascript:hi('he_mu', <%="'"..devname.."', '"..vifname.."'"%>);this.blur(); ">HE_MU</a>
                 </li>
             <% end %>
-            <li class="cbi-tab-disabled" id="vif-cfg-tab-WPS">
-                <a href="javascript:hi('WPS', <%="'"..WscValue.."', '"..devname.."', '"..vifname.."'"%>);this.blur(); ">WPS</a>
-            </li>
-            <% if map_cfgs then %>
-                <% if (not dev.wdsBand or dev.wdsBand == dev.dbdcBandName) and first_card_cfgs.MapMode ~= "1" then %>
-                    <li class="cbi-tab-disabled" id="vif-cfg-tab-wds">
-                        <a href="javascript:hi('wds');this.blur(); ">WDS</a>
-                    </li>
-                <% end %>
-            <% else %>
-                <% if (not dev.wdsBand or dev.wdsBand == dev.dbdcBandName) then %>
-                    <li class="cbi-tab-disabled" id="vif-cfg-tab-wds">
-                        <a href="javascript:hi('wds');this.blur(); ">WDS</a>
-                    </li>
-                <% end %>
-            <% end %>
-            <% if map_cfgs then %>
-                <% if request[4] == "vif_cfg_view" and cfgs.MapMode == "0" then%>
-                    <li class="cbi-tab-disabled" id="vif-cfg-tab-station">
-                        <a href="javascript:hi('station', <%="'"..WscValue.."', '"..devname.."', '"..vifname.."'"%>);this.blur(); ">Stations</a>
-                    </li>
-                <% end %>
-            <% else %>
-                <% if request[4] == "vif_cfg_view" then%>
-                    <li class="cbi-tab-disabled" id="vif-cfg-tab-station">
-                        <a href="javascript:hi('station', <%="'"..WscValue.."', '"..devname.."', '"..vifname.."'"%>);this.blur(); ">Stations</a>
-                    </li>
-                <% end %>
+            <% if request[4] == "vif_cfg_view" then%>
+                <li class="cbi-tab-disabled" id="vif-cfg-tab-station">
+                    <a href="javascript:hi('station', <%="'"..devname.."', '"..vifname.."'"%>);this.blur(); ">Stations</a>
+                </li>
             <% end %>
         </ul>
         <input type="hidden" name="__activeTab" id="__activeTab" value="basic">
@@ -230,43 +160,6 @@ function hi(to, WPS_state, devname, vifname)
                     <td></td>
                 </tr>
             </thead>
-            <tbody id="EASY_MESH_VIF_SETTINGS_TBODY" style="display:none">
-                <tr>
-                    <td>SSID</td>
-                    <td>
-                        <span id="EASY_MESH_SSID_SPAN"></span>
-                    </td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td>Auth Mode</td>
-                    <td>
-                        <span id="EASY_MESH_AUTH_MODE_SPAN"></span>
-                    </td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td>Encryption</td>
-                    <td>
-                        <span id="EASY_MESH_ENCRYPTION_SPAN"></span>
-                    </td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td>Pass-phrase</td>
-                    <td>
-                        <span id="EASY_MESH_PASS_PHRASE_SPAN"></span>
-                    </td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td>Hidden</td>
-                    <td>
-                        <span id="EASY_MESH_IS_HIDDEN_SSID_SPAN"></span>
-                    </td>
-                    <td></td>
-                </tr>
-            </tbody>
             <tbody id="VIF_CFG_BASIC_SETTINGS">
                 <tr>
                     <td>SSID</td>
@@ -606,15 +499,6 @@ function hi(to, WPS_state, devname, vifname)
                     </td>
                     <td></td>
                 </tr>
-                <tbody id="EASY_MESH_DEV_SETTINGS_TBODY" style="display:none">
-                    <tr>
-                        <td>Mode</td>
-                        <td>
-                            <span id="EASY_MESH_WMODE_SPAN"></span>
-                        </td>
-                        <td></td>
-                    </tr>
-                </tbody>
                 <tbody id="DEV_CFG_BASIC_SETTINGS">
                     <tr>
                         <td>Mode</td>
@@ -788,284 +672,6 @@ function hi(to, WPS_state, devname, vifname)
                 </tr>
             </table>
         <% end %>
-        
-        <table class="cbi-section-table" id="vif-cfg-WPS" name="vif-cfg-WPS" style="display:none">
-            <tr>
-                <td clss="head" id="WPS_text">
-                    WPS
-                </td>
-                <td>
-                    <input type="radio" name="WPSRadio" id="WPSRadioOn" value="1" <% if tostring(mtkwifi.__any_wsc_enabled(WscValue)) == "1"  then %> checked="checked"<% end %>/> Enable
-                    <input type="radio" name="WPSRadio" id="WPSRadioOff" value="0" <% if tostring(mtkwifi.__any_wsc_enabled(WscValue)) == "0" then %> checked="checked"<% end %>/> Disable
-                </td>
-
-            </tr>
-        </table>
-
-        <table class="cbi-section-table" id="vif-cfg-WPS-Summary" name="vif-cfg-WPS-Summary" border="1" cellpadding="2" cellspacing="1" width="90%" style="display:none">
-            <tbody>
-                <%if tostring(mtkwifi.__any_wsc_enabled(WscValue)) == "1" then%>
-                    <% if not appliedWscValue or (WscValue == appliedWscValue) then%>
-                        <!-- =================  WPS Summary  ================= -->
-
-                        <tr>
-                          <td class="head" id="wpsConfigured_text">WPS Configured: </td>
-                          <td> <span id="WPSConfigured"> </span> </td>
-                        </tr>
-
-                        <tr>
-                          <td class="head" id="wpsSSID_text">WPS SSID: </td>
-                          <td> <span id="WPSSSID"> </span> </td>
-                        </tr>
-
-                        <tr>
-                          <td class="head" id="wpsAuthMode_text">WPS Auth Mode: </td>
-                          <td> <span id="WPSAuthMode"> </span> </td>
-                        </tr>
-
-                        <tr>
-                          <td class="head" id="wpsEncrypType_text">WPS Encryp Type: </td>
-                          <td> <span id="WPSEncryptype"> </span> </td>
-                        </tr>
-
-                        <tr>
-                          <td class="head">WPS Key: </span></td>
-                          <td> <span id="WPSWPAKey"> </span> </td>
-                        </tr>
-
-                        <% if map_cfgs then %>
-                            <% if cfgs.MapMode == "0" then %>
-                                <tr>
-                                    <td class="head" id="wpsAPPIN_text">AP PIN:
-                                    </td>
-                                    <td> <!--exec cmd="web 2860 wifi wpsPINCode"-->
-                                        <input name="PINCode" id="PINCode" value='<%=cfgs.WscVendorPinCode%>' size="10" maxLength="9">
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td class="head" id="wpsAPPIN_text">AP PIN Action:
-                                    </td>
-                                    <td>
-                                        <input class="cbi-button cbi-button-apply" type="button" value="Random New PINCode" id="GenPIN" name="GenPIN" onClick="wpsGenPinCode('<%=vifname%>', '<%=devname%>')" >
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td>Reset Parameters</td>
-                                    <td>
-                                        <input class="cbi-button cbi-button-apply" type="button" value="Reset OOB" id="wpsResetOOB_text" name="submitResetOOB" align="left" onClick="wpsResetOOB('<%=vifname%>', '<%=devname%>')" >
-                                    </td>
-                                </tr>
-                            <% end %>
-                        <% else %>
-                                <tr>
-                                    <td class="head" id="wpsAPPIN_text">AP PIN:
-                                    </td>
-                                    <td> <!--exec cmd="web 2860 wifi wpsPINCode"-->
-                                        <input name="PINCode" id="PINCode" value='<%=cfgs.WscVendorPinCode%>' size="10" maxLength="9">
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td class="head" id="wpsAPPIN_text">AP PIN Action:
-                                    </td>
-                                    <td>
-                                        <input class="cbi-button cbi-button-apply" type="button" value="Random New PINCode" id="GenPIN" name="GenPIN" onClick="wpsGenPinCode('<%=vifname%>', '<%=devname%>')" >
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td>Reset Parameters</td>
-                                    <td>
-                                        <input class="cbi-button cbi-button-apply" type="button" value="Reset OOB" id="wpsResetOOB_text" name="submitResetOOB" align="left" onClick="wpsResetOOB('<%=vifname%>', '<%=devname%>')" >
-                                    </td>
-                                </tr>
-                        <% end %>
-
-                        <tr>
-                            <td class="head" id="wpsMode_text">WPS mode</td>
-                            <td>
-                                <input name="PINPBCRadio" id="PINRadio" value="1" type="radio" checked onClick="onPINPBCRadioClick(1)"><font id="wpsPINMode_text">PIN &nbsp;</font>
-                                <input name="PINPBCRadio" id="PBCRadio" value="2" type="radio" onClick="onPINPBCRadioClick(2)"><font id="wpsPBCMode_text">PBC &nbsp;</font>
-                            </td>
-                        </tr>
-
-                        <tr id="PINRow" style="display: table-row;">
-                            <td class="head" id="wpsPINNum_text">PIN</td>
-                            <td>
-                                <input value="" name="PIN" id="PIN" size="10" maxlength="10" type="text">
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td>
-                                WPS Action
-                            </td>
-                            <td>
-                                <input class="cbi-button cbi-button-apply" type="button" value="Connect" id="wpsPINApply_text" name="submitWPS" align="left" onClick="wpsStart('<%=vifname%>', '<%=devname%>');" disabled="disabled" />
-                            </td>
-                        </tr>
-                        <!-- =======================  WPS Info Bar  ======================= -->
-                        <tr>
-                          <td class="head" id="wpsCurrentStatus_text">WPS Current Status: </td>
-                          <td>
-                             <span id="WPSCurrentStatus"> </span>
-                          </td>
-                        </tr>
-
-                        <tr>
-                            <td class="title" id="wpsStatus_text">WPS Status</td>
-                            <td>
-                                <textarea name="WPSInfo" id="WPSInfo" cols="55" rows="2" wrap="off" readonly="1"></textarea>
-                            </td>
-                        </tr>
-                    <% else %>
-                        <tr>
-                            <td class="alert-message" colspan="2">
-                                <strong>
-                                    Other WPS related settings will be displayed only after applying the saved WPS settings.<br />
-                                    Please click on <em>Save and Apply</em> button to apply the saved WPS settings.
-                                </strong>
-                            </td>
-                        </tr>
-                    <% end %>
-                <% end %>
-            </tbody>
-        </table>
-
-        <% if not dev.wdsBand or dev.wdsBand == dev.dbdcBandName then %>
-            <table class="cbi-section-table" id="vif-cfg-wds" style="display:none">
-                <tr><th></th><td></td><td></td></tr>
-                <tr>
-                    <td>WDS Mode</td>
-                    <td>
-                        <select name="__wdsenable" id="WdsEnable" size="1" onchange="WdsModeOnChange(this.value)">
-                            <option value="0"<% if vif.__wdsenable == "0" then %> selected="selected"<% end %>>Disable</option>
-                            <option value="4"<% if vif.__wdsenable == "4" then %> selected="selected"<% end %>>Lazy Mode</option>
-                            <option value="2"<% if vif.__wdsenable == "2" then %> selected="selected"<% end %>>Bridge Mode</option>
-                            <option value="3"<% if vif.__wdsenable == "3" then %> selected="selected"<% end %>>Repeater Mode</option>
-                        </select>
-                    </td>
-                    <td></td>
-                </tr>
-                <tr id="row-wds-phy-mode" <% if not cfgs.WdsEnable or vif.__wdsenable == "0" then %> style="display:none" <% end %>>
-                    <td>Phy Mode</td>
-                    <td>
-                        <select name="WdsPhyMode" id="WdsPhyMode" size="1" <% if not cfgs.WdsEnable or vif.__wdsenable == "0" then %> disabled <% end %>>
-                            <% _wdsPhyMode=cfgs.WdsPhyMode and cfgs.WdsPhyMode:upper() %>
-                            <% if mtkwifi.band(vif.__wirelessmode or string.split(cfgs.WirelessMode,";")[1]) == "2.4G" then %>
-                                <option value="CCK;CCK;CCK;CCK"<% if _wdsPhyMode == "CCK;CCK;CCK;CCK" then %> selected="selected"<% end %>>CCK</option>
-                            <% end %>
-                            <option value="OFDM;OFDM;OFDM;OFDM"<% if _wdsPhyMode == "OFDM;OFDM;OFDM;OFDM" then %> selected="selected"<% end %>>OFDM</option>
-                            <option value="HTMIX;HTMIX;HTMIX;HTMIX"<% if _wdsPhyMode == "HTMIX;HTMIX;HTMIX;HTMIX" then %> selected="selected"<% end %>>HTMIX</option>
-                            <option value="GREENFIELD;GREENFIELD;GREENFIELD;GREENFIELD"<% if _wdsPhyMode == "GREENFIELD;GREENFIELD;GREENFIELD;GREENFIELD" then %> selected="selected"<% end %>>GREENFIELD</option>
-                            <option value="VHT;VHT;VHT;VHT"<% if _wdsPhyMode == "VHT;VHT;VHT;VHT" then %> selected="selected"<% end %>>VHT</option>
-                            <option value="HE;HE;HE;HE"<% if _wdsPhyMode == "HE;HE;HE;HE" then %> selected="selected"<% end %>>HE</option>
-                        </select>
-                    </td>
-                    <td><span id="__wdsPhyModeMsg"></span></td>
-                </tr>
-                <tr id="row-wds-enc-type0" <% if not cfgs.WdsEnable or vif.__wdsenable == "0" then %> style="display:none" <% end %>>
-                    <td>EncrypType</td>
-                    <td>
-                        <select name="__wds_encryp_type0" id="__wds_encryp_type0" size="1" onchange="WdsSecurityOnChange(0,this.value)" <% if not cfgs.WdsEnable or vif.__wdsenable == "0" then %> disabled <% end %>>
-                            <% _wdsEncType=cfgs.WdsEncrypType and cfgs.WdsEncrypType:upper():match("^(%a+)") %>
-                            <option value="NONE"<% if _wdsEncType == "NONE" then %> selected="selected"<% end %>>NONE</option>
-                            <option value="WEP"<% if _wdsEncType == "WEP" then %> selected="selected"<% end %>>WEP</option>
-                            <option value="TKIP"<% if _wdsEncType == "TKIP" then %> selected="selected"<% end %>>TKIP</option>
-                            <option value="AES"<% if _wdsEncType == "AES" then %> selected="selected"<% end %>>AES</option>
-                        </select>
-                    </td>
-                    <td></td>
-                </tr>
-                <tr id="row-wds-enc-key0" <% if not cfgs.WdsEnable or vif.__wdsenable == "0" then %> style="display:none" <% end %>>
-                    <td>Encryp Key</td>
-                    <td><input type="text" id="Wds0Key" name="Wds0Key" size=28 maxlength=64 value="<%=cfgs.Wds0Key%>" <% if not cfgs.WdsEnable or vif.__wdsenable == "0" or not _wdsEncType or _wdsEncType == "NONE" then %> disabled <% end %>></td>
-                    <td></td>
-                </tr>
-                <tr id="row-wds-enc-type1" <% if not cfgs.WdsEnable or vif.__wdsenable == "0" then %> style="display:none" <% end %>>
-                    <td>EncrypType</td>
-                    <td>
-                        <select name="__wds_encryp_type1" id="__wds_encryp_type1" size="1" onchange="WdsSecurityOnChange(1,this.value)" <% if not cfgs.WdsEnable or vif.__wdsenable == "0" then %> disabled <% end %>>
-                            <% _wdsEncType=cfgs.WdsEncrypType and cfgs.WdsEncrypType:upper():match("^%a+;(%a+)") %>
-                            <option value="NONE"<% if _wdsEncType == "NONE" then %> selected="selected"<% end %>>NONE</option>
-                            <option value="WEP"<% if _wdsEncType == "WEP" then %> selected="selected"<% end %>>WEP</option>
-                            <option value="TKIP"<% if _wdsEncType == "TKIP" then %> selected="selected"<% end %>>TKIP</option>
-                            <option value="AES"<% if _wdsEncType == "AES" then %> selected="selected"<% end %>>AES</option>
-                        </select>
-                    <td>
-                    <td></td>
-                </tr>
-                <tr id="row-wds-enc-key1" <% if not cfgs.WdsEnable or vif.__wdsenable == "0" then %> style="display:none" <% end %>>
-                    <td>Encryp Key</td>
-                    <td><input type="text" id="Wds1Key" name="Wds1Key" size=28 maxlength=64 value="<%=cfgs.Wds1Key%>" <% if not cfgs.WdsEnable or vif.__wdsenable == "0" or not _wdsEncType or _wdsEncType == "NONE" then %> disabled <% end %>></td>
-                    <td></td>
-                </tr>
-                <tr id="row-wds-enc-type2" <% if not cfgs.WdsEnable or vif.__wdsenable == "0" then %> style="display:none" <% end %>>
-                    <td>EncrypType</td>
-                    <td>
-                        <select name="__wds_encryp_type2" id="__wds_encryp_type2" size="1" onchange="WdsSecurityOnChange(2,this.value)" <% if not cfgs.WdsEnable or vif.__wdsenable == "0" then %> disabled <% end %>>
-                            <% _wdsEncType=cfgs.WdsEncrypType and cfgs.WdsEncrypType:upper():match("^%a+;%a+;(%a+)") %>
-                            <option value="NONE"<% if _wdsEncType == "NONE" then %> selected="selected"<% end %>>NONE</option>
-                            <option value="WEP"<% if _wdsEncType == "WEP" then %> selected="selected"<% end %>>WEP</option>
-                            <option value="TKIP"<% if _wdsEncType == "TKIP" then %> selected="selected"<% end %>>TKIP</option>
-                            <option value="AES"<% if _wdsEncType == "AES" then %> selected="selected"<% end %>>AES</option>
-                        </select>
-                    <td>
-                    <td></td>
-                </tr>
-                <tr id="row-wds-enc-key2" <% if not cfgs.WdsEnable or vif.__wdsenable == "0" then %> style="display:none" <% end %>>
-                    <td>Encryp Key</td>
-                    <td><input type="text" id="Wds2Key" name="Wds2Key" size=28 maxlength=64 value="<%=cfgs.Wds2Key%>" <% if not cfgs.WdsEnable or vif.__wdsenable == "0" or not _wdsEncType or _wdsEncType == "NONE" then %> disabled <% end %>></td>
-                    <td></td>
-                </tr>
-                <tr id="row-wds-enc-type3" <% if not cfgs.WdsEnable or vif.__wdsenable == "0" then %> style="display:none" <% end %>>
-                    <td>EncrypType</td>
-                    <td>
-                        <select name="__wds_encryp_type3" id="__wds_encryp_type3" size="1" onchange="WdsSecurityOnChange(3,this.value)" <% if not cfgs.WdsEnable or vif.__wdsenable == "0" then %> disabled <% end %>>
-                            <% _wdsEncType=cfgs.WdsEncrypType and cfgs.WdsEncrypType:upper():match("^%a+;%a+;%a+;(%a+)") %>
-                            <option value="NONE"<% if _wdsEncType == "NONE" then %> selected="selected"<% end %>>NONE</option>
-                            <option value="WEP"<% if _wdsEncType == "WEP" then %> selected="selected"<% end %>>WEP</option>
-                            <option value="TKIP"<% if _wdsEncType == "TKIP" then %> selected="selected"<% end %>>TKIP</option>
-                            <option value="AES"<% if _wdsEncType == "AES" then %> selected="selected"<% end %>>AES</option>
-                        </select>
-                    <td>
-                    <td></td>
-                </tr>
-                <tr id="row-wds-enc-key3" <% if not cfgs.WdsEnable or vif.__wdsenable == "0" then %> style="display:none" <% end %>>
-                    <td>Encryp Key</td>
-                    <td><input type="text" id="Wds3Key" name="Wds3Key" size=28 maxlength=64 value="<%=cfgs.Wds3Key%>" <% if not cfgs.WdsEnable or vif.__wdsenable == "0" or not _wdsEncType or _wdsEncType == "NONE" then %> disabled <% end %>></td>
-                    <td></td>
-                </tr>
-                <input type="hidden" id="WdsEncrypType" name="WdsEncrypType" value="<%=cfgs.WdsEncrypType%>">
-                <tr id="row-wds-ap-mac-addr0" <% if not cfgs.WdsEnable or vif.__wdsenable == "0" or cfgs.WdsEnable == "4" then %> style="display:none" <% end %>>
-                    <td>AP MAC Address</td>
-                    <% _wdsMac=cfgs.WdsList and cfgs.WdsList:match("^([%x:]+)") %>
-                    <td><input type="text" id="__wds_mac_0" name="__wds_mac_0" size=20 maxlength=17 value="<%=_wdsMac%>" <% if not cfgs.WdsEnable or vif.__wdsenable == "0" or cfgs.WdsEnable == "4" then %> disabled <% end %>></td>
-                    <td></td>
-                </tr>
-                <tr id="row-wds-ap-mac-addr1" <% if not cfgs.WdsEnable or vif.__wdsenable == "0" or cfgs.WdsEnable == "4" then %> style="display:none" <% end %>>
-                    <td>AP MAC Address</td>
-                    <% _wdsMac=cfgs.WdsList and cfgs.WdsList:match("^[%x:]+;([%x:]+)") %>
-                    <td><input type="text" id="__wds_mac_1" name="__wds_mac_1" size=20 maxlength=17 value="<%=_wdsMac%>" <% if not cfgs.WdsEnable or vif.__wdsenable == "0" or cfgs.WdsEnable == "4" then %> disabled <% end %>></td>
-                    <td></td>
-                </tr>
-                <tr id="row-wds-ap-mac-addr2" <% if not cfgs.WdsEnable or vif.__wdsenable == "0" or cfgs.WdsEnable == "4" then %> style="display:none" <% end %>>
-                    <td>AP MAC Address</td>
-                    <% _wdsMac=cfgs.WdsList and cfgs.WdsList:match("^[%x:]+;[%x:]+;([%x:]+)") %>
-                    <td><input type="text" id="__wds_mac_2" name="__wds_mac_2" size=20 maxlength=17 value="<%=_wdsMac%>" <% if not cfgs.WdsEnable or vif.__wdsenable == "0" or cfgs.WdsEnable == "4" then %> disabled <% end %>></td>
-                    <td></td>
-                </tr>
-                <tr id="row-wds-ap-mac-addr3" <% if not cfgs.WdsEnable or vif.__wdsenable == "0" or cfgs.WdsEnable == "4" then %> style="display:none" <% end %>>
-                    <td>AP MAC Address</td>
-                    <% _wdsMac=cfgs.WdsList and cfgs.WdsList:match("^[%x:]+;[%x:]+;[%x:]+;([%x:]+)") %>
-                    <td><input type="text" id="__wds_mac_3" name="__wds_mac_3" size=20 maxlength=17 value="<%=_wdsMac%>" <% if not cfgs.WdsEnable or vif.__wdsenable == "0" or cfgs.WdsEnable == "4" then %> disabled <% end %>></td>
-                    <td></td>
-                </tr>
-                <input type="hidden" id="WdsList" name="WdsList" value="<%=cfgs.WdsList%>">
-            </table>
-        <% end %>
 
         <% if request[4] == "vif_cfg_view" then%>
             <table class="cbi-section-table" id="vif-cfg-station" name="vif-cfg-station" style="display:none" width="600" border="1" cellpadding="2" cellspacing="1">
@@ -1085,41 +691,7 @@ function hi(to, WPS_state, devname, vifname)
             </table>
         <% end %>
 
-    <% if map_cfgs then %>
-        <fieldset class="cbi-section" id="vif-cfg-basic-AC">
-            <legend>Access Control - <%=vifname and devname.."@"..vifname or devname%>  </legend>
-            <table class="cbi-section-table">
-                <tr>
-                    <td style="width:300px;">Access Policy</td>
-                    <td>
-                        <input type="radio" name="__accesspolicy" value="0" id="disable_AP" <% if first_card_cfgs.MapMode == "1" then %> disabled="disabled" <% end %> <% if cfgs["AccessPolicy"..(vifidx-1)] == "0" then %> checked="checked"<% end %>/> Disable
-                        <br>
-                        <input type="radio" name="__accesspolicy" value="1" id="white_AP" <% if first_card_cfgs.MapMode == "1" then %> disabled="disabled" <% end %> <% if cfgs["AccessPolicy"..(vifidx-1)] == "1" then %> checked="checked"<% end %>/> White List
-                        <br>
-                        <input type="radio" name="__accesspolicy" value="2" id="black_AP" <% if first_card_cfgs.MapMode == "1" then %> disabled="disabled" <% end %> <% if cfgs["AccessPolicy"..(vifidx-1)] == "2" then %> checked="checked"<% end %>/> Black List
-                        <br>
-                        <% if first_card_cfgs.MapMode == "1" then %>
-                            <span style="color:red;">To set Black List see MAP application note when EasyMesh is enabled.</span>
-                        <% end %>
-                    </td>
-                </tr>
-            </table>
-            <pre>
-# 1. one MAC one line.
-# 2. empty lines will be ignored.
-# 3. lines start with "#" will be ignored.
-# 4. invalid MAC will be ignored.
 
-11:22:33:44:55:66
-AA:BB:CC:DD:EE:FF
-11:22:33:aa:bb:cc
-            </pre>
-            <textarea name="__maclist" id="__maclist" <% if first_card_cfgs.MapMode == "1" then %> disabled="disabled" <% end %> style="width:98%; height: 200px;"><%
-            local list = cfgs["AccessControlList"..(vifidx-1)] or ""
-            print(table.concat(list:split(";"), "\n"))
-            %></textarea>
-        </fieldset>
-    <% else %>
         <fieldset class="cbi-section" id="vif-cfg-basic-AC">
             <legend>Access Control - <%=vifname and devname.."@"..vifname or devname%>  </legend>
             <table class="cbi-section-table">
@@ -1149,7 +721,6 @@ AA:BB:CC:DD:EE:FF
             print(table.concat(list:split(";"), "\n"))
             %></textarea>
         </fieldset>
-    <% end %>
 
         <div class="cbi-page-actions" id="vif_form_action_btns">
             <input class="cbi-button cbi-button-apply" name="__apply" value="Save and Apply" type="submit">
@@ -1267,588 +838,6 @@ AA:BB:CC:DD:EE:FF
                 }
             );
         }
-    <% end %>
-
-    <% if not dev.wdsBand or dev.wdsBand == dev.dbdcBandName then %>
-        function CheckWdsEncKey(i)
-        {
-            var key = document.getElementById("Wds" + i + "Key").value;
-            if (document.getElementById("__wds_encryp_type"+i).selectedIndex == 1) {
-                if (key.length == 10 || key.length == 26) {
-                    var re = /[A-Fa-f0-9]{10,26}/;
-                    if (!re.test(key)) {
-                        alert("WDS"+i+"Key should be a 10/26 hexdecimal or a 5/13 ascii");
-                        document.getElementById("Wds" + i + "Key").focus();
-                        document.getElementById("Wds" + i + "Key").select();
-                        return false;
-                    }
-                    else
-                        return true;
-                }
-                else if (key.length == 5 || key.length == 13) {
-                    return true;
-                }
-                else {
-                    alert("WDS"+i+"Key should be a 10/26 hexdecimal or a 5/13 ascii");
-                    document.getElementById("Wds" + i + "Key").focus();
-                    document.getElementById("Wds" + i + "Key").select();
-                    return false;
-                }
-            }
-            else if (document.getElementById("__wds_encryp_type"+i).selectedIndex == 2 ||
-                    document.getElementById("__wds_encryp_type"+i).selectedIndex == 3){
-                if (key.length < 8 || key.length > 64) {
-                    alert("WDS"+i+"Key should be with length 8~64");
-                    document.getElementById("Wds" + i + "Key").focus();
-                    document.getElementById("Wds" + i + "Key").select();
-                    return false;
-                }
-                else if (key.length == 64) {
-                    var re = /[A-Fa-f0-9]{64}/;
-                    if (!re.test(key)) {
-                        alert("WDS"+i+"Key should be a 64 hexdecimal");
-                        document.getElementById("Wds" + i + "Key").focus();
-                        document.getElementById("Wds" + i + "Key").select();
-                        return false;
-                    }
-                    else
-                        return true;
-                }
-                else
-                    return true;
-            }
-            return true;
-        }
-
-        function ValidateWdsForm()
-        {
-            var all_wds_list = "";
-            var all_enc_type = "";
-            if(document.getElementById("WdsEnable").selectedIndex == 0){
-                return true;
-            }
-            for(var i=0; i < 4; i++){
-                all_enc_type += document.getElementById("__wds_encryp_type"+i).value;
-                if(i != 3){
-                    all_enc_type += ';';
-                }
-            }
-            document.getElementById("WdsEncrypType").value = all_enc_type;
-            if (!CheckWdsEncKey(0) || !CheckWdsEncKey(1) || !CheckWdsEncKey(2) || !CheckWdsEncKey(3)){
-                return false;
-            }
-            if (document.getElementById("WdsEnable").selectedIndex >= 2){
-                var re = /[A-Fa-f0-9]{2}:[A-Fa-f0-9]{2}:[A-Fa-f0-9]{2}:[A-Fa-f0-9]{2}:[A-Fa-f0-9]{2}:[A-Fa-f0-9]{2}/;
-                for (var i = 0; i < 4; i++){
-                    if (document.getElementById("__wds_mac_"+i).value == ""){
-                        continue;
-                    }
-                    if (!re.test(document.getElementById("__wds_mac_"+i).value)) {
-                        alert("Please fill WDS remote AP MAC Address in correct format! (XX:XX:XX:XX:XX:XX)");
-                        document.getElementById("__wds_mac_"+i).focus();
-                        document.getElementById("__wds_mac_"+i).select();
-                        return false;
-                    }
-                    else {
-                        all_wds_list += document.getElementById("__wds_mac_"+i).value;
-                        all_wds_list += ';';
-                    }
-                }
-                if (all_wds_list == ""){
-                    alert("WDS remote AP MAC Address are empty !!!");
-                    document.getElementById("__wds_mac_0").focus();
-                    document.getElementById("__wds_mac_0").select();
-                    return false;
-                }
-                else{
-                    document.getElementById("WdsList").value = all_wds_list;
-                    for(i=0; i < 4; i++){
-                        document.getElementById("__wds_mac_"+i).disabled = true;
-                    }
-                }
-            }
-            return true;
-        }
-
-        function WdsSecurityOnChange(i,encType)
-        {
-            if(encType == "NONE"){
-                document.getElementById("Wds" + i + "Key").disabled =true;
-            }
-            else{
-                document.getElementById("Wds" + i + "Key").disabled =false;
-            }
-        }
-
-        function WdsModeOnChange(wdsMode)
-        {
-            switch(parseInt(wdsMode,10)){
-                case 0:
-                    document.getElementById("row-wds-phy-mode").style.display="none";
-                    document.getElementById("WdsPhyMode").disabled=true;
-                    for(var i=0; i < 4; i++){
-                        document.getElementById("row-wds-enc-type"+i).style.display="none";
-                        document.getElementById("__wds_encryp_type"+i).disabled=true;
-                        document.getElementById("row-wds-enc-key"+i).style.display="none";
-                        document.getElementById("Wds" + i + "Key").disabled=true;
-                        document.getElementById("row-wds-ap-mac-addr"+i).style.display="none";
-                        document.getElementById("__wds_mac_"+i).disabled=true;
-                    }
-                break;
-                case 4:
-                    document.getElementById("row-wds-phy-mode").style.display="";
-                    document.getElementById("WdsPhyMode").disabled=false;
-                    for(var i=0; i < 4; i++){
-                        document.getElementById("row-wds-enc-type"+i).style.display="";
-                        document.getElementById("__wds_encryp_type"+i).disabled=false;
-                        document.getElementById("row-wds-enc-key"+i).style.display="";
-                        WdsSecurityOnChange(i,document.getElementById("__wds_encryp_type"+i).value);
-                        document.getElementById("row-wds-ap-mac-addr"+i).style.display="none";
-                        document.getElementById("__wds_mac_"+i).disabled=true;
-                    }
-                break;
-                case 2:
-                case 3:
-                    document.getElementById("row-wds-phy-mode").style.display="";
-                    document.getElementById("WdsPhyMode").disabled=false;
-                    for(var i=0; i < 4; i++){
-                        document.getElementById("row-wds-enc-type"+i).style.display="";
-                        document.getElementById("__wds_encryp_type"+i).disabled=false;
-                        document.getElementById("row-wds-enc-key"+i).style.display="";
-                        WdsSecurityOnChange(i,document.getElementById("__wds_encryp_type"+i).value);
-                        document.getElementById("row-wds-ap-mac-addr"+i).style.display="";
-                        document.getElementById("__wds_mac_"+i).disabled=false;
-                    }
-                break;
-                default:
-                    console.log("Unknwon WDS Mode : ",wdsMode);
-            }
-        }
-
-        function updateWdsPhyMode(wirelessMode){
-            var wirelessModeSelect = document.getElementById('WirelessMode');
-            var wdsPhyModeSelect = document.getElementById("WdsPhyMode");
-            wirelessMode *= 1;
-            document.getElementById("__wdsPhyModeMsg").innerHTML = "";
-            for(var idx=0; idx < wdsPhyModeSelect.length; idx++){
-                wdsPhyModeSelect.options[idx].disabled = false;
-                switch(wdsPhyModeSelect.options[idx].text){
-                    case "CCK":
-                        // "G/GN" Wireless mode does not support CCK Phy Mode
-                        if(wirelessMode == 7){
-                            wdsPhyModeSelect.options[idx].disabled = true;
-                            wdsPhyModeSelect.options[idx].selected = false;
-                        }
-                    break;
-                    case "OFDM":
-                        // "B only" Wireless mode does not support OFDM Phy Mode
-                        if(wirelessMode == 1){
-                            wdsPhyModeSelect.options[idx].disabled = true;
-                            wdsPhyModeSelect.options[idx].selected = false;
-                        }
-                    break;
-                    case "HTMIX":
-                    case "GREENFIELD":
-                        if(is_mode_legacy_only(wirelessMode)){
-                            wdsPhyModeSelect.options[idx].disabled = true;
-                            wdsPhyModeSelect.options[idx].selected = false;
-                        }
-                    break;
-                    case "VHT":
-                        if(wirelessMode >= 0 && wirelessMode <= 11){
-                            wdsPhyModeSelect.options[idx].disabled = true;
-                            wdsPhyModeSelect.options[idx].selected = false;
-                        }
-                    break;
-                    default:
-                        console.log("Unknown WDS PhyMode",wdsPhyModeSelect.options[idx].text);
-                }
-            }
-            for(var idx=0; idx < wdsPhyModeSelect.length; idx++){
-                if(wdsPhyModeSelect.options[idx].disabled){
-                    document.getElementById("__wdsPhyModeMsg").innerHTML = "Disabled options are not supported by <strong>" + wirelessModeSelect.options[wirelessModeSelect.selectedIndex].text + "</strong> Wireless Mode";
-                    break;
-                }
-            }
-        }
-    <% end %>
-
-    /* Functions used for updating WPS Summary section must be written inside this check. */
-    <%if (tostring(mtkwifi.__any_wsc_enabled(WscValue)) == "1") and (not appliedWscValue or (WscValue == appliedWscValue)) then%>
-        function WPS_deInit()
-        {
-            clearTimeout(refreshWpsTimerId);
-        }
-
-        function WPS_init(devname, vifname, delay_ms)
-        {
-            refreshWpsTimerId = setTimeout(function(){ update_WPS(devname, vifname); }, delay_ms);
-        }
-
-        function checkSecurity(devname, vifname)
-        {
-            XHR.get('<%=luci.dispatcher.build_url("admin",  "network",  "wifi",  "get_wps_security")%>/' + vifname + '/' + devname, null, 
-                function(x)
-                {
-                    console.log(x);
-                    console.log(x.response);
-                    showSecurityPopup(x.response);
-                }
-            );
-        }
-
-        function showSecurityPopup(output)
-        {
-            var res = JSON.parse(output);
-
-            if (res.AuthMode == "SHARED" || res.AuthMode == "WEPAUTO" || res.AuthMode == "WPA" ||
-                res.AuthMode == "WPA2" || res.AuthMode == "WPA1WPA2" || res.IEEE8021X == "1")
-                alert("WPS does not support this security mode,  please reset to OOB first!");
-        }
-
-        function ValidateChecksum(PIN)
-        {
-            var accum = 0;
-            var tmp_str = PIN.replace("-", "");
-            var pincode = tmp_str.replace(" ", "");
-
-            document.getElementById("PIN").value = pincode;
-            if (pincode.length == 4)
-                return 1;
-            if (pincode.length != 8)
-                return 0;
-
-            accum += 3 * (parseInt(pincode / 10000000) % 10);
-            accum += 1 * (parseInt(pincode / 1000000) % 10);
-            accum += 3 * (parseInt(pincode / 100000) % 10);
-            accum += 1 * (parseInt(pincode / 10000) % 10);
-            accum += 3 * (parseInt(pincode / 1000) % 10);
-            accum += 1 * (parseInt(pincode / 100) % 10);
-            accum += 3 * (parseInt(pincode / 10) % 10);
-            accum += 1 * (parseInt(pincode / 1) % 10);
-
-            return ((accum % 10) == 0);
-        }
-
-        function PINPBCFormCheck()
-        {
-            if (document.getElementById("PINRadio").checked) {
-                // PIN
-                var pinObj = document.getElementById("PIN");
-                if(pinObj.value != "") {
-                    if (!ValidateChecksum(pinObj.value)) {
-                        alert("PIN number validation failed\n");
-                        pinObj.select();
-                        pinObj.focus();
-                        return false;
-                    }
-                }
-                else{
-                        alert("Please enter enrollee PIN.");
-                        pinObj.select();
-                        pinObj.focus();
-                        return false;
-                }
-            } else {
-                // PBC
-            }
-            return true;
-        }
-
-        function startWpsPinMode(vifname, devname, enrollee_pin)
-        {
-            disable_all_link_btns();
-            XHR.get('<%=luci.dispatcher.build_url("admin", "network", "wifi", "set_wifi_do_wps")%>/' + vifname + '/' + devname + '/' + enrollee_pin, null, 
-                function(x)
-                {
-                    console.log(x);
-                    console.log(x.response);
-                }
-            );
-        }
-
-        function startWpsPbcMode(vifname, devname)
-        {
-            disable_all_link_btns();
-            XHR.get('<%=luci.dispatcher.build_url("admin", "network", "wifi", "set_wifi_do_wps")%>/' + vifname + '/' + devname + '/' + 'nopin', null, 
-                function(x)
-                {
-                    console.log(x);
-                    console.log(x.response);
-                }
-            );
-        }
-
-        function wpsStart(vifname, devname)
-        {
-            var ssid_index = "0";
-
-            if (document.getElementById("PINRadio").checked) {
-                // PIN
-                var enrollee_pin = document.getElementById("PIN").value;
-                if(!PINPBCFormCheck(enrollee_pin)){
-                    return false;
-                }
-                enrollee_pin = document.getElementById("PIN").value;
-                console.log("wpsStart.enrollee_pin="+enrollee_pin);
-                startWpsPinMode(vifname, devname, enrollee_pin)
-            } else {
-                // PBC
-                startWpsPbcMode(vifname, devname)
-            }
-        }
-
-        function onPINPBCRadioClick(value)
-        {
-            var a = document.getElementById("PINRow");
-            if(value == 1){
-                // PIN selected
-                a.style.display = "table-row";
-            }else{
-                // PBC selected
-                a.style.display = "none";
-            }
-        }
-
-        function update_WPS(devname, vifname)
-        {
-            if(document.getElementById("WPSRadioOn").checked == true){
-                WPS_refresh(devname, vifname);
-            }
-            else{
-                WPS_init(devname, vifname, 1000);
-            }
-        }
-
-        function WPS_refresh(devname, vifname)
-        {
-            // Make AJAX request only if the refreshWpsAjaxFlag is false by which server will not be overloaded!
-            if(refreshWpsAjaxFlag == false){
-                XHR.get('<%=luci.dispatcher.build_url("admin", "network", "wifi", "get_wps_info")%>/' + devname + '/' + vifname, null,
-                    function(x)
-                    {
-                        var ret = true;
-                        console.log(x);
-                        console.log(x.response);
-                        /*  Before the reception of response for above AJAX request i.e. get_wps_info,
-                         *  user may have changed the tab or clicked on Disable radio button of WPS.
-                         *  Process the response only if active tab is WPS and Enable radio button of WPS is checked.
-                         */
-                        if(document.getElementById("__activeTab").value == "WPS"){
-                            if(document.getElementById("WPSRadioOn").checked == true){
-                                ret = initWpsDetails(x.response);
-                            }
-                            // Start the WPS refresh timer if active tab is WPS
-                            if(ret == true){
-                                WPS_init(devname, vifname, 5000);
-                            }
-                            else{
-                                WPS_init(devname, vifname, 10000);
-                            }
-                        }
-                        // Reset the flag for next AJAX request
-                        refreshWpsAjaxFlag = false;
-                    }
-                );
-                /* User may trigger the WPS refresh timer by changing the tab while above AJAX request i.e. get_wps_info is on progress!
-                 * Set the flag so that this AJAX request will not happen again before the processing of received response of previous AJAX request.
-                 */
-                refreshWpsAjaxFlag = true;
-            }
-        }
-
-        function wpsGetPinCode(vifname)
-        {
-            if(document.getElementById("PIN").value == "")
-            {
-                XHR.get('<%=luci.dispatcher.build_url("admin", "network", "wifi", "get_wifi_pin")%>/' + vifname, null,
-                    function(x)
-                    {
-                        console.log(x);
-                        console.log(x.response);
-                        <% if map_cfgs then %>
-                            <% if cfgs.MapMode == "0" then%>
-                                updateApPin(x.response);
-                            <% end %>
-                        <% else %>
-                            updateApPin(x.response);
-                        <% end %>
-                    }
-                );
-            }
-        }
-
-        function wpsGenPinCode(vifname, devname)
-        {
-            disable_all_link_btns();
-            XHR.get('<%=luci.dispatcher.build_url("admin", "network", "wifi", "set_wifi_gen_pin")%>/' + vifname + '/' + devname, null, 
-                function(x)
-                {
-                    console.log(x);
-                    console.log(x.response);
-                    try{
-                        updateApPin(x.response);
-                    }
-                    catch(e){
-                        alert("Failed to generate a new pin!\nERROR: Either device is unreachable or response is incorrect!");
-                    }
-                    finally{
-                        enable_all_link_btns();
-                    }
-                }
-            );
-        }
-
-        function wpsResetOOB(vifname, devname)
-        {
-            disable_all_link_btns();
-            WPS_deInit();
-            location.href = '<%=luci.dispatcher.build_url("admin", "network", "wifi", "set_wifi_wps_oob")%>/' + devname + '/' + vifname;
-        }
-
-        function update_vif_settings(output)
-        {
-            // This function will update the fields which may have changed by other entity such as registrar
-            var isRegAuthModeValid = false;
-            var isRegEncTypeValid = false;
-            var authModeSel = document.getElementById("AuthMode");
-            var prevAuthModeSelIdx = authModeSel.selectedIndex;
-            var encTypeSel = document.getElementById("__encrypttype");
-            var regAuthMode = output["AuthMode"].replace(/(\W|_)/g,"").toUpperCase();
-            var regEncType = output["EncType"].toUpperCase();
-
-            // Update SSID
-            document.getElementById("vif-cfg-basic-ssid").value = output.SSID;
-            if(validate_ssid() == false){
-                return false;
-            }
-
-            // Update Auth Mode
-            if (regAuthMode == "OPEN" && regEncType != "NONE"){
-                alert("WPS does not support " + output["AuthMode"] + "-" + output["EncType"] + " security!\nPlease click on ResetOOB button to restore default settings.");
-                return false;
-            }
-            if (regAuthMode == "OPEN" && regEncType == "NONE"){
-                regAuthMode = "Disable";
-            }
-            for(var idx = 0 ; idx < authModeSel.length; idx++){
-                if(regAuthMode == authModeSel.options[idx].value){
-                    isRegAuthModeValid = true;
-                    if (idx != authModeSel.selectedIndex){
-                        authModeSel.selectedIndex = idx;
-                        AuthMode_onchange(regAuthMode);
-                    }
-                    break;
-                }
-            }
-            if(!isRegAuthModeValid){
-                alert("WPS Authentication Mode as " + output["AuthMode"] + " is not valid!\nPlease click on ResetOOB button to restore default settings.");
-                return false;
-            }
-
-            // Update Encryption Type
-            if(regAuthMode == "WPA2PSK" || regAuthMode == "WPAPSKWPA2PSK"){
-                for(var idx = 0 ; idx < encTypeSel.length; idx++){
-                    if( regEncType == encTypeSel.options[idx].value &&
-                        encTypeSel.options[idx].disabled == false){
-                        isRegEncTypeValid = true;
-                        if (idx != encTypeSel.selectedIndex){
-                            encTypeSel.selectedIndex = idx;
-                        }
-                        break;
-                    }
-                }
-                if(!isRegEncTypeValid){
-                    alert("WPS Encryption Type as " + output["EncType"] + " is not valid!\nPlease click on ResetOOB button to restore default settings.");
-                    // Restore previous Auth Mode
-                    authModeSel.selectedIndex = prevAuthModeSelIdx;
-                    AuthMode_onchange(authModeSel.options[prevAuthModeSelIdx].value);
-                    return false;
-                }
-
-                // Update WPA Key
-                document.getElementById("<%="WPAPSK"..vifidx%>").value = output["WscWPAKey"];
-                if(check_WpaKey(regAuthMode, '<%=vifidx%>', '<%=cfgs["HT_DisallowTKIP"]%>') == false){
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        function initWpsDetails(list)
-        {
-            var output;
-            try{
-                output = JSON.parse(list);
-            }
-            catch(e){
-                document.getElementById("wpsPINApply_text").disabled = true;
-                return false;
-            }
-
-            if (output.DRIVER_RSP == "NO"){
-                alert("Driver is not responding!");
-                document.getElementById("wpsPINApply_text").disabled = true;
-                return false;
-            }
-
-            wpsconfigured = document.getElementById("WPSConfigured");
-
-            if(output.Conf == "1" || output.Conf == "0")
-                wpsconfigured.innerHTML = "No";
-            else if(output.Conf == "2")
-                wpsconfigured.innerHTML = "Yes";
-            else
-                wpsconfigured.innerHTML = "Unknown";
-
-            wpsssid = document.getElementById("WPSSSID");
-            wpsssid.innerHTML = output.SSID.replace(/ /g,"&nbsp;");
-
-            wpsauthmode = document.getElementById("WPSAuthMode");
-            wpsauthmode.innerHTML = output.AuthMode;
-
-            wpsencryptype = document.getElementById("WPSEncryptype");
-            wpsencryptype.innerHTML = output.EncType;
-
-            wpswpakey = document.getElementById("WPSWPAKey");
-            wpswpakey.innerHTML = output.WscWPAKey.replace(/ /g,"&nbsp;");
-
-            wpsstatus = document.getElementById("WPSCurrentStatus");
-            wpsstatus.innerHTML = output.WscStatus;
-            if((output.WscStatus == "Idle" && document.getElementById("BusyText_VIF").style.display == "")||
-                output.WscResult == "-1" || output.WscResult == "1"){
-                enable_all_link_btns();
-            }
-
-            if(output.WscResult == "-1")
-                document.getElementById("WPSInfo").value = "WSC failed";
-            else if(output.WscResult == "0"){
-                document.getElementById("WPSInfo").value = "WSC:" + output.WscResult;
-            }else if(output.WscResult == "1")
-                document.getElementById("WPSInfo").value = "WSC Success";
-
-            if(output.IS_BASIC_TAB_UPDATE_REQUIRED == true && update_vif_settings(output) == false){
-                document.getElementById("wpsPINApply_text").disabled = true;
-                return false;
-            }
-
-            if(document.getElementById("BusyText_VIF").style.display == "none"){
-                document.getElementById("wpsPINApply_text").disabled = false;
-            }
-            return true;
-        }
-
-        function updateApPin(output)
-        {
-            var res = JSON.parse(output);
-            //console.log("wpsGenPinCodeCB.pincode="+res.genpincode);
-
-            if(res.genpincode != "NG")
-                document.getElementById("PINCode").value = res.genpincode;
-            else
-                alert("GenPINCode NG! Please refresh this page.");
-        }
-
     <% end %>
 
     function checkInjection(str)
@@ -2398,81 +1387,10 @@ AA:BB:CC:DD:EE:FF
         return true;
     }
 
-    function validate_wps()
-    {
-        var AuthMode= document.getElementById("AuthMode").value;
-        var EncType = document.getElementById("__encrypttype").value;
-
-        if(document.getElementById("WPSRadioOn").checked == true){
-            var WPSAuthModeList = [];
-            <% for _, authModeName in ipairs(dev.WpsEnableAuthModeList) do %>
-                WPSAuthModeList.push("<%=authModeName%>");
-            <% end %>
-            if(WPSAuthModeList.indexOf(AuthMode) == -1){
-                alert("WPS could not be enabled when security is set as " + AuthMode +" Authentication Mode!");
-                return false;
-            }
-            else if(document.getElementById("__hidessid").checked == true){
-                if(document.getElementById("__activeTab").value == "WPS"){
-                    alert("WPS could not be enabled while hidden SSID is set.");
-                    return false;
-                }
-                else{
-                    alert("WPS will be disabled when hidden SSID is set!");
-                }
-            }
-            else if(AuthMode=="OPEN" && EncType == "WEP"){
-                if(document.getElementById("__activeTab").value == "WPS"){
-                    alert("WPS could not be enabled when security is set as Open-WEP.");
-                    return false;
-                }
-                else{
-                    alert("WPS will be disabled when security is set as Open-WEP!");
-                }
-            }
-        }
-        if((AuthMode == "WPA2" || AuthMode == "WPA2PSK" || AuthMode == "WPA3PSK") && EncType == "AES"){
-            if(document.getElementById("__pmfmfpr").checked == true && document.getElementById("__pmfmfpc").checked == false){
-                alert("Need to enable MFPC toghter when enable MFPR!");
-                return false;
-            }
-        }
-        return true;
-    }
-
-    function chk_WPS_ACL(chk_WPS)
-    {
-        var chk_MAC = document.getElementById("__maclist").value;
-        var mac_reg_exp = /^(([A-Fa-f0-9]{2}[:]){5}[A-Fa-f0-9]{2}[,]?)+$/i;
-        var test_MAC = mac_reg_exp.test(chk_MAC);
-
-        if (chk_MAC.trim() == "" || chk_MAC.trim() == null || !test_MAC || test_MAC == false){
-
-                if ((document.getElementById("WPSRadioOn").checked) && (document.getElementById("disable_AP").checked == false)){
-                    if (chk_WPS != 1){
-                        let chk_usr_action = confirm("Both WPS and Access Policy can't enable simultaneously when Access Control List is empty or invalid. \nEnabling WPS will Disable Access Policy.");
-                        if (chk_usr_action == true)
-                            document.getElementById("disable_AP").checked = true;
-                        else
-                            document.getElementById("WPSRadioOff").checked = true;
-                    }
-                    else{
-                        let chk_usr_action = confirm("Both WPS and Access Policy can't enable simultaneously when Access Control List is empty or invalid. \nEnabling Access Policy will Disable WPS.");
-                        if (chk_usr_action == true)
-                            document.getElementById("WPSRadioOff").checked = true;
-                        else
-                            document.getElementById("disable_AP").checked = true;
-                    }
-                }
-        }
-
-        return true;
-    }
 
     function validate_basic(vifidx,ht_disallow_tkip)
     {
-        if (!validate_ssid() || !chk_WPS_ACL('<%=tostring(mtkwifi.__any_wsc_enabled(WscValue)) %>') ||
-            !validate_security(vifidx,ht_disallow_tkip)){
+        if (!validate_ssid() || !validate_security(vifidx,ht_disallow_tkip)){
             return false;
         }
 
@@ -2505,15 +1423,8 @@ AA:BB:CC:DD:EE:FF
 
     function validate_all(vifidx,ht_disallow_tkip)
     {
-        <% if not dev.wdsBand or dev.wdsBand == dev.dbdcBandName then %>
-            if(!ValidateWdsForm())
-                return false;
-        <% end %>
 
         if(!validate_basic(vifidx,ht_disallow_tkip))
-            return false;
-
-        if(!validate_wps())
             return false;
 
         disable_all_link_btns();
@@ -2571,131 +1482,6 @@ AA:BB:CC:DD:EE:FF
         }
     }
 
-    function update_easymesh_profile_fields(obj_1905)
-    {
-        if(!obj_1905.hasOwnProperty('Radio Info')){
-            console.log("No Radio Info Property in Topology!",obj_1905);
-            return;
-        }
-        var own_bssid = "<%=vif.__bssid and vif.__bssid:sub(1,17)%>";
-        var ssid_span = document.getElementById("EASY_MESH_SSID_SPAN");
-        var auth_mode_span = document.getElementById("EASY_MESH_AUTH_MODE_SPAN");
-        var encryption_span = document.getElementById("EASY_MESH_ENCRYPTION_SPAN");
-        var pass_phrase_span = document.getElementById("EASY_MESH_PASS_PHRASE_SPAN");
-        var is_hidden_ssid_span = document.getElementById("EASY_MESH_IS_HIDDEN_SSID_SPAN");
-        var wmode_span = document.getElementById("EASY_MESH_WMODE_SPAN");
-        wmode_span.innerHTML = document.getElementById("WirelessMode").value;
-
-        if (own_bssid == ""){
-            console.log("Failed to update EasyMesh profile fields! Own BSSID is empty!");
-            return;
-        }
-        if (!ssid_span || !auth_mode_span || !encryption_span || !pass_phrase_span || !is_hidden_ssid_span){
-            console.log("Failed to update EasyMesh profile fields! Could not find the fields to update!");
-            return;
-        }
-        for (var radioIdx=0; radioIdx < obj_1905['Radio Info'].length; radioIdx++){
-            var radioInfoObj = obj_1905['Radio Info'][radioIdx];
-            var bssInfoArr = radioInfoObj['BSSINFO'];
-            var bssIdx;
-            for(bssIdx=0; bssIdx < bssInfoArr.length; bssIdx++){
-                var bssInfo = bssInfoArr[bssIdx];
-                if(bssInfo.hasOwnProperty('BSSID') && (bssInfo['BSSID'].toUpperCase() == own_bssid.toUpperCase())){
-
-                    ssid_span.innerHTML = bssInfo.hasOwnProperty('SSID') ?
-                        bssInfo['SSID'].length > 32 ?
-                        bssInfo['SSID'] + "INVALID SSID: SSID has more than 32 characters!" : bssInfo['SSID'] == "" ?
-                        "INVALID SSID: SSID IS EMPTY" : bssInfo['SSID'] : "N/A";
-
-                    auth_mode_span.innerHTML = bssInfo.hasOwnProperty('Security') ?
-                        get_auth_mode_str(bssInfo['Security']) : "N/A";
-
-                    encryption_span.innerHTML = bssInfo.hasOwnProperty('Encryption') ?
-                        get_encryption_str(bssInfo['Encryption']) : "N/A";
-
-                    pass_phrase_span.innerHTML = bssInfo.hasOwnProperty('Pass-phrase') ? bssInfo['Pass-phrase'] : "N/A";
-                    is_hidden_ssid_span.innerHTML = bssInfo.hasOwnProperty('Hidden') ?
-                        bssInfo['Hidden'] == "1" ? "Enabled" : "Disabled" : "N/A";
-                    document.getElementById("VIF_CFG_BASIC_SETTINGS").style.display = "none";
-                    document.getElementById("ENCRYPTION").style.display = "none";
-                    document.getElementById("WPAXPSK").style.display = "none";
-                    document.getElementById("WEP").style.display = "none";
-                    document.getElementById("VIF_HIDDEN_SSID_ROW").style.display = "none";
-                    document.getElementById("EASY_MESH_VIF_SETTINGS_TBODY").style.display = "";
-                    document.getElementById("DEV_CFG_BASIC_SETTINGS").style.display = "none";
-                    document.getElementById("EASY_MESH_DEV_SETTINGS_TBODY").style.display = "";
-                    break;
-                }
-            }
-            if(bssIdx < bssInfoArr.length){
-                break;
-            }
-        }
-    }
-
-    function find_own_topo_info(devRole, jsTopoInfo, alMac)
-    {
-        var tree_info = [];
-        var topoInfoArr = jsTopoInfo['topology information'];
-        if(!(topoInfoArr instanceof Array)){
-            console.log("Incorrect TopologyInfo: Value of topology information is not an Array!");
-            return;
-        }
-        for(var idx_1905=0; idx_1905 < topoInfoArr.length; idx_1905++){
-            var obj_1905 = topoInfoArr[idx_1905];
-            if (obj_1905.hasOwnProperty('AL MAC') && (obj_1905['AL MAC'].toUpperCase() == alMac.toUpperCase())){
-                update_easymesh_profile_fields(obj_1905);
-                return;
-            }
-        }
-        console.log(alMac," AL-MAC NOT FOUND in Topology! Topology: ",jsTopoInfo);
-    }
-
-    function get_al_mac(devRole, jsTopoInfo)
-    {
-        XHR.get('<%=luci.dispatcher.build_url("admin", "network", "multi_ap", "get_al_mac")%>' + '/' + devRole, null, 
-            function(x)
-            {
-                console.log(x);
-                try{
-                    var r = JSON.parse(x.response);
-                    var mac_reg_exp = /[A-Fa-f0-9]{2}:[A-Fa-f0-9]{2}:[A-Fa-f0-9]{2}:[A-Fa-f0-9]{2}:[A-Fa-f0-9]{2}:[A-Fa-f0-9]{2}/;
-                    if (r['status'] == "SUCCESS" && mac_reg_exp.test(r['al_mac'])) {
-                        find_own_topo_info(devRole, jsTopoInfo, r['al_mac']);
-                    }
-                    else{
-                        console.log("Incorrect AL-MAC received!",r['status'],r['al_mac']);
-                    }
-                }
-                catch(e){
-                    console.log("Incorrect response received for get AL-MAC request!",e.name,e.message);
-                }
-            }
-        );
-    }
-
-    function get_run_time_topology(devRole)
-    {
-        XHR.get('<%=luci.dispatcher.build_url("admin", "network", "multi_ap", "get_runtime_topology")%>', null, 
-            function(x)
-            {
-                try{
-                    var r = JSON.parse(x.response);
-                    if(r.status == "SUCCESS"){
-                        var jsTopoInfo = JSON.parse(r['luaTopologyInfo']);
-                        get_al_mac(devRole, jsTopoInfo);
-                    }
-                    else{
-                        console.log("Failed to get Topology Info!\nStatus: ",r.status);
-                    }
-                }
-                catch(e){
-                    console.log("Incorrect response! Failed to get Topology Info!",e.name,e.message);
-                }
-            }
-        );
-    }
-
     function get_apply_status_cb(rsp)
     {
         try{
@@ -2727,9 +1513,6 @@ AA:BB:CC:DD:EE:FF
     }
 
     window.onload = function(){
-        <% if not dev.wdsBand or dev.wdsBand == dev.dbdcBandName then %>
-            updateWdsPhyMode("<%=string.split(cfgs.WirelessMode,";")[1]%>");
-        <% end %>
         get_apply_status();
         AuthMode_onchange(document.getElementById("AuthMode").options[document.getElementById("AuthMode").selectedIndex].value);
     }

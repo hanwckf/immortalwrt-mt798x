@@ -74,16 +74,7 @@ function index()
     entry({"admin", "network", "wifi", "apcli_cfg_view"}, template("admin_mtk/mtk_wifi_apcli")).leaf = true
     entry({"admin", "network", "wifi", "apcli_cfg"}, call("apcli_cfg")).leaf = true
     entry({"admin", "network", "wifi", "apcli_disconnect"}, call("apcli_disconnect")).leaf = true
-    entry({"admin", "network", "wifi", "apcli_connect"}, call("apcli_connect")).leaf = true
-
-    entry({"admin", "network", "wifi", "set_wifi_wps_oob"}, call("set_wifi_wps_oob")).leaf = true
-    entry({"admin", "network", "wifi", "set_wifi_do_wps"}, call("set_wifi_do_wps")).leaf = true
-    entry({"admin", "network", "wifi", "get_wps_security"}, call("get_wps_security")).leaf = true
-    entry({"admin", "network", "wifi", "apcli_do_enr_pin_wps"}, call("apcli_do_enr_pin_wps")).leaf = true;
-    entry({"admin", "network", "wifi", "apcli_do_enr_pbc_wps"}, call("apcli_do_enr_pbc_wps")).leaf = true;
-    entry({"admin", "network", "wifi", "apcli_cancel_wps"}, call("apcli_cancel_wps")).leaf = true;
-    entry({"admin", "network", "wifi", "apcli_wps_gen_pincode"}, call("apcli_wps_gen_pincode")).leaf = true;
-    
+    entry({"admin", "network", "wifi", "apcli_connect"}, call("apcli_connect")).leaf = true    
     entry({"admin", "network", "wifi", "apcli_scan"}, call("apcli_scan")).leaf = true;
     entry({"admin", "network", "wifi", "sta_info"}, call("sta_info")).leaf = true;
     entry({"admin", "network", "wifi", "get_apcli_conn_info"}, call("get_apcli_conn_info")).leaf = true;
@@ -882,109 +873,6 @@ function vif_cfg(dev, vif)
     end
 end
 
-function set_wifi_wps_oob(devname, ifname)
-    local SSID, mac = ""
-    local  ssid_index = 0
-    local devs = mtkwifi.get_all_devs()
-    local profile = devs[devname].profile
-    assert(profile)
-
-    local cfgs = mtkwifi.load_profile(profile)
-
-    ssid_index = devs[devname]["vifs"][ifname].vifidx
-    mac = c_get_macaddr(ifname)
-
-    if (mac["macaddr"]  ~= "") then
-        SSID = "RalinkInitAP"..(ssid_index-1).."_"..mac["macaddr"]
-    else
-        SSID = "RalinkInitAP"..(ssid_index-1).."_unknown"
-    end
-
-    cfgs["SSID"..ssid_index]=SSID
-    cfgs.WscConfStatus = mtkwifi.token_set(cfgs.WscConfStatus, ssid_index, "1")
-    cfgs.AuthMode = mtkwifi.token_set(cfgs.AuthMode, ssid_index, "WPA2PSK")
-    cfgs.EncrypType = mtkwifi.token_set(cfgs.EncrypType, ssid_index, "AES")
-    cfgs.DefaultKeyID = mtkwifi.token_set(cfgs.DefaultKeyID, ssid_index, "2")
-
-    cfgs["WPAPSK"..ssid_index]="12345678"
-    cfgs["WPAPSK"]=""
-    cfgs.IEEE8021X = mtkwifi.token_set(cfgs.IEEE8021X, ssid_index, "0")
-
-    os.execute("iwpriv "..ifname.." set SSID="..SSID )
-    debug_write("iwpriv "..ifname.." set SSID="..SSID )
-    os.execute("iwpriv "..ifname.." set AuthMode=WPA2PSK")
-    debug_write("iwpriv "..ifname.." set AuthMode=WPA2PSK")
-    os.execute("iwpriv "..ifname.." set EncrypType=AES")
-    debug_write("iwpriv "..ifname.." set EncrypType=AES")
-    os.execute("iwpriv "..ifname.." set WPAPSK=12345678")
-    debug_write("iwpriv "..ifname.." set WPAPSK=12345678")
-    os.execute("iwpriv "..ifname.." set SSID="..SSID)
-    debug_write("iwpriv "..ifname.." set SSID="..SSID)
-
-    cfgs = mtkwifi.__restart_if_wps(devname, ifname, cfgs)
-    __mtkwifi_save_profile(cfgs, profile, true)
-
-    --mtkwifi.__run_in_child_env(__restart_all_daemons, devname, ifname)
-
-    os.execute("iwpriv "..ifname.." set WscConfStatus=1")
-    debug_write("iwpriv "..ifname.." set WscConfStatus=1")
-
-    local url_to_visit_after_reload = luci.dispatcher.build_url("admin", "network", "wifi", "vif_cfg_view", devname, ifname)
-    luci.http.redirect(luci.dispatcher.build_url("admin", "network", "wifi", "loading",url_to_visit_after_reload))
-end
-
-function set_wifi_do_wps(ifname, devname, wsc_pin_code_w)
-    local devs = mtkwifi.get_all_devs()
-    local ssid_index = devs[devname]["vifs"][ifname].vifidx
-    local profile = devs[devname].profile
-    local wsc_mode = 0
-    local wsc_conf_mode
-    assert(profile)
-
-    local cfgs = mtkwifi.load_profile(profile)
-
-    if(wsc_pin_code_w == "nopin") then
-        wsc_mode=2
-    else
-        wsc_mode=1
-    end
-
-    wsc_conf_mode = mtkwifi.token_get(cfgs["WscConfMode"], ssid_index, nil)
-
-    if (wsc_conf_mode == 0) then
-        print("{\"wps_start\":\"WPS_NOT_ENABLED\"}")
-        DBG_MSG("WPS is not enabled before do PBC/PIN.\n")
-        return
-    end
-
-    if (wsc_mode == 1) then
-        __wps_ap_pin_start_all(ifname, wsc_pin_code_w)
-
-    elseif (wsc_mode == 2) then
-        __wps_ap_pbc_start_all(ifname)
-    else
-        http.write_json("{\"wps_start\":\"NG\"}")
-        return
-    end
-    cfgs["WscStartIF"] = ifname
-
-    http.write_json("{\"wps_start\":\"OK\"}")
-end
-
-function get_wps_security(ifname, devname)
-    local devs = mtkwifi.get_all_devs()
-    local ssid_index = devs[devname]["vifs"][ifname].vifidx
-    local profile = devs[devname].profile
-    assert(profile)
-    local output = {}
-    local cfgs = mtkwifi.load_profile(profile)
-
-    output["AuthMode"] = mtkwifi.token_get(cfgs.AuthMode,ssid_index)
-    output["IEEE8021X"] = mtkwifi.token_get(cfgs.IEEE8021X,ssid_index)
-
-    http.write_json(output)
-end
-
 function string.tohex(str)
     return (str:gsub('.', function (c)
         return string.format('%02X', string.byte(c))
@@ -1024,82 +912,6 @@ function decode_ssid(raw_ssid)
         output = output:gsub("&#"..codenum..";", string.char(tonumber(codenum)))
     end
     return output
-end
-
-function apcli_do_enr_pin_wps(ifname, devname, raw_ssid)
-    local target_ap_ssid = ""
-    local ret_value = {}
-    if(raw_ssid == "") then
-        ret_value["apcli_do_enr_pin_wps"] = "GET_SSID_NG"
-    end
-    ret_value["raw_ssid"] = raw_ssid
-    target_ap_ssid = decode_ssid(raw_ssid)
-    target_ap_ssid = ''..mtkwifi.__handleSpecialChars(target_ap_ssid)
-    ret_value["target_ap_ssid"] = target_ap_ssid
-    if(target_ap_ssid == "") then
-        ret_value["apcli_do_enr_pin_wps"] = "GET_SSID_NG"
-    else
-        ret_value["apcli_do_enr_pin_wps"] = "OK"
-    end
-    os.execute("ifconfig "..ifname.." up")
-    debug_write("ifconfig "..ifname.." up")
-    os.execute("brctl addif br0 "..ifname)
-    debug_write("brctl addif br0 "..ifname)
-    os.execute("brctl addif br-lan "..ifname)
-    debug_write("brctl addif br-lan "..ifname)
-    os.execute("iwpriv "..ifname.." set ApCliAutoConnect=1")
-    os.execute("iwpriv "..ifname.." set ApCliEnable=1")
-    debug_write("iwpriv "..ifname.." set ApCliEnable=1")
-    --os.execute("iwpriv "..ifname.." set WscConfMode=0")
-    os.execute("iwpriv "..ifname.." set WscConfMode=1")
-    debug_write("iwpriv "..ifname.." set WscConfMode=1")
-    os.execute("iwpriv "..ifname.." set WscMode=1")
-    debug_write("iwpriv "..ifname.." set WscMode=1")
-    os.execute("iwpriv "..ifname.." set ApCliWscSsid=\""..target_ap_ssid.."\"")
-    debug_write("iwpriv "..ifname.." set ApCliWscSsid=\""..target_ap_ssid.."\"")
-    os.execute("iwpriv "..ifname.." set WscGetConf=1")
-    debug_write("iwpriv "..ifname.." set WscGetConf=1")
-    -- check interface value to correlate with nvram as values will be like apclixxx
-    http.write_json(ret_value)
-end
-
-function apcli_do_enr_pbc_wps(ifname, devname)
-    local ret_value = {}
-
-    --os.execute("iwpriv "..ifname.." set ApCliAutoConnect=1")
-    --os.execute("iwpriv "..ifname.." set ApCliEnable=1")
-    --os.execute("ifconfig "..ifname.." up")
-    --os.execute("brctl addif br0 "..ifname)
-    --os.execute("iwpriv "..ifname.." set WscConfMode=0")
-    os.execute("iwpriv "..ifname.." set WscConfMode=1")
-    os.execute("iwpriv "..ifname.." set WscMode=2")
-    os.execute("iwpriv "..ifname.." set WscGetConf=1")
-    -- check interface value to correlate with nvram as values will be like apclixxx
-
-    --debug_write("iwpriv "..ifname.." set ApCliEnable=1")
-    --debug_write("brctl addif br0 "..ifname)
-    --debug_write("ifconfig "..ifname.." up")
-    debug_write("iwpriv "..ifname.." set WscConfMode=1")
-    debug_write("iwpriv "..ifname.." set WscMode=2")
-    debug_write("iwpriv "..ifname.." set WscGetConf=1")
-    ret_value["apcli_do_enr_pbc_wps"] = "OK"
-    http.write_json(ret_value)
-end
-
-function apcli_cancel_wps(ifname)
-    local ret_value = {}
-    os.execute("iwpriv "..ifname.." set WscStop=1")
-    -- os.execute("miniupnpd.sh init")
-    -- check interface value to correlate with nvram as values will be like apclixxx
-    ret_value["apcli_cancel_wps"] = "OK"
-    http.write_json(ret_value)
-end
-
-function apcli_wps_gen_pincode(ifname)
-    local ret_value = {}
-    os.execute("iwpriv "..ifname.." set WscGenPinCode")
-    ret_value["apcli_wps_gen_pincode"] = "OK"
-    http.write_json(ret_value)
 end
 
 function get_apcli_conn_info(ifname)

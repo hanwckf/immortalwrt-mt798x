@@ -32,9 +32,6 @@ vifidx = vif and vif.vifidx or nil
 --print(devs, dev, dev.apcli, devname, vifname)
 
 local cfgs = mtkwifi.load_profile(dev.profile)
-local map_cfgs
-local first_card_cfgs
-local appliedMapModeDiff
 
 %>
 
@@ -60,7 +57,6 @@ local appliedMapModeDiff
 
 var intervalId = "";
 var waiting_count = 0;
-var wps_status_interval = 1500;
 function hi(to, devname, vifname)
 {
     var a;
@@ -68,12 +64,10 @@ function hi(to, devname, vifname)
     var tables = new Array();
     tables.push("vif-cfg-apcli");
     tables.push("vif-cfg-apcli-config");
-    tables.push("vif-cfg-WPS");
     tables.push("apcli_form_buttons");
 
     var tabs = new Array();
     tabs.push("vif-cfg-tab-apcli");
-    tabs.push("vif-cfg-tab-WPS");
 
     document.getElementById("__activeTab").value = to;
     for (x in tables)
@@ -100,11 +94,6 @@ function hi(to, devname, vifname)
             a.className = "cbi-tab";
         }
     }
-
-    if(to == "WPS")
-    {
-        apcli_wps_get_pincode(vifname);
-    }
 }
 
 </script>
@@ -126,10 +115,6 @@ function hi(to, devname, vifname)
                 <li class="cbi-tab" id="vif-cfg-tab-apcli">
                     <a href="javascript:hi('apcli', <%="'"..devname.."', '"..vifname.."'"%>);this.blur(); ">AP Client</a>
                 </li>
-                <li class="cbi-tab-disabled" id="vif-cfg-tab-WPS">
-                    <a href="javascript:hi('WPS', <%="'"..devname.."', '"..vifname.."'"%>);this.blur(); ">APCli WPS</a>
-                </li>
-                <span id="disable-txt"></span>
             </ul>
             <input type="hidden" name="__activeTab" id="__activeTab" value="apcli">
             <input type="hidden" name="__pin_ap_ssid" id="__pin_ap_ssid" value="">
@@ -385,104 +370,6 @@ function hi(to, devname, vifname)
                     </tbody>
                 </table>
             </fieldset>
-            <fieldset id="vif-cfg-WPS" name="vif-cfg-WPS" style="display:none">
-                <table class="cbi-section-table">
-                    <tbody>
-                        <table class="cbi-section-table">
-                            <tbody>
-                                <legend> <a name="apcli_wps_section">WPS Config</a></legend>
-                                <tr id="div_wps_conf_mode_tr">
-                                    <td class="head">WPS Role:
-                                    </td>
-                                    <td>
-                                        <select name="wps_conf_mode" id="wps_conf_mode" >
-                                            <option value="enr" selected>Enrollee</option>
-                                        </select>
-                                    </td>
-                                </tr>
-                                <tr id="div_wps_pin">
-                                    <td class="head">AP Client PIN:
-                                    </td>
-                                    <td>
-                                        <input name="pin_code" id="pin_code" value="123456" size="10" maxLength="9" readonly="1">
-                                    </td>
-                                </tr>
-                                <tr id="div_wps_pin_action">
-                                    <td class="head">PIN Action:
-                                    </td>
-                                    <td>
-                                        <input type="button" class="cbi-button cbi-button-apply" value="Random New PINCode" id="gen_pin" name="gen_pin" onClick="on_gen_pincode_start('<%=vifname%>')">
-                                <!-- Future use
-                                    <br><hr>
-                                    <input type="button" value="Set Vendor PINCode" id="set_pin" name="set_pin" onClick="apcli_wps_set_pincode(this.form.WPSEnable.value)">-->
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="head" id="wps_mode_txt">WPS Mode</td>
-                                    <td>
-                                        <input name="wps_mode" id="wps_mode_pin" value="pin" type="radio" checked onClick="on_wps_mode_change(this.value)"><font id="wps_mode_pin_txt">PIN &nbsp;</font>
-                                        <input name="wps_mode" id="wps_mode_pbc" value="pbc" type="radio" onClick="on_wps_mode_change(this.value)"><font id="wps_mode_pbc_txt">PBC &nbsp;</font>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="head">WPS Scan</td>
-                                    <td>
-                                        <input type="button" class="cbi-button cbi-button-find" value="Start Scan" onClick="on_rescan_start('WPS', '<%=vifname%>', '<%=devname%>')">
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td colspan=2>
-                                        <div id="loadingbar" style="display:none;">
-                                            <img src="<%=resource%>/icons/loading.gif" alt="<%:Loading%>" style="vertical-align:middle;" />
-                                            &nbsp;&nbsp;&nbsp; Please wait while request is processed......
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <table id="root_ap_table" class="cbi-section-table">
-                            <tbody>
-                                <legend> <a name="apcli_wps_section" id="apcli_wps_section">Root AP Info</a></legend>
-                                <tr id="div_root_ap_ssid_tr">
-                                    <td class="head">Root AP SSID</td>
-                                    <td><input name="root_ap_ssid" id="root_ap_ssid" size=20 maxlength=32 value=""></td>
-                                </tr>
-                                <tr id="div_root_ap_mac_tr">
-                                    <td class="head">Root AP MAC Address (Optional)</td>
-                                    <td><input name="pin_ap_bssid" id="pin_ap_bssid" size=20 maxlength=17 value=""></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <table id="div_wps_info" name="div_wps_info" class="cbi-section-table" style="visibility: visible;">
-                            <legend> <a name="apcli_wps_section">WPS Status</a></legend>
-                            <tbody>
-                                <tr><td colspan="2">
-                                    <textarea name="wps_info" id="wps_info" cols="100" rows="4" wrap="off" readonly="1"></textarea>
-                                </td></tr>
-                            </tbody>
-                        </table>
-                        <!-- =============================== AP List ================================== -->
-                        <table name="aplist" class="cbi-section-table" id="aplist-site-survey" width="600" border="1" cellpadding="2" cellspacing="1">
-                            <legend> <a name="wps_section_site_survey">Site Survey</a></legend>
-                            <tr>
-                                <td class="head" style="width:6%">No</td>
-                                <td class="head" style="width:6%">Ch</td>
-                                <td class="head">SSID</td>
-                                <td class="head">SSID Length</td>
-                                <td class="head">BSSID</td>
-                                <td class="head">Security</td>
-                                <td class="head">Signal(%)</td>
-                                <td class="head">W-Mode</td>
-                                <td class="head">ExtCh</td>
-                                <td class="head">NT</td>
-                                <td class="head">WPS</td>
-                            </tr>
-                        </table>
-                        <!-- =============================== Waiting info ================================== -->
-                    </tbody>
-                </table>
-            </fieldset>
-
             <div class="cbi-page-actions" id="apcli_form_buttons">
                 <input class="cbi-button cbi-button-apply" name="__apply" value="Save and Apply" type="submit">
                 <input class="cbi-button cbi-button-apply" value="Save" type="submit">
@@ -894,111 +781,9 @@ function hi(to, devname, vifname)
         on_any_end();
     }
 
-    function on_gen_pincode_start(vifname)
-    {
-        on_any_start();
-        apcli_wps_gen_pincode(vifname);
-    }
-
-    function on_gen_pincode_end(vifname)
-    {
-        on_any_end();
-        on_get_pincode_start(vifname);
-    }
-
-    function on_get_pincode_start(vifname)
-    {
-        on_any_start();
-        apcli_wps_get_pincode(vifname);
-    }
-
-    function on_get_pincode_end()
-    {
-        on_any_end();
-    }
-
-    function on_apcli_wps_start(wsc_conf_mode, vifname, devname)
-    {
-        var pin_mode = document.getElementById("wps_mode_pin").checked;
-        var pin_ap_ssid = document.getElementById("__pin_ap_ssid");
-        var root_ap_ssid_inp = document.getElementById("root_ap_ssid");
-        var encode_ssid = "";
-        var alert_msg = "Please choose a Root AP in Site Survey result table below.\n" + 
-                "if there is no WPS Root AP in the Site Survey result table,\n" +
-                "please do scan again";
-
-        //console.log("on_apcli_wps_start.pin_mode=" + pin_mode);
-
-        if (wsc_conf_mode == "enr") {
-            if (pin_mode){
-                //console.log("pin_ap_ssid.value.length=" + pin_ap_ssid.value.length);
-                if (pin_ap_ssid.value.length ==  0) {
-                    alert(alert_msg);
-                    root_ap_ssid_inp.focus();
-                    root_ap_ssid_inp.select();
-                    return;
-                }
-                encode_ssid = ssid_encode(pin_ap_ssid.value);
-                if (encode_ssid == "") {
-                    alert("Incorrect Root AP SSID!");
-                    root_ap_ssid_inp.focus();
-                    root_ap_ssid_inp.select();
-                }
-                else{
-                    on_any_start();
-                    apcli_do_enr_pin_wps(encode_ssid, vifname, devname);
-                }
-            }
-            else {
-                on_any_start();
-                apcli_do_enr_pbc_wps(vifname, devname);
-            }
-        }
-        else if (wsc_conf_mode == "reg4") {
-            alert("This mode is not supported by driver.");
-        }
-        else {
-            alert("Please choose one of WPS Role.");
-        }
-    }
-
-    function on_apcli_wps_end()
-    {
-        on_any_end();
-    }
-
-    function on_apcli_wps_cancel_start(vifname, devname)
-    {
-        on_any_start();
-        apcli_show_wps_status_str("WSC: Cancelling");
-        apcli_cancel_wps(vifname);
-        setTimeout(function(){ apcli_get_wps_status(vifname, devname) }, wps_status_interval);
-    }
-
-    function on_apcli_wps_cancel_end()
-    {
-        on_any_end();
-    }
-
     function display(mode, id)
     {
         document.getElementById(id).style.display = mode;
-    }
-
-    function on_wps_mode_change(wsc_mode)
-    {
-        wps_conf_mode = document.getElementById("wps_conf_mode").value;
-        if (wsc_mode == "pbc") {
-            //display("none", "div_wps_enrolle_pin"); //Future used for Reg.
-            show_root_ap_info("OFF");
-        }
-
-        if (wsc_mode == "pin") {
-            //if (wps_conf_mode == "reg4"))
-                //display("table-row", "div_wps_enrolle_pin"); //Future used for Reg.
-            if (wps_conf_mode == "enr")
-                show_root_ap_info("ON");
-        }
     }
 
     //Sub function
@@ -1013,17 +798,6 @@ function hi(to, devname, vifname)
             document.getElementById("BusyText_ApCli").style.display="none";
         }
         console.log("waiting_count="+waiting_count);
-    }
-
-    function show_root_ap_info(mode)
-    {
-        if(mode == "ON"){
-            document.getElementById("root_ap_table").style.display= "";
-            document.getElementById("apcli_wps_section").style.display= "";
-        } else {
-            document.getElementById("root_ap_table").style.display= "none";
-            document.getElementById("apcli_wps_section").style.display= "none";
-        }
     }
 
     function clean_aplist_table()
@@ -1096,245 +870,13 @@ function hi(to, devname, vifname)
         return ((accum % 10) == 0);
     }
 
-    function show_profile_info(wps_info)
-    {
-        var wps_info_textarea = document.getElementById("wps_info");
-        //if ((!wps_info.enr_profile_idx) && (!wps_info.enr_SSID))
-        //    return -1;
-
-        wps_info_textarea.value += "\n[Profile" + wps_info.enr_profile_idx + "]";
-        wps_info_textarea.value += "\nSSID:" + wps_info.enr_SSID;
-        wps_info_textarea.value += "\nAuthMode:" + wps_info.enr_AuthMode;
-        wps_info_textarea.value += "\tEncrypType:" + wps_info.enr_EncrypType;
-        wps_info_textarea.value += "\nDefault Key Index:" + wps_info.enr_DefaultKeyID;
-        if(wps_info.AuthMode == "WEP") //WPS1.0 Spec which is OBSOLESCENT on WPS2.0.
-            wps_info_textarea.value += "\tKey(Hex value):" + wps_info.enr_KeyStr;
-        else
-            wps_info_textarea.value += "\tWPS Key(ASCII):" + wps_info.enr_WPAPSK;
-
-        return 0;
-    }
-
-    function apcli_show_wps_status_str(show_str)
-    {
-        var wps_info_textarea = document.getElementById("wps_info");
-
-        wps_info_textarea.value = show_str;
-    }
-
-    function apcli_update_wps_status(wps_info, show_str)
-    {
-        var wps_info_textarea = document.getElementById("wps_info");
-        var ret = 0;
-
-        if (wps_info.wps_result == "Failed") {
-            wps_info_textarea.value = "WSC failed" + "\n" + "WSC failed";
-            ret = -1;
-        } else if (wps_info.wps_result == "Success") {
-            wps_info_textarea.value = "WSC Success";
-            if (wps_info.wps_port_secured == "YES") {
-                //if (show_profile_info(wps_info) == 0)
-                //    ret = 1;
-                //else
-                //    ret = 0;
-                show_profile_info(wps_info);
-                ret = 1;
-            } else {
-                wps_info_textarea.value += "\nConnecting";
-                ret = 0;
-            }
-        } else {
-            wps_info_textarea.value = "WSC:" + wps_info.wps_status;
-            if ((wps_info.wps_status_code == 0) || (wps_info.wps_status_code == 1))
-                ret = 1;
-            else
-                ret = 0;
-        }
-
-        if (ret != 0)
-            on_apcli_wps_end();
-
-        return ret;
-    }
-
     //Ajax functions
     //========================================================================================
-    function apcli_get_wps_status_cb(request, vifname, devname)
-    {
-        //console.log("apcli_get_wps_status_cb.responseText=" + request.responseText);
-        var out = request;
-        var res = JSON.parse(out);
-
-        if (!res) {
-            alert("apcli_get_wps_status NG! Please refresh this page.");
-            return;
-        }
-
-        if (res.apcli_get_wps_status == "OK") {
-            ret = apcli_update_wps_status(res);
-            if (ret == 0)
-                setTimeout(function(){ apcli_get_wps_status(vifname, devname) }, wps_status_interval);
-        } else {
-            alert("apcli_get_wps_status NG! Please refresh this page.\n" + res.apcli_get_wps_status);
-        }
-    }
-
-    function apcli_get_wps_status(vifname, devname)
-    {
-        XHR.get('<%=luci.dispatcher.build_url("admin",  "network",  "wifi", "apcli_get_wps_status")%>/' + vifname + "/" + devname, null, 
-            function(x)
-            {
-                console.log(x);
-                console.log(x.response);
-                apcli_get_wps_status_cb(x.response, vifname, devname);
-            }
-        );
-    }
-
-    function apcli_do_enr_pin_wps_cb(request, vifname, devname)
-    {
-        //console.log("apcli_do_enr_pin_wps_cb.responseText=" + request.responseText);
-        var res = JSON.parse(request);
-
-        if (res.apcli_do_enr_pin_wps == "OK")
-            setTimeout(function(){ apcli_get_wps_status(vifname, devname) }, wps_status_interval);
-        else
-            alert("apcli_do_enr_pin_wps NG! Please refresh this page.\n" + res.apcli_do_enr_pin_wps);
-    }
-
-    function apcli_do_enr_pin_wps(pin_ap_ssid, vifname, devname)
-    {
-        XHR.get('<%=luci.dispatcher.build_url("admin",  "network",  "wifi",  "apcli_do_enr_pin_wps")%>/' + vifname + '/' + devname + '/' + pin_ap_ssid, null, 
-            function(x)
-            {
-                console.log(x);
-                console.log(x.response);
-                apcli_do_enr_pin_wps_cb(x.response, vifname, devname);
-            }
-        );
-    }
-
-    function apcli_do_enr_pbc_wps_cb(request, vifname, devname)
-    {
-        //console.log("apcli_do_enr_pbc_wps_cb.responseText=" + request.responseText);
-        var res = JSON.parse(request);
-
-        if (res.apcli_do_enr_pbc_wps == "OK")
-            setTimeout(function(){ apcli_get_wps_status(vifname, devname) }, wps_status_interval);
-        else
-            alert("apcli_do_enr_pbc_wps NG! Please refresh this page.\n" + res.apcli_do_enr_pbc_wps);
-    }
-
-    function apcli_do_enr_pbc_wps(vifname, devname)
-    {
-        XHR.get('<%=luci.dispatcher.build_url("admin",  "network",  "wifi",  "apcli_do_enr_pbc_wps")%>/' + vifname + '/' + devname, null, 
-            function(x)
-            {
-                console.log(x);
-                console.log(x.response);
-                apcli_do_enr_pbc_wps_cb(x.response, vifname, devname);
-            }
-        );
-    }
-
-    function apcli_cancel_wps_cb(request)
-    {
-        //console.log("apcli_cancel_wps_cb.responseText=" + request.responseText);
-        var res = JSON.parse(request);
-
-        if (res.apcli_cancel_wps != "OK") {
-            alert("apcli_cancel_wps NG! Please refresh this page.\n" + res.apcli_cancel_wps);
-        }
-
-        on_apcli_wps_cancel_end();
-    }
-
-    function apcli_cancel_wps(vifname)
-    {
-        XHR.get('<%=luci.dispatcher.build_url("admin",  "network",  "wifi",  "apcli_cancel_wps")%>/' + vifname, null, 
-            function(x)
-            {
-                console.log(x);
-                console.log(x.response);
-                apcli_cancel_wps_cb(x.response);
-            }
-        );
-    }
-
-    function apcli_wps_gen_pincode_cb(request, vifname)
-    {
-        var res = JSON.parse(request);
-
-        if (res.apcli_wps_gen_pincode == "OK")
-            on_gen_pincode_end(vifname);
-        else
-            alert("apcli_wps_gen_pincode NG! Please refresh this page.\n" + res.apcli_wps_gen_pincode);
-    }
-
-    function apcli_wps_gen_pincode(vifname)
-    {
-        XHR.get('<%=luci.dispatcher.build_url("admin",  "network",  "wifi",  "apcli_wps_gen_pincode")%>/' + vifname, null, 
-            function(x)
-            {
-                console.log(x);
-                console.log(x.response);
-                apcli_wps_gen_pincode_cb(x.response, vifname);
-            }
-        );
-    }
-
-    function apcli_wps_get_pincode_cb(request)
-    {
-        var res = JSON.parse(request);
-        //console.log("wpsConfigApplyCB.res=" + res + " ssid_index=" + ssid_index);
-
-        //console.log("res.getpincode.length=" + res.getpincode.length)
-        if (res.getpincode.length == 8)
-            document.getElementById("pin_code").value = res.getpincode;
-        else
-            alert("GetPINCode NG! Please refresh this page.");
-
-        on_get_pincode_end();
-    }
-
-    function apcli_wps_get_pincode(vifname)
-    {
-        XHR.get('<%=luci.dispatcher.build_url("admin",  "network",  "wifi",  "apcli_wps_get_pincode")%>/' + vifname, null, 
-            function(x)
-            {
-                console.log(x);
-                console.log(x.response);
-                apcli_wps_get_pincode_cb(x.response);
-            }
-        );
-    }
-
-    function filter_WPS_results(list, mode)
-    {
-        var mylist=[];
-        if(mode == "WPS")
-        {
-            for (var i = 0; list[i] ; i++)
-            {
-                if(list[i]["wps"] == "YES")
-                {
-                    mylist.push(list[i]);
-                }
-            }
-            return mylist;
-        }
-        else
-        {
-            return list;
-        }
-    }
-
     function get_site_survey_cb(request, mode)
     {
         //console.log("get_wps_site_survey_cb.responseText=" + request.responseText);
         //console.log("get_wps_site_survey_cb.args=" + mode);
         ap_list = JSON.parse(request);
-        ap_list = filter_WPS_results(ap_list, mode);
 
         clean_aplist_table();
         insert_aplist_table();
@@ -1643,12 +1185,8 @@ function hi(to, devname, vifname)
         get_apply_status();
         <% if cfgs.ApCliEnable == "1" then %>
             toggle_apcli(true);
-            document.getElementById("vif-cfg-tab-WPS").classList.remove("tab-disabled");
-            document.getElementById("disable-txt").innerHTML = "";
         <% else %>
             toggle_apcli(false);
-            document.getElementById("vif-cfg-tab-WPS").classList.add("tab-disabled");
-            document.getElementById("disable-txt").innerHTML = "To access ApCli WPS tab please enable ApClient Mode";
         <% end %>
     }
 

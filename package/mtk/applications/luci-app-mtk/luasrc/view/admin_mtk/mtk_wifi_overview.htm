@@ -14,9 +14,6 @@ local devs = mtkwifi.get_all_devs()
 local l1dat, l1 = mtkwifi.__get_l1dat()
 local dridx = l1.DEV_RINDEX
 local main_ifname
-local map_cfgs
-local first_card_cfgs
-local appliedMapModeDiff
 local chipname
 %>
 
@@ -56,8 +53,12 @@ local chipname
                                         <span style="color:red;">* FATAL ERROR: Incorrect Profile Settings</span>
                                     <%end%>
                                     <br>
-                                    <span> Driver version: <%=dev.version%> <br/></span>
-                                    <span> Tempature: <%=dev.tempature%>&#176;</span>
+                                    <%if dev.version then%>
+                                        <span> Driver version: <%=dev.version%> <br/></span>
+                                    <%end%>
+                                    <%if dev.tempature then%>
+                                        <span> Tempature: <%=dev.tempature%>&#176;C</span>
+                                    <%end%>
                                 </td>
                                 <td style="width:310px;text-align:left">
                                     <div id="ActionBtns_<%=string.split(dev.devname,".")[1]%>">
@@ -225,6 +226,7 @@ local chipname
         </table>
     </fieldset>
 -->
+
 <script>
     function disable_all_buttons()
     {
@@ -244,9 +246,9 @@ local chipname
 
     function visit_url(idSuffix,to)
     {
-        disable_all_buttons();
-        document.getElementById("ActionBtns_"+idSuffix).style.display = "none";
-        document.getElementById("BusyText_"+idSuffix).style.display = "";
+        //disable_all_buttons();
+        //document.getElementById("ActionBtns_"+idSuffix).style.display = "none";
+        //document.getElementById("BusyText_"+idSuffix).style.display = "";
         location.href = to;
     }
 
@@ -358,118 +360,6 @@ local chipname
         if (apCliInfcList.length >= 1 ){
             setTimeout(apcliInfoTimerHandler,1000,apCliInfcList,0,5);
         }
-    }
-
-    function update_displayed_profile_fields(obj_1905)
-    {
-        var vifInfcList=[];
-        var WirelessModeListJS = {};
-        <% for _,dev in ipairs(devs) do %>
-            <% if dev.vifs then%>
-                <% for _,vif in ipairs(dev.vifs) do %>
-                    <% if vif.state == "up" then%>
-                        vifInfcList.push("<%=vif.vifname%>");
-                        WirelessModeListJS['<%=vif.vifname%>'] = {};
-                        <% for wModeIdx, wModeStr in pairs(dev.WirelessModeList) do %>
-                            WirelessModeListJS['<%=vif.vifname%>']['<%=wModeIdx%>'] = "<%=wModeStr%>";
-                        <% end %>
-                    <% end %>
-                <% end %>
-            <% end %>
-        <% end %>
-
-        if(!obj_1905.hasOwnProperty('Radio Info')){
-            console.log("Topology does not have Radio Info Property!",obj_1905);
-            return;
-        }
-        for (var vifIdx = 0; vifIdx < vifInfcList.length; vifIdx++){
-            var ssid_span = document.getElementById("SSID_"+vifInfcList[vifIdx]);
-            var channel_span = document.getElementById("CHANNEL_"+vifInfcList[vifIdx]);
-            var bssid_span = document.getElementById("BSSID_"+vifInfcList[vifIdx]);
-
-            if (!ssid_span || !channel_span || !bssid_span ){
-                continue;
-            }
-            for (var radioIdx=0; radioIdx < obj_1905['Radio Info'].length; radioIdx++){
-                var radioInfoObj = obj_1905['Radio Info'][radioIdx];
-                var bssInfoArr = radioInfoObj['BSSINFO'];
-                var bssIdx;
-                for(bssIdx=0; bssIdx < bssInfoArr.length; bssIdx++){
-                    var bssInfo = bssInfoArr[bssIdx];
-                    if(bssInfo.hasOwnProperty('BSSID') && (bssInfo['BSSID'].toUpperCase() == bssid_span.innerHTML.toUpperCase())){
-                        ssid_span.innerHTML = bssInfo['SSID'];
-                        channel_span.innerHTML = radioInfoObj['channel'];
-                        break;
-                    }
-                }
-                if(bssIdx < bssInfoArr.length){
-                    break;
-                }
-            }
-        }
-    }
-
-    function find_own_topo_info(devRole, jsTopoInfo, alMac)
-    {
-        var tree_info = [];
-        var topoInfoArr = jsTopoInfo['topology information'];
-        if(!(topoInfoArr instanceof Array)){
-            console.log("Incorrect TopologyInfo: Value of topology information is not an Array!");
-            return;
-        }
-        for(var idx_1905=0; idx_1905 < topoInfoArr.length; idx_1905++){
-            var obj_1905 = topoInfoArr[idx_1905];
-            if (obj_1905.hasOwnProperty('AL MAC') && (obj_1905['AL MAC'].toUpperCase() == alMac.toUpperCase())){
-                update_displayed_profile_fields(obj_1905);
-                return;
-            }
-        }
-        console.log(alMac," AL-MAC NOT FOUND in Topology! Topology: ",jsTopoInfo);
-    }
-
-    function get_al_mac(devRole, jsTopoInfo)
-    {
-        XHR.get('<%=luci.dispatcher.build_url("admin", "network", "multi_ap", "get_al_mac")%>' + '/' + devRole, null, 
-            function(x)
-            {
-                console.log(x);
-                try{
-                    var r = JSON.parse(x.response);
-                    var mac_reg_exp = /[A-Fa-f0-9]{2}:[A-Fa-f0-9]{2}:[A-Fa-f0-9]{2}:[A-Fa-f0-9]{2}:[A-Fa-f0-9]{2}:[A-Fa-f0-9]{2}/;
-                    if (r['status'] == "SUCCESS" && mac_reg_exp.test(r['al_mac'])) {
-                        find_own_topo_info(devRole, jsTopoInfo, r['al_mac']);
-                    }
-                    else{
-                        console.log("Incorrect AL-MAC received!",r['status'],r['al_mac']);
-                    }
-                }
-                catch(e){
-                    console.log("Incorrect response received for get AL-MAC request!",e.name,e.message);
-                }
-            }
-        );
-    }
-
-    function get_run_time_topology(devRole)
-    {
-        XHR.get('<%=luci.dispatcher.build_url("admin", "network", "multi_ap", "get_runtime_topology")%>', null, 
-            function(x)
-            {
-                try{
-                    var r = JSON.parse(x.response);
-                    if(r.status == "SUCCESS"){
-                        var jsTopoInfo = JSON.parse(r['luaTopologyInfo']);
-                        get_al_mac(devRole, jsTopoInfo);
-                    }
-                    else{
-                        console.log("Failed to get Topology Info!\nStatus: ",r.status);
-                    }
-                }
-                catch(e){
-                    console.log("Incorrect response! Failed to get Topology Info!",e.name,e.message);
-                }
-            }
-        );
     }
 
     function get_apply_status_cb(rsp)

@@ -1393,19 +1393,12 @@ function mtkwifi.get_all_devs()
                 end
             end
             if not vif_name then
-                if tonumber(cfgs.BssidNum) >= 1 then
-                    errmsg = "Enable an interface to get information."
-                elseif devs[i].apcli and devs[i].apcli["state"] ~= "up" then
-                    errmsg = "Enable ApCli interface i.e. "..devs[i].apcli["vifname"].." to get information."
-                else
-                    errmsg = "Add an interface to get information."
-                end
-                devs[i].version = errmsg
-                devs[i].tempature = errmsg
+                devs[i].version = nil
+                devs[i].tempature = nil
             else
                 local version = mtkwifi.read_pipe("iwpriv "..vif_name.." get_driverinfo")
                 version = version and version:match("Driver version: (.-)\n") or ""
-                devs[i].version = version ~= "" and version or "Unknown: Incorrect response from version command!"
+                devs[i].version = version ~= "" and version or nil
                 devs[i].tempature = c_getTempature(vif_name)['tempature']
             end
 
@@ -1453,7 +1446,7 @@ end
 
 function mtkwifi.scan_ap(vifname)
     os.execute("iwpriv "..vifname.." set SiteSurvey=0")
-    os.execute("sleep 10") -- depends on your env
+    os.execute("sleep 5") -- depends on your env
     local op =  c_scanResult(vifname, 0)
     local scan_result = op["scanresult"]
     local next_line_index = 0
