@@ -228,7 +228,7 @@ int getWMOde(lua_State *L)
 
 int convert_string_display(lua_State *L)
 {
-#define BUF_SIZE	199
+#define BUF_SIZE	256
 	int  len, i;
 	char buffer[BUF_SIZE];		// 33(characters in SSID) * 6(maximum length of a HTML entity)  = 198 + 1(null character) = 199
 	char *pOut,*pBufLimit;
@@ -241,31 +241,31 @@ int convert_string_display(lua_State *L)
 	for (i = 0; i < len && (pBufLimit - pOut) >=7; i++) { // 6(maximum length of a HTML entity) + 1(null character) = 7
 		switch (str[i]) {
 		case 38:
-			strncpy(pOut, "&amp;", BUF_SIZE - 1);		// '&'
+			sprintf(pOut, "&amp;");		// '&'
 			pOut += 5;
 			break;
 
 		case 60:
-			strncpy(pOut, "&lt;", BUF_SIZE - 1);		// '<'
+			sprintf(pOut, "&lt;");		// '<'
 			pOut += 4;
 			break;
 
 		case 62:
-			strncpy(pOut, "&gt;", BUF_SIZE - 1);		// '>'
+			sprintf(pOut, "&gt;");		// '>'
 			pOut += 4;
 			break;
 
 		case 34:
-			strncpy(pOut, "&#34;", BUF_SIZE - 1);		// '"'
+			sprintf(pOut, "&#34;");		// '"'
 			pOut += 5;
 			break;
 
 		case 39:
-			strncpy(pOut, "&#39;", BUF_SIZE - 1);		// '''
+			sprintf(pOut, "&#39;");		// '''
 			pOut += 5;
 			break;
 		case 32:
-			strncpy(pOut, "&nbsp;", BUF_SIZE - 1);	// ' '
+			sprintf(pOut, "&nbsp;");	// ' '
 			pOut += 6;
 			break;
 

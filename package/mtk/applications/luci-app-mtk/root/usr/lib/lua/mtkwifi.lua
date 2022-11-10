@@ -346,6 +346,10 @@ function mtkwifi.__profile_applied_settings_path(profile)
     return bak
 end
 
+function mtkwifi.get_temp(ifname)
+    return c_getTempature(ifname)['tempature']
+end
+
 -- if path2 is not given, use backup of path1.
 function mtkwifi.diff_profile(path1, path2)
     assert(path1)
@@ -1394,12 +1398,10 @@ function mtkwifi.get_all_devs()
             end
             if not vif_name then
                 devs[i].version = nil
-                devs[i].tempature = nil
             else
                 local version = mtkwifi.read_pipe("iwpriv "..vif_name.." get_driverinfo")
                 version = version and version:match("Driver version: (.-)\n") or ""
                 devs[i].version = version ~= "" and version or nil
-                devs[i].tempature = c_getTempature(vif_name)['tempature']
             end
 
             -- Setup reverse indices by devname

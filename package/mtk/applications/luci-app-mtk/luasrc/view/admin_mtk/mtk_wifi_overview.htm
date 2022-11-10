@@ -56,8 +56,9 @@ local chipname
                                     <%if dev.version then%>
                                         <span> Driver version: <%=dev.version%> <br/></span>
                                     <%end%>
-                                    <%if dev.tempature then%>
-                                        <span> Tempature: <%=dev.tempature%>&#176;C</span>
+                                    <%local temp = mtkwifi.get_temp(main_ifname)%>
+                                    <%if temp then%>
+                                        <span> Tempature: <%=temp%>&#176;C</span>
                                     <%end%>
                                 </td>
                                 <td style="width:310px;text-align:left">
