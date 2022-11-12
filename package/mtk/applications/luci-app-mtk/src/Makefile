@@ -1,4 +1,4 @@
-OBJ_IOCTL = ioctl_helper.o
+OBJ_IOCTL = ioctl_helper.o rate_calc.o
 CFLAGS += -I.
 CFLAGS += -I$(ROOTDIR)/user/luci/lua-5.1.5/src
 CFLAGS += -Wall -shared -fPIC

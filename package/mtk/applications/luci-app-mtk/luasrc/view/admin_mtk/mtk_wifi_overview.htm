@@ -204,20 +204,18 @@ local chipname
         <% end %>
     <% end %>
 
-<!--
-    <h2><a id="content" name="content"><%:Station List%></a></h2>
-
     <fieldset class="cbi-section">
-        <table class="cbi-section-table" style="margin:10px" id="iw-assoclist">
+        <h2><a id="content" name="content">Station List</a></h2>
+        <table class="cbi-section-table" style="margin: auto" id="iw-assoclist">
             <tr class="cbi-section-table-titles">
-                <th class="cbi-section-table-cell"></th>
-                <th class="cbi-section-table-cell"><%:SSID%></th>
-                <th class="cbi-section-table-cell"><%:MAC-Address%></th>
-                <th class="cbi-section-table-cell"><%:IPv4-Address%></th>
-                <th class="cbi-section-table-cell"><%:Signal%></th>
-                <th class="cbi-section-table-cell"><%:Noise%></th>
-                <th class="cbi-section-table-cell"><%:RX Rate%></th>
-                <th class="cbi-section-table-cell"><%:TX Rate%></th>
+                <th class="cbi-section-table-cell">Interface</th>
+                <th class="cbi-section-table-cell">SSID</th>
+                <th class="cbi-section-table-cell">MAC-Address</th>
+                <!--th class="cbi-section-table-cell">IPv4-Address</th-->
+                <th class="cbi-section-table-cell">Signal (dBm)</th>
+                <th class="cbi-section-table-cell">TX Rate</th>
+                <th class="cbi-section-table-cell">RX Rate</th>
+                <th class="cbi-section-table-cell">Connected Time</th>
             </tr>
             <tr class="cbi-section-table-row cbi-rowstyle-2">
                 <td class="cbi-value-field" colspan="8">
@@ -226,9 +224,58 @@ local chipname
             </tr>
         </table>
     </fieldset>
--->
 
 <script>
+
+    function clean_stalist_table()
+    {
+        var table = document.getElementById('iw-assoclist');
+        //console.log("clean_aplist_table.aplist len=" + table.rows.length);
+        while(table.rows.length > 1)
+            table.deleteRow(-1);
+    }
+
+    function insert_stalist_table(ifname, ssid, sta_list)
+    {
+        var i, tr_row, td_cell;
+        var tableid = document.getElementById('iw-assoclist');
+
+        for (i = 0; sta_list[i] ; i++){
+            //console.log(sta_list[i]);
+            tr_row = tableid.insertRow(-1);
+
+            tr_row.align = "center";
+            td_cell = tr_row.insertCell(-1);
+            td_cell.innerHTML = ifname;
+
+            td_cell = tr_row.insertCell(-1);
+            td_cell.innerHTML = ssid;
+
+            td_cell = tr_row.insertCell(-1);
+            td_cell.innerHTML = sta_list[i].MacAddr;
+
+            // FIXME: TODO
+            /*
+            td_cell = tr_row.insertCell(-1);
+            td_cell.innerHTML = "IPv4 addr";
+            */
+
+            td_cell = tr_row.insertCell(-1);
+            td_cell.innerHTML = sta_list[i].AvgRssi0 + ", " + sta_list[i].AvgRssi1 + ", " + sta_list[i].AvgRssi2;
+
+            //TxRate
+            td_cell = tr_row.insertCell(-1);
+            td_cell.innerHTML = sta_list[i].TxRate + "Mbps," + sta_list[i].Bw+ "MHz" + "<br>" + sta_list[i].PhyMode + ", " + sta_list[i].Mcs + ", " + sta_list[i].Gi + "GI";
+
+            //RxRate
+            td_cell = tr_row.insertCell(-1);
+            td_cell.innerHTML = sta_list[i].RxRate + "Mbps," + sta_list[i].LastBw + "MHz" + "<br>" + sta_list[i].LastPhyMode + ", " + sta_list[i].LastMcs + ", " + sta_list[i].LastGi + "GI";
+
+            td_cell = tr_row.insertCell(-1);
+            td_cell.innerHTML = sta_list[i].Hr + ":" + sta_list[i].Min + ":" + sta_list[i].Sec;
+        }
+    }
+
     function disable_all_buttons()
     {
         var inp = document.getElementsByTagName("INPUT");
@@ -295,6 +342,42 @@ local chipname
                 }
             }
         );
+    }
+    var stainfo = [];
+    function staInfoHandler()
+    {
+        for (var i=0; stainfo[i]; i++) {
+            //console.log(stainfo[i].ifname);
+            XHR.poll(3, "<%=luci.dispatcher.build_url("admin",  "network",  "wifi",  "sta_info")%>/" + stainfo[i].ifname, null, 
+                function(x)
+                {
+                    this.idx = i;
+                    try{
+                        //console.log(x.responseText);
+                        response = JSON.parse(x.responseText);
+                        for (var j=0; stainfo[j]; j++) {
+                            if (response[0].ifname == stainfo[j].ifname) {
+                                response.shift(); //delete first item
+                                stainfo[j].sta = response;
+                            }
+                        }
+                    }
+                    catch(e){}
+                }
+            );
+        }
+    }
+
+    function printstainfo()
+    {
+        //console.log(stainfo);
+        clean_stalist_table();
+        var stabuf = stainfo;
+        for (var i=0; stabuf[i]; i++) {
+            insert_stalist_table(stabuf[i].ifname, stabuf[i].ssid, stabuf[i].sta);
+        }
+        
+        setTimeout(printstainfo, 500);
     }
 
     function apcliInfoTimerHandler(vifNameList,idx,remSec)
@@ -396,6 +479,17 @@ local chipname
     window.onload = function(){
         get_apply_status();
         updateApCliInfo();
+        <% for _,dev in ipairs(devs) do %>
+            <% if dev.vifs then%>
+                <% for _,vif in ipairs(dev.vifs) do %>
+                    <% if vif.state == "up" then %>
+                        stainfo.push({"ifname": "<%=vif.vifname%>", "ssid": "<%=vif.__ssid%>", "sta": ""});
+                    <% end %>
+                <% end %>
+            <% end %>
+        <% end %>
+        staInfoHandler(stainfo);
+        printstainfo();
     }
 </script>
     <%+footer%>

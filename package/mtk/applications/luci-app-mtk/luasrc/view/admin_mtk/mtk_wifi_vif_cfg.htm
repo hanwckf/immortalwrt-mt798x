@@ -59,17 +59,10 @@ function hi(to, devname, vifname)
     <% end %>
     tables.push("vif-cfg-basic-AC");
 
-    <% if request[4] == "vif_cfg_view" then%>
-        tables.push("vif-cfg-station");
-    <% end %>
-
     var tabs = new Array();
     tabs.push("vif-cfg-tab-basic");
     <% if string.split(cfgs.WirelessMode,";")[1] == "16" or string.split(cfgs.WirelessMode,";")[1] == "17" or string.split(cfgs.WirelessMode,";")[1] == "18" then %>
         tabs.push("vif-cfg-tab-he_mu");
-    <% end %>
-    <% if request[4] == "vif_cfg_view" then%>
-        tabs.push("vif-cfg-tab-station");
     <% end %>
 
     document.getElementById("__activeTab").value = to;
@@ -98,14 +91,6 @@ function hi(to, devname, vifname)
             a.className = "cbi-tab";
         }
     }
-
-    <% if request[4] == "vif_cfg_view" then%>
-        //Clear station list timer
-        XHR.halt();
-        if(to == "station"){
-            InitStaList(devname, vifname);
-        }
-    <% end %>
 }
 
 </script>
@@ -141,11 +126,6 @@ function hi(to, devname, vifname)
             <% if string.split(cfgs.WirelessMode,";")[1] == "16" or string.split(cfgs.WirelessMode,";")[1] == "17" or string.split(cfgs.WirelessMode,";")[1] == "18" then %>
                 <li class="cbi-tab-disabled" id="vif-cfg-tab-he_mu">
                     <a href="javascript:hi('he_mu', <%="'"..devname.."', '"..vifname.."'"%>);this.blur(); ">HE_MU</a>
-                </li>
-            <% end %>
-            <% if request[4] == "vif_cfg_view" then%>
-                <li class="cbi-tab-disabled" id="vif-cfg-tab-station">
-                    <a href="javascript:hi('station', <%="'"..devname.."', '"..vifname.."'"%>);this.blur(); ">Stations</a>
                 </li>
             <% end %>
         </ul>
@@ -673,25 +653,6 @@ function hi(to, devname, vifname)
             </table>
         <% end %>
 
-        <% if request[4] == "vif_cfg_view" then%>
-            <table class="cbi-section-table" id="vif-cfg-station" name="vif-cfg-station" style="display:none" width="600" border="1" cellpadding="2" cellspacing="1">
-                <tr>
-                    <td class="head" id="stalistMacAddr">MAC Addr</td>
-                    <td class="head">Aid</td>
-                    <td class="head">PSM</td>
-                    <td class="head">MIMO<br>PS</td>
-                    <td class="head">TX Rate</td>
-                    <td class="head">TxBF</td>
-                    <td class="head">RSSI</td>
-                    <td class="head">Stream<br>SNR</td>
-                    <td class="head">Snd Rsp<br>SNR</td>
-                    <td class="head">Last<br>RX Rate</td>
-                    <td class="head">Connect<br>Time</td>
-                </tr>
-            </table>
-        <% end %>
-
-
         <fieldset class="cbi-section" id="vif-cfg-basic-AC">
             <legend>Access Control - <%=vifname and devname.."@"..vifname or devname%>  </legend>
             <table class="cbi-section-table">
@@ -732,7 +693,6 @@ AA:BB:CC:DD:EE:FF
 
 <script type="text/javascript">
 
-    var sta_list;
     function disable_all_link_btns()
     {
         document.getElementById("vif_form_action_btns").style.display = "none";
@@ -763,82 +723,6 @@ AA:BB:CC:DD:EE:FF
 
         return ((imode >= 0) && (imode <= 4));
     }
-
-    /* Functions used for updating Stations tab must be written inside this check. */
-    <% if request[4] == "vif_cfg_view" then%>
-        function clean_stalist_table()
-        {
-            var table = document.getElementById('vif-cfg-station');
-            //console.log("clean_aplist_table.aplist len=" + table.rows.length);
-            while(table.rows.length > 1)
-                table.deleteRow(-1);
-        }
-
-        function insert_stalist_table()
-        {
-            var i, tr_row, td_cell;
-            var tableid = document.getElementById('vif-cfg-station');
-
-            for (i = 0; sta_list[i] ; i++){
-                console.log(sta_list[i]);
-                tr_row = tableid.insertRow(-1);
-                td_cell = tr_row.insertCell(-1);
-                td_cell.innerHTML = sta_list[i].MacAddr;
-                td_cell = tr_row.insertCell(-1);
-                td_cell.innerHTML = sta_list[i].Aid;
-                td_cell = tr_row.insertCell(-1);
-                td_cell.innerHTML = sta_list[i].Psm;
-                td_cell = tr_row.insertCell(-1);
-                td_cell.innerHTML = sta_list[i].MimoPs;
-                td_cell = tr_row.insertCell(-1);
-                td_cell.innerHTML = "MCS "+ sta_list[i].Mcs + "<br>" + sta_list[i].Bw+ "M, " + sta_list[i].Gi + "GI<br>" + sta_list[i].PhyMode + ", " +sta_list[i].Stbc;
-                td_cell = tr_row.insertCell(-1);
-                td_cell.innerHTML = sta_list[i].iTxBF + " " + sta_list[i].eTxBF;
-                td_cell = tr_row.insertCell(-1);
-                td_cell.innerHTML = sta_list[i].AvgRssi0 + "<br>" + sta_list[i].AvgRssi1 + "<br>" + sta_list[i].AvgRssi2 + "<br>" + sta_list[i].AvgRssi3;
-                td_cell = tr_row.insertCell(-1);
-                td_cell.innerHTML = sta_list[i].StreamSnr0 + "<br>" + sta_list[i].StreamSnr1 + "<br>" + sta_list[i].StreamSnr2;
-
-                if (sta_list[i].eTxBF != "-")
-                {
-                    td_cell = tr_row.insertCell(-1);
-                    td_cell.innerHTML = sta_list[i].SoundingRespSnr0 + "<br>" + sta_list[i].SoundingRespSnr1 + "<br>" + sta_list[i].SoundingRespSnr2;
-                }
-                else{
-                    td_cell = tr_row.insertCell(-1);
-                    td_cell.innerHTML = "-<br>-<br>-";
-                }
-
-                td_cell = tr_row.insertCell(-1);
-                td_cell.innerHTML = "MCS "+ sta_list[i].LastMcs + "<br>" + sta_list[i].LastBw+ "M, " + sta_list[i].LastGi + "GI<br>" + sta_list[i].LastPhyMode + ", " +sta_list[i].LastStbc;
-
-                td_cell = tr_row.insertCell(-1);
-                td_cell.innerHTML = sta_list[i].Hr + ":" + sta_list[i].Min + ":" + sta_list[i].Sec;
-            }
-        }
-
-        function InitStaList_cb(response)
-        {
-            sta_list = response;
-            clean_stalist_table();
-            insert_stalist_table();
-        }
-
-        function InitStaList(devname, vifname)
-        {
-            XHR.poll(10, "<%=luci.dispatcher.build_url("admin",  "network",  "wifi",  "sta_info")%>/" + vifname + '/' + devname, null, 
-                function(x)
-                {
-                    try{
-                        var response = JSON.parse(x.responseText);
-                        console.log("Station List " + response);
-                        InitStaList_cb(response);
-                    }
-                    catch(e){}
-                }
-            );
-        }
-    <% end %>
 
     function checkInjection(str)
     {

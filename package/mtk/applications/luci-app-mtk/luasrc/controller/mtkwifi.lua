@@ -940,6 +940,9 @@ function sta_info(ifname)
     local output = {}
     local stalist = c_StaInfo(ifname)
 
+    local ifname_t = {["ifname"] = ifname}
+    table.insert(output, ifname_t)
+
     local count = 0
     for _ in pairs(stalist) do count = count + 1 end
 

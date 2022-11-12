@@ -9,66 +9,8 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <linux/wireless.h>
-#include <lua.h>							   /* Always include this */
-#include <lauxlib.h>						   /* Always include this */
-#include <lualib.h>							/* Always include this */
 
-#define USHORT  unsigned short
-#define UCHAR   unsigned char
-
-typedef union _HTTRANSMIT_SETTING {
-	struct {
-		USHORT MCS:6;
-		USHORT ldpc:1;
-		USHORT BW:2;
-		USHORT ShortGI:1;
-		USHORT STBC:1;
-		USHORT eTxBF:1;
-		USHORT iTxBF:1;
-		USHORT MODE:3;
-	} field;
-	USHORT word;
-} HTTRANSMIT_SETTING, *PHTTRANSMIT_SETTING;
-
-typedef struct _RT_802_11_MAC_ENTRY {
-	unsigned char           ApIdx;
-	unsigned char           Addr[6];
-	unsigned short          Aid;
-	unsigned char           Psm;     // 0:PWR_ACTIVE, 1:PWR_SAVE
-	unsigned char           MimoPs;  // 0:MMPS_STATIC, 1:MMPS_DYNAMIC, 3:MMPS_Enabled
-	signed char             AvgRssi0;
-	signed char             AvgRssi1;
-	signed char             AvgRssi2;
-	unsigned int            ConnectedTime;
-	HTTRANSMIT_SETTING      TxRate;
-	unsigned int            LastRxRate;
-	short                   StreamSnr[3];
-	short                   SoundingRespSnr[3];
-	//short                   TxPER;
-	//short                   reserved;
-} RT_802_11_MAC_ENTRY;
-
-#define MAX_NUMBER_OF_MAC               544
-
-typedef struct _RT_802_11_MAC_TABLE {
-	unsigned long            Num;
-	RT_802_11_MAC_ENTRY      Entry[MAX_NUMBER_OF_MAC];
-} RT_802_11_MAC_TABLE;
-
-#define IF_NAMESIZE			16
-#define SIOCIWFIRSTPRIV			0x8BE0
-#define RT_PRIV_IOCTL				(SIOCIWFIRSTPRIV + 0x0E)
-#define RTPRIV_IOCTL_GET_MAC_TABLE_STRUCT	(SIOCIWFIRSTPRIV + 0x1F)
-#define RTPRIV_IOCTL_GSITESURVEY		(SIOCIWFIRSTPRIV + 0x0D)
-#define OID_GET_WMODE			0x099E
-#define OID_GET_CPU_TEMPERATURE		0x09A1
-
-int get_macaddr(lua_State *L);
-int convert_string_display(lua_State *L);
-int StaInfo(lua_State *L);
-int getWMOde(lua_State *L);
-int getTempature(lua_State *L);
-int scanResult(lua_State *L);
+#include "mtwifi.h"
 
 int luaopen_ioctl_helper(lua_State *L)
 {
@@ -302,7 +244,7 @@ int StaInfo(lua_State *L)
 	int i, s;
 	struct iwreq iwr;
 	RT_802_11_MAC_TABLE *table;
-	char tmpBuff[128];
+	char tmpBuff[128] = {0};
 	char *phyMode[12] = {"CCK", "OFDM", "MM", "GF", "VHT", "HE",
 		"HE5G", "HE2G", "HE_SU", "HE_EXT_SU", "HE_TRIG", "HE_MU"};
 	const char *interface = luaL_checkstring(L, 1);
@@ -340,20 +282,28 @@ int StaInfo(lua_State *L)
 		lua_pushnumber(L, i);
 
 		RT_802_11_MAC_ENTRY *pe = &(table->Entry[i]);
-		unsigned int lastRxRate = pe->LastRxRate;
-		unsigned int mcs = pe->LastRxRate & 0x7F;
-		unsigned int vht_nss;
-		unsigned int vht_mcs = pe->TxRate.field.MCS;
-		unsigned int vht_nss_r;
-		unsigned int vht_mcs_r = pe->LastRxRate & 0x3F;
+
+		HTTRANSMIT_SETTING RxRate;
+		RxRate.word = pe->LastRxRate;
+
+		/* vht tx mcs nss*/
+		unsigned int mcs = pe->TxRate.field.MCS;
+		unsigned int nss = 0;
+		
+		/* vht rx mcs nss*/
+		unsigned int mcs_r = RxRate.field.MCS;
+		unsigned int nss_r = 0;
+
 		int hr, min, sec;
+		unsigned long DataRate = 0;
+		unsigned long DataRate_r = 0;
 
 		hr = pe->ConnectedTime/3600;
 		min = (pe->ConnectedTime % 3600)/60;
 		sec = pe->ConnectedTime - hr*3600 - min*60;
 
 		 /*Creates first child table of size 28 non-array elements: */
-		lua_createtable(L, 0, 28);
+		lua_createtable(L, 0, 32);
 
 		// MAC Address
 		snprintf(tmpBuff, sizeof(tmpBuff), "%02X:%02X:%02X:%02X:%02X:%02X", pe->Addr[0], pe->Addr[1], pe->Addr[2], pe->Addr[3],
@@ -375,14 +325,15 @@ int StaInfo(lua_State *L)
 		lua_setfield(L, -2, "MimoPs");
 
 		// TX Rate
-		if (pe->TxRate.field.MODE == 4){
-			vht_nss = ((vht_mcs & (0x3 << 4)) >> 4) + 1;
-			vht_mcs = vht_mcs & 0xF;
-			snprintf(tmpBuff, sizeof(tmpBuff), "%dS-M%d/", vht_nss, vht_mcs);
+		if (pe->TxRate.field.MODE >= 4){
+			nss = ((mcs & (0x3 << 4)) >> 4) + 1;
+			mcs = mcs & 0xF;
+			snprintf(tmpBuff, sizeof(tmpBuff), "%dSS-MCS%d", nss, mcs);
 			lua_pushstring(L, tmpBuff);
 			lua_setfield(L, -2, "Mcs");
 		} else{
-			snprintf(tmpBuff, sizeof(tmpBuff), "%d", pe->TxRate.field.MCS);
+			mcs = mcs & 0x3f;
+			snprintf(tmpBuff, sizeof(tmpBuff), "MCS%d", pe->TxRate.field.MCS);
 			lua_pushstring(L, tmpBuff);
 			lua_setfield(L, -2, "Mcs");
 		}
@@ -399,9 +350,13 @@ int StaInfo(lua_State *L)
 			snprintf(tmpBuff, sizeof(tmpBuff), "%d", 80);
 			lua_pushstring(L, tmpBuff);
 			lua_setfield(L, -2, "Bw");
+		} else if (pe->TxRate.field.BW == 3){
+			snprintf(tmpBuff, sizeof(tmpBuff), "%d", 160);
+			lua_pushstring(L, tmpBuff);
+			lua_setfield(L, -2, "Bw");
 		}
 
-		snprintf(tmpBuff, sizeof(tmpBuff), "%c", pe->TxRate.field.ShortGI? 'S': 'L');
+		snprintf(tmpBuff, sizeof(tmpBuff), "%c", pe->TxRate.field.ShortGI ? 'S': 'L');
 		lua_pushstring(L, tmpBuff);
 		lua_setfield(L, -2, "Gi");
 
@@ -460,41 +415,76 @@ int StaInfo(lua_State *L)
 		}
 
 		// Last RX Rate
-		if (((lastRxRate>>13) & 0x7) == 4){
-			vht_nss_r = ((vht_mcs_r & (0x3 << 4)) >> 4) + 1;
-			vht_mcs_r = vht_mcs_r & 0xF;
-			snprintf(tmpBuff, sizeof(tmpBuff), "%dS-M%d", vht_nss_r, vht_mcs_r);
-			lua_pushstring(L, tmpBuff);
-			lua_setfield(L, -2, "LastMcs");
-		} else{
-			snprintf(tmpBuff, sizeof(tmpBuff), "%d", mcs);
-			lua_pushstring(L, tmpBuff);
-			lua_setfield(L, -2, "LastMcs");
+		if (RxRate.field.MODE >= MODE_VHT) {
+			nss_r = ((mcs_r & (0x3 << 4)) >> 4) + 1;
+			mcs_r = mcs_r & 0xF;
+			snprintf(tmpBuff, sizeof(tmpBuff), "%dSS-MCS%d", nss_r, mcs_r);
+		} else if (RxRate.field.MODE == MODE_HTMIX) {
+			mcs_r = mcs_r & 0x3f;
+			snprintf(tmpBuff, sizeof(tmpBuff), "MCS%d", mcs_r);
+		} else if (RxRate.field.MODE == MODE_OFDM) {
+			mcs_r = mcs_r & 0xF;
+			if (mcs_r == TMI_TX_RATE_OFDM_6M)
+				snprintf(tmpBuff, sizeof(tmpBuff), "MCS%d", 0);
+			else if (mcs_r == TMI_TX_RATE_OFDM_9M)
+				snprintf(tmpBuff, sizeof(tmpBuff), "MCS%d", 1);
+			else if (mcs_r == TMI_TX_RATE_OFDM_12M)
+				snprintf(tmpBuff, sizeof(tmpBuff), "MCS%d", 2);
+			else if (mcs_r == TMI_TX_RATE_OFDM_18M)
+				snprintf(tmpBuff, sizeof(tmpBuff), "MCS%d", 3);
+			else if (mcs_r == TMI_TX_RATE_OFDM_24M)
+				snprintf(tmpBuff, sizeof(tmpBuff), "MCS%d", 4);
+			else if (mcs_r == TMI_TX_RATE_OFDM_36M)
+				snprintf(tmpBuff, sizeof(tmpBuff), "MCS%d", 5);
+			else if (mcs_r == TMI_TX_RATE_OFDM_48M)
+				snprintf(tmpBuff, sizeof(tmpBuff), "MCS%d", 6);
+			else if (mcs_r == TMI_TX_RATE_OFDM_54M)
+				snprintf(tmpBuff, sizeof(tmpBuff), "MCS%d", 7);
+			else
+				snprintf(tmpBuff, sizeof(tmpBuff), "MCS%d", 0);
+		} else if (RxRate.field.MODE == MODE_CCK) {
+			mcs_r = mcs_r & 0x7;
+			if (mcs_r == TMI_TX_RATE_CCK_1M_LP)
+				snprintf(tmpBuff, sizeof(tmpBuff), "MCS%d", 0);
+			else if (mcs_r == TMI_TX_RATE_CCK_2M_LP || mcs_r == TMI_TX_RATE_CCK_2M_SP)
+				snprintf(tmpBuff, sizeof(tmpBuff), "MCS%d", 1);
+			else if (mcs_r == TMI_TX_RATE_CCK_5M_LP || mcs_r == TMI_TX_RATE_CCK_5M_SP)
+				snprintf(tmpBuff, sizeof(tmpBuff), "MCS%d", 2);
+			else if (mcs_r == TMI_TX_RATE_CCK_11M_LP || mcs_r == TMI_TX_RATE_CCK_11M_SP)
+				snprintf(tmpBuff, sizeof(tmpBuff), "MCS%d", 3);
+			else
+				snprintf(tmpBuff, sizeof(tmpBuff), "MCS%d", 0);
 		}
+		lua_pushstring(L, tmpBuff);
+		lua_setfield(L, -2, "LastMcs");
 
-		if (((lastRxRate>>7) & 0x3) == 0){
+		if (RxRate.field.BW == 0){
 			snprintf(tmpBuff, sizeof(tmpBuff), "%d", 20);
 			lua_pushstring(L, tmpBuff);
 			lua_setfield(L, -2, "LastBw");
-		} else if (((lastRxRate>>7) & 0x3) == 1){
+		} else if (RxRate.field.BW == 1){
 			snprintf(tmpBuff, sizeof(tmpBuff), "%d", 40);
 			lua_pushstring(L, tmpBuff);
 			lua_setfield(L, -2, "LastBw");
-		} else if (((lastRxRate>>7) & 0x3) == 2){
+		} else if (RxRate.field.BW == 2){
 			snprintf(tmpBuff, sizeof(tmpBuff), "%d", 80);
+			lua_pushstring(L, tmpBuff);
+			lua_setfield(L, -2, "LastBw");
+		} else if (RxRate.field.BW == 3){
+			snprintf(tmpBuff, sizeof(tmpBuff), "%d", 160);
 			lua_pushstring(L, tmpBuff);
 			lua_setfield(L, -2, "LastBw");
 		}
 
-		snprintf(tmpBuff, sizeof(tmpBuff), "%c", ((lastRxRate>>8) & 0x1)? 'S': 'L');
+		snprintf(tmpBuff, sizeof(tmpBuff), "%c", RxRate.field.ShortGI ? 'S': 'L');
 		lua_pushstring(L, tmpBuff);
 		lua_setfield(L, -2, "LastGi");
 
-		snprintf(tmpBuff, sizeof(tmpBuff), "%s", phyMode[(lastRxRate>>13) & 0x7]);
+		snprintf(tmpBuff, sizeof(tmpBuff), "%s", phyMode[RxRate.field.MODE]);
 		lua_pushstring(L, tmpBuff);
 		lua_setfield(L, -2, "LastPhyMode");
 
-		snprintf(tmpBuff, sizeof(tmpBuff), "%s", ((lastRxRate>>9) & 0x3)? "STBC": " ");
+		snprintf(tmpBuff, sizeof(tmpBuff), "%s", RxRate.field.STBC ? "STBC": " ");
 		lua_pushstring(L, tmpBuff);
 		lua_setfield(L, -2, "LastStbc");
 
@@ -510,6 +500,26 @@ int StaInfo(lua_State *L)
 		snprintf(tmpBuff, sizeof(tmpBuff), "%02d", sec);
 		lua_pushstring(L, tmpBuff);
 		lua_setfield(L, -2, "Sec");
+
+		if (pe->TxRate.field.MODE >= MODE_HE) {
+			get_rate_he((mcs & 0xf), pe->TxRate.field.BW, nss, 0, &DataRate);
+		} else {
+			getRate(pe->TxRate, &DataRate);
+		}
+
+		snprintf(tmpBuff, sizeof(tmpBuff), "%ld", DataRate);
+		lua_pushstring(L, tmpBuff);
+		lua_setfield(L, -2, "TxRate");
+
+		if (RxRate.field.MODE >= MODE_HE) {
+			get_rate_he((mcs_r & 0xf), RxRate.field.BW, nss_r, 0, &DataRate_r);
+		} else {
+			getRate(RxRate, &DataRate_r);
+		}
+
+		snprintf(tmpBuff, sizeof(tmpBuff), "%ld", DataRate_r);
+		lua_pushstring(L, tmpBuff);
+		lua_setfield(L, -2, "RxRate");
 
 		lua_settable(L, -3);
 	}
