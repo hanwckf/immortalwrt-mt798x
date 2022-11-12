@@ -55,46 +55,7 @@ local cfgs = mtkwifi.load_profile(dev.profile)
 <script type="text/javascript" src="<%=resource%>/cbi.js?v=git-17.250.41546-90ac861"></script>
 <script type="text/javascript">
 
-var intervalId = "";
 var waiting_count = 0;
-function hi(to, devname, vifname)
-{
-    var a;
-    var x;
-    var tables = new Array();
-    tables.push("vif-cfg-apcli");
-    tables.push("vif-cfg-apcli-config");
-    tables.push("apcli_form_buttons");
-
-    var tabs = new Array();
-    tabs.push("vif-cfg-tab-apcli");
-
-    document.getElementById("__activeTab").value = to;
-    for (x in tables)
-    {
-        a = document.getElementById(tables[x]);
-        if (tables[x].indexOf(to) == -1)
-        {
-            a.style.display = "none";
-        }
-        else
-        {
-            a.style.display = "";
-        }
-    }
-    for (y in tabs)
-    {
-        a = document.getElementById(tabs[y]);
-        if(tabs[y].indexOf(to) == -1)
-        {
-            a.className = "cbi-tab-disabled";
-        }
-        else
-        {
-            a.className = "cbi-tab";
-        }
-    }
-}
 
 </script>
 
@@ -111,11 +72,6 @@ function hi(to, devname, vifname)
                     <span style="color:red;">( <a href="javascript:location.href='<%=luci.dispatcher.build_url("admin", "network", "wifi", "reload", devname)%>'">Click here</a> to apply changes)</span>
                 <%end%>
             </legend>
-            <ul class="cbi-tabmenu">
-                <li class="cbi-tab" id="vif-cfg-tab-apcli">
-                    <a href="javascript:hi('apcli', <%="'"..devname.."', '"..vifname.."'"%>);this.blur(); ">AP Client</a>
-                </li>
-            </ul>
             <input type="hidden" name="__activeTab" id="__activeTab" value="apcli">
             <input type="hidden" name="__pin_ap_ssid" id="__pin_ap_ssid" value="">
             <input type="hidden" name="ApCliAuthMode" id="ApCliAuthMode" value="<%=cfgs.ApCliAuthMode%>">

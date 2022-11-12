@@ -177,10 +177,8 @@ local chipname
                                         <% if dev.ApCliEnable ~= "1" then %>
                                             <% if dev.apcli.state == "up" then %>
                                             <input class="cbi-button cbi-button-reset" style="width:100px" title="Disable this network" value="Disable" type="button" onclick="visit_url('<%=dev.apcli.devname%>','<%=luci.dispatcher.build_url("admin", "network", "wifi", "vif_disable", dev.apcli.vifname)%>')">
-                                            <% else %>
-                                            <input class="cbi-button cbi-button-apply" style="width:100px" title="Enable this network" value="Enable" type="button" onclick="visit_url('<%=dev.apcli.devname%>','<%=luci.dispatcher.build_url("admin", "network", "wifi", "vif_enable", dev.apcli.vifname)%>')">
-                                            <% end %>
                                             <input class="cbi-button cbi-button-reload" style="width:100px" title="Reload WiFi network" value="Connect" type="button" onclick="visit_url('<%=dev.apcli.devname%>','<%=luci.dispatcher.build_url("admin", "network", "wifi", "apcli_connect", dev.devname, dev.apcli.vifname)%>')">
+                                            <% end %>
                                             <input class="cbi-button cbi-button-edit" style="width:100px" title="Configure WiFi device" value="Config" type="button" onclick="visit_url('<%=dev.apcli.devname%>','<%=luci.dispatcher.build_url("admin", "network", "wifi", "apcli_cfg_view", dev.devname, dev.apcli.vifname)%>')">
                                         <% else %>
                                             <input class="cbi-button cbi-button-reset" id="ApCliDownBtn_<%=dev.apcli.devname%>" style="width:100px;display:none" title="Disable this network" value="Disable" type="button" onclick="visit_url('<%=dev.apcli.devname%>','<%=luci.dispatcher.build_url("admin", "network", "wifi", "vif_disable", dev.apcli.vifname)%>')">
@@ -351,10 +349,9 @@ local chipname
             XHR.poll(3, "<%=luci.dispatcher.build_url("admin",  "network",  "wifi",  "sta_info")%>/" + stainfo[i].ifname, null, 
                 function(x)
                 {
-                    this.idx = i;
                     try{
                         //console.log(x.responseText);
-                        response = JSON.parse(x.responseText);
+                        var response = JSON.parse(x.responseText);
                         for (var j=0; stainfo[j]; j++) {
                             if (response[0].ifname == stainfo[j].ifname) {
                                 response.shift(); //delete first item

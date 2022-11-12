@@ -509,16 +509,16 @@ local WirelessModeList = {
     [6] = "N in 2.4G only",
     [7] = "G/GN", -- i.e., no CCK mode
     [8] = "A/N in 5 band",
-    [9] = "B/G/GN mode",
+    [9] = "B/G/GN",
     -- [10] = "A/AN/G/GN mode", --not support B mode
     [11] = "only N in 5G band",
     -- [12] = "B/G/GN/A/AN/AC mixed",
     -- [13] = "G/GN/A/AN/AC mixed", -- no B mode
     [14] = "A/AC/AN mixed",
     [15] = "AC/AN mixed", --but no A mode
-    [16] = "HE_2G mode", --HE Wireless Mode
-    [17] = "HE_5G mode", --HE Wireless Mode
-    [18] = "HE_6G mode", --HE Wireless Mode
+    [16] = "HE_2G", --HE Wireless Mode
+    [17] = "HE_5G", --HE Wireless Mode
+    [18] = "HE_6G", --HE Wireless Mode
 }
 
 local DevicePropertyMap = {
@@ -1447,6 +1447,11 @@ end
 
 
 function mtkwifi.scan_ap(vifname)
+    local flags = tonumber(mtkwifi.read_pipe("cat /sys/class/net/"..vifname.."/flags 2>/dev/null")) or 0
+    if flags%2 ~= 1 then
+        os.execute("ifconfig "..vifname.." up")
+    end
+    
     os.execute("iwpriv "..vifname.." set SiteSurvey=0")
     os.execute("sleep 5") -- depends on your env
     local op =  c_scanResult(vifname, 0)
@@ -1542,6 +1547,10 @@ function mtkwifi.scan_ap(vifname)
         if not scan_result or not string.match(scan_result, "%s+%x%x:%x%x:%x%x:%x%x:%x%x:%x%x%s+") then
             break
         end
+    end
+
+    if flags%2 ~= 1 then
+        os.execute("ifconfig "..vifname.." down")
     end
 
     return ap_list
