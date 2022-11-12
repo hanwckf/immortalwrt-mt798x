@@ -2,7 +2,7 @@
 .DS_Store
 .*.swp
 /env
-/dl
+/dl/*
 /.config
 /.config.old
 /bin
@@ -30,3 +30,7 @@ git-src
 .cproject
 .ccache
 .vscode
+
+!/dl/datconf*
+!/dl/mt798*
+!/dl/warp*

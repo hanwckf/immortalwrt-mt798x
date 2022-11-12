@@ -205,6 +205,9 @@ define Package/base-files/install
 
 	$(if $(CONFIG_TARGET_PREINIT_DISABLE_FAILSAFE), \
 		rm -f $(1)/etc/banner.failsafe,)
+
+	$(if $(CONFIG_PACKAGE_wifi-profile), \
+		rm -f $(1)/sbin/wifi)
 endef
 
 ifneq ($(DUMP),1)
