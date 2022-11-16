@@ -914,17 +914,17 @@ local ApCliAuthModeList = {
 }
 
 local EncryptionTypeList = {
-    "WEP",
-    "TKIP",
-    "TKIPAES",
     "AES",
-    "GCMP256"
+    "GCMP256",
+    "TKIPAES",
+    "TKIP",
+    "WEP"
 }
 
 local EncryptionTypeList_6G = {
-    "WEP",
     "AES",
-    "GCMP256"
+    "GCMP256",
+    "WEP"
 }
 
 local dbdc_prefix = {
