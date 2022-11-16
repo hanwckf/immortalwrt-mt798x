@@ -130,9 +130,31 @@ function __mtkwifi_save_profile(cfgs, path, isProfileSettingsAppliedToDriver)
     end
 end
 
+local __setup_wan = function(devname)
+    local devs = mtkwifi.get_all_devs()
+    local profiles = mtkwifi.search_dev_and_profile()
+    local cfgs = mtkwifi.load_profile(profiles[devname])
+    local dev = devs and devs[devname]
+    local vif = "eth1"
+
+    if cfgs.ApCliEnable ~= "0" and cfgs.ApCliEnable ~= "" and dev.apcli.vifname then
+        vif = dev.apcli.vifname
+    end
+
+    nixio.syslog("debug", "Set wan/wan6 to "..vif)
+
+    os.execute("uci set network.wan.device="..vif)
+    os.execute("uci set network.wan6.device="..vif)
+    os.execute("uci commit")
+    os.execute("ifup wan")
+    os.execute("ifup wan6")
+
+end
+
 local __mtkwifi_reload = function (devname)
     local wifi_restart = false
     local wifi_reload = false
+    local change_wan = false
     local profiles = mtkwifi.search_dev_and_profile()
 
     for dev,profile in pairs(profiles) do
@@ -149,7 +171,14 @@ local __mtkwifi_reload = function (devname)
                 wifi_reload = true
             end
 
+            if diff.ApCliEnable then
+                change_wan = true
+            end
         end
+    end
+
+    if change_wan and devname then
+        __setup_wan(devname)
     end
 
     if wifi_restart then
@@ -1156,6 +1185,10 @@ function apcli_cfg(dev, vif)
         end
     end
 
+    -- disable ACS for apcli
+    if cfgs.ApCliEnable ~= "0" and cfgs.ApCliEnable ~= "" then
+        cfgs.AutoChannelSelect = "0"
+    end
     -- http.write_json(http.formvalue())
 
     -- Mediatek Adaptive Network
@@ -1239,7 +1272,7 @@ function apcli_connect(dev, vif)
     cfgs.ApCliEnable = "1"
     __mtkwifi_save_profile(cfgs, profiles[devname], true)
     os.execute("ifconfig "..vifname.." up")
-    os.execute("brctl addif br-lan "..vifname)
+    --os.execute("brctl addif br-lan "..vifname)
     os.execute("iwpriv "..vifname.." set MACRepeaterEn="..cfgs.MACRepeaterEn)
     os.execute("iwpriv "..vifname.." set ApCliEnable=0")
     os.execute("iwpriv "..vifname.." set Channel="..cfgs.Channel)
@@ -1263,6 +1296,8 @@ function apcli_connect(dev, vif)
     end
     os.execute("iwpriv "..vifname.." set ApCliSsid=\""..mtkwifi.__handleSpecialChars(cfgs.ApCliSsid).."\"")
     os.execute("iwpriv "..vifname.." set ApCliEnable=1")
+    os.execute("iwpriv "..vifname.." set ApCliAutoConnect=3")
+
     luci.http.redirect(luci.dispatcher.build_url("admin", "network", "wifi"))
 end
 
@@ -1283,7 +1318,7 @@ function apcli_disconnect(dev, vif)
     __mtkwifi_save_profile(cfgs, profiles[devname], true)
     os.execute("iwpriv "..vifname.." set ApCliEnable=0")
     os.execute("ifconfig "..vifname.." down")
-    os.execute("brctl delif br-lan "..vifname)
+    --os.execute("brctl delif br-lan "..vifname)
     luci.http.redirect(luci.dispatcher.build_url("admin", "network", "wifi"))
 end
 

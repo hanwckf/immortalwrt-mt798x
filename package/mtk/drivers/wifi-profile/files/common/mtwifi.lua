@@ -103,8 +103,15 @@ function mtwifi_up(devname)
             then
                 nixio.syslog("debug", "mtwifi_up: ifconfig "..vif.." up")
                 os.execute("ifconfig "..vif.." up")
-                add_vif_into_lan(vif)
+                --add_vif_into_lan(vif)
             -- else nixio.syslog("debug", "mtwifi_up: skip "..vif..", prefix not match "..pre)
+            end
+            if string.match(vif, esc(dev.apcli_ifname).."[0-9]+") and
+                cfgs.ApCliEnable ~= "0" and cfgs.ApCliEnable ~= "" then
+                -- enable apcli auto connect by default
+                -- ApCliAutoConnect: 1=User Trigger Scan Mode 2=Partial Scan Mode 3=Driver Trigger Scan ModeW
+                os.execute("iwpriv "..vif.." set ApCliEnable=1")
+                os.execute("iwpriv "..vif.." set ApCliAutoConnect=3")
             end
         end
 

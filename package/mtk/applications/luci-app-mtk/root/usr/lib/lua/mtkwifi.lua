@@ -1125,6 +1125,7 @@ function mtkwifi.__setup_vifs(cfgs, devname, mainidx, subidx)
         end
 
         if (vifs[j].__temp_channel ~= "" ) then
+            vifs[j].__temp_channel = mtkwifi.__trim(vifs[j].__temp_channel)
             vifs[j].__channel = vifs[j].__temp_channel
         else
             vifs[j].__channel = cfgs.Channel
@@ -1224,9 +1225,9 @@ function mtkwifi.__setup_apcli(cfgs, devname, mainidx, subidx)
         end
         local flags = tonumber(mtkwifi.read_pipe("cat /sys/class/net/"..apcli_name.."/flags 2>/dev/null")) or 0
         apcli.state = flags%2 == 1 and "up" or "down"
-        rd_pipe_output = mtkwifi.read_pipe("cat /sys/class/net/"..apcli_name.."/address 2>/dev/null")
+        rd_pipe_output = mtkwifi.__trim(mtkwifi.read_pipe("cat /sys/class/net/"..apcli_name.."/address 2>/dev/null"))
         apcli.mac_addr = rd_pipe_output and string.match(rd_pipe_output, "%x%x:%x%x:%x%x:%x%x:%x%x:%x%x") or "?"
-        rd_pipe_output = mtkwifi.read_pipe("iwconfig "..apcli_name.." | grep 'Access Point' 2>/dev/null")
+        rd_pipe_output = mtkwifi.__trim(mtkwifi.read_pipe("iwconfig "..apcli_name.." | grep 'Access Point' 2>/dev/null"))
         apcli.bssid = rd_pipe_output and string.match(rd_pipe_output, "%x%x:%x%x:%x%x:%x%x:%x%x:%x%x") or "Not-Associated"
         return apcli
     else
@@ -1245,7 +1246,7 @@ function mtkwifi.__setup_eths()
         ethInfo['ifname'] = ethName
         local flags = tonumber(mtkwifi.read_pipe("cat /sys/class/net/"..ethName.."/flags 2>/dev/null")) or 0
         ethInfo['state'] = flags%2 == 1 and "up" or "down"
-        ethInfo['mac_addr'] = mtkwifi.read_pipe("cat /sys/class/net/"..ethName.."/address 2>/dev/null") or "?"
+        ethInfo['mac_addr'] = mtkwifi.__trim(mtkwifi.read_pipe("cat /sys/class/net/"..ethName.."/address 2>/dev/null")) or "?"
         table.insert(etherInfo,ethInfo)
     end
     return etherInfo
