@@ -1,0 +1,12 @@
+--- a/drivers/net/ethernet/mediatek/mtk_eth_soc.h
++++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
+@@ -41,8 +41,7 @@
+ #define MTK_HW_FEATURES		(NETIF_F_IP_CSUM | \
+ 				 NETIF_F_RXCSUM | \
+ 				 NETIF_F_HW_VLAN_CTAG_TX | \
+-				 NETIF_F_SG | NETIF_F_TSO | \
+-				 NETIF_F_TSO6 | \
++				 NETIF_F_SG | NETIF_F_ALL_TSO | \
+ 				 NETIF_F_IPV6_CSUM)
+ #define MTK_SET_FEATURES	(NETIF_F_LRO | \
+ 				 NETIF_F_HW_VLAN_CTAG_RX)
