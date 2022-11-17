@@ -7,6 +7,9 @@ Compared the official one, we allow to use hacks or non-upstreamable patches / m
 
 Default login address: http://192.168.1.1 or http://immortalwrt.lan, username: __root__, password: _none_.
 
+## About immortalwrt-mt798x 
+- https://cmi.hanwckf.top/p/immortalwrt-mt798x
+
 ## Download
 Built firmware images are available for many architectures and come with a package selection to be used as WiFi home router. To quickly find a factory image usable to migrate from a vendor stock firmware to ImmortalWrt, try the *Firmware Selector*.
 
