@@ -37,6 +37,10 @@ endef
 define Build/Compile
 endef
 
+define Package/wifi-profile/conffiles
+/etc/wireless/
+endef
+
 define Package/wifi-profile/install
 	$(INSTALL_DIR) $(1)/etc/wireless/
 	$(INSTALL_DIR) $(1)/lib/wifi/
