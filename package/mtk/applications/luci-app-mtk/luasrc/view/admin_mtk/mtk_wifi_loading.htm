@@ -8,10 +8,10 @@ local disp = require "luci.dispatcher"
 local request = disp.context.request
 local url = "/"..table.concat(request,'/',5)
 %>
-<h2><a>Applying Settings</a></h2>
+<h2><%:Wireless%></h2>
 <div class="alert-message" id="BusyMsg">
     <img src="<%=resource%>/icons/loading.gif" alt="" style="vertical-align:middle" />
-    <big><strong>Please wait while the settings are being applied.</strong></big>
+    <big><strong><%:Please wait while the settings are being applied.%></strong></big>
 </div>
 <div class="alert-message error" id="TimeoutMsgDiv" style="display:none">
     <big><strong id="TimeoutMsg">Device is taking too much time to apply the settings!</strong></big>

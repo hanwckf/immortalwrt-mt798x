@@ -8,14 +8,8 @@ include $(TOPDIR)/rules.mk
 
 LUCI_TITLE:=MediaTek Proprietary Configuration.
 LUCI_DEPENDS:=+datconf-lua
-LUCI_MK_PATH_OLD:=$(shell test -e ../luci.mk && echo "old")
-LUCI_MK_PATH_FEEDS:=$(shell test -e $(TOPDIR)/feeds/luci/luci.mk && echo "feeds")
-ifeq ($(LUCI_MK_PATH_OLD),old)
-include ../luci.mk
-else ifeq ($(LUCI_MK_PATH_FEEDS),feeds)
+LUCI_PKGARCH:=all
+
 include $(TOPDIR)/feeds/luci/luci.mk
-else
-include $(TOPDIR)/package/luci/luci.mk
-endif
 
 # call BuildPackage - OpenWrt buildroot signature

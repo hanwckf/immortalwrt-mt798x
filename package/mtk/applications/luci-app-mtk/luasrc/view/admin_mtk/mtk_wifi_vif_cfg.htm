@@ -98,8 +98,7 @@ function hi(to, devname, vifname)
 <form method="post" name="cbi" action="<%=luci.dispatcher.build_url("admin", "network", "wifi", "vif_cfg", devname, vifname)%>" enctype="multipart/form-data" onsubmit="return validate_all('<%=vifidx%>','<%=cfgs["HT_DisallowTKIP"]%>')" autocomplete="off">
 <% if not dev or not vif then%>
     <fieldset class="cbi-section">
-        <legend>Interface Not Exist - <%=vifname and devname.."@"..vifname or devname%>
-        </legend>
+        <h2>Interface Not Exist - <%=vifname and devname.."@"..vifname or devname%></h2>
     </fieldset>
 <% else %>
     <input type="hidden" id="CountryCode" name="CountryCode" value="<%=cfgs.CountryCode%>">
@@ -110,34 +109,32 @@ function hi(to, devname, vifname)
     <% end %>
     <input type="hidden" id="Channel" name="Channel" value="<%=cfgs.Channel%>">
     <fieldset class="cbi-section">
-        <legend>Interface Configurations - <%=vifname and devname.."@"..vifname or devname%>
+        <h2><%:Interface Configurations%> - <%=vifname and devname.."@"..vifname or devname%>
             <%if next(diff) ~= nil then%>
-                <span style="color:red;">( <a href="javascript:location.href='<%=luci.dispatcher.build_url("admin", "network", "wifi", "reload", dev.devname)%>'">Click here</a> to apply changes)</span>
+                <span style="color:red;">( <a href="javascript:location.href='<%=luci.dispatcher.build_url("admin", "network", "wifi", "reload", dev.devname)%>'"><%:Click here%></a> <%:to apply changes%>)</span>
             <%end%>
-        </legend>
+        </h2>
         <div class="alert-message" id="BusyText_VIF" style="display:none;">
             <img src="<%=resource%>/icons/loading.gif" alt="" style="vertical-align:middle" />
-            <big><strong>Please wait while the request is being processed.</strong></big>
+            <big><strong><%:Please wait while the request is being processed.%></strong></big>
         </div>
         <ul class="cbi-tabmenu">
             <li class="cbi-tab" id="vif-cfg-tab-basic">
-                <a href="javascript:hi('basic', <%="'"..devname.."', '"..vifname.."'"%>);this.blur(); ">Basic</a>
+                <a href="javascript:hi('basic', <%="'"..devname.."', '"..vifname.."'"%>);this.blur(); "><%:Basic Settings%></a>
             </li>
             <% if string.split(cfgs.WirelessMode,";")[1] == "16" or string.split(cfgs.WirelessMode,";")[1] == "17" or string.split(cfgs.WirelessMode,";")[1] == "18" then %>
                 <li class="cbi-tab-disabled" id="vif-cfg-tab-he_mu">
-                    <a href="javascript:hi('he_mu', <%="'"..devname.."', '"..vifname.."'"%>);this.blur(); ">HE_MU</a>
+                    <a href="javascript:hi('he_mu', <%="'"..devname.."', '"..vifname.."'"%>);this.blur(); "><%:HE Settings%></a>
                 </li>
             <% end %>
         </ul>
         <input type="hidden" name="__activeTab" id="__activeTab" value="basic">
         <table class="cbi-section-table" id="vif-cfg-basic">
-            <thead>
+            <thead style="display:none;">
                 <tr>
-                    <td></td>
                     <td>
                         <input value="<%=request[4]%>" name="__action" type="hidden"></input>
                     </td>
-                    <td></td>
                 </tr>
             </thead>
             <tbody id="VIF_CFG_BASIC_SETTINGS">
@@ -146,11 +143,10 @@ function hi(to, devname, vifname)
                     <td>
                         <input id="vif-cfg-basic-ssid" value="<%=vif.__ssid and vif.__ssid:gsub("\"","&quot;") or nil%>" name="<%="SSID"..vifidx%>"></input>
                     </td>
-                    <td></td>
                 </tr>
                 <% if dev.DBDC_MODE == "0" then %>
                 <tr>
-                    <td>Channel</td>
+                    <td><%:Channel%></td>
                     <td>
                         <select style="width:auto" name="__channel">
                             <% for i=0,14 do %>
@@ -160,11 +156,10 @@ function hi(to, devname, vifname)
                             <% end %>
                         </select>
                     </td>
-                    <td></td>
                 </tr>
                 <% end %>
                 <tr>
-                    <td>Auth Mode</td>
+                    <td><%:Auth Mode%></td>
                     <td>
                         <select name="__authmode" cfg="AuthMode" id="AuthMode" onchange="AuthMode_onchange(this.options[this.options.selectedIndex].value)">
                             <% for _, v in ipairs(AuthModes) do %>
@@ -201,12 +196,11 @@ function hi(to, devname, vifname)
                             <% end %>
                         </select>
                     </td>
-                    <td></td>
                 </tr>
             </tbody>
             <tbody id="ENCRYPTION" style="display:none;">
                 <tr>
-                    <td>Encryption</td>
+                    <td><%:Encryption%></td>
                     <td>
                         <select name="__encrypttype" id="__encrypttype" cfg="EncrypType">
                         <% for _,v in ipairs(EncryptionTypeLists) do %>
@@ -215,30 +209,27 @@ function hi(to, devname, vifname)
                         <% end %>
                         </select>
                     </td>
-                    <td></td>
                 </tr>
             </tbody>
             <tbody id="REKEY_INTERVAL" style="display:none;">
                 <tr>
-                    <td>Key Renewal Interval</td>
+                    <td><%:Key Renewal Interval%></td>
                     <td>
-                        <input value="<%=vif.__rekeyinterval%>" type="text" name="__rekeyinterval" id="__rekeyinterval" cfg="RekeyInterval"> second(s) (0 ~ 4194303)
+                        <input value="<%=vif.__rekeyinterval%>" type="text" name="__rekeyinterval" id="__rekeyinterval" cfg="RekeyInterval">
                     </td>
-                    <td></td>
                 </tr>
             </tbody>
             <tbody id="WPAXPSK" style="display:none;">
                 <tr>
-                    <td>Key</td>
+                    <td><%:Key%></td>
                     <td>
                         <input value="<%=vif.__wpapsk and vif.__wpapsk:gsub("\"","&quot;") or nil%>" type="text" name="<%="WPAPSK"..vifidx%>" id="<%="WPAPSK"..vifidx%>"></input>
                     </td>
-                    <td></td>
                 </tr>
             </tbody>
             <tbody id="WEP" style="display:none;">
                 <tr>
-                    <td>Default Key</td>
+                    <td><%:WEP Default Key%></td>
                     <td>
                         <select name="__DefaultKeyID" id="__DefaultKeyID">
                             <option value="1" <%if tonumber(vif.__wepkey_id) == 1 then%>selected="selected"<%end%>>1</option>
@@ -247,84 +238,74 @@ function hi(to, devname, vifname)
                             <option value="4" <%if tonumber(vif.__wepkey_id) == 4 then%>selected="selected"<%end%>>4</option>
                         </select>
                     </td>
-                    <td></td>
                 </tr>
                 <tr>
-                    <td>WEP Key 1</td>
+                    <td><%:WEP Key%> 1</td>
                     <td>
                         <input value="<%=cfgs["Key1Str"..vifidx] and cfgs["Key1Str"..vifidx]:gsub("\"","&quot;") or nil%>" type="text" name="<%="Key1Str"..vifidx%>" id="<%="Key1Str"..vifidx%>"></input>
                     </td>
-                    <td></td>
                 </tr>
                 <tr>
-                    <td>Key Type 1</td>
+                    <td><%:WEP Key Type%> 1</td>
                     <td>
                         <select id="<%="WEP1Type"..vifidx%>" name="<%="WEP1Type"..vifidx%>">
                         <option value="1" <%if(mtkwifi.token_get(cfgs["Key1Type"], vifidx, 0)) == "1" then %> selected="selected"<%end%>>ASCII</option>
                         <option value="0" <%if(mtkwifi.token_get(cfgs["Key1Type"], vifidx, 0)) == "0" then %> selected="selected"<%end%>>Hex</option>
                         </select>
                     </td>
-                    <td></td>
                 </tr>
                 <tr>
-                    <td>WEP Key 2</td>
+                    <td><%:WEP Key%> 2</td>
                     <td>
                         <input value="<%=cfgs["Key2Str"..vifidx] and cfgs["Key2Str"..vifidx]:gsub("\"","&quot;") or nil%>" type="text" name="<%="Key2Str"..vifidx%>" id="<%="Key2Str"..vifidx%>"></input>
                     </td>
-                    <td></td>
                 </tr>
                 <tr>
-                    <td>Key Type 2</td>
+                    <td><%:WEP Key Type%> 2</td>
                     <td>
                         <select id="<%="WEP2Type"..vifidx%>" name="<%="WEP2Type"..vifidx%>">
                         <option value="1" <%if(mtkwifi.token_get(cfgs["Key2Type"], vifidx, 0)) == "1" then %> selected="selected"<%end%>>ASCII</option>
                         <option value="0" <%if(mtkwifi.token_get(cfgs["Key2Type"], vifidx, 0)) == "0" then %> selected="selected"<%end%>>Hex</option>
                         </select>
                     </td>
-                    <td></td>
                 </tr>
                 <tr>
-                    <td>WEP Key 3</td>
+                    <td><%:WEP Key%> 3</td>
                     <td>
                         <input value="<%=cfgs["Key3Str"..vifidx] and cfgs["Key3Str"..vifidx]:gsub("\"","&quot;") or nil%>" type="text" name="<%="Key3Str"..vifidx%>" id="<%="Key3Str"..vifidx%>"></input>
                     </td>
-                    <td></td>
                 </tr>
                 <tr>
-                    <td>Key Type 3</td>
+                    <td><%:WEP Key Type%> 3</td>
                     <td>
                         <select id="<%="WEP3Type"..vifidx%>" name="<%="WEP3Type"..vifidx%>">
                         <option value="1" <%if(mtkwifi.token_get(cfgs["Key3Type"], vifidx, 0)) == "1" then %> selected="selected"<%end%>>ASCII</option>
                         <option value="0" <%if(mtkwifi.token_get(cfgs["Key3Type"], vifidx, 0)) == "0" then %> selected="selected"<%end%>>Hex</option>
                         </select>
                     </td>
-                    <td></td>
                 </tr>
                 <tr>
-                    <td>WEP Key 4</td>
+                    <td><%:WEP Key%> 4</td>
                     <td>
                         <input value="<%=cfgs["Key4Str"..vifidx] and cfgs["Key4Str"..vifidx]:gsub("\"","&quot;") or nil%>" type="text" name="<%="Key4Str"..vifidx%>" id="<%="Key4Str"..vifidx%>"></input>
                     </td>
-                    <td></td>
                 </tr>
                 <tr>
-                    <td>Key Type 4</td>
+                    <td><%:WEP Key Type%> 4</td>
                     <td>
                         <select id="<%="WEP4Type"..vifidx%>" name="<%="WEP4Type"..vifidx%>">
                         <option value="1" <%if(mtkwifi.token_get(cfgs["Key4Type"], vifidx, 0)) == "1" then %> selected="selected"<%end%>>ASCII</option>
                         <option value="0" <%if(mtkwifi.token_get(cfgs["Key4Type"], vifidx, 0)) == "0" then %> selected="selected"<%end%>>Hex</option>
                         </select>
                     </td>
-                    <td></td>
                 </tr>
             </tbody>
             <tbody id="WPAX" style="display:none;">
                 <tr>
-                    <td>PMK Cache Period</td>
+                    <td><%:PMK Cache Period%></td>
                     <td>
                         <input value="<%=vif.__pmkcacheperiod%>" type="text" name="__pmkcacheperiod" id="__pmkcacheperiod" cfg="PMKCachePeriod"> minute(s)
                     </td>
-                    <td></td>
                 </tr>
                 <tr>
                     <td>Pre-Authentication</td>
@@ -334,154 +315,136 @@ function hi(to, devname, vifname)
                         checked="checked"
                         <% end %> type="checkbox">
                     </td>
-                    <td></td>
                 </tr>
             </tbody>
             <tbody id="PMF" style="display:none;">
                 <tr>
-                    <td>MFPC </td>
+                    <td><%:MFPC%></td>
                     <td> <input name="__pmfmfpc" id="__pmfmfpc" value="1"
                         <% if mtkwifi.token_get(cfgs["PMFMFPC"], vifidx, 0) == "1" then %>
                         checked="checked"
                         <% end %> type="checkbox"> </td>
-                    <td></td>
                 </tr>
                 <tr>
-                    <td>MFPR </td>
+                    <td><%:MFPR%></td>
                     <td> <input name="__pmfmfpr" id="__pmfmfpr" value="1"
                         <% if mtkwifi.token_get(cfgs["PMFMFPR"], vifidx, 0) == "1" then %>
                         checked="checked"
                         <% end %> type="checkbox"></td>
-                    <td></td>
                 </tr>
                 <tr>
-                    <td>MFPSHA256 </td>
+                    <td><%:MFPSHA256%></td>
                     <td> <input name="__pmfsha256" id="__pmfsha256" value="1"
                         <% if mtkwifi.token_get(cfgs["PMFSHA256"], vifidx, 0) == "1" then %>
                         checked="checked"
                         <% end %> type="checkbox"> </td>
-                    <td></td>
                 </tr>
             </tbody>
             <tbody id="IEEE8021X" style="display:none;">
                 <tr>
-                    <td>WEP for 8021X</td>
+                    <td><%:WEP for 8021X%></td>
                     <td>
                         <input value="1" type="checkbox" name="__8021x_wep" <% if vif.__encrypttype=="WEP" then %>checked="checked" <% end %>></input>
                     </td>
-                    <td></td>
                 </tr>
             </tbody>
             <tbody id="RADIUS" style="display:none">
                 <tr>
-                    <td>Radius Server IP</td>
+                    <td><%:Radius Server IP%></td>
                     <td>
                         <input value="<%=vif.__radius_server%>" type="text" name="__radius_server" id="__radius_server" cfg="RADIUS_Server">
                     </td>
-                    <td></td>
                 </tr>
                 <tr>
-                    <td>Radius Server Port</td>
+                    <td><%:Radius Server Port%></td>
                     <td>
                         <input value="<%=vif.__radius_port%>" type="text" name="__radius_port" id="__radius_port" cfg="RADIUS_Port">
                     </td>
-                    <td></td>
                 </tr>
                 <tr>
-                    <td>Shared Secret</td>
+                    <td><%:Radius Key%></td>
                     <td>
                         <input value="<%=cfgs["RADIUS_Key"..vifidx] and cfgs["RADIUS_Key"..vifidx]:gsub("\"","&quot;") or nil%>" type="text" name="<%="RADIUS_Key"..vifidx%>" id="<%="RADIUS_Key"..vifidx%>"></input>
                     </td>
-                    <td></td>
                 </tr>
                 <tr>
-                    <td>Session Timeout</td>
+                    <td><%:Radius Session Timeout%>(s)</td>
                     <td>
-                        <input value="<%=mtkwifi.token_get(cfgs.session_timeout_interval, vifidx, 0)%>" type="text" name="__session_timeout_interval" id="__session_timeout_interval"> second(s)
+                        <input value="<%=mtkwifi.token_get(cfgs.session_timeout_interval, vifidx, 0)%>" type="text" name="__session_timeout_interval" id="__session_timeout_interval">
                     </td>
-                    <td></td>
                 </tr>
                 <tr>
-                    <td>Idle Timeout</td>
+                    <td><%:Radius Idle Timeout%>(s)</td>
                     <td>
-                        <input value="<%=cfgs.idle_timeout_interval%>" type="text" name="idle_timeout_interval" id="idle_timeout_interval"> second(s)
+                        <input value="<%=cfgs.idle_timeout_interval%>" type="text" name="idle_timeout_interval" id="idle_timeout_interval">
                     </td>
-                    <td></td>
                 </tr>
             </tbody>
             <tbody>
                 <tr id="VIF_HIDDEN_SSID_ROW">
-                    <td>Hidden</td>
+                    <td><%:Hidden SSID%></td>
                     <td>
                         <input id="__hidessid" name="__hidessid" cfg="HideSSID" value="1"
                         <% if vif.__hidessid == "1" then %>
                         checked="checked"
                         <% end %> type="checkbox">
                     </td>
-                    <td></td>
                 </tr>
                 <tr>
-                    <td>AP Isolation</td>
+                    <td><%:AP Isolation%></td>
                     <td>
                         <input name="__noforwarding" cfg="NoForwarding" value="1"
                         <% if vif.__noforwarding == "1" then %>
                         checked="checked"
                         <% end %> type="checkbox">
                     </td>
-                    <td></td>
                 </tr>
                 <tr>
-                    <td>WMM Capable</td>
+                    <td><%:WMM Capable%></td>
                     <td>
                         <input name="__wmmcapable" cfg="WmmCapable" value="1"
                         <% if vif.__wmmcapable ~= "0" then %>
                         checked="checked"
                         <% end %> type="checkbox">
                     </td>
-                    <td></td>
                 </tr>
                 <tr>
-                    <td>TX Rate</td>
+                    <td><%:Fixed TX Rate%></td>
                     <td>
                         <input value="<%=vif.__txrate or 0%>" name="__txrate" id="__txrate"></input>
                     </td>
-                    <td></td>
                 </tr>
                 <tr>
-                    <td>STBC</td>
+                    <td><%:HT STBC%></td>
                     <td>
                         <input type="radio" name="__ht_stbc" value="1" <% if vif.__ht_stbc == "1" then %> checked="checked"<% end %>/> Enable
                         <input type="radio" name="__ht_stbc" value="0" <% if vif.__ht_stbc == "0" then %> checked="checked"<% end %>/> Disable
                     </td>
-                    <td></td>
                 </tr>
                 <tr>
-                    <td>HT LDPC</td>
+                    <td><%:HT LDPC%></td>
                     <td>
                         <input type="radio" name="__ht_ldpc" value="1" <% if vif.__ht_ldpc == "1" then %> checked="checked"<% end %>/> Enable
                         <input type="radio" name="__ht_ldpc" value="0" <% if vif.__ht_ldpc == "0" then %> checked="checked"<% end %>/> Disable
                     </td>
-                    <td></td>
                 </tr>
                 <tr>
-                    <td>VHT STBC</td>
+                    <td><%:VHT STBC%></td>
                     <td>
                         <input type="radio" name="__vht_stbc" value="1" <% if vif.__vht_stbc == "1" then %> checked="checked"<% end %>/> Enable
                         <input type="radio" name="__vht_stbc" value="0" <% if vif.__vht_stbc == "0" then %> checked="checked"<% end %>/> Disable
                     </td>
-                    <td></td>
                 </tr>
                 <tr>
-                    <td>VHT LDPC</td>
+                    <td><%:VHT LDPC%></td>
                     <td>
                         <input type="radio" name="__vht_ldpc" value="1" <% if vif.__vht_ldpc == "1" then %> checked="checked"<% end %>/> Enable
                         <input type="radio" name="__vht_ldpc" value="0" <% if vif.__vht_ldpc == "0" then %> checked="checked"<% end %>/> Disable
                     </td>
-                    <td></td>
                 </tr>
                 <tbody id="DEV_CFG_BASIC_SETTINGS">
                     <tr>
-                        <td>Mode</td>
+                        <td><%:Wireless Mode%></td>
                         <td>
                             <select style="width:auto" name="__wirelessmode" id="WirelessMode">
                                 <!--
@@ -497,68 +460,60 @@ function hi(to, devname, vifname)
                                 <% end %>
                             </select>
                         </td>
-                        <td></td>
                     </tr>
                 </tbody>
                 <tr>
-                    <td>DLS Capable</td>
+                    <td><%:DLS Capable%></td>
                     <td>
                         <input type="radio" name="__dls_capable" value="1" <% if vif.__dls_capable == "1" then %> checked="checked"<% end %>/> Enable
                         <input type="radio" name="__dls_capable" value="0" <% if vif.__dls_capable == "0" then %> checked="checked"<% end %>/> Disable
                     </td>
-                    <td></td>
                 </tr>
                 <tr>
-                    <td>APSD Capable</td>
+                    <td><%:APSD Capable%></td>
                     <td>
                         <input type="radio" name="__apsd_capable" value="1" <% if vif.__apsd_capable == "1" then %> checked="checked"<% end %>/> Enable
                         <input type="radio" name="__apsd_capable" value="0" <% if vif.__apsd_capable == "0" then %> checked="checked"<% end %>/> Disable
                     </td>
-                    <td></td>
                 </tr>
                 <tr>
-                    <td>Fragment Threshold</td>
+                    <td><%:Fragment Threshold%> (256-2346)</td>
                     <td>
-                        <input name="__frag_threshold" id="FragThreshold" value="<%=vif.__frag_threshold or 2346%>" />(range 256-2346, default 2346)
+                        <input name="__frag_threshold" id="FragThreshold" value="<%=vif.__frag_threshold or 2346%>" />
                     </td>
-                    <td></td>
                 </tr>
                 <tr>
-                    <td>RTS Threshold</td>
+                    <td><%:RTS Threshold%> (1-2347)</td>
                     <td>
-                        <input name="__rts_threshold" id="RTSThreshold" value="<%=vif.__rts_threshold or 2347%>" />(range 1-2347, default 2347)
+                        <input name="__rts_threshold" id="RTSThreshold" value="<%=vif.__rts_threshold or 2347%>" />
                     </td>
-                    <td></td>
                 </tr>
                 <tr>
-                    <td>VHT Short GI</td>
+                    <td><%:VHT Short GI%></td>
                     <td>
                         <select style="width:auto" name="__vht_sgi">
                             <option value="0" <% if vif.__vht_sgi == "0" then %> selected="selected"<% end%>>Long</option>
                             <option value="1" <% if vif.__vht_sgi == "1" then %> selected="selected"<% end%>>Short</option>
                         </select>
                     </td>
-                    <td></td>
                 </tr>
                 <tr>
-                    <td>VHT BW Signaling</td>
+                    <td><%:VHT BW Signaling%></td>
                     <td>
                         <input type="radio" name="__vht_bw_signal" value="1" <% if vif.__vht_bw_signal == "1" then %> checked="checked"<% end %>/> Enable
                         <input type="radio" name="__vht_bw_signal" value="0" <% if vif.__vht_bw_signal == "0" then %> checked="checked"<% end %>/> Disable
                         <input type="radio" name="__vht_bw_signal" value="2" <% if vif.__vht_bw_signal == "2" then %> checked="checked"<% end %>/> Dynamic
                     </td>
-                    <td></td>
                 </tr>
                 <tr>
-                    <td>HT Protection</td>
+                    <td><%:HT Protection%></td>
                     <td>
                         <input type="radio" name="__ht_protect" value="1" <% if vif.__ht_protect == "1" then %> checked="checked"<% end %>/> Enable
                         <input type="radio" name="__ht_protect" value="0" <% if vif.__ht_protect == "0" then %> checked="checked"<% end %>/> Disable
                     </td>
-                    <td></td>
                 </tr>
                 <tr>
-                    <td>HT Guard Interval</td>
+                    <td><%:HT Guard Interval%></td>
                     <td>
                         <select style="width:auto" name="__ht_gi">
                             <option value="0" <% if vif.__ht_gi == "0" then %> selected="selected"<% end%>>Long</option>
@@ -566,17 +521,15 @@ function hi(to, devname, vifname)
                             <option value="2" <% if vif.__ht_gi == "2" then %> selected="selected"<% end%>>Auto</option>
                         </select>
                     </td>
-                    <td></td>
                 </tr>
                 <tr>
-                    <td>Operating Mode</td>
+                    <td><%:HT Operating Mode%></td>
                     <td>
                         <select style="width:auto" name="__ht_opmode">
-                            <option value="0" <% if vif.__ht_opmode == "0" then %> selected="selected"<% end%>>Mixed Mode</option>
-                            <option value="1" <% if vif.__ht_opmode == "1" then %> selected="selected"<% end%>>Green Field</option>
+                            <option value="0" <% if vif.__ht_opmode == "0" then %> selected="selected"<% end%>><%:HT Mixed Mode%></option>
+                            <option value="1" <% if vif.__ht_opmode == "1" then %> selected="selected"<% end%>><%:HT Green Field%></option>
                         </select>
                     </td>
-                    <td></td>
                 </tr>
                 <tr>
                     <td>A-MSDU</td>
@@ -584,15 +537,13 @@ function hi(to, devname, vifname)
                         <input type="radio" name="__ht_amsdu" value="1" <% if vif.__ht_amsdu == "1" then %> checked="checked"<% end %>/> Enable
                         <input type="radio" name="__ht_amsdu" value="0" <% if vif.__ht_amsdu == "0" then %> checked="checked"<% end %>/> Disable
                    </td>
-                    <td></td>
                 </tr>
                 <tr>
-                    <td>Auto Block ACK</td>
+                    <td><%:Auto Block ACK%></td>
                     <td>
                         <input type="radio" name="__ht_autoba" value="1" <% if vif.__ht_autoba == "1" then %> checked="checked"<% end %>/> Enable
                         <input type="radio" name="__ht_autoba" value="0" <% if vif.__ht_autoba == "0" then %> checked="checked"<% end %>/> Disable
                     </td>
-                    <td></td>
                 </tr>
                 <tr>
                     <td>IGMP Snooping</td>
@@ -600,69 +551,51 @@ function hi(to, devname, vifname)
                         <input type="radio" name="__igmp_snenable" value="1" <% if vif.__igmp_snenable == "1" then %> checked="checked"<% end %>/> Enable
                         <input type="radio" name="__igmp_snenable" value="0" <% if vif.__igmp_snenable == "0" then %> checked="checked"<% end %>/> Disable
                     </td>
-                    <td></td>
                 </tr>
             </tbody>
-            <tfoot>
-                <tr>
-                    <td></td>
-                    <td></td>
-                </tr>
-            </tfoot>
         </table>
         
         <% if string.split(cfgs.WirelessMode,";")[1] == "16" or string.split(cfgs.WirelessMode,";")[1] == "17" or string.split(cfgs.WirelessMode,";")[1] == "18" then %>
             <table id="vif-cfg-he_mu" class="cbi-section-table" name="vif-cfg-he_mu" style="display:none">
                 <tr>
-                    <th></th>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td>DL OFDMA</td>
+                    <td><%:DL OFDMA%></td>
                     <td>
                         <input type="radio" name="__muofdma_dlenable" value="1" <% if vif.__muofdma_dlenable == "1" then %> checked="checked"<% end %>/> Enable
                         <input type="radio" name="__muofdma_dlenable" value="0" <% if vif.__muofdma_dlenable == "0" then %> checked="checked"<% end %>/> Disable
                     </td>
-                    <td></td>
                 </tr>
                 <tr>
-                    <td>UL OFDMA</td>
+                    <td><%:UL OFDMA%></td>
                     <td>
                         <input type="radio" name="__muofdma_ulenable" value="1" <% if vif.__muofdma_ulenable == "1" then%> checked="checked"<% end %>/> Enable
                         <input type="radio" name="__muofdma_ulenable" value="0" <% if vif.__muofdma_ulenable == "0" then%> checked="checked"<% end %>/> Disable
                     </td>
-                    <td></td>
                 </tr>
                 <tr>
-                    <td>DL MU-MIMO</td>
+                    <td><%:DL MU-MIMO%></td>
                     <td>
                         <input type="radio" name="__mumimo_dlenable" value="1" <% if vif.__mumimo_dlenable == "1" then %> checked="checked"<% end %>/> Enable
                         <input type="radio" name="__mumimo_dlenable" value="0" <% if vif.__mumimo_dlenable == "0" then %> checked="checked"<% end %>/> Disable
                     </td>
-                    <td></td>
                 </tr>
                 <tr>
-                    <td>UL MU-MIMO</td>
+                    <td><%:UL MU-MIMO%></td>
                     <td>
                         <input type="radio" name="__mumimo_ulenable" value="1" <% if vif.__mumimo_ulenable == "1" then%> checked="checked"<% end %>/> Enable
                         <input type="radio" name="__mumimo_ulenable" value="0" <% if vif.__mumimo_ulenable == "0" then%> checked="checked"<% end %>/> Disable
                     </td>
-                    <td></td>
                 </tr>
             </table>
         <% end %>
 
         <fieldset class="cbi-section" id="vif-cfg-basic-AC">
-            <legend>Access Control - <%=vifname and devname.."@"..vifname or devname%>  </legend>
+            <h3>Access Control - <%=vifname and devname.."@"..vifname or devname%>  </h3>
             <table class="cbi-section-table">
                 <tr>
-                    <td style="width:300px;">Access Policy</td>
+                    <td><%:Access Policy%></td>
                     <td>
                         <input type="radio" name="__accesspolicy" value="0" id="disable_AP" <% if cfgs["AccessPolicy"..(vifidx-1)] == "0" then %> checked="checked"<% end %>/> Disable
-                        <br>
                         <input type="radio" name="__accesspolicy" value="1" id="white_AP" <% if cfgs["AccessPolicy"..(vifidx-1)] == "1" then %> checked="checked"<% end %>/> White List
-                        <br>
                         <input type="radio" name="__accesspolicy" value="2" id="black_AP" <% if cfgs["AccessPolicy"..(vifidx-1)] == "2" then %> checked="checked"<% end %>/> Black List
                     </td>
                 </tr>
@@ -876,33 +809,33 @@ AA:BB:CC:DD:EE:FF
         }
         if( (checkRange(document.getElementById("__radius_port").value, 1, 1, 65535)==false) ||
             (isNaN(document.getElementById("__radius_port").value) == true)){
-            alert('Please input a valid radius server port number.');
+            alert('<%:Please input a valid radius server port number.%>');
             return false;
         }
         if(checkStrictInjection(document.getElementById("RADIUS_Key"+vifidx).value)==false){
-            alert('The shared secret contains invalid characters.');
+            alert('<%:The radius shared secret contains invalid characters.%>');
             return false;
         }
         if(document.getElementById("__session_timeout_interval").value != ""){
             if(isNaN(document.getElementById("__session_timeout_interval").value) == true){
-                alert('Please input a valid session timeout number or u may have left it empty.');
+                alert('<%:Please input a valid session timeout number or u may have left it empty.%>');
                 return false;
             }
         }
         else
         {
-            alert("Session time out is empty");
+            alert("<%:Radius session time out is empty.%>");
             return false;
         }
         if(document.getElementById("idle_timeout_interval").value !=""){
             if(isNaN(document.getElementById("idle_timeout_interval").value) == true){
-                alert('Please input a valid idle timeout number or u may have left it empty.');
+                alert('<%:Please input a valid idle timeout number or u may have left it empty.%>');
                 return false;
             }
         }
         else
         {
-            alert("Idle time out is empty");
+            alert("<%:Radius idle time out is empty.%>");
             return false;
         }
         return true;
@@ -1076,9 +1009,6 @@ AA:BB:CC:DD:EE:FF
             alert('Please input a valid key renewal interval');
             return false;
         }
-        if(document.getElementById("__rekeyinterval").value == 0){
-            alert('Renew key interval is equal to 0, so the device will not refresh key');
-        }
         if(!document.getElementById("__pmkcacheperiod").value.length){
             alert('Please input the PMK Cache Period.');
             return false;
@@ -1150,9 +1080,6 @@ AA:BB:CC:DD:EE:FF
             alert('Please input a valid key renewal interval');
             return false;
         }
-        if(document.getElementById("__rekeyinterval").value == 0){
-            alert('Renew key interval is equal to 0, so the device will not refresh key');
-        }
         return true;
     }
 
@@ -1210,19 +1137,7 @@ AA:BB:CC:DD:EE:FF
     {
         var AuthMode= document.getElementById("AuthMode").value;
         var EncType = document.getElementById("__encrypttype").value;
-        if(AuthMode=="Disable")
-        {
-            if(!confirm("You are about to create an Open Security Network! Are you sure ?")){
-                return false;
-            }
-        }
-        else if(AuthMode=="Enhanced Open")
-        {
-            if(!confirm("You are about to create an Enhanced Open Security Network with AES Encryption! Are you sure ?")){
-                return false;
-            }
-        }
-        else if(AuthMode == "OPEN" || AuthMode == "WEPAUTO" || AuthMode == "SHARED")
+        if(AuthMode == "OPEN" || AuthMode == "WEPAUTO" || AuthMode == "SHARED")
         {
             if(check_Wep(AuthMode,vifidx,ht_disallow_tkip) == false)
                 return false;

@@ -32,16 +32,16 @@ local bands = mtkwifi.detect_triband()
 
 <form method="post" name="cbi" action="<%=luci.dispatcher.build_url("admin", "network", "wifi", "dev_cfg", devname)%>" enctype="multipart/form-data" onreset="return cbi_validate_reset(this)" onsubmit="return cbi_validate_form(this, 'Some fields are invalid, cannot save values!') && ValidateAllSettings()" autocomplete="false">
     <fieldset class="cbi-section">
-        <legend> Device Configuration - <%=devname%> 
+        <h2><%:Device Configuration%> - <%=devname%> 
             <%local diff = mtkwifi.diff_profile(dev.profile)%>
             <%if next(diff) ~= nil then%>
-                <span style="color:red;">( <a href="javascript:location.href='<%=luci.dispatcher.build_url("admin", "network", "wifi", "reload", dev.devname)%>'">Click here</a> to apply changes)</span>
+                <span style="color:red;"> (<a href="javascript:location.href='<%=luci.dispatcher.build_url("admin", "network", "wifi", "reload", dev.devname)%>'"><%:Click here%></a> <%:to apply changes%>)</span>
             <%end%>
-        </legend>
+        </h2>
 
         <table id="dev-cfg-basic" class="cbi-section-table">
             <tr>
-                <td>Channel</td>
+                <td><%:Channel%></td>
                 <td>
                     <select style="width:auto; min-width:180px;" name="Channel" id="Channel" onchange="Channel_onchange(this.value)" <% if cfgs.ApCliEnable == "1" then %> disabled="disabled" <% end %>>
                     </select>
@@ -49,7 +49,7 @@ local bands = mtkwifi.detect_triband()
                 <td><% if cfgs.ApCliEnable == "1" then %> APClient/Repeater Mode. <% end %></td>
             </tr>
             <tr id="HT_EXTCHA_TR" style="display:none">
-                <td>40MHz HT Ext Channel</td>
+                <td><%:40MHz HT Ext Channel%></td>
                 <td>
                     <select style="width:auto; min-width:180px;" name="HT_EXTCHA" id="HT_EXTCHA" <% if cfgs.ApCliEnable == "1" or dev.__bw ~= "40" or dev.__bw ~= "60" then %> disabled="disabled" <% end %>>
                     </select>
@@ -57,7 +57,7 @@ local bands = mtkwifi.detect_triband()
                 <td><% if cfgs.ApCliEnable == "1" then %> APClient/Repeater Mode. <% end %></td>
             </tr>
             <tr id="VHT_Sec80_Channel_TR" style="display:none">
-                <td>80MHz Second VHT Channel</td>
+                <td><%:80MHz Second VHT Channel%></td>
                 <td>
                     <select style="width:auto; min-width:180px; " name="VHT_Sec80_Channel" id="VHT_Sec80_Channel" <% if cfgs.ApCliEnable == "1" or dev.__bw ~= "161" then %> disabled="disabled" <% end %>>
                     </select>
@@ -66,26 +66,13 @@ local bands = mtkwifi.detect_triband()
             </tr>
            <% if string.split(cfgs.WirelessMode,";")[1] == "16" or string.split(cfgs.WirelessMode,";")[1] == "17" or string.split(cfgs.WirelessMode,";")[1] == "18" then %>
                 <tr>
-                    <td>BSS color</td>
+                    <td><%:BSS color%></td>
                     <td>
                         <input name="BssColor" id="BssColor" value="<%=cfgs.BSSColorValue%>"/>
                     </td>
-                    <td></td>
                 </tr>
                 <tr>
-                    <td>Co-located BSSID set max index</td>
-                    <td>
-                        <select name="CoLocatedBSSID" style="width:auto">
-                            <option value="1" <% if cfgs.CoLocatedBSSID == "1" then %> selected="selected" <% end %>>1</option>
-                            <option value="2" <% if cfgs.CoLocatedBSSID == "2" then %> selected="selected" <% end %>>2</option>
-                            <option value="3" <% if cfgs.CoLocatedBSSID == "3" then %> selected="selected" <% end %>>3</option>
-                            <option value="4" <% if cfgs.CoLocatedBSSID == "4" then %> selected="selected" <% end %>>4</option>
-                        </select>
-                    </td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td>TWT Support</td>
+                    <td><%:TWT Support%></td>
                     <td>
                         <select name="TWTSupport" style="width:auto">
                             <option value="0" <% if cfgs.TWTSupport == "0" then %> selected="selected" <% end %>> Disable</option>
@@ -93,13 +80,12 @@ local bands = mtkwifi.detect_triband()
                             <option value="2" <% if cfgs.TWTSupport == "2" then %> selected="selected" <% end %>> Mandatory</option>
                         </select>
                     </td>
-                    <td></td>
                 </tr>
             <% end %>
 
             <input type="hidden" id="WirelessMode" value="<%=string.split(cfgs.WirelessMode,";")[1]%>">
             <tr>
-                <td>Country Code</td>
+                <td><%:Country Code%></td>
                 <td>
                     <select name="CountryCode" style="width:auto" id="CountryCode" onchange="CountryCode_onchange()">
                         <option value="US" id="advCountryCodeUS" <% if cfgs.CountryCode == "US" then %> selected="selected"<% end %>>US (United States)</option>
@@ -110,18 +96,16 @@ local bands = mtkwifi.detect_triband()
                         <option value="NONE" id="advCountryCodeNONE"<% if cfgs.CountryCode == "NONE" then %> selected="selected"<% end %>>NONE</option>
                     </select>
                 </td>
-                <td></td>
             </tr>
             <tr>
-                <td>Country Region</td>
+                <td><%:Country Region%></td>
                 <td>
                     <select style="width:auto; min-width:180px;" name="__cr" id="__cr" onchange="CountryRegion_onchange(this.value)">
                     </select>
                 </td>
-                <td><span id="__cRegionMsg"></span></td>
             </tr>
             <tr>
-                <td>Channel BandWidth</td>
+                <td><%:Channel BandWidth%></td>
                 <td>
                     <select style="width:auto" name="__bw" id="__bw" onchange="Bw_onchange(this.options[this.options.selectedIndex].value)">
                         <option value="20" <% if dev.__bw == "20" then %> selected="selected"<% end%>>20 MHz</option>
@@ -132,10 +116,9 @@ local bands = mtkwifi.detect_triband()
                         <option value="161" <% if dev.__bw == "161" then %> selected="selected"<% end%>>80+80 MHz</option>
                     </select>
                 </td>
-                <td><span id="__chBwMsg"></span></td>
             </tr>
             <tr>
-                <td>HT TX Stream</td>
+                <td><%:TX Stream%></td>
                 <td>
                     <select name="HT_TxStream" style="width:auto">
                         <% if dev.maxTxStream then %>
@@ -150,10 +133,9 @@ local bands = mtkwifi.detect_triband()
                         <% end %>
                     </select>
                 </td>
-                <td><span><% if dev.maxTxStream then %><strong><%=dev.devname%></strong> supports maximum <strong><%=dev.maxTxStream%></strong> HT TX Stream<% end %></span></td>
             </tr>
             <tr>
-                <td>HT RX Stream</td>
+                <td><%:RX Stream%></td>
                 <td>
                     <select name="HT_RxStream" style="width:auto">
                         <% if dev.maxRxStream then %>
@@ -168,14 +150,12 @@ local bands = mtkwifi.detect_triband()
                         <% end %>
                     </select>
                 </td>
-                <td><span><% if dev.maxRxStream then %><strong><%=dev.devname%></strong> supports maximum <strong><%=dev.maxRxStream%></strong> HT RX Stream<% end %></span></td>
             </tr>
             <tr>
-                <td>TX Power</td>
+                <td><%:TX Power%> (1-100)</td>
                 <td>
-                    <input name="TxPower" id="TxPower" value="<%=cfgs.TxPower%>" />%(range 1-100, default 100)
+                    <input name="TxPower" id="TxPower" value="<%=cfgs.TxPower%>" />
                 </td>
-                <td></td>
             </tr>
             <% if mtkwifi.band(string.split(cfgs.WirelessMode,";")[1]) == "5G" then %>
                 <tr>
@@ -184,20 +164,18 @@ local bands = mtkwifi.detect_triband()
                         <input type="radio" name="IEEE80211H" value="1" <% if cfgs.IEEE80211H == "1" then %> checked="checked"<% end %>/> Enable
                         <input type="radio" name="IEEE80211H" value="0" <% if cfgs.IEEE80211H == "0" then %> checked="checked"<% end %>/> Disable
                     </td>
-                    <td></td>
                 </tr>
                 <tr>
-                    <td>Dfs</td>
+                    <td><%:DFS%></td>
                     <td>
                         <input type="radio" name="DfsEnable" value="1" <% if cfgs.DfsEnable == "1" then %> checked="checked"<% end %>/> Enable
                         <input type="radio" name="DfsEnable" value="0" <% if cfgs.DfsEnable == "0" then %> checked="checked"<% end %>/> Disable
                     </td>
-                    <td></td>
                 </tr>
             <% end %>
             <% if cfgs.MUTxRxEnable then %>
             <tr>
-                <td>Beam Forming &amp; MIMO <%=dev.__mimo%></td>
+                <td><%:Beam Forming and MIMO Setting%></td>
                 <td>
                     <select name="__mimo" autocomplete="off" >
                         <option value="0"<% if tonumber(dev.__mimo) == 0 then %> selected="selected"<% end %>> ETxBF (SU) </option>
@@ -210,17 +188,15 @@ local bands = mtkwifi.detect_triband()
                             <option value="5"<% if tonumber(dev.__mimo) == 5 then %> selected="selected"<% end %>> Disable TxBF (SU BF and MU-MIMO) </option>
                     </select>
                 </td>
-                <td></td>
             </tr>
             <% end %>
             <% if string.split(cfgs.WirelessMode,";")[1] == "16" or string.split(cfgs.WirelessMode,";")[1] == "17" or string.split(cfgs.WirelessMode,";")[1] == "18" then %>
             <tr>
-                <td>Spatial Reuse</td>
+                <td><%:Spatial Reuse%></td>
                 <td>
                     <input type="radio" name="SREnable" value="1" <% if cfgs.SREnable == "1" then %> checked="checked"<% end %>/> Enable
                     <input type="radio" name="SREnable" value="0" <% if cfgs.SREnable == "0" then %> checked="checked"<% end %>/> Disable
                 </td>
-                <td></td>
             </tr>
             <% end %>
         </table>
@@ -233,25 +209,6 @@ local bands = mtkwifi.detect_triband()
 
     </div>
 </form>
-
- 
-<!--form method="post" name="cbi2" action="<%=luci.dispatcher.build_url("admin", "network", "wifi", "dev_cfg_raw", devname)%>" enctype="multipart/form-data" onreset="return cbi_validate_reset(this)" onsubmit="return cbi_validate_form(this, 'Some fields are invalid, cannot save values!')" autocomplete="off">
-    <fieldset class="cbi-section">
-        <legend> Raw Configurations ( Edit WiFi profile directly )</legend>
-        <p> <span style="color: red"><b>WARNING</b></span> : DO NOT MESS WITH IT IF YOU DON'T UNDERSTAND IT!</p>
-        <textarea name="raw" id="raw" style="width:98%; height: 200px;"><%
-            local fd = io.open(dev.profile)
-            for line in fd:lines() do
-                print(line)
-            end
-        %></textarea>
-    </fieldset>
-    <div class="cbi-page-actions">
-        <input class="cbi-button cbi-button-reset" value="Reset" onclick="location.href='<%=luci.dispatcher.build_url("admin", "network", "wifi", "dev_cfg_view", devname)%>'" type="button">
-        <input class="cbi-button cbi-button-apply" id="save" value="Save" type="submit" onclick="if (confirm('You are going to overwrite the profile directly, are you sure?')) return true; else return false;">
-        <input class="cbi-button cbi-button-apply" id="reset" value="Restore Profile to Factory Setting" type="button" onclick="if (confirm('You are going to reset the profile of <%=devname%> to factory default, are you sure?')) location.href='<%=luci.dispatcher.build_url("admin", "network", "wifi", "reset_to_defaults", devname)%>'">
-    </div>
-</form-->
 
 <script type="text/javascript">
 
@@ -316,7 +273,6 @@ local bands = mtkwifi.detect_triband()
             CN:[1,7,9,11,12,13,14,15,18,19,20,21,22,30,31,32,33,36,37],
             NONE:[]
         };
-        document.getElementById("__cRegionMsg").innerHTML = "";
         if (is_mode_gband(wMode)){
             // Channel 14 should be disabled for all the Countries except JAPAN(JP) and NONE Country Code.
             // If WireleeMode is not in 'B only' mode, then Channel 14 should be disabled for Japan and NONE Country Code too.
@@ -337,8 +293,6 @@ local bands = mtkwifi.detect_triband()
                         cRegionSelect.options[idx].selected = false;
                     }
                 }
-                document.getElementById("__cRegionMsg").innerHTML = "Disabled options are not supported by <strong>" + cCode +
-    "</strong> Country Code or <strong> <%=dev.WirelessModeList[tonumber(string.split(cfgs.WirelessMode,";")[1])]%> </strong> Wireless Mode";
             }
         }
         else if (is_mode_aband(wMode) && cCode != "NONE"){
@@ -348,8 +302,6 @@ local bands = mtkwifi.detect_triband()
                     cRegionSelect.options[idx].selected = false;
                 }
             }
-            document.getElementById("__cRegionMsg").innerHTML = "Disabled options are not supported by <strong>" + cCode +
-    "</strong> Country Code or <strong> <%=dev.WirelessModeList[tonumber(string.split(cfgs.WirelessMode,";")[1])]%> </strong> Wireless Mode";
         }
         return cRegionSelect.value;
     }
@@ -398,8 +350,8 @@ local bands = mtkwifi.detect_triband()
         XHR.get('<%=luci.dispatcher.build_url("admin", "network", "wifi", "get_channel_list")%>', {mode:mode, country_region:country_region},
             function(x)
             {
-                console.log(x);
-                console.log(x.response);
+                //console.log(x);
+                //console.log(x.response);
                 var json = eval(x.response);
                 initChannelList(json);
             }
@@ -438,7 +390,6 @@ local bands = mtkwifi.detect_triband()
         } else {
             wmode = mode*1;
         }
-        document.getElementById("__chBwMsg").innerHTML = "";
         if( <%=string.split(cfgs.WirelessMode,";")[1]%> != 18 ){
             if (is_mode_legacy_only(wmode) || parseInt(ch) >= 165) {
                 for (var idx=0; idx < bw_sel.length; idx++) {
@@ -512,13 +463,6 @@ local bands = mtkwifi.detect_triband()
                     bw_sel.options[idx].disabled = true;
                     bw_sel.options[idx].selected = false;
                 }
-            }
-        }
-        for (var idx=0; idx < bw_sel.length; idx++) {
-            if(bw_sel.options[idx].disabled){
-                document.getElementById("__chBwMsg").innerHTML = "Disabled options are not supported by <strong>" + "<%=dev.devname%>" +
-"</strong> device or <strong> <%=dev.WirelessModeList[tonumber(string.split(cfgs.WirelessMode,";")[1])]%> </strong> Wireless Mode or Channel <strong>" + ch +"</strong>";
-                break;
             }
         }
         Bw_onchange(bw_sel.value, ch);
@@ -611,8 +555,8 @@ local bands = mtkwifi.detect_triband()
         XHR.get('<%=luci.dispatcher.build_url("admin", "network", "wifi", "get_HT_ext_channel_list")%>', {mode:mode, ch_cur:ch, country_region:cr},
             function(x)
             {
-                console.log(x);
-                console.log(x.response);
+                //console.log(x);
+                //console.log(x.response);
                 var json = eval(x.response);
                 initHTExtChannelList(json,ch,cr);
             }

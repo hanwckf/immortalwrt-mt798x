@@ -61,17 +61,17 @@ var waiting_count = 0;
 
 <div class="alert-message" id="BusyText_ApCli" style="display:none;">
     <img src="<%=resource%>/icons/loading.gif" alt="" style="vertical-align:middle" />
-    <big><strong>Please wait while the request is being processed.</strong></big>
+    <big><strong><%:Please wait while the request is being processed.%></strong></big>
 </div>
 <div id="apcli_body_div">
     <form method="post" name="cbi" action="<%=luci.dispatcher.build_url("admin", "network", "wifi", "apcli_cfg", devname, vifname)%>" enctype="multipart/form-data" onreset="return cbi_validate_reset(this);" onsubmit="return validate_all() && cbi_validate_form(this, 'Some fields are invalid, cannot save values!')" autocomplete="off">
         <fieldset class="cbi-section">
-            <legend>ApCli Configurations - <%=vifname and devname.."@"..vifname or devname%>
+            <h2><%:ApCli Configurations%> - <%=vifname and devname.."@"..vifname or devname%>
                 <%local diff = mtkwifi.diff_profile(dev.profile)%>
                 <%if next(diff) ~= nil then%>
-                    <span style="color:red;">( <a href="javascript:location.href='<%=luci.dispatcher.build_url("admin", "network", "wifi", "reload", devname)%>'">Click here</a> to apply changes)</span>
+                    <span style="color:red;">( <a href="javascript:location.href='<%=luci.dispatcher.build_url("admin", "network", "wifi", "reload", devname)%>'"><%:Click here%></a> <%:to apply changes%>)</span>
                 <%end%>
-            </legend>
+            </h2>
             <input type="hidden" name="__activeTab" id="__activeTab" value="apcli">
             <input type="hidden" name="__pin_ap_ssid" id="__pin_ap_ssid" value="">
             <input type="hidden" name="ApCliAuthMode" id="ApCliAuthMode" value="<%=cfgs.ApCliAuthMode%>">
@@ -82,11 +82,7 @@ var waiting_count = 0;
             <input type="hidden" name="ApCliOWETranIe" id="ApCliOWETranIe" value="<%=cfgs.ApCliOWETranIe%>">
 
             <fieldset class="cbi-section" id="vif-cfg-apcli">
-                <legend>
-                    <a id="apcli_scan_hdr">
-                        Available Wireless Networks
-                    </a>
-                </legend>
+                <h3><%:ApCli Available Wireless Networks%></h3>
                 <p class="left">
                     <input id="scan" type="button" class="cbi-button cbi-button-find" onclick="get_ap_list('<%=vifname%>')" value="Scan Wireless Network"/>
                 </p>
@@ -106,41 +102,37 @@ var waiting_count = 0;
                 </div>
             </fieldset>
             <fieldset class="cbi-section" id="vif-cfg-apcli-config">
-                <legend> <a name="apcli_cfg_section">Connection Configurations</a> </legend>
+                <h3><%:ApCli Connection Configurations%></h3>
                 <table class="cbi-section-table">
                     <tr>
-                        <td>ApClient Mode</td>
+                        <td><%:ApClient Mode%></td>
                         <td>
                             <input type="radio" name="ApCliEnable" id="ApCliEnableRadioOn" value="1" <% if cfgs.ApCliEnable == "1" then %> checked="checked"<% end %> onclick="toggle_apcli(true)"/> Enable
                             <input type="radio" name="ApCliEnable" id="ApCliEnableRadioOff" value="0" <% if cfgs.ApCliEnable ~= "1" then %> checked="checked"<% end %> onclick="toggle_apcli(false)"/> Disable
                         </td>
-                        <td></td>
                     </tr>
                     <tbody id="apcli_cfg" <% if cfgs.ApCliEnable ~= "1" then %> style="display:none;" <% end %> >
                         <tr>
-                            <td>MAC Repeater Mode</td>
+                            <td><%:MAC Repeater Mode%></td>
                             <td>
                                 <input type="radio" name="MACRepeaterEn" value="1" <% if cfgs.MACRepeaterEn == "1" then %> checked="checked"<% end %>/> Enable
                                 <input type="radio" name="MACRepeaterEn" value="0" <% if cfgs.MACRepeaterEn ~= "1" then %> checked="checked"<% end %>/> Disable
                             </td>
-                            <td></td>
                         </tr>
                         <tr>
-                            <td>Root AP SSID</td>
+                            <td><%:Root AP SSID%></td>
                             <td>
                                 <input type="text" name="ApCliSsid" id="ApCliSsid" value="<%=cfgs.ApCliSsid and cfgs.ApCliSsid:gsub("\"","&quot;") or nil%>"/>
                             </td>
-                            <td></td>
                         </tr>
                         <tr>
-                            <td>Root AP Channel</td>
+                            <td><%:Root AP Channel%></td>
                             <td>
                                 <input type="text" name="Channel" id="Channel" value="<%=dev.Channel%>"/>
                             </td>
-                            <td> <span style="color:red;">This will overwrite channel of AP!</span></td>
                         </tr>
                         <tr>
-                            <td>Root AP Authentication Mode</td>
+                            <td><%:Root AP Authentication Mode%></td>
                             <td>
                                 <select cfg="ApCliAuthMode" id="__authModeSel" onchange="ApCliAuthMode_onchange(this.options[this.options.selectedIndex].value, false, true)">
                                     <% for _,v in ipairs(dev.ApCliAuthModeList) do %>
@@ -161,12 +153,11 @@ var waiting_count = 0;
                                     <% end %>
                                 </select>
                             </td>
-                            <td></td>
                         </tr>
                     </tbody>
                     <tbody id="apcli_wpa" <% if cfgs.ApCliAuthMode ~= "WPAPSK" and cfgs.ApCliAuthMode ~= "WPA2PSK" and cfgs.ApCliAuthMode ~= "WPA3PSK" and (not (cfgs.ApCliAuthMode == "OWE" and cfgs.ApCliEncrypType== "AES" and cfgs.ApCliOWETranIe ~= "1")) then %> style="display:none;"<% end %>>
                         <tr>
-                            <td>Root AP Encryption</td>
+                            <td><%:Root AP Encryption%></td>
                             <td>
                                 <select id="__wpaApCliEncrypType" >
                                     <% for _, v in ipairs(dev.EncryptionTypeList) do %>
@@ -184,19 +175,17 @@ var waiting_count = 0;
                                     <% end %>
                                 </select>
                             </td>
-                            <td></td>
                         </tr>
                         <tr <% if (cfgs.ApCliAuthMode == "OWE" and cfgs.ApCliEncrypType== "AES" and cfgs.ApCliOWETranIe ~= "1") then %> style="display:none;"<% end %>>
-                            <td>Root AP WPA Key</td>
+                            <td><%:Root AP WPA Key%></td>
                             <td>
                                 <input type="text" name="ApCliWPAPSK" id="ApCliWPAPSK" value="<%=cfgs.ApCliWPAPSK and cfgs.ApCliWPAPSK:gsub("\"","&quot;") or nil%>"/>
                             </td>
-                            <td></td>
                         </tr>
                     </tbody>
                     <tbody id="apcli_pmf" <% if cfgs.ApCliAuthMode ~= "WPA2PSK" and cfgs.ApCliAuthMode ~= "WPA3PSK" then %> style="display:none;" <% end %>>
                         <tr>
-                            <td>ApCli MFPC</td>
+                            <td><%:ApCli MFPC%></td>
                             <td>
                                 <input id="__apcli_pmfmfpc"
                                 <% if cfgs.ApCliPMFMFPC == "1" then %>
@@ -207,10 +196,9 @@ var waiting_count = 0;
                                 <% end %>
                                 type="checkbox">
                             </td>
-                            <td></td>
                         </tr>
                         <tr>
-                            <td>ApCli MFPR</td>
+                            <td><%:ApCli MFPR%></td>
                             <td>
                                 <input id="__apcli_pmfmfpr"
                                 <% if cfgs.ApCliPMFMFPR == "1" then %>
@@ -221,10 +209,9 @@ var waiting_count = 0;
                                 <% end %>
                                 type="checkbox">
                             </td>
-                            <td></td>
                         </tr>
                         <tr id="apcli_pmf_sha256_row" <% if cfgs.ApCliAuthMode == "WPA3PSK" then %> style="display:none" <% end %> >
-                            <td>ApCli MFPSHA256 </td>
+                            <td><%:ApCli MFPSHA256%></td>
                             <td>
                                 <input id="__apcli_pmfsha256"
                                 <% if cfgs.ApCliPMFSHA256 == "1" then %>
@@ -235,21 +222,19 @@ var waiting_count = 0;
                                 <% end %>
                                 type="checkbox">
                             </td>
-                            <td></td>
                         </tr>
                     </tbody>
                     <tbody id="apcli_wep"<% if cfgs.ApCliEncrypType ~= "WEP" then %> style="display: none;"<% end %>>
                         <tr>
-                            <td>Root AP Encryption</td>
+                            <td><%:Root AP Encryption%></td>
                             <td>
                                 <select id="__wepApCliEncrypType" >
                                     <option value="WEP" selected="selected">WEP</option>
                                 </select>
                             </td>
-                            <td></td>
                         </tr>
                         <tr>
-                            <td>WEP Default Key</td>
+                            <td><%:WEP Default Key%></td>
                             <td>
                                 <select name="ApCliDefaultKeyID" id="ApCliDefaultKeyID">
                                     <option value="1" <%if tonumber(cfgs.ApCliDefaultKeyID) == 1 then%>selected="selected"<%end%>>1</option>
@@ -260,14 +245,13 @@ var waiting_count = 0;
                             </td>
                         </tr>
                         <tr>
-                            <td>Root AP WEP Key 1</td>
+                            <td><%:Root AP WEP Key%> 1</td>
                             <td>
                                 <input type="text" name="ApCliKey1Str" id="ApCliKey1Str" value="<%=cfgs.ApCliKey1Str and cfgs.ApCliKey1Str:gsub("\"","&quot;") or nil%>" maxlength="26"/>
                             </td>
-                            <td></td>
                         </tr>
                         <tr>
-                            <td>WEP Key 1 Type</td>
+                            <td><%:WEP Key Type%> 1</td>
                             <td>
                                 <select id="ApCliKey1Type" name="ApCliKey1Type">
                                 <option value="1" <%if tonumber(cfgs.ApCliKey1Type) == 1 then %> selected="selected"<%end%>>ASCII</option>
@@ -276,14 +260,13 @@ var waiting_count = 0;
                             </td>
                         </tr>
                         <tr>
-                            <td>Root AP WEP Key 2</td>
+                            <td><%:Root AP WEP Key%> 2</td>
                             <td>
                                 <input type="text" name="ApCliKey2Str" id="ApCliKey2Str" value="<%=cfgs.ApCliKey2Str and cfgs.ApCliKey2Str:gsub("\"","&quot;") or nil%>" maxlength="26"/>
                             </td>
-                            <td></td>
                         </tr>
                         <tr>
-                            <td>WEP Key 2 Type</td>
+                            <td><%:WEP Key Type%> 2</td>
                             <td>
                                 <select id="ApCliKey2Type" name="ApCliKey2Type">
                                 <option value="1" <%if tonumber(cfgs.ApCliKey2Type) == 1 then %> selected="selected"<%end%>>ASCII</option>
@@ -292,14 +275,13 @@ var waiting_count = 0;
                             </td>
                         </tr>
                         <tr>
-                            <td>Root AP WEP Key 3</td>
+                            <td><%:Root AP WEP Key%> 3</td>
                             <td>
                                 <input type="text" name="ApCliKey3Str" id="ApCliKey3Str" value="<%=cfgs.ApCliKey3Str and cfgs.ApCliKey3Str:gsub("\"","&quot;") or nil%>" maxlength="26"/>
                             </td>
-                            <td></td>
                         </tr>
                         <tr>
-                            <td>WEP Key 3 Type</td>
+                            <td><%:WEP Key Type%> 3</td>
                             <td>
                                 <select id="ApCliKey3Type" name="ApCliKey3Type">
                                 <option value="1" <%if tonumber(cfgs.ApCliKey3Type) == 1 then %> selected="selected"<%end%>>ASCII</option>
@@ -308,14 +290,13 @@ var waiting_count = 0;
                             </td>
                         </tr>
                         <tr>
-                            <td>Root AP WEP Key 4</td>
+                            <td><%:Root AP WEP Key%> 4</td>
                             <td>
                                 <input type="text" name="ApCliKey4Str" id="ApCliKey4Str" value="<%=cfgs.ApCliKey4Str and cfgs.ApCliKey4Str:gsub("\"","&quot;") or nil%>" maxlength="26"/>
                             </td>
-                            <td></td>
                         </tr>
                         <tr>
-                            <td>WEP Key 4 Type</td>
+                            <td><%:WEP Key Type%> 4</td>
                             <td>
                                 <select id="ApCliKey4Type" name="ApCliKey4Type">
                                 <option value="1" <%if tonumber(cfgs.ApCliKey4Type) == 1 then %> selected="selected"<%end%>>ASCII</option>
@@ -371,7 +352,7 @@ var waiting_count = 0;
                 (aplist[i].authmode == "OWE" && aplist[i].encrypttype == "AES") ||
                 (aplist[i].authmode == "WPA3PSK" && aplist[i].encrypttype == "AES") ||
                 (aplist[i].authmode == "WPA2PSKWPA3PSK" && aplist[i].encrypttype == "AES")) {
-                td6.innerHTML = '<a href="javascript:choose_rootap(\''+i+'\')" >Choose This</a>';
+                td6.innerHTML = '<a href="javascript:choose_rootap(\''+i+'\')" ><%:Choose This%></a>';
             } else {
                 td6.innerHTML = 'Security Not Supported';
             }
@@ -381,17 +362,17 @@ var waiting_count = 0;
         var td0 = tr.insertCell(0);
         td0.innerHTML = '<strong>SSID</strong>';
         var td1 = tr.insertCell(1);
-        td1.innerHTML = '<strong>SSID Length</strong>';
+        td1.innerHTML = '<strong>SSID <%:Length%></strong>';
         var td2 = tr.insertCell(2);
-        td2.innerHTML = '<strong>Channel</strong>';
+        td2.innerHTML = '<strong><%:Channel%></strong>';
         var td3 = tr.insertCell(3);
         td3.innerHTML = '<strong>BSSID</strong>';
         var td4 = tr.insertCell(4);
-        td4.innerHTML = '<strong>Security</strong>';
+        td4.innerHTML = '<strong><%:Security Mode%></strong>';
         var td5 = tr.insertCell(5);
-        td5.innerHTML = '<strong>RSSI</strong>';
+        td5.innerHTML = '<strong><%:Signal%></strong>';
         var td6 = tr.insertCell(6);
-        td6.innerHTML = '<strong>Action</strong>';
+        td6.innerHTML = '<strong><%:Action%></strong>';
 
         var div = document.getElementById('aplist');
         div.innerHTML = "";
@@ -684,7 +665,6 @@ var waiting_count = 0;
         document.getElementById("ApCliKey2Str").value="";
         document.getElementById("ApCliKey3Str").value="";
         document.getElementById("ApCliKey4Str").value="";
-        location.href="#apcli_cfg_section";
     }
 
     function decode_ssid(ssid)

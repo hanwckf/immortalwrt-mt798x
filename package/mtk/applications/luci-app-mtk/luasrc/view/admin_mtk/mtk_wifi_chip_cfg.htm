@@ -30,16 +30,16 @@ local cfgs = mtkwifi.load_profile(dev.profile)
 
 <form method="post" name="cbi" action="<%=luci.dispatcher.build_url("admin", "network", "wifi", "chip_cfg", devname)%>" enctype="multipart/form-data" onreset="return cbi_validate_reset(this)" onsubmit="return cbi_validate_form(this, 'Some fields are invalid, cannot save values!') && ValidateAllSettings()" autocomplete="false">
     <fieldset class="cbi-section">
-        <legend> Chip Configurations - <%=string.split(devname,".")[1]%>
+        <h2><%:Chip Configurations%> - <%=string.split(devname,".")[1]%>
             <%local diff = mtkwifi.diff_profile(dev.profile)%>
             <%if next(diff) ~= nil then%>
-                <span style="color:red;">( <a href="javascript:location.href='<%=luci.dispatcher.build_url("admin", "network", "wifi", "reload", dev.devname)%>'">Click here</a> to apply changes)</span>
+                <span style="color:red;">( <a href="javascript:location.href='<%=luci.dispatcher.build_url("admin", "network", "wifi", "reload", dev.devname)%>'"><%:Click here%></a> <%:to apply changes%>)</span>
             <%end%>
-        </legend>
+        </h2>
 
         <table id="dev-cfg-basic" class="cbi-section-table">
             <tr>
-                <td>Decline BA Request</td>
+                <td><%:Decline BA Request%></td>
                 <td>
                     <select style="width:auto" name="HT_BADecline">
                         <option value="1" <% if cfgs.HT_BADecline == "1" then %> selected="selected"<% end%>>Enable</option>
@@ -48,7 +48,7 @@ local cfgs = mtkwifi.load_profile(dev.profile)
                 </td>
             </tr>
             <tr>
-                <td>Reverse Direction Grant (RDG)</td>
+                <td><%:Reverse Direction Grant (RDG)%></td>
                 <td>
                     <select style="width:auto" name="HT_RDG">
                         <option value="1" <% if cfgs.HT_RDG == "1" then %> selected="selected"<% end%>>Enable</option>
@@ -57,13 +57,13 @@ local cfgs = mtkwifi.load_profile(dev.profile)
                 </td>
             </tr>
             <tr>
-                <td>BA Win size</td>
+                <td><%:BA Win size%> <% if string.split(cfgs.WirelessMode,";")[1] == "16" or string.split(cfgs.WirelessMode,";")[1] == "17" or string.split(cfgs.WirelessMode,";")[1] == "18" then %>(1-256)<% else %>(1-64)<% end %></td>
                 <td>
-                    <input name="HT_BAWinSize" id="HT_BAWinSize" value="<%=cfgs.HT_BAWinSize%>"/><% if string.split(cfgs.WirelessMode,";")[1] == "16" or string.split(cfgs.WirelessMode,";")[1] == "17" or string.split(cfgs.WirelessMode,";")[1] == "18" then %> (range 1-256) <% else %> (range 1-64) <% end %>
+                    <input name="HT_BAWinSize" id="HT_BAWinSize" value="<%=cfgs.HT_BAWinSize%>"/>
                 </td>
             </tr>
             <tr>
-                <td>HT Disallow TKIP</td>
+                <td><%:HT Disallow TKIP%></td>
                 <td>
                     <select style="width:auto" name="HT_DisallowTKIP">
                         <option value="1" <% if cfgs.HT_DisallowTKIP == "1" then %> selected="selected"<% end%>>Enable</option>
@@ -72,7 +72,7 @@ local cfgs = mtkwifi.load_profile(dev.profile)
                 </td>
             </tr>
             <tr>
-                <td>Wi-Fi HWNAT</td>
+                <td><%:Wi-Fi HWNAT%></td>
                 <td>
                     <select style="width:auto" name="WHNAT">
                         <option value="1" <% if cfgs.WHNAT == "1" then %> selected="selected"<% end%>>Enable</option>
@@ -81,7 +81,7 @@ local cfgs = mtkwifi.load_profile(dev.profile)
                 </td>
             </tr>
             <tr>
-                <td>E2pAccessMode</td>
+                <td><%:E2pAccessMode%></td>
                 <td>
                     <select style="width:auto" name="E2pAccessMode">
                         <option value="1" <% if cfgs.E2pAccessMode == "1" then %> selected="selected"<% end%>>EFUSE</option>
@@ -90,19 +90,19 @@ local cfgs = mtkwifi.load_profile(dev.profile)
                 </td>
             </tr>
             <tr>
-                <td>Beacon Interval</td>
+                <td><%:Beacon Interval%> (20-999)</td>
                 <td>
-                    <input name="BeaconPeriod" id="BeaconPeriod" value="<%=cfgs.BeaconPeriod%>" />tu(range 20-999, default 100)
+                    <input name="BeaconPeriod" id="BeaconPeriod" value="<%=cfgs.BeaconPeriod%>" />
                 </td>
             </tr>
             <tr>
-                <td>Data Beacon Rate (DTIM)</td>
+                <td><%:Data Beacon Rate (DTIM)%> (1-255)</td>
                 <td>
-                    <input name="DtimPeriod" id="DtimPeriod" value="<%=cfgs.DtimPeriod%>" />Beacon interval(range 1-255, default 1)
+                    <input name="DtimPeriod" id="DtimPeriod" value="<%=cfgs.DtimPeriod%>" />
                 </td>
             </tr>
             <tr>
-                <td>BG Protection Mode</td>
+                <td><%:BG Protection Mode%></td>
                 <td>
                     <select name="BGProtection" style="width:auto">
                         <option value="0" <% if cfgs.BGProtection == "0" then %>selected="selected"<% end %>>Auto</option>
@@ -112,7 +112,7 @@ local cfgs = mtkwifi.load_profile(dev.profile)
                 </td>
             </tr>
             <tr>
-                <td>Short Preamble</td>
+                <td><%:Short Preamble%></td>
                 <td>
                     <select style="width:auto" name="TxPreamble">
                         <option value="1" <% if cfgs.TxPreamble == "1" then %> selected="selected"<% end%>>Enable</option>
@@ -121,7 +121,7 @@ local cfgs = mtkwifi.load_profile(dev.profile)
                 </td>
             </tr>
             <tr>
-                <td>TX Burst</td>
+                <td><%:TX Burst%></td>
                 <td>
                     <select style="width:auto" name="TxBurst">
                         <option value="1" <% if cfgs.TxBurst == "1" then %> selected="selected"<% end%>>Enable</option>
@@ -130,7 +130,7 @@ local cfgs = mtkwifi.load_profile(dev.profile)
                 </td>
             </tr>
             <tr>
-                <td>Short Slot</td>
+                <td><%:Short Slot%></td>
                 <td>
                     <select style="width:auto" name="ShortSlot">
                         <option value="1" <% if cfgs.ShortSlot == "1" then %> selected="selected"<% end%>>Enable</option>
