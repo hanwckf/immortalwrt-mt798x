@@ -66,6 +66,41 @@ function del_vif_from_lan(vif)
     end
 end
 
+function d8021xd_chk(devname, prefix, vif, enable)
+    if mtkwifi.exists("/tmp/run/8021xd_"..vif..".pid") then
+        os.execute("cat /tmp/run/8021xd_"..vif..".pid | xargs kill -9")
+        os.execute("rm /tmp/run/8021xd_"..vif..".pid")
+        nixio.syslog("debug", "mtwifi: stop 8021xd")
+    end
+
+    if enable and mtkwifi.exists("/usr/bin/8021xd") then
+        local profile = mtkwifi.search_dev_and_profile()[devname]
+        local cfgs = mtkwifi.load_profile(profile)
+        local auth_mode = cfgs.AuthMode
+        local ieee8021x = cfgs.IEEE8021X
+        local pat_auth_mode = {"WPA$", "WPA;", "WPA2$", "WPA2;", "WPA1WPA2$", "WPA1WPA2;", "WPA3$", "WPA3;", "192$", "192;", "WPA2-Ent-OSEN$", "WPA2-Ent-OSEN;"}
+        local pat_ieee8021x = {"1$", "1;"}
+        local apd_en = false
+
+        for _, pat in ipairs(pat_auth_mode) do
+            if string.find(auth_mode, pat) then
+                apd_en = true
+            end
+        end
+
+        for _, pat in ipairs(pat_ieee8021x) do
+            if string.find(ieee8021x, pat) then
+                apd_en = true
+            end
+        end
+
+        if apd_en then
+            nixio.syslog("debug", "mtwifi: start 8021xd")
+            os.execute("8021xd -p "..prefix.. " -i "..vif)
+        end
+    end
+end
+
 function mtwifi_up(devname)
     local nixio = require("nixio")
     local mtkwifi = require("mtkwifi")
@@ -114,6 +149,7 @@ function mtwifi_up(devname)
                 os.execute("iwpriv "..vif.." set ApCliAutoConnect=3")
             end
         end
+        d8021xd_chk(devname, dev.ext_ifname, dev.main_ifname, true)
 
     else nixio.syslog("debug", "mtwifi_up: skip "..devname..", config(l1profile) not exist")
     end
@@ -146,6 +182,7 @@ function mtwifi_down(devname)
         end
         -- hw_nat_register is only compatible with legacy WHNAT
         -- os.execute("iwpriv "..dev.main_ifname.." set hw_nat_register=0")
+        d8021xd_chk(devname, dev.ext_ifname, dev.main_ifname, false)
         for _,vif in ipairs(string.split(mtkwifi.read_pipe("ls /sys/class/net"), "\n"))
         do
             if vif == dev.main_ifname
