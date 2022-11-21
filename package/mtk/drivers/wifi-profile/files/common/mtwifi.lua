@@ -67,6 +67,7 @@ function del_vif_from_lan(vif)
 end
 
 function d8021xd_chk(devname, prefix, vif, enable)
+    local mtkwifi = require("mtkwifi")
     if mtkwifi.exists("/tmp/run/8021xd_"..vif..".pid") then
         os.execute("cat /tmp/run/8021xd_"..vif..".pid | xargs kill -9")
         os.execute("rm /tmp/run/8021xd_"..vif..".pid")
