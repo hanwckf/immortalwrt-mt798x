@@ -209,7 +209,7 @@ local chipname
                 <th class="cbi-section-table-cell"><%:Interface%></th>
                 <th class="cbi-section-table-cell">SSID</th>
                 <th class="cbi-section-table-cell"><%:MAC-Address%></th>
-                <!--th class="cbi-section-table-cell"><%:IPv4-Address%></th-->
+                <th class="cbi-section-table-cell"><%:Hostname%></th>
                 <th class="cbi-section-table-cell"><%:Signal%> (dBm)</th>
                 <th class="cbi-section-table-cell"><%:TX Rate%></th>
                 <th class="cbi-section-table-cell"><%:RX Rate%></th>
@@ -236,7 +236,7 @@ local chipname
     function insert_stalist_table(ifname, ssid, sta_list)
     {
         var i, tr_row, td_cell;
-        var rssi_str;
+        var rssi_str, host_str;
         var tableid = document.getElementById('iw-assoclist');
 
         for (i = 0; sta_list[i] ; i++){
@@ -253,11 +253,14 @@ local chipname
             td_cell = tr_row.insertCell(-1);
             td_cell.innerHTML = sta_list[i].MacAddr;
 
-            // FIXME: TODO
-            /*
+            host_str = sta_list[i].hostname
+            if (sta_list[i].ipv4 != "")
+                host_str = host_str + ", " + sta_list[i].ipv4
+            if (sta_list[i].ipv6 != "")
+                host_str = host_str + "<br>" + sta_list[i].ipv6
             td_cell = tr_row.insertCell(-1);
-            td_cell.innerHTML = "IPv4 addr";
-            */
+            td_cell.innerHTML = host_str;
+            
             rssi_str = sta_list[i].AvgRssi0 + ", " + sta_list[i].AvgRssi1;
             if (sta_list[i].AvgRssi2 != "-127")
                 rssi_str = rssi_str + ", " + sta_list[i].AvgRssi2;
@@ -380,7 +383,7 @@ local chipname
                 insert_stalist_table(stabuf[i].ifname, stabuf[i].ssid, stabuf[i].sta);
             }
         }
-        setTimeout(printstainfo, 1500);
+        setTimeout(printstainfo, 2000);
     }
 
     function apcliInfoTimerHandler(vifNameList,idx,remSec)
