@@ -295,6 +295,9 @@ msgstr "访问控制"
 msgid "Access Policy"
 msgstr "访问控制策略"
 
+msgid "Access control MAC address list"
+msgstr "访问控制MAC地址列表"
+
 msgid "White List"
 msgstr "白名单模式"
 

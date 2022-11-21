@@ -565,11 +565,14 @@ function hi(to, devname, vifname)
                 <td><%:Access Policy%></td>
                 <td>
                     <input type="radio" name="__accesspolicy" value="0" id="disable_AP" <% if cfgs["AccessPolicy"..(vifidx-1)] == "0" then %> checked="checked"<% end %>/> Disable
-                    <input type="radio" name="__accesspolicy" value="1" id="white_AP" <% if cfgs["AccessPolicy"..(vifidx-1)] == "1" then %> checked="checked"<% end %>/> White List
-                    <input type="radio" name="__accesspolicy" value="2" id="black_AP" <% if cfgs["AccessPolicy"..(vifidx-1)] == "2" then %> checked="checked"<% end %>/> Black List
+                    <br>
+                    <input type="radio" name="__accesspolicy" value="1" id="white_AP" <% if cfgs["AccessPolicy"..(vifidx-1)] == "1" then %> checked="checked"<% end %>/> <%:White List%>
+                    <br>
+                    <input type="radio" name="__accesspolicy" value="2" id="black_AP" <% if cfgs["AccessPolicy"..(vifidx-1)] == "2" then %> checked="checked"<% end %>/> <%:Black List%>
                 </td>
             </tr>
         </table>
+        <h3><%:Access control MAC address list%></h3>
         <textarea name="__maclist" id="__maclist" style="width:98%; height: 100px;"><%
         local list = cfgs["AccessControlList"..(vifidx-1)] or ""
         print(table.concat(list:split(";"), "\n"))
