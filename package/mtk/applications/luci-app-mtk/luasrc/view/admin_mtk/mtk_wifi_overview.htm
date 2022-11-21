@@ -236,6 +236,7 @@ local chipname
     function insert_stalist_table(ifname, ssid, sta_list)
     {
         var i, tr_row, td_cell;
+        var rssi_str;
         var tableid = document.getElementById('iw-assoclist');
 
         for (i = 0; sta_list[i] ; i++){
@@ -257,9 +258,11 @@ local chipname
             td_cell = tr_row.insertCell(-1);
             td_cell.innerHTML = "IPv4 addr";
             */
-
+            rssi_str = sta_list[i].AvgRssi0 + ", " + sta_list[i].AvgRssi1;
+            if (sta_list[i].AvgRssi2 != "-127")
+                rssi_str = rssi_str + ", " + sta_list[i].AvgRssi2;
             td_cell = tr_row.insertCell(-1);
-            td_cell.innerHTML = sta_list[i].AvgRssi0 + ", " + sta_list[i].AvgRssi1 + ", " + sta_list[i].AvgRssi2;
+            td_cell.innerHTML = rssi_str;
 
             //TxRate
             td_cell = tr_row.insertCell(-1);
