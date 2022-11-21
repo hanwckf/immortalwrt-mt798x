@@ -54,13 +54,14 @@ function hi(to, devname, vifname)
     var x;
     var tables = new Array();
     tables.push("vif-cfg-basic");
+    tables.push("vif-cfg-ac");
     <% if string.split(cfgs.WirelessMode,";")[1] == "16" or string.split(cfgs.WirelessMode,";")[1] == "17" or string.split(cfgs.WirelessMode,";")[1] == "18" then %>
         tables.push("vif-cfg-he_mu");
     <% end %>
-    tables.push("vif-cfg-basic-AC");
 
     var tabs = new Array();
     tabs.push("vif-cfg-tab-basic");
+    tabs.push("vif-cfg-tab-ac");
     <% if string.split(cfgs.WirelessMode,";")[1] == "16" or string.split(cfgs.WirelessMode,";")[1] == "17" or string.split(cfgs.WirelessMode,";")[1] == "18" then %>
         tabs.push("vif-cfg-tab-he_mu");
     <% end %>
@@ -121,6 +122,9 @@ function hi(to, devname, vifname)
         <ul class="cbi-tabmenu">
             <li class="cbi-tab" id="vif-cfg-tab-basic">
                 <a href="javascript:hi('basic', <%="'"..devname.."', '"..vifname.."'"%>);this.blur(); "><%:Basic Settings%></a>
+            </li>
+            <li class="cbi-tab-disabled" id="vif-cfg-tab-ac">
+                <a href="javascript:hi('ac', <%="'"..devname.."', '"..vifname.."'"%>);this.blur(); "><%:Access Control%></a>
             </li>
             <% if string.split(cfgs.WirelessMode,";")[1] == "16" or string.split(cfgs.WirelessMode,";")[1] == "17" or string.split(cfgs.WirelessMode,";")[1] == "18" then %>
                 <li class="cbi-tab-disabled" id="vif-cfg-tab-he_mu">
@@ -554,7 +558,24 @@ function hi(to, devname, vifname)
                 </tr>
             </tbody>
         </table>
-        
+
+        <fieldset id="vif-cfg-ac" name="vif-cfg-ac" style="display:none">
+        <table class="cbi-section-table">
+            <tr>
+                <td><%:Access Policy%></td>
+                <td>
+                    <input type="radio" name="__accesspolicy" value="0" id="disable_AP" <% if cfgs["AccessPolicy"..(vifidx-1)] == "0" then %> checked="checked"<% end %>/> Disable
+                    <input type="radio" name="__accesspolicy" value="1" id="white_AP" <% if cfgs["AccessPolicy"..(vifidx-1)] == "1" then %> checked="checked"<% end %>/> White List
+                    <input type="radio" name="__accesspolicy" value="2" id="black_AP" <% if cfgs["AccessPolicy"..(vifidx-1)] == "2" then %> checked="checked"<% end %>/> Black List
+                </td>
+            </tr>
+        </table>
+        <textarea name="__maclist" id="__maclist" style="width:98%; height: 100px;"><%
+        local list = cfgs["AccessControlList"..(vifidx-1)] or ""
+        print(table.concat(list:split(";"), "\n"))
+        %></textarea>
+        </fieldset>
+
         <% if string.split(cfgs.WirelessMode,";")[1] == "16" or string.split(cfgs.WirelessMode,";")[1] == "17" or string.split(cfgs.WirelessMode,";")[1] == "18" then %>
             <table id="vif-cfg-he_mu" class="cbi-section-table" name="vif-cfg-he_mu" style="display:none">
                 <tr>
@@ -588,38 +609,10 @@ function hi(to, devname, vifname)
             </table>
         <% end %>
 
-        <fieldset class="cbi-section" id="vif-cfg-basic-AC">
-            <h3>Access Control - <%=vifname and devname.."@"..vifname or devname%>  </h3>
-            <table class="cbi-section-table">
-                <tr>
-                    <td><%:Access Policy%></td>
-                    <td>
-                        <input type="radio" name="__accesspolicy" value="0" id="disable_AP" <% if cfgs["AccessPolicy"..(vifidx-1)] == "0" then %> checked="checked"<% end %>/> Disable
-                        <input type="radio" name="__accesspolicy" value="1" id="white_AP" <% if cfgs["AccessPolicy"..(vifidx-1)] == "1" then %> checked="checked"<% end %>/> White List
-                        <input type="radio" name="__accesspolicy" value="2" id="black_AP" <% if cfgs["AccessPolicy"..(vifidx-1)] == "2" then %> checked="checked"<% end %>/> Black List
-                    </td>
-                </tr>
-            </table>
-            <pre>
-# 1. one MAC one line.
-# 2. empty lines will be ignored.
-# 3. lines start with "#" will be ignored.
-# 4. invalid MAC will be ignored.
-
-11:22:33:44:55:66
-AA:BB:CC:DD:EE:FF
-11:22:33:aa:bb:cc
-            </pre>
-            <textarea name="__maclist" id="__maclist" style="width:98%; height: 200px;"><%
-            local list = cfgs["AccessControlList"..(vifidx-1)] or ""
-            print(table.concat(list:split(";"), "\n"))
-            %></textarea>
-        </fieldset>
-
         <div class="cbi-page-actions" id="vif_form_action_btns">
-            <input class="cbi-button cbi-button-apply" name="__apply" value="Save and Apply" type="submit">
-            <input class="cbi-button cbi-button-apply" value="Save" type="submit">
-            <input class="cbi-button cbi-button-reset" value="Reset" type="reset">
+            <input class="cbi-button cbi-button-apply" name="__apply" value="<%:Save & Apply%>" type="submit">
+            <input class="cbi-button cbi-button-apply" value="<%:Save%>" type="submit">
+            <input class="cbi-button cbi-button-reset" value="<%:Reset%>" type="reset">
         </div>
 <% end %> <!-- if not dev -->
 </form>

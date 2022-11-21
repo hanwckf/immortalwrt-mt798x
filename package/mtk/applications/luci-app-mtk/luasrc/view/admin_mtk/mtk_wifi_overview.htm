@@ -45,7 +45,7 @@ local chipname
                             <% chipname = string.split(dev.devname,".")[1].."."..(dev.mainidx) %>
                             <tr  style="height:45px">
                                 <td style="width:34px">
-                                    <img src="/luci-static/resources/icons/wifi.png" style="float:left; margin-right:10px" width="30px" height="30px">
+                                    <img src="/luci-static/resources/icons/wifi_big.png" style="float:left; margin-right:10px" width="30px" height="30px">
                                 </td>
                                 <td colspan="2" style="text-align:left">
                                     <big><strong title="<%=dev.profile%>"> <%=string.split(dev.devname,".")[1]%></strong></big>
@@ -89,7 +89,7 @@ local chipname
                                     <%if not dev.vifs then%>
                                         <button class="cbi-button cbi-button-apply" id="reset" onclick="visit_url('<%=dev.devname%>','<%=luci.dispatcher.build_url("admin", "network", "wifi", "reset_to_defaults", dev.devname)%>')"><%:Restore Profile to Factory Settings%></button>
                                     <%else%>
-                                        <button class="cbi-button cbi-button-reload" onclick="visit_url('<%=dev.devname%>','<%=luci.dispatcher.build_url("admin", "network", "wifi", "reload", dev.devname)%>')"><%:RELOAD%></button>
+                                        <button class="cbi-button cbi-button-reset" onclick="visit_url('<%=dev.devname%>','<%=luci.dispatcher.build_url("admin", "network", "wifi", "reload", dev.devname)%>')"><%:RELOAD%></button>
                                         <button class="cbi-button cbi-button-edit" onclick="visit_url('<%=dev.devname%>','<%=luci.dispatcher.build_url("admin", "network", "wifi", "dev_cfg_view", dev.devname)%>')"><%:CONFIG%></button>
                                         <button class="cbi-button cbi-button-add" onclick='add_vif("<%=dev.devname%>","<%=dev.vifs.__prefix%>","<%=dev.maxVif%>")'><%:ADD%></button>
                                     <%end%>

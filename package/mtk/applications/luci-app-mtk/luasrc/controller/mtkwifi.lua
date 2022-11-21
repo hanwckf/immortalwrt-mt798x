@@ -51,6 +51,7 @@ end
 
 function index()
     entry({"admin", "network", "wifi"}, template("admin_mtk/mtk_wifi_overview"), _("Wireless"), 1)
+    entry({"admin", "network", "wifi", "test"}, call("test")).leaf = true
     entry({"admin", "network", "wifi", "chip_cfg_view"}, template("admin_mtk/mtk_wifi_chip_cfg")).leaf = true
     entry({"admin", "network", "wifi", "chip_cfg"}, call("chip_cfg")).leaf = true
     entry({"admin", "network", "wifi", "dev_cfg_view"}, template("admin_mtk/mtk_wifi_dev_cfg")).leaf = true
@@ -85,6 +86,10 @@ function index()
     entry({"admin", "network", "wifi", "loading"}, template("admin_mtk/mtk_wifi_loading")).leaf = true;
     entry({"admin", "network", "wifi", "get_apply_status"}, call("get_apply_status")).leaf = true;
     entry({"admin", "network", "wifi", "reset_to_defaults"}, call("reset_to_defaults")).leaf = true;
+end
+
+function test()
+    http.write_json(http.formvalue())
 end
 
 function exec_reboot()

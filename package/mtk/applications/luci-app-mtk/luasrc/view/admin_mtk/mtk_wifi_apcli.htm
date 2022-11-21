@@ -64,7 +64,7 @@ var waiting_count = 0;
     <big><strong><%:Please wait while the request is being processed.%></strong></big>
 </div>
 <div id="apcli_body_div">
-    <form method="post" name="cbi" action="<%=luci.dispatcher.build_url("admin", "network", "wifi", "apcli_cfg", devname, vifname)%>" enctype="multipart/form-data" onreset="return cbi_validate_reset(this);" onsubmit="return validate_all() && cbi_validate_form(this, 'Some fields are invalid, cannot save values!')" autocomplete="off">
+    <form method="post" name="cbi" action="<%=luci.dispatcher.build_url("admin", "network", "wifi", "apcli_cfg", devname, vifname)%>" enctype="multipart/form-data" onreset="return cbi_validate_reset(this);" onsubmit="return validate_all() && cbi_validate_form(this, '<%:Some fields are invalid, cannot save values!%>')" autocomplete="off">
         <fieldset class="cbi-section">
             <h2><%:ApCli Configurations%> - <%=vifname and devname.."@"..vifname or devname%>
                 <%local diff = mtkwifi.diff_profile(dev.profile)%>
@@ -308,9 +308,9 @@ var waiting_count = 0;
                 </table>
             </fieldset>
             <div class="cbi-page-actions" id="apcli_form_buttons">
-                <input class="cbi-button cbi-button-apply" name="__apply" value="Save and Apply" type="submit">
-                <input class="cbi-button cbi-button-apply" value="Save" type="submit">
-                <input class="cbi-button cbi-button-reset" value="Reset" type="reset">
+                <input class="cbi-button cbi-button-apply" name="__apply" value="<%:Save & Apply%>" type="submit">
+                <input class="cbi-button cbi-button-apply" value="<%:Save%>" type="submit">
+                <input class="cbi-button cbi-button-reset" value="<%:Reset%>" type="reset">
             </div>
         </fieldset>
     </form>
