@@ -11,6 +11,7 @@ module("luci.controller.mtkwifi", package.seeall)
 
 local ioctl_help = require "ioctl_helper"
 local http = require("luci.http")
+local i18n = require("luci.i18n")
 local mtkwifi = require("mtkwifi")
 local sys = require "luci.sys"
 
@@ -21,37 +22,29 @@ function debug_write(...)
         return
     end
     local syslog_msg = "";
-    local ff = io.open("/tmp/dbgmsg", "a")
     local nargs = select('#',...)
 
     for n=1, nargs do
       local v = select(n,...)
       if (type(v) == "string" or type(v) == "number") then
-        ff:write(v.." ")
         syslog_msg = syslog_msg..v.." ";
       elseif (type(v) == "boolean") then
         if v then
-          ff:write("true ")
           syslog_msg = syslog_msg.."true ";
         else
-          ff:write("false ")
           syslog_msg = syslog_msg.."false ";
         end
       elseif (type(v) == "nil") then
-        ff:write("nil ")
         syslog_msg = syslog_msg.."nil ";
       else
-        ff:write("<Non-printable data type = "..type(v).."> ")
         syslog_msg = syslog_msg.."<Non-printable data type = "..type(v).."> ";
       end
     end
-    ff:write("\n")
-    ff:close()
     nixio.syslog("debug", syslog_msg)
 end
 
 function index()
-    entry({"admin", "network", "wifi"}, template("admin_mtk/mtk_wifi_overview"), _("Wireless"), 1)
+    entry({"admin", "network", "wifi"}, template("admin_mtk/mtk_wifi_overview"), _("Wireless"), 10)
     entry({"admin", "network", "wifi", "test"}, call("test")).leaf = true
     entry({"admin", "network", "wifi", "chip_cfg_view"}, template("admin_mtk/mtk_wifi_chip_cfg")).leaf = true
     entry({"admin", "network", "wifi", "chip_cfg"}, call("chip_cfg")).leaf = true
@@ -1069,6 +1062,11 @@ function get_channel_list()
     end
 
     remove_ch_by_region(ch_list, region)
+
+    for k,v in ipairs(ch_list) do
+        v.text = i18n.translate(v.text)
+    end
+
     http.write_json(ch_list)
 end
 
@@ -1133,6 +1131,10 @@ function get_HT_ext_channel_list()
         end
     end
 
+    for k,v in ipairs(ext_ch_list) do
+        v.text = i18n.translate(v.text)
+    end
+
     http.write_json(ext_ch_list)
 end
 
@@ -1176,6 +1178,11 @@ function get_5G_2nd_80Mhz_channel_list()
             table.remove(ch_list, i)
         end
     end
+
+    for k,v in ipairs(ch_list) do
+        v.text = i18n.translate(v.text)
+    end
+
     http.write_json(ch_list)
 end
 

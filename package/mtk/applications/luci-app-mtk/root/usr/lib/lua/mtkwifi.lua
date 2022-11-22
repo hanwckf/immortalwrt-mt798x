@@ -26,34 +26,24 @@ function debug_write(...)
          return
     end
     local syslog_msg = "";
-    local ff = io.open("/tmp/mtkwifi", "a")
     local nargs = select('#',...)
-
-
 
     for n=1, nargs do
       local v = select(n,...)
       if (type(v) == "string" or type(v) == "number") then
-        ff:write(v.." ")
         syslog_msg = syslog_msg..v.." ";
       elseif (type(v) == "boolean") then
         if v then
-          ff:write("true ")
           syslog_msg = syslog_msg.."true ";
         else
-          ff:write("false ")
           syslog_msg = syslog_msg.."false ";
         end
       elseif (type(v) == "nil") then
-        ff:write("nil ")
         syslog_msg = syslog_msg.."nil ";
       else
-        ff:write("<Non-printable data type = "..type(v).."> ")
         syslog_msg = syslog_msg.."<Non-printable data type = "..type(v).."> ";
       end
     end
-    ff:write("\n")
-    ff:close()
     nixio.syslog("debug", syslog_msg)
 end
 
