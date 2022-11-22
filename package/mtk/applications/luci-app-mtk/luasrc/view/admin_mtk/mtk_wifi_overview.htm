@@ -32,175 +32,175 @@ local chipname
         <div class="alert-message">
             <big><strong><%:No wireless device found!%></strong></big>
         </div>
-    <% end %>
+    <% else %>
 
+    <fieldset class="cbi-section">
+    <table class="cbi-section-table" style="margin:10px; empty-cells:hide">
     <% for _,dev in ipairs(devs) do %>
         <% main_ifname = l1dat and l1dat[dridx][dev.devname].main_ifname or dbdc_prefix[mainidx][subidx].."0" %>
         <% if mtkwifi.exists("/sys/class/net/"..main_ifname) then %>
-            <fieldset class="cbi-section">
-                <table class="cbi-section-table" style="margin:10px; empty-cells:hide">
-                    <!-- physical device -->
-                    <tbody>
-                        <% if chipname ~= string.split(dev.devname,".")[1].."."..(dev.mainidx) then %>
-                            <% chipname = string.split(dev.devname,".")[1].."."..(dev.mainidx) %>
-                            <tr  style="height:45px">
-                                <td style="width:34px">
-                                    <img src="/luci-static/resources/icons/wifi_big.png" style="float:left; margin-right:10px" width="30px" height="30px">
-                                </td>
-                                <td colspan="2" style="text-align:left">
-                                    <big><strong title="<%=dev.profile%>"> <%=string.split(dev.devname,".")[1]%></strong></big>
-                                    <%if not dev.vifs then%>
-                                        <span style="color:red;">* FATAL ERROR: Incorrect Profile Settings</span>
-                                    <%end%>
-                                    <br>
-                                    <%if dev.version then%>
-                                        <span> <%:Driver version%>: <%=dev.version%> <br/></span>
-                                    <%end%>
-                                    <%local temp = mtkwifi.get_temp(main_ifname)%>
-                                    <%if temp then%>
-                                        <span> <%:Tempature%>: <%=temp%>&#176;C</span>
-                                    <%end%>
-                                </td>
-                                <td style="width:310px;text-align:right">
-                                    <div id="ActionBtns_<%=string.split(dev.devname,".")[1]%>">
-                                        <button class="cbi-button cbi-button-edit" onclick="visit_url('<%=string.split(dev.devname,".")[1]%>','<%=luci.dispatcher.build_url("admin", "network", "wifi", "chip_cfg_view", dev.devname)%>')"><%:CONFIG%></button>
-                                    </div>
-                                    <div id="BusyText_<%=string.split(dev.devname,".")[1]%>" style="display:none">
-                                        <big><strong><%:Processing request.%></strong></big>
-                                    </div>
-                                </td>
-                            </tr>
-                        <% end %>
-                        <tr>
-                            <td style="width:56px"></td>
-                            <td colspan="2" style="text-align:left;padding-left:25px;">
-                                <big><strong title="<%=dev.profile%>"><%=dev.devname%></strong></big>
-                                    <%local diff = mtkwifi.diff_profile(dev.profile)%>
-                                    <%if next(diff) ~= nil then%>
-                                        <span style="color:red;">* <%:need reload to apply changes%></span>
-                                    <%end%>
-                                <br>
-                                <%local cfgs = mtkwifi.load_profile(dev.profile)%>
-                                <span> <%:Current Band%>: <%=mtkwifi.band(string.split(cfgs.WirelessMode,";")[1])%> <br/> </span>
-                                <span> <%:Work mode%>: <% if dev.ApCliEnable == "1" then %> APCli <% else %> AP <% end %></span>
-                            </td>
-                            <td style="width:310px;text-align:right">
-                                <div id="ActionBtns_<%=dev.devname%>">
-                                    <%if not dev.vifs then%>
-                                        <button class="cbi-button cbi-button-apply" id="reset" onclick="visit_url('<%=dev.devname%>','<%=luci.dispatcher.build_url("admin", "network", "wifi", "reset_to_defaults", dev.devname)%>')"><%:Restore Profile to Factory Settings%></button>
-                                    <%else%>
-                                        <button class="cbi-button cbi-button-reset" onclick="visit_url('<%=dev.devname%>','<%=luci.dispatcher.build_url("admin", "network", "wifi", "reload", dev.devname)%>')"><%:RELOAD%></button>
-                                        <button class="cbi-button cbi-button-edit" onclick="visit_url('<%=dev.devname%>','<%=luci.dispatcher.build_url("admin", "network", "wifi", "dev_cfg_view", dev.devname)%>')"><%:CONFIG%></button>
-                                        <button class="cbi-button cbi-button-add" onclick='add_vif("<%=dev.devname%>","<%=dev.vifs.__prefix%>","<%=dev.maxVif%>")'><%:ADD%></button>
-                                    <%end%>
-                                </div>
-                                <div id="BusyText_<%=dev.devname%>" style="display:none">
-                                    <big><strong><%:Processing request.%></strong></big>
-                                </div>
-                            </td>
-                        </tr>
-                        <!-- /physical device -->
-                        <% if dev.vifs then%>
-                            <!-- network list -->
-                            <% for _,vif in ipairs(dev.vifs) do %>
-                            <tr class="cbi-section-table-row cbi-rowstyle-1">
-                                <td></td>
-                                <td class="cbi-value-field" style="width:16px; padding:3px;padding-left:40px;">
-                                    <% if vif.state == "up" then %>
-                                    <img src="/luci-static/resources/icons/signal-75-100.png">
-                                    <% else %>
-                                    <img src="/luci-static/resources/icons/signal-none.png">
-                                    <% end %>
-                                </td>
-                                <td class="cbi-value-field" style="vertical-align:middle; text-align:left; padding:3px">
-                                    <strong><%:Interface%>:</strong> <%=vif.vifname%> |
-                                    <strong><%:Type%>:</strong> AP |
-                                    <strong>SSID:</strong>
-                                        <span id="SSID_<%=vif.vifname%>">
-                                            <% if vif.__ssid == "" then %>
-                                                <span style="color:red;"> Error: value not present in dat file </span>
-                                            <% else %>
-                                                <span> <%=vif.__ssid and vif.__ssid:gsub(" ","&nbsp;") or nil%> <% end %> </span>
-                                        </span> |
-                                    <strong><%:Channel%>:</strong>
-                                        <span id="CHANNEL_<%=vif.vifname%>"><%=vif.__channel or dev.Channel%></span>
-                                    <br>
-                                    <% if vif.state == "up" then %>
-                                    <strong>BSSID:</strong> <span id="BSSID_<%=vif.vifname%>"><%=vif.__bssid%></span> | <strong><%:Wireless Mode%>:</strong> <span><%=dev.WirelessModeList[tonumber(vif.__wirelessmode)]%></span>
-                                    <% else %>
-                                    <%:Wireless is disabled or not associated%>
-                                    <% end %>
-                                </td>
-                                <td class="cbi-value-field" style="text-align:right">
-                                    <div id="ActionBtns_<%=vif.vifname%>">
-                                        <% if not vif.state then %>
-                                        <button class="cbi-button cbi-button-apply" onclick="alert('Please click on Reload button of ' + '<%=dev.devname%>' + ' device to enable this interface.')"><%:ENABLE%></button>
-                                        <% elseif vif.state == "up" then %>
-                                        <button class="cbi-button cbi-button-reset" onclick="visit_url('<%=vif.vifname%>','<%=luci.dispatcher.build_url("admin", "network", "wifi", "vif_disable", vif.vifname)%>')"><%:DISABLE%></button>
-                                        <% else %>
-                                        <button class="cbi-button cbi-button-apply" onclick="visit_url('<%=vif.vifname%>','<%=luci.dispatcher.build_url("admin", "network", "wifi", "vif_enable", vif.vifname)%>')"><%:ENABLE%></button>
-                                        <% end %>
-                                        <button class="cbi-button cbi-button-edit" onclick="visit_url('<%=vif.vifname%>','<%=luci.dispatcher.build_url("admin", "network", "wifi", "vif_cfg_view", dev.devname, vif.vifname)%>')"><%:CONFIG%></button>
-                                        <button class="cbi-button cbi-button-remove" onclick="visit_url('<%=vif.vifname%>','<%=luci.dispatcher.build_url("admin", "network", "wifi", "vif_del", dev.devname, vif.vifname)%>')"><%:REMOVE%></button>
-                                    </div>
-                                    <div id="BusyText_<%=vif.vifname%>" style="display:none">
-                                        <big><strong><%:Processing request.%></strong></big>
-                                    </div>
-                                </td>
-                            </tr>
+            <!-- physical device -->
+            <tbody>
+                <% if chipname ~= string.split(dev.devname,".")[1].."."..(dev.mainidx) then %>
+                    <% chipname = string.split(dev.devname,".")[1].."."..(dev.mainidx) %>
+                    <tr  style="height:45px">
+                        <td style="width:34px">
+                            <img src="/luci-static/resources/icons/wifi_big.png" style="float:left; margin-right:10px" width="30px" height="30px">
+                        </td>
+                        <td colspan="2" style="text-align:left">
+                            <big><strong title="<%=dev.profile%>"> <%=string.split(dev.devname,".")[1]%></strong></big>
+                            <%if not dev.vifs then%>
+                                <span style="color:red;">* FATAL ERROR: Incorrect Profile Settings</span>
+                            <%end%>
+                            <br>
+                            <%if dev.version then%>
+                                <span> <%:Driver version%>: <%=dev.version%> <br/></span>
+                            <%end%>
+                            <%local temp = mtkwifi.get_temp(main_ifname)%>
+                            <%if temp then%>
+                                <span> <%:Tempature%>: <%=temp%>&#176;C</span>
+                            <%end%>
+                        </td>
+                        <td style="width:310px;text-align:right">
+                            <div id="ActionBtns_<%=string.split(dev.devname,".")[1]%>">
+                                <button class="cbi-button cbi-button-edit" onclick="visit_url('<%=string.split(dev.devname,".")[1]%>','<%=luci.dispatcher.build_url("admin", "network", "wifi", "chip_cfg_view", dev.devname)%>')"><%:CONFIG%></button>
+                            </div>
+                            <div id="BusyText_<%=string.split(dev.devname,".")[1]%>" style="display:none">
+                                <big><strong><%:Processing request.%></strong></big>
+                            </div>
+                        </td>
+                    </tr>
+                <% end %>
+                <tr>
+                    <td style="width:56px"></td>
+                    <td colspan="2" style="text-align:left;padding-left:25px;">
+                        <big><strong title="<%=dev.profile%>"><%=dev.devname%></strong></big>
+                            <%local diff = mtkwifi.diff_profile(dev.profile)%>
+                            <%if next(diff) ~= nil then%>
+                                <span style="color:red;">* <%:need reload to apply changes%></span>
+                            <%end%>
+                        <br>
+                        <%local cfgs = mtkwifi.load_profile(dev.profile)%>
+                        <span> <%:Current Band%>: <%=mtkwifi.band(string.split(cfgs.WirelessMode,";")[1])%> <br/> </span>
+                        <span> <%:Work mode%>: <% if dev.ApCliEnable == "1" then %> APCli <% else %> AP <% end %></span>
+                    </td>
+                    <td style="width:310px;text-align:right">
+                        <div id="ActionBtns_<%=dev.devname%>">
+                            <%if not dev.vifs then%>
+                                <button class="cbi-button cbi-button-apply" id="reset" onclick="visit_url('<%=dev.devname%>','<%=luci.dispatcher.build_url("admin", "network", "wifi", "reset_to_defaults", dev.devname)%>')"><%:Restore Profile to Factory Settings%></button>
+                            <%else%>
+                                <button class="cbi-button cbi-button-reset" onclick="visit_url('<%=dev.devname%>','<%=luci.dispatcher.build_url("admin", "network", "wifi", "reload", dev.devname)%>')"><%:RELOAD%></button>
+                                <button class="cbi-button cbi-button-edit" onclick="visit_url('<%=dev.devname%>','<%=luci.dispatcher.build_url("admin", "network", "wifi", "dev_cfg_view", dev.devname)%>')"><%:CONFIG%></button>
+                                <button class="cbi-button cbi-button-add" onclick='add_vif("<%=dev.devname%>","<%=dev.vifs.__prefix%>","<%=dev.maxVif%>")'><%:ADD%></button>
+                            <%end%>
+                        </div>
+                        <div id="BusyText_<%=dev.devname%>" style="display:none">
+                            <big><strong><%:Processing request.%></strong></big>
+                        </div>
+                    </td>
+                </tr>
+                <!-- /physical device -->
+                <% if dev.vifs then%>
+                    <!-- network list -->
+                    <% for _,vif in ipairs(dev.vifs) do %>
+                    <tr class="cbi-section-table-row cbi-rowstyle-1">
+                        <td></td>
+                        <td class="cbi-value-field" style="width:16px; padding:3px;padding-left:40px;">
+                            <% if vif.state == "up" then %>
+                            <img src="/luci-static/resources/icons/signal-75-100.png">
+                            <% else %>
+                            <img src="/luci-static/resources/icons/signal-none.png">
                             <% end %>
-                            <!-- /network list -->
-                            <!-- apcli list -->
-                            <% if dev.apcli then %>
-                            <tr>
-                                <td></td>
-                                <td class="cbi-value-field" style="width:16px; padding:3px;padding-left:40px;">
+                        </td>
+                        <td class="cbi-value-field" style="vertical-align:middle; text-align:left; padding:3px">
+                            <strong><%:Interface%>:</strong> <%=vif.vifname%> |
+                            <strong><%:Type%>:</strong> AP |
+                            <strong>SSID:</strong>
+                                <span id="SSID_<%=vif.vifname%>">
+                                    <% if vif.__ssid == "" then %>
+                                        <span style="color:red;"> Error: value not present in dat file </span>
+                                    <% else %>
+                                        <span> <%=vif.__ssid and vif.__ssid:gsub(" ","&nbsp;") or nil%> <% end %> </span>
+                                </span> |
+                            <strong><%:Channel%>:</strong>
+                                <span id="CHANNEL_<%=vif.vifname%>"><%=vif.__channel or dev.Channel%></span>
+                            <br>
+                            <% if vif.state == "up" then %>
+                            <strong>BSSID:</strong> <span id="BSSID_<%=vif.vifname%>"><%=vif.__bssid%></span> | <strong><%:Wireless Mode%>:</strong> <span><%=dev.WirelessModeList[tonumber(vif.__wirelessmode)]%></span>
+                            <% else %>
+                            <%:Wireless is disabled or not associated%>
+                            <% end %>
+                        </td>
+                        <td class="cbi-value-field" style="text-align:right">
+                            <div id="ActionBtns_<%=vif.vifname%>">
+                                <% if not vif.state then %>
+                                <button class="cbi-button cbi-button-apply" onclick="alert('Please click on Reload button of ' + '<%=dev.devname%>' + ' device to enable this interface.')"><%:ENABLE%></button>
+                                <% elseif vif.state == "up" then %>
+                                <button class="cbi-button cbi-button-reset" onclick="visit_url('<%=vif.vifname%>','<%=luci.dispatcher.build_url("admin", "network", "wifi", "vif_disable", vif.vifname)%>')"><%:DISABLE%></button>
+                                <% else %>
+                                <button class="cbi-button cbi-button-apply" onclick="visit_url('<%=vif.vifname%>','<%=luci.dispatcher.build_url("admin", "network", "wifi", "vif_enable", vif.vifname)%>')"><%:ENABLE%></button>
+                                <% end %>
+                                <button class="cbi-button cbi-button-edit" onclick="visit_url('<%=vif.vifname%>','<%=luci.dispatcher.build_url("admin", "network", "wifi", "vif_cfg_view", dev.devname, vif.vifname)%>')"><%:CONFIG%></button>
+                                <button class="cbi-button cbi-button-remove" onclick="visit_url('<%=vif.vifname%>','<%=luci.dispatcher.build_url("admin", "network", "wifi", "vif_del", dev.devname, vif.vifname)%>')"><%:REMOVE%></button>
+                            </div>
+                            <div id="BusyText_<%=vif.vifname%>" style="display:none">
+                                <big><strong><%:Processing request.%></strong></big>
+                            </div>
+                        </td>
+                    </tr>
+                    <% end %>
+                    <!-- /network list -->
+                    <!-- apcli list -->
+                    <% if dev.apcli then %>
+                    <tr>
+                        <td></td>
+                        <td class="cbi-value-field" style="width:16px; padding:3px;padding-left:40px;">
+                            <% if dev.apcli.state == "up" then %>
+                            <img src="/luci-static/resources/icons/signal-75-100.png">
+                            <% else %>
+                            <img src="/luci-static/resources/icons/signal-none.png">
+                            <% end %>
+                        </td>
+                        <td class="cbi-value-field" style="vertical-align:middle; text-align:left; padding:3px"><strong><%:Interface%>:</strong> <%=dev.apcli.devname%> | <strong><%:Type%>:</strong> STA | <strong><%:Status%>:</strong> <span id="ConnStatus_<%=dev.apcli.devname%>"><% if dev.ApCliEnable ~= "1" then %> <%:Disconnected%> <% end %></span>
+                            <br>
+                            <div id="LoadingBar_<%=dev.apcli.devname%>" <% if dev.ApCliEnable ~= "1" then %> style="display:none" <% end %>>
+                                <img src="<%=resource%>/icons/loading.gif" alt="<%:Loading%>" style="width:20px;height:20px;vertical-align:middle;"/> <cite>&nbsp;Loading connection information of <%=dev.apcli.devname%></cite>
+                            </div>
+                            <div id="ConnInfo_<%=dev.apcli.devname%>" style="display:none">
+                                <strong>BSSID:</strong> <span id="ApCliBssid_<%=dev.apcli.devname%>"></span> |
+                                <strong>SSID:</strong> <span id="ApCliSsid_<%=dev.apcli.devname%>"></span>
+                            </div>
+                            <span id="DisConnMsg_<%=dev.apcli.devname%>" <% if dev.ApCliEnable == "1" then %> style="display:none" <% end %>><%:Wireless is disabled or not associated%></span>
+                        </td>
+                        <td style="text-align:right">
+                            <div id="ActionBtns_<%=dev.apcli.devname%>">
+                                <% if dev.ApCliEnable ~= "1" then %>
                                     <% if dev.apcli.state == "up" then %>
-                                    <img src="/luci-static/resources/icons/signal-75-100.png">
-                                    <% else %>
-                                    <img src="/luci-static/resources/icons/signal-none.png">
+                                    <button class="cbi-button cbi-button-reset" onclick="visit_url('<%=dev.apcli.devname%>','<%=luci.dispatcher.build_url("admin", "network", "wifi", "vif_disable", dev.apcli.vifname)%>')"><%:DISABLE%></button>
+                                    <button class="cbi-button cbi-button-reload" onclick="visit_url('<%=dev.apcli.devname%>','<%=luci.dispatcher.build_url("admin", "network", "wifi", "apcli_connect", dev.devname, dev.apcli.vifname)%>')"><%:RECONNECT%></button>
                                     <% end %>
-                                </td>
-                                <td class="cbi-value-field" style="vertical-align:middle; text-align:left; padding:3px"><strong><%:Interface%>:</strong> <%=dev.apcli.devname%> | <strong><%:Type%>:</strong> STA | <strong><%:Status%>:</strong> <span id="ConnStatus_<%=dev.apcli.devname%>"><% if dev.ApCliEnable ~= "1" then %> <%:Disconnected%> <% end %></span>
-                                    <br>
-                                    <div id="LoadingBar_<%=dev.apcli.devname%>" <% if dev.ApCliEnable ~= "1" then %> style="display:none" <% end %>>
-                                        <img src="<%=resource%>/icons/loading.gif" alt="<%:Loading%>" style="width:20px;height:20px;vertical-align:middle;"/> <cite>&nbsp;Loading connection information of <%=dev.apcli.devname%></cite>
-                                    </div>
-                                    <div id="ConnInfo_<%=dev.apcli.devname%>" style="display:none">
-                                        <strong>BSSID:</strong> <span id="ApCliBssid_<%=dev.apcli.devname%>"></span> |
-                                        <strong>SSID:</strong> <span id="ApCliSsid_<%=dev.apcli.devname%>"></span>
-                                    </div>
-                                    <span id="DisConnMsg_<%=dev.apcli.devname%>" <% if dev.ApCliEnable == "1" then %> style="display:none" <% end %>><%:Wireless is disabled or not associated%></span>
-                                </td>
-                                <td style="text-align:right">
-                                    <div id="ActionBtns_<%=dev.apcli.devname%>">
-                                        <% if dev.ApCliEnable ~= "1" then %>
-                                            <% if dev.apcli.state == "up" then %>
-                                            <button class="cbi-button cbi-button-reset" onclick="visit_url('<%=dev.apcli.devname%>','<%=luci.dispatcher.build_url("admin", "network", "wifi", "vif_disable", dev.apcli.vifname)%>')"><%:DISABLE%></button>
-                                            <button class="cbi-button cbi-button-reload" onclick="visit_url('<%=dev.apcli.devname%>','<%=luci.dispatcher.build_url("admin", "network", "wifi", "apcli_connect", dev.devname, dev.apcli.vifname)%>')"><%:RECONNECT%></button>
-                                            <% end %>
-                                            <button class="cbi-button cbi-button-edit" onclick="visit_url('<%=dev.apcli.devname%>','<%=luci.dispatcher.build_url("admin", "network", "wifi", "apcli_cfg_view", dev.devname, dev.apcli.vifname)%>')"><%:CONFIG%></button>
-                                        <% else %>
-                                            <button class="cbi-button cbi-button-reset" style="display:none" id="ApCliDownBtn_<%=dev.apcli.devname%>" onclick="visit_url('<%=dev.apcli.devname%>','<%=luci.dispatcher.build_url("admin", "network", "wifi", "vif_disable", dev.apcli.vifname)%>')"><%:DISABLE%></button>
-                                            <button class="cbi-button cbi-button-apply" style="display:none" id="ApCliUpBtn_<%=dev.apcli.devname%>" onclick="visit_url('<%=dev.apcli.devname%>','<%=luci.dispatcher.build_url("admin", "network", "wifi", "vif_enable", dev.apcli.vifname)%>')"><%:ENABLE%></button>
-                                            <button class="cbi-button cbi-button-remove" style="display:none" id="ApCliDisConnBtn_<%=dev.apcli.devname%>" onclick="visit_url('<%=dev.apcli.devname%>','<%=luci.dispatcher.build_url("admin", "network", "wifi", "apcli_disconnect", dev.devname, dev.apcli.vifname)%>')"><%:DISCONNECT%></button>
-                                            <button class="cbi-button cbi-button-reload" style="display:none" id="ApCliConnBtn_<%=dev.apcli.devname%>" onclick="visit_url('<%=dev.apcli.devname%>','<%=luci.dispatcher.build_url("admin", "network", "wifi", "apcli_connect", dev.devname, dev.apcli.vifname)%>')"><%:CONNECT%></button>
-                                            <button class="cbi-button cbi-button-edit"  style="display:none" id="ApCliCfgBtn_<%=dev.apcli.devname%>" onclick="visit_url('<%=dev.apcli.devname%>','<%=luci.dispatcher.build_url("admin", "network", "wifi", "apcli_cfg_view", dev.devname, dev.apcli.vifname)%>')"><%:CONFIG%></button>
-                                        <% end %>
-                                    </div>
-                                    <div id="BusyText_<%=dev.apcli.devname%>" style="display:none">
-                                        <big><strong><%:Processing request.%></strong></big>
-                                    </div>
-                                </td>
-                            </tr>
-                            <% end %>
-                            <!-- /apcli list -->
-                        <% end %>
-                    </tbody>
-                </table>
-            </fieldset>
+                                    <button class="cbi-button cbi-button-edit" onclick="visit_url('<%=dev.apcli.devname%>','<%=luci.dispatcher.build_url("admin", "network", "wifi", "apcli_cfg_view", dev.devname, dev.apcli.vifname)%>')"><%:CONFIG%></button>
+                                <% else %>
+                                    <button class="cbi-button cbi-button-reset" style="display:none" id="ApCliDownBtn_<%=dev.apcli.devname%>" onclick="visit_url('<%=dev.apcli.devname%>','<%=luci.dispatcher.build_url("admin", "network", "wifi", "vif_disable", dev.apcli.vifname)%>')"><%:DISABLE%></button>
+                                    <button class="cbi-button cbi-button-apply" style="display:none" id="ApCliUpBtn_<%=dev.apcli.devname%>" onclick="visit_url('<%=dev.apcli.devname%>','<%=luci.dispatcher.build_url("admin", "network", "wifi", "vif_enable", dev.apcli.vifname)%>')"><%:ENABLE%></button>
+                                    <button class="cbi-button cbi-button-remove" style="display:none" id="ApCliDisConnBtn_<%=dev.apcli.devname%>" onclick="visit_url('<%=dev.apcli.devname%>','<%=luci.dispatcher.build_url("admin", "network", "wifi", "apcli_disconnect", dev.devname, dev.apcli.vifname)%>')"><%:DISCONNECT%></button>
+                                    <button class="cbi-button cbi-button-reload" style="display:none" id="ApCliConnBtn_<%=dev.apcli.devname%>" onclick="visit_url('<%=dev.apcli.devname%>','<%=luci.dispatcher.build_url("admin", "network", "wifi", "apcli_connect", dev.devname, dev.apcli.vifname)%>')"><%:CONNECT%></button>
+                                    <button class="cbi-button cbi-button-edit"  style="display:none" id="ApCliCfgBtn_<%=dev.apcli.devname%>" onclick="visit_url('<%=dev.apcli.devname%>','<%=luci.dispatcher.build_url("admin", "network", "wifi", "apcli_cfg_view", dev.devname, dev.apcli.vifname)%>')"><%:CONFIG%></button>
+                                <% end %>
+                            </div>
+                            <div id="BusyText_<%=dev.apcli.devname%>" style="display:none">
+                                <big><strong><%:Processing request.%></strong></big>
+                            </div>
+                        </td>
+                    </tr>
+                    <% end %>
+                    <!-- /apcli list -->
+                <% end %>
+            </tbody>
         <% end %>
     <% end %>
+    </table>
+    </fieldset>
 
     <fieldset class="cbi-section">
         <h2><%:Station List%></h2>
@@ -222,6 +222,7 @@ local chipname
             </tr>
         </table>
     </fieldset>
+    <% end %>
 
 <script>
 
