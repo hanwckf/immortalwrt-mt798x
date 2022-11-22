@@ -35,7 +35,7 @@ local chipname
     <% else %>
 
     <fieldset class="cbi-section">
-    <table class="cbi-section-table" style="margin:10px; empty-cells:hide">
+    <table class="cbi-section-table" style="empty-cells:hide">
     <% for _,dev in ipairs(devs) do %>
         <% main_ifname = l1dat and l1dat[dridx][dev.devname].main_ifname or dbdc_prefix[mainidx][subidx].."0" %>
         <% if mtkwifi.exists("/sys/class/net/"..main_ifname) then %>
@@ -44,8 +44,8 @@ local chipname
                 <% if chipname ~= string.split(dev.devname,".")[1].."."..(dev.mainidx) then %>
                     <% chipname = string.split(dev.devname,".")[1].."."..(dev.mainidx) %>
                     <tr  style="height:45px">
-                        <td style="width:34px">
-                            <img src="/luci-static/resources/icons/wifi_big.png" style="float:left; margin-right:10px" width="30px" height="30px">
+                        <td style="padding:15px;">
+                            <img src="/luci-static/resources/icons/wifi_big.png">
                         </td>
                         <td colspan="2" style="text-align:left">
                             <big><strong title="<%=dev.profile%>"> <%=string.split(dev.devname,".")[1]%></strong></big>
