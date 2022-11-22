@@ -376,6 +376,9 @@ msgstr "PMK缓存周期"
 msgid "WEP for 8021X"
 msgstr "启用8021X WEP"
 
+msgid "Pre-Authentication"
+msgstr "启用预认证"
+
 msgid "Radius Server IP"
 msgstr "Radius认证服务器IP"
 
@@ -388,7 +391,7 @@ msgstr "Radius密钥"
 msgid "Radius Session Timeout"
 msgstr "Radius会话超时时间"
 
-msgid "Radius Idle Timeout(s)"
+msgid "Radius Idle Timeout"
 msgstr "Radius空闲超时时间"
 
 msgid "MFPSHA256"

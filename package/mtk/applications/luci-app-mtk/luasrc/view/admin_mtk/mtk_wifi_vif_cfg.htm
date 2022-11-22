@@ -306,13 +306,13 @@ function hi(to, devname, vifname)
             </tbody>
             <tbody id="WPAX" style="display:none;">
                 <tr>
-                    <td><%:PMK Cache Period%></td>
+                    <td><%:PMK Cache Period%> (min)</td>
                     <td>
-                        <input value="<%=vif.__pmkcacheperiod%>" type="text" name="__pmkcacheperiod" id="__pmkcacheperiod" cfg="PMKCachePeriod"> minute(s)
+                        <input value="<%=vif.__pmkcacheperiod%>" type="text" name="__pmkcacheperiod" id="__pmkcacheperiod" cfg="PMKCachePeriod">
                     </td>
                 </tr>
                 <tr>
-                    <td>Pre-Authentication</td>
+                    <td><%:Pre-Authentication%></td>
                     <td>
                         <input name="__preauth" id="__preauth" value="1"
                         <% if mtkwifi.token_get(cfgs["PreAuth"], vifidx, 0) == "1" then %>
@@ -372,13 +372,13 @@ function hi(to, devname, vifname)
                     </td>
                 </tr>
                 <tr>
-                    <td><%:Radius Session Timeout%>(s)</td>
+                    <td><%:Radius Session Timeout%> (s)</td>
                     <td>
                         <input value="<%=mtkwifi.token_get(cfgs.session_timeout_interval, vifidx, 0)%>" type="text" name="__session_timeout_interval" id="__session_timeout_interval">
                     </td>
                 </tr>
                 <tr>
-                    <td><%:Radius Idle Timeout%>(s)</td>
+                    <td><%:Radius Idle Timeout%> (s)</td>
                     <td>
                         <input value="<%=cfgs.idle_timeout_interval%>" type="text" name="idle_timeout_interval" id="idle_timeout_interval">
                     </td>
