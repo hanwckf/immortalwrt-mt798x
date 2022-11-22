@@ -3505,10 +3505,15 @@ static void mtk_pending_work(struct work_struct *work)
 	mtk_prepare_reset_fe(eth);
 
 	/* Trigger Wifi SER reset */
-	call_netdevice_notifiers(MTK_FE_START_RESET, eth->netdev[0]);
-	rtnl_unlock();
-	wait_for_completion_timeout(&wait_ser_done, 5000);
-	rtnl_lock();
+	for (i = 0; i < MTK_MAC_COUNT; i++) {
+		if (!eth->netdev[i])
+			continue;
+		call_netdevice_notifiers(MTK_FE_START_RESET, eth->netdev[i]);
+		rtnl_unlock();
+		wait_for_completion_timeout(&wait_ser_done, 5000);
+		rtnl_lock();
+		break;
+	}
 
 	while (test_and_set_bit_lock(MTK_RESETTING, &eth->state))
 		cpu_relax();
@@ -3535,7 +3540,7 @@ static void mtk_pending_work(struct work_struct *work)
 
 	/* restart DMA and enable IRQs */
 	for (i = 0; i < MTK_MAC_COUNT; i++) {
-		if (!test_bit(i, &restart))
+		if (!test_bit(i, &restart) || !eth->netdev[i])
 			continue;
 		err = mtk_open(eth->netdev[i]);
 		if (err) {
@@ -3559,6 +3564,8 @@ static void mtk_pending_work(struct work_struct *work)
 
 	/* Power up sgmii */
 	for (i = 0; i < MTK_MAC_COUNT; i++) {
+		if (!eth->netdev[i])
+			continue;
 		mac = netdev_priv(eth->netdev[i]);
 		phy_node = of_parse_phandle(mac->of_node, "phy-handle", 0);
 		if (!phy_node && eth->xgmii->regmap_sgmii[i]) {
@@ -3567,11 +3574,15 @@ static void mtk_pending_work(struct work_struct *work)
 		}
 	}
 
-	call_netdevice_notifiers(MTK_FE_RESET_NAT_DONE, eth->netdev[0]);
-	pr_info("[%s] HNAT reset done !\n", __func__);
-
-	call_netdevice_notifiers(MTK_FE_RESET_DONE, eth->netdev[0]);
-	pr_info("[%s] WiFi SER reset done !\n", __func__);
+	for (i = 0; i < MTK_MAC_COUNT; i++) {
+		if (!eth->netdev[i])
+			continue;
+		call_netdevice_notifiers(MTK_FE_RESET_NAT_DONE, eth->netdev[i]);
+		pr_info("[%s] HNAT reset done !\n", __func__);
+		call_netdevice_notifiers(MTK_FE_RESET_DONE, eth->netdev[i]);
+		pr_info("[%s] WiFi SER reset done !\n", __func__);
+		break;
+	}
 
 	atomic_dec(&reset_lock);
 	if (atomic_read(&force) > 0)
