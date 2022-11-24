@@ -139,9 +139,13 @@ function mtwifi_up(devname)
             then
                 nixio.syslog("debug", "mtwifi_up: ifconfig "..vif.." up")
                 os.execute("ifconfig "..vif.." up")
-                --add_vif_into_lan(vif)
-            -- else nixio.syslog("debug", "mtwifi_up: skip "..vif..", prefix not match "..pre)
             end
+
+            if vif ~= dev.main_ifname and (string.match(vif, esc(dev.ext_ifname).."[0-9]+")) then
+                -- add ra1..rax1 to br-lan
+                add_vif_into_lan(vif)
+            end
+
             if string.match(vif, esc(dev.apcli_ifname).."[0-9]+") and
                 cfgs.ApCliEnable ~= "0" and cfgs.ApCliEnable ~= "" then
                 -- enable apcli auto connect by default
