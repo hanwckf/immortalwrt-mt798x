@@ -5,6 +5,10 @@ THERMAL_PATH="/sys/class/thermal"
 
 if grep -Eq "ipq40xx|ipq806x" "/etc/openwrt_release"; then
 	wifi_temp="$(awk '{printf("%.1f°C ", $0 / 1000)}' "$IEEE_PATH"/phy*/device/hwmon/hwmon*/temp1_input | awk '$1=$1')"
+elif grep -Eq "mediatek" "/etc/openwrt_release"; then
+	wifi_temp1="$(iwpriv ra0 stat | awk '/CurrentTemperature/ {printf("%d°C", $3)}')"
+	wifi_temp2="$(iwpriv rax0 stat | awk '/CurrentTemperature/ {printf("%d°C", $3)}')"
+	wifi_temp="$(echo "$wifi_temp1 $wifi_temp2" | xargs)"
 else
 	wifi_temp="$(awk '{printf("%.1f°C ", $0 / 1000)}' "$IEEE_PATH"/phy*/hwmon*/temp1_input | awk '$1=$1')"
 fi

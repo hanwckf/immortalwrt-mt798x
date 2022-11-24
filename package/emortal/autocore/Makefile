@@ -12,6 +12,7 @@ PKG_RELEASE:=$(COMMITCOUNT)
 PKG_CONFIG_DEPENDS:= \
 	CONFIG_TARGET_bcm27xx \
 	CONFIG_TARGET_bcm53xx \
+	CONFIG_TARGET_mediatek \
 	CONFIG_TARGET_mvebu
 
 include $(INCLUDE_DIR)/package.mk
@@ -23,7 +24,7 @@ define Package/autocore-arm
   DEPENDS:=@(arm||aarch64) \
     +TARGET_bcm27xx:bcm27xx-userland \
     +TARGET_bcm53xx:nvram \
-    +TARGET_mvebu:mhz
+    +(TARGET_mediatek||TARGET_mvebu):mhz
   VARIANT:=arm
 endef
 
@@ -43,7 +44,9 @@ define Package/autocore/install/Default
 
 	$(INSTALL_DIR) $(1)/sbin
 	$(INSTALL_BIN) ./files/generic/cpuinfo $(1)/sbin/
+ifeq ($(filter mediatek%, $(TARGETID)),)
 	$(INSTALL_BIN) ./files/generic/ethinfo $(1)/sbin/
+endif
 
 	$(INSTALL_DIR) $(1)/usr/share/rpcd/acl.d
 	$(CP) ./files/generic/luci-mod-status-autocore.json $(1)/usr/share/rpcd/acl.d/
@@ -55,7 +58,7 @@ endef
 define Package/autocore-arm/install
 	$(call Package/autocore/install/Default,$(1))
 
-ifneq ($(filter ipq% %mt7622, $(TARGETID)),)
+ifneq ($(filter ipq% mediatek%, $(TARGETID)),)
 	$(INSTALL_BIN) ./files/arm/tempinfo $(1)/sbin/
 endif
 endef
