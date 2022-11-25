@@ -1,8 +1,17 @@
 /dts-v1/;
 #include "mt7981.dtsi"
+
 / {
 	model = "360 T7";
 	compatible = "360,t7", "mediatek,mt7981";
+
+	aliases {
+		led-boot = &red_led;
+		led-failsafe = &red_led;
+		led-running = &green_led;
+		led-upgrade = &green_led;
+	};
+
 	chosen {
 		bootargs = "console=ttyS0,115200n1 loglevel=8  \
 				earlycon=uart8250,mmio32,0x11002000";
@@ -15,12 +24,12 @@
 	leds {
 		compatible = "gpio-leds";
 
-		green {
+		green_led: green {
 			label = "360t7:green";
 			gpios = <&pio 7 GPIO_ACTIVE_LOW>;
 		};
 
-		red {
+		red_led: red {
 			label = "360t7:red";
 			gpios = <&pio 3 GPIO_ACTIVE_LOW>;
 		};
