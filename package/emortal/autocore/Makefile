@@ -44,15 +44,16 @@ define Package/autocore/install/Default
 
 	$(INSTALL_DIR) $(1)/sbin
 	$(INSTALL_BIN) ./files/generic/cpuinfo $(1)/sbin/
-ifeq ($(filter mediatek%, $(TARGETID)),)
-	$(INSTALL_BIN) ./files/generic/ethinfo $(1)/sbin/
-endif
 
 	$(INSTALL_DIR) $(1)/usr/share/rpcd/acl.d
 	$(CP) ./files/generic/luci-mod-status-autocore.json $(1)/usr/share/rpcd/acl.d/
 
+ifeq ($(filter mediatek%, $(TARGETID)),)
+	$(INSTALL_BIN) ./files/generic/ethinfo $(1)/sbin/
+
 	$(INSTALL_DIR) $(1)/www/luci-static/resources/view/status/include
 	$(INSTALL_DATA) ./files/generic/21_ethinfo.js $(1)/www/luci-static/resources/view/status/include/
+endif
 endef
 
 define Package/autocore-arm/install
