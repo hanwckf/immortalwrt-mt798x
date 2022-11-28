@@ -403,7 +403,7 @@ static int hnat_start(u32 ppe_id)
 {
 	u32 foe_table_sz;
 	u32 foe_mib_tb_sz;
-	u32 etry_num_cfg;
+	int etry_num_cfg;
 
 	if (ppe_id >= CFG_PPE_NUM)
 		return -EINVAL;

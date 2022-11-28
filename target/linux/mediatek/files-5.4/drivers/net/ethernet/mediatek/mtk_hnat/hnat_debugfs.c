@@ -41,6 +41,7 @@ static const char * const packet_type[] = {
 static uint8_t *show_cpu_reason(struct sk_buff *skb)
 {
 	static u8 buf[32];
+	int ret;
 
 	switch (skb_hnat_reason(skb)) {
 	case TTL_0:
@@ -89,8 +90,12 @@ static uint8_t *show_cpu_reason(struct sk_buff *skb)
 		return "Pre bind\n";
 	}
 
-	sprintf(buf, "CPU Reason Error - %X\n", skb_hnat_entry(skb));
-	return buf;
+	ret = snprintf(buf, sizeof(buf), "CPU Reason Error - %X\n",
+		       skb_hnat_entry(skb));
+	if (ret == strlen(buf))
+		return buf;
+	else
+		return "CPU Reason Error\n";
 }
 
 uint32_t foe_dump_pkt(struct sk_buff *skb)
@@ -742,7 +747,8 @@ int read_mib(struct mtk_hnat *h, u32 ppe_id,
 		*packets = cnt_r2 + ((u64)cnt_r3 << 32);
 	} else {
 		*bytes = cnt_r0 + ((u64)(cnt_r1 & 0xffff) << 32);
-		*packets = ((cnt_r1 & 0xffff0000) >> 16) + ((cnt_r2 & 0xffffff) << 16);
+		*packets = ((cnt_r1 & 0xffff0000) >> 16) +
+			   ((u64)(cnt_r2 & 0xffffff) << 16);
 	}
 
 	return 0;
@@ -758,6 +764,9 @@ struct hnat_accounting *hnat_get_count(struct mtk_hnat *h, u32 ppe_id,
 	if (ppe_id >= CFG_PPE_NUM)
 		return NULL;
 
+	if (index >= hnat_priv->foe_etry_num)
+		return NULL;
+
 	if (!hnat_priv->data->per_flow_accounting)
 		return NULL;
 
@@ -766,7 +775,7 @@ struct hnat_accounting *hnat_get_count(struct mtk_hnat *h, u32 ppe_id,
 
 	h->acct[ppe_id][index].bytes += bytes;
 	h->acct[ppe_id][index].packets += packets;
-	
+
 	if (diff) {
 		diff->bytes = bytes;
 		diff->packets = packets;
@@ -1850,6 +1859,15 @@ static ssize_t hnat_queue_write(struct file *file, const char __user *buf,
 
 	line[length] = '\0';
 
+#if defined(CONFIG_MEDIATEK_NETSYS_V3)
+	if (max_rate > 100000000 || max_rate < 0 ||
+	    min_rate > 100000000 || min_rate < 0)
+#else
+	if (max_rate > 10000000 || max_rate < 0 ||
+	    min_rate > 10000000 || min_rate < 0)
+#endif
+		return -EINVAL;
+
 	while (max_rate > 127) {
 		max_rate /= 10;
 		max_exp++;
@@ -2139,7 +2157,7 @@ static void hnat_qos_pppq_enable(void)
 static ssize_t hnat_qos_toggle_write(struct file *file, const char __user *buffer,
 				     size_t count, loff_t *data)
 {
-	char buf[8];
+	char buf[8] = {0};
 	int len = count;
 
 	if ((len > 8) || copy_from_user(buf, buffer, len))
@@ -2293,25 +2311,26 @@ static ssize_t hnat_static_entry_write(struct file *file,
 
 	buf[len] = '\0';
 #if defined(CONFIG_MEDIATEK_NETSYS_V3)
-	sscanf(buf, "%d %x %x %x %hx %hx %x %x %x %hx %hx %s %s %x %x %x",
-	       &hash,
-	       &entry.ipv4_hnapt.info_blk1,
-	       &entry.ipv4_hnapt.sip,
-	       &entry.ipv4_hnapt.dip,
-	       &entry.ipv4_hnapt.sport,
-	       &entry.ipv4_hnapt.dport,
-	       &entry.ipv4_hnapt.info_blk2,
-	       &entry.ipv4_hnapt.new_sip,
-	       &entry.ipv4_hnapt.new_dip,
-	       &entry.ipv4_hnapt.new_sport,
-	       &entry.ipv4_hnapt.new_dport,
-	       dmac_str, smac_str, &tport_id, &tops_entry, &cdrt_id);
+	if (sscanf(buf, "%d %x %x %x %hx %hx %x %x %x %hx %hx %s %s %x %x %x",
+		   &hash,
+		   &entry.ipv4_hnapt.info_blk1,
+		   &entry.ipv4_hnapt.sip,
+		   &entry.ipv4_hnapt.dip,
+		   &entry.ipv4_hnapt.sport,
+		   &entry.ipv4_hnapt.dport,
+		   &entry.ipv4_hnapt.info_blk2,
+		   &entry.ipv4_hnapt.new_sip,
+		   &entry.ipv4_hnapt.new_dip,
+		   &entry.ipv4_hnapt.new_sport,
+		   &entry.ipv4_hnapt.new_dport,
+		   dmac_str, smac_str, &tport_id, &tops_entry, &cdrt_id) != 16)
+		return -EFAULT;
 
 	entry.ipv4_hnapt.tport_id = tport_id;
 	entry.ipv4_hnapt.tops_entry = tops_entry;
 	entry.ipv4_hnapt.cdrt_id = cdrt_id;
 
-	if ((hash > 8192) || (hash < -1) || (hash % 4 != 0) ||
+	if ((hash >= hnat_priv->foe_etry_num) || (hash < -1) ||
 	    (tport_id > 16) || (tport_id < 0) ||
 	    (tops_entry > 64) || (tops_entry < 0) ||
 	    (cdrt_id > 255) || (cdrt_id < 0) ||
@@ -2324,24 +2343,25 @@ static ssize_t hnat_static_entry_write(struct file *file,
 	    (entry.ipv4_hnapt.new_dport > 65535) ||
 	    (entry.ipv4_hnapt.new_dport < 0)) {
 		hnat_static_entry_help();
-		return -EINVAL;
+		return -EFAULT;
 	}
 #else
-	sscanf(buf, "%d %x %x %x %hx %hx %x %x %x %hx %hx %s %s",
-	       &hash,
-	       &entry.ipv4_hnapt.info_blk1,
-	       &entry.ipv4_hnapt.sip,
-	       &entry.ipv4_hnapt.dip,
-	       &entry.ipv4_hnapt.sport,
-	       &entry.ipv4_hnapt.dport,
-	       &entry.ipv4_hnapt.info_blk2,
-	       &entry.ipv4_hnapt.new_sip,
-	       &entry.ipv4_hnapt.new_dip,
-	       &entry.ipv4_hnapt.new_sport,
-	       &entry.ipv4_hnapt.new_dport,
-	       dmac_str, smac_str);
+	if (sscanf(buf, "%d %x %x %x %hx %hx %x %x %x %hx %hx %s %s",
+		   &hash,
+		   &entry.ipv4_hnapt.info_blk1,
+		   &entry.ipv4_hnapt.sip,
+		   &entry.ipv4_hnapt.dip,
+		   &entry.ipv4_hnapt.sport,
+		   &entry.ipv4_hnapt.dport,
+		   &entry.ipv4_hnapt.info_blk2,
+		   &entry.ipv4_hnapt.new_sip,
+		   &entry.ipv4_hnapt.new_dip,
+		   &entry.ipv4_hnapt.new_sport,
+		   &entry.ipv4_hnapt.new_dport,
+		   dmac_str, smac_str) != 13)
+		return -EFAULT;
 
-	if ((hash > 8192) || (hash < -1) || (hash % 4 != 0) ||
+	if ((hash >= hnat_priv->foe_etry_num) || (hash < -1) ||
 	    (entry.ipv4_hnapt.sport > 65535) ||
 	    (entry.ipv4_hnapt.sport < 0) ||
 	    (entry.ipv4_hnapt.dport > 65535) ||
@@ -2351,7 +2371,7 @@ static ssize_t hnat_static_entry_write(struct file *file,
 	    (entry.ipv4_hnapt.new_dport > 65535) ||
 	    (entry.ipv4_hnapt.new_dport < 0)) {
 		hnat_static_entry_help();
-		return -EINVAL;
+		return -EFAULT;
 	}
 #endif
 
@@ -2507,7 +2527,11 @@ int hnat_init_debugfs(struct mtk_hnat *h)
 		h->regset[i]->nregs = ARRAY_SIZE(hnat_regs);
 		h->regset[i]->base = h->ppe_base[i];
 
-		snprintf(name, sizeof(name), "regdump%ld", i);
+		ret = snprintf(name, sizeof(name), "regdump%ld", i);
+		if (ret != strlen(name)) {
+			ret = -ENOMEM;
+			goto err1;
+		}
 		file = debugfs_create_regset32(name, 0444,
 					       root, h->regset[i]);
 		if (!file) {
@@ -2544,13 +2568,21 @@ int hnat_init_debugfs(struct mtk_hnat *h)
 			    &hnat_static_fops);
 
 	for (i = 0; i < hnat_priv->data->num_of_sch; i++) {
-		snprintf(name, sizeof(name), "qdma_sch%ld", i);
+		ret = snprintf(name, sizeof(name), "qdma_sch%ld", i);
+		if (ret != strlen(name)) {
+			ret = -ENOMEM;
+			goto err1;
+		}
 		debugfs_create_file(name, 0444, root, (void *)i,
 				    &hnat_sched_fops);
 	}
 
 	for (i = 0; i < MTK_QDMA_TX_NUM; i++) {
-		snprintf(name, sizeof(name), "qdma_txq%ld", i);
+		ret = snprintf(name, sizeof(name), "qdma_txq%ld", i);
+		if (ret != strlen(name)) {
+			ret = -ENOMEM;
+			goto err1;
+		}
 		debugfs_create_file(name, 0444, root, (void *)i,
 				    &hnat_queue_fops);
 	}
