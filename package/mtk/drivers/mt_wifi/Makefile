@@ -7,11 +7,20 @@ include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/kernel.mk
 
 PKG_NAME:=mt_wifi
-P4REV:=
-PKG_VERSION:=7.6.4.1
+
+ifeq ($(CONFIG_MTK_CHIP_MT7981),y)
+PKG_VERSION:=7.6.4.1-mt7981
 PKG_SOURCE:=mt7981_20220425-4c770b-obj.tar.xz
+else
+ifeq ($(CONFIG_MTK_CHIP_MT7986),y)
+PKG_VERSION:=7.6.6.1-mt7986
+PKG_SOURCE:=mt7986-7.6.6.1-obj.tar.xz
+endif
+endif
+
+PKG_BUILD_DEPENDS:=warp
+
 PKG_BUILD_PARALLEL:=1
-PKG_SOURCE_URL:=
 PKG_BUILD_DIR:=$(KERNEL_BUILD_DIR)/$(PKG_NAME)
 PKG_KCONFIG:= \
 	AP_SUPPORT \
@@ -296,10 +305,6 @@ if [ "$$(CONFIG_MTK_WIFI_FW_BIN_LOAD)" = "y" ]; then \
 	$(INSTALL_DIR) $(1)/lib/firmware/; \
 	if [ "$$(CONFIG_MTK_CHIP_MT7986)" = "y" ] ; then \
 		$(INSTALL_BIN) $(PKG_BUILD_DIR)/bin/mt7986/rebb/WIFI_RAM_CODE_MT7986.bin \
-		$(PKG_BUILD_DIR)/bin/mt7986/rebb/WIFI_RAM_CODE_MT7986_TESTMODE.bin \
-		$(PKG_BUILD_DIR)/bin/mt7986/rebb/WIFI_RAM_CODE_MT7986_TESTMODE_MT7975.bin \
-		$(PKG_BUILD_DIR)/bin/mt7986/rebb/mt7986_patch_e1_hdr_testmode.bin \
-		$(PKG_BUILD_DIR)/bin/mt7986/rebb/mt7986_patch_e1_hdr_testmode_mt7975.bin \
 		$(PKG_BUILD_DIR)/bin/mt7986/rebb/WIFI_RAM_CODE_MT7986_MT7975.bin \
 		$(PKG_BUILD_DIR)/bin/mt7986/rebb/mt7986_patch_e1_hdr.bin \
 		$(PKG_BUILD_DIR)/bin/mt7986/rebb/mt7986_patch_e1_hdr_mt7975.bin \
@@ -320,8 +325,6 @@ if [ "$$(CONFIG_MTK_WIFI_FW_BIN_LOAD)" = "y" ]; then \
 		$(INSTALL_BIN) $(PKG_BUILD_DIR)/bin/mt7981/rebb/WIFI_RAM_CODE_MT7981.bin \
 		$(PKG_BUILD_DIR)/bin/mt7981/rebb/7981_WACPU_RAM_CODE_release.bin \
 		$(PKG_BUILD_DIR)/bin/mt7981/rebb/mt7981_patch_e1_hdr.bin \
-		$(PKG_BUILD_DIR)/bin/mt7981/rebb/WIFI_RAM_CODE_MT7981_TESTMODE.bin \
-		$(PKG_BUILD_DIR)/bin/mt7981/rebb/mt7981_patch_e1_hdr_testmode.bin \
 		$(PKG_BUILD_DIR)/bin/mt7981/rebb/MT7981_iPAiLNA_EEPROM.bin \
 		$(PKG_BUILD_DIR)/bin/mt7981/rebb/MT7981_ePAeLNA_EEPROM.bin \
 		$(1)/lib/firmware/; \

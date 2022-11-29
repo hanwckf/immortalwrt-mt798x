@@ -1056,7 +1056,7 @@ config MTK_DBDC_ONE_BAND_SUPPORT
 
 #APCLI STA
 config MTK_APCLI_STA_SUPPORT
-	bool "APCLI STA Support"
+	bool "APCLI Supplicant Support"
 	depends on MTK_APCLI_SUPPORT
 	depends on MTK_CFG80211_SUPPORT
 	default n
@@ -1311,9 +1311,9 @@ if MTK_WIFI_MT_MAC
 	config MTK_CHIP_MT7916
 		bool
 		default n
-        config MTK_CHIP_MT7981
-                bool
-                default n
+	config MTK_CHIP_MT7981
+		bool
+		default n
 endif
 
 if MTK_CHIP_MT7615E || MTK_CHIP_MT7622 || MTK_CHIP_MT7626 || MTK_CHIP_AXE || MTK_CHIP_MT7915 || MTK_CHIP_MT7986 || MTK_CHIP_MT7916 || MTK_CHIP_MT7981
