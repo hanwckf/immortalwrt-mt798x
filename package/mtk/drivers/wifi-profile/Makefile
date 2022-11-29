@@ -12,6 +12,18 @@ PKG_NAME:=wifi-profile
 PKG_RELEASE:=1
 PKG_LICENSE:=GPL-2.0
 
+PKG_KCONFIG:= \
+	first_card \
+	first_card_name \
+	second_card \
+	second_card_name \
+	third_card \
+	third_card_name \
+	WIFI_NORMAL_SETTING \
+	WIFI_QUICK_SETTING
+
+PKG_CONFIG_DEPENDS:=$(foreach c, $(PKG_KCONFIG),$(if $(CONFIG_$c),CONFIG_$(c)))
+
 include $(INCLUDE_DIR)/package.mk
 
 define Package/wifi-profile
