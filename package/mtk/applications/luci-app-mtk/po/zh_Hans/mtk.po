@@ -253,6 +253,9 @@ msgstr "启用VHT LDPC"
 msgid "DLS Capable"
 msgstr "启用终端直通(DLS)"
 
+msgid "802.11k RRM"
+msgstr "启用 802.11k"
+
 msgid "APSD Capable"
 msgstr "启用节能模式(APSD)"
 
