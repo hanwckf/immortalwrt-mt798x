@@ -418,7 +418,6 @@ WHNAT=1
 WiFiTest=0
 WirelessMode=16
 WmmCapable=1
-WNMEnable=1
 WPAPSK=
 WPAPSK10=
 WPAPSK11=
