@@ -977,10 +977,12 @@ function sta_info(ifname)
     local hosts = sys.net.host_hints()
 
     for i=0, count - 1 do
-        stalist[i].ipv4 = hosts[stalist[i].MacAddr].ipv4 or ""
-        stalist[i].ipv6 = hosts[stalist[i].MacAddr].ipv6 or ""
-        stalist[i].hostname = hosts[stalist[i].MacAddr].name or "-"
-        table.insert(output, stalist[i])
+        if stalist[i].MacAddr then
+            stalist[i].ipv4 = hosts[stalist[i].MacAddr].ipv4 or ""
+            stalist[i].ipv6 = hosts[stalist[i].MacAddr].ipv6 or ""
+            stalist[i].hostname = hosts[stalist[i].MacAddr].name or "-"
+            table.insert(output, stalist[i])
+        end
     end
     http.write_json(output)
 end

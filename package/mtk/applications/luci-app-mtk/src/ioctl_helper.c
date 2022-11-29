@@ -289,7 +289,7 @@ int StaInfo(lua_State *L)
 		/* vht tx mcs nss*/
 		unsigned int mcs = pe->TxRate.field.MCS;
 		unsigned int nss = 0;
-		
+
 		/* vht rx mcs nss*/
 		unsigned int mcs_r = RxRate.field.MCS;
 		unsigned int nss_r = 0;
@@ -302,7 +302,7 @@ int StaInfo(lua_State *L)
 		min = (pe->ConnectedTime % 3600)/60;
 		sec = pe->ConnectedTime - hr*3600 - min*60;
 
-		 /*Creates first child table of size 28 non-array elements: */
+		 /*Creates first child table of size 32 non-array elements: */
 		lua_createtable(L, 0, 32);
 
 		// MAC Address
