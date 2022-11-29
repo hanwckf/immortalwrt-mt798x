@@ -178,14 +178,14 @@ local bands = mtkwifi.detect_triband()
                 <td><%:Beam Forming and MIMO Setting%></td>
                 <td>
                     <select name="__mimo" autocomplete="off" >
-                        <option value="0"<% if tonumber(dev.__mimo) == 0 then %> selected="selected"<% end %>> ETxBF (SU) </option>
-                        <option value="1"<% if tonumber(dev.__mimo) == 1 then %> selected="selected"<% end %>> ITxBF (SU) </option>
-                        <option value="2"<% if tonumber(dev.__mimo) == 2 then %> selected="selected"<% end %>> ITxBF+ETxBF (SU) </option>
+                        <option value="0"<% if tonumber(dev.__mimo) == 0 then %> selected="selected"<% end %>> ETxBF + SU-MIMO </option>
+                        <option value="1"<% if tonumber(dev.__mimo) == 1 then %> selected="selected"<% end %>> ITxBF + SU-MIMO </option>
+                        <option value="2"<% if tonumber(dev.__mimo) == 2 then %> selected="selected"<% end %>> ITxBF + ETxBF + SU-MIMO  </option>
                         <% if not dev.mimoBand or dev.mimoBand == dev.dbdcBandName then %>
-                            <option value="3"<% if tonumber(dev.__mimo) == 3 then %> selected="selected"<% end %>> MU (SU ETxBF+MU-MIMO) </option>
-                            <option value="4"<% if tonumber(dev.__mimo) == 4 then %> selected="selected"<% end %>> ITxBF+MU (I+E+MU) </option>
+                            <option value="3"<% if tonumber(dev.__mimo) == 3 then %> selected="selected"<% end %>> ETxBF + MU-MIMO </option>
+                            <option value="4"<% if tonumber(dev.__mimo) == 4 then %> selected="selected"<% end %>> ITxBF + ETxBF + MU-MIMO </option>
                         <% end %>
-                            <option value="5"<% if tonumber(dev.__mimo) == 5 then %> selected="selected"<% end %>> Disable TxBF (SU BF and MU-MIMO) </option>
+                            <option value="5"<% if tonumber(dev.__mimo) == 5 then %> selected="selected"<% end %>> Disable TxBF </option>
                     </select>
                 </td>
             </tr>
