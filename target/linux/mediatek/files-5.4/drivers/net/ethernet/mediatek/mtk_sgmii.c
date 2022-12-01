@@ -41,7 +41,7 @@ void mtk_sgmii_setup_phya_gen1(struct mtk_xgmii *ss, int mac_id)
 {
 	u32 id = mtk_mac2xgmii_id(ss->eth, mac_id);
 
-	if (id < 0 || id >= MTK_MAX_DEVS ||
+	if (id >= MTK_MAX_DEVS ||
 	    !ss->regmap_sgmii[id] || !ss->regmap_pextp[id])
 		return;
 
@@ -161,7 +161,7 @@ void mtk_sgmii_setup_phya_gen2(struct mtk_xgmii *ss, int mac_id)
 int mtk_sgmii_setup_mode_an(struct mtk_xgmii *ss, unsigned int mac_id)
 {
 	struct mtk_eth *eth = ss->eth;
-	unsigned int val;
+	unsigned int val = 0;
 	u32 id = mtk_mac2xgmii_id(ss->eth, mac_id);
 
 	if (!ss->regmap_sgmii[id])
@@ -216,7 +216,7 @@ int mtk_sgmii_setup_mode_force(struct mtk_xgmii *ss, unsigned int mac_id,
 			       const struct phylink_link_state *state)
 {
 	struct mtk_eth *eth = ss->eth;
-	unsigned int val;
+	unsigned int val = 0;
 	u32 id = mtk_mac2xgmii_id(eth, mac_id);
 
 	if (!ss->regmap_sgmii[id])
@@ -285,7 +285,7 @@ int mtk_sgmii_setup_mode_force(struct mtk_xgmii *ss, unsigned int mac_id,
 void mtk_sgmii_restart_an(struct mtk_eth *eth, int mac_id)
 {
 	struct mtk_xgmii *ss = eth->xgmii;
-	unsigned int val, sid = mtk_mac2xgmii_id(eth, mac_id);
+	unsigned int val = 0, sid = mtk_mac2xgmii_id(eth, mac_id);
 
 	/* Decide how GMAC and SGMIISYS be mapped */
 	sid = (MTK_HAS_CAPS(eth->soc->caps, MTK_SHARED_SGMII)) ?

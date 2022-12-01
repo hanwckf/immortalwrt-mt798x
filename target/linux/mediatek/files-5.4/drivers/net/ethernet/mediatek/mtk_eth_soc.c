@@ -201,7 +201,7 @@ static int mtk_mdio_reset(struct mii_bus *bus)
 static int mt7621_gmac0_rgmii_adjust(struct mtk_eth *eth,
 				     phy_interface_t interface)
 {
-	u32 val;
+	u32 val = 0;
 
 	/* Check DDR memory type.
 	 * Currently TRGMII mode with DDR2 memory is not supported.
@@ -289,7 +289,7 @@ static void mtk_mac_config(struct phylink_config *config, unsigned int mode,
 					   phylink_config);
 	struct mtk_eth *eth = mac->hw;
 	u32 sid, i;
-	int val, ge_mode, err=0;
+	int val = 0, ge_mode, err = 0;
 
 	/* MT76x8 has no hardware settings between for the MAC */
 	if (!MTK_HAS_CAPS(eth->soc->caps, MTK_SOC_MT7628) &&
@@ -521,7 +521,7 @@ static int mtk_mac_pcs_get_state(struct phylink_config *config,
 		struct mtk_xgmii *ss = eth->xgmii;
 		u32 id = mtk_mac2xgmii_id(eth, mac->id);
 		u32 pmsr = mtk_r32(mac->hw, MTK_MAC_MSR(mac->id));
-		u32 val;
+		u32 val = 0;
 
 		regmap_read(ss->regmap_sgmii[id], SGMSYS_PCS_CONTROL_1, &val);
 
@@ -3510,7 +3510,9 @@ static void mtk_pending_work(struct work_struct *work)
 			continue;
 		call_netdevice_notifiers(MTK_FE_START_RESET, eth->netdev[i]);
 		rtnl_unlock();
-		wait_for_completion_timeout(&wait_ser_done, 5000);
+		if (!wait_for_completion_timeout(&wait_ser_done, 5000))
+			pr_warn("[%s] wait for MTK_FE_START_RESET failed\n",
+				__func__);
 		rtnl_lock();
 		break;
 	}
