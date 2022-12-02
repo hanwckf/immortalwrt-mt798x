@@ -1140,7 +1140,11 @@ function hi(to, devname, vifname)
     {
         var AuthMode= document.getElementById("AuthMode").value;
         var EncType = document.getElementById("__encrypttype").value;
-        if(AuthMode == "OPEN" || AuthMode == "WEPAUTO" || AuthMode == "SHARED")
+        if(AuthMode=="Disable" || AuthMode=="Enhanced Open")
+        {
+            return true;
+        }
+        else if(AuthMode == "OPEN" || AuthMode == "WEPAUTO" || AuthMode == "SHARED")
         {
             if(check_Wep(AuthMode,vifidx,ht_disallow_tkip) == false)
                 return false;
