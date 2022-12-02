@@ -941,6 +941,9 @@ static unsigned int hnat_ipv6_get_nexthop(struct sk_buff *skb,
 		return 0;
 	}
 
+	if (!dst)
+		return -1;
+
 	rcu_read_lock_bh();
 	ipv6_nexthop =
 		rt6_nexthop((struct rt6_info *)dst, &ipv6_hdr(skb)->daddr);
