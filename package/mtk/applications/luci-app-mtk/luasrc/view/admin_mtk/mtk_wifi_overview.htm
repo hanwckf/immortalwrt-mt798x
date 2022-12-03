@@ -184,7 +184,7 @@ local chipname
                                     <button class="cbi-button cbi-button-reset" style="display:none" id="ApCliDownBtn_<%=dev.apcli.devname%>" onclick="visit_url('<%=dev.apcli.devname%>','<%=luci.dispatcher.build_url("admin", "network", "wifi", "vif_disable", dev.apcli.vifname)%>')"><%:DISABLE%></button>
                                     <button class="cbi-button cbi-button-apply" style="display:none" id="ApCliUpBtn_<%=dev.apcli.devname%>" onclick="visit_url('<%=dev.apcli.devname%>','<%=luci.dispatcher.build_url("admin", "network", "wifi", "vif_enable", dev.apcli.vifname)%>')"><%:ENABLE%></button>
                                     <button class="cbi-button cbi-button-remove" style="display:none" id="ApCliDisConnBtn_<%=dev.apcli.devname%>" onclick="visit_url('<%=dev.apcli.devname%>','<%=luci.dispatcher.build_url("admin", "network", "wifi", "apcli_disconnect", dev.devname, dev.apcli.vifname)%>')"><%:DISCONNECT%></button>
-                                    <button class="cbi-button cbi-button-reload" style="display:none" id="ApCliConnBtn_<%=dev.apcli.devname%>" onclick="visit_url('<%=dev.apcli.devname%>','<%=luci.dispatcher.build_url("admin", "network", "wifi", "apcli_connect", dev.devname, dev.apcli.vifname)%>')"><%:CONNECT%></button>
+                                    <button class="cbi-button cbi-button-reload" style="display:none" id="ApCliConnBtn_<%=dev.apcli.devname%>" onclick="visit_url('<%=dev.apcli.devname%>','<%=luci.dispatcher.build_url("admin", "network", "wifi", "apcli_connect", dev.devname, dev.apcli.vifname)%>')"><%:RECONNECT%></button>
                                     <button class="cbi-button cbi-button-edit"  style="display:none" id="ApCliCfgBtn_<%=dev.apcli.devname%>" onclick="visit_url('<%=dev.apcli.devname%>','<%=luci.dispatcher.build_url("admin", "network", "wifi", "apcli_cfg_view", dev.devname, dev.apcli.vifname)%>')"><%:CONFIG%></button>
                                 <% end %>
                             </div>
@@ -406,7 +406,7 @@ local chipname
     {
         var vifName = vifNameList[idx];
         if(connInfo.hasOwnProperty("conn_state") && connInfo["conn_state"] == "Connected"){
-            document.getElementById("ConnStatus_"+vifName).innerHTML = connInfo["conn_state"];
+            document.getElementById("ConnStatus_"+vifName).innerHTML = "<%:Connected%>";
             document.getElementById("ApCliBssid_"+vifName).innerHTML = (connInfo.hasOwnProperty("bssid")) ? connInfo["bssid"] : "?";
             document.getElementById("ApCliSsid_"+vifName).innerHTML = (connInfo.hasOwnProperty("ssid")) ? connInfo["ssid"].replace(/ /g,"&nbsp;") : "";
             document.getElementById("LoadingBar_"+vifName).style.display = "none";
@@ -423,7 +423,11 @@ local chipname
                 setTimeout(apcliInfoTimerHandler,1000,vifNameList,idx,remSec - 1);
             }
             else{
-                document.getElementById("ConnStatus_"+vifName).innerHTML = (connInfo.hasOwnProperty("conn_state")) ? connInfo["conn_state"] : "Disconnected";
+                if (connInfo.hasOwnProperty("conn_state") && (connInfo["conn_state"] == "Connected")) {
+                    document.getElementById("ConnStatus_"+vifName).innerHTML = "<%:Connected%>";
+                } else {
+                    document.getElementById("ConnStatus_"+vifName).innerHTML = "<%:Disconnected%>";
+                }
                 document.getElementById("LoadingBar_"+vifName).style.display = "none";
                 document.getElementById("DisConnMsg_"+vifName).style.display = "";
                 if (connInfo.hasOwnProperty("infc_state") && connInfo["infc_state"] == "up"){

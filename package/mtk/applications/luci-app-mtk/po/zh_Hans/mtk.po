@@ -97,6 +97,12 @@ msgstr "接口类型"
 msgid "Status"
 msgstr "状态"
 
+msgid "DISCONNECT"
+msgstr "断开"
+
+msgid "Connected"
+msgstr "已连接"
+
 msgid "Disconnected"
 msgstr "未连接"
 
