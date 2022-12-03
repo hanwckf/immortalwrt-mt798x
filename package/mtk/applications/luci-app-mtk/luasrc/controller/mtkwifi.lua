@@ -570,6 +570,10 @@ local function __security_cfg(cfgs, vif_idx)
 
     local __authmode = http.formvalue("__authmode") or "Disable"
     cfgs.AuthMode = mtkwifi.token_set(cfgs.AuthMode, vif_idx, __authmode)
+    cfgs.WpaMixPairCipher = ""
+    cfgs.PMFMFPC = "0"
+    cfgs.PMFMFPR = "0"
+    cfgs.PMFSHA256 = "0"
 
     if __authmode == "Disable" then
         cfgs.AuthMode = mtkwifi.token_set(cfgs.AuthMode, vif_idx, "OPEN")
