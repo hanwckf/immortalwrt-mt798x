@@ -411,7 +411,7 @@ function dev_cfg_raw(devname)
 end
 
 function __delete_mbss_para(cfgs, vif_idx)
-    debug_write(vif_idx)
+    debug_write("delete_mbss_para vif: ", vif_idx)
     cfgs["WPAPSK"..vif_idx]=""
     cfgs["Key1Type"]=mtkwifi.token_set(cfgs["Key1Type"],vif_idx,"")
     cfgs["Key2Type"]=mtkwifi.token_set(cfgs["Key2Type"],vif_idx,"")
@@ -554,27 +554,6 @@ local function conf_wep_keys(cfgs,vifidx)
 end
 
 local function __security_cfg(cfgs, vif_idx)
-    debug_write("__security_cfg, before, HideSSID="..tostring(cfgs.HideSSID))
-    debug_write("__security_cfg, before, NoForwarding="..tostring(cfgs.NoForwarding))
-    debug_write("__security_cfg, before, WmmCapable="..tostring(cfgs.WmmCapable))
-    debug_write("__security_cfg, before, TxRate="..tostring(cfgs.TxRate))
-    debug_write("__security_cfg, before, RekeyInterval="..tostring(cfgs.RekeyInterval))
-    debug_write("__security_cfg, before, AuthMode="..tostring(cfgs.AuthMode))
-    debug_write("__security_cfg, before, EncrypType="..tostring(cfgs.EncrypType))
-    debug_write("__security_cfg, before, WscModeOption="..tostring(cfgs.WscModeOption))
-    debug_write("__security_cfg, before, RekeyMethod="..tostring(cfgs.RekeyMethod))
-    debug_write("__security_cfg, before, IEEE8021X="..tostring(cfgs.IEEE8021X))
-    debug_write("__security_cfg, before, DefaultKeyID="..tostring(cfgs.DefaultKeyID))
-    debug_write("__security_cfg, before, PMFMFPC="..tostring(cfgs.PMFMFPC))
-    debug_write("__security_cfg, before, PMFMFPR="..tostring(cfgs.PMFMFPR))
-    debug_write("__security_cfg, before, PMFSHA256="..tostring(cfgs.PMFSHA256))
-    debug_write("__security_cfg, before, RADIUS_Server="..tostring(cfgs.RADIUS_Server))
-    debug_write("__security_cfg, before, RADIUS_Port="..tostring(cfgs.RADIUS_Port))
-    debug_write("__security_cfg, before, session_timeout_interval="..tostring(cfgs.session_timeout_interval))
-    debug_write("__security_cfg, before, PMKCachePeriod="..tostring(cfgs.PMKCachePeriod))
-    debug_write("__security_cfg, before, PreAuth="..tostring(cfgs.PreAuth))
-    debug_write("__security_cfg, before, Wapiifname="..tostring(cfgs.Wapiifname))
-
     -- Reset/Clear all necessary settings here. Later, these settings will be set as per AuthMode.
     cfgs.RekeyMethod = mtkwifi.token_set(cfgs.RekeyMethod, vif_idx, "DISABLE")
     cfgs.IEEE8021X = mtkwifi.token_set(cfgs.IEEE8021X, vif_idx, "0")
@@ -711,27 +690,6 @@ local function __security_cfg(cfgs, vif_idx)
         -- cfgs.wapipsk_keytype
         -- cfgs.wapipsk_prekey
     end
-
-    debug_write("__security_cfg, after, HideSSID="..tostring(cfgs.HideSSID))
-    debug_write("__security_cfg, after, NoForwarding="..tostring(cfgs.NoForwarding))
-    debug_write("__security_cfg, after, WmmCapable="..tostring(cfgs.WmmCapable))
-    debug_write("__security_cfg, after, TxRate="..tostring(cfgs.TxRate))
-    debug_write("__security_cfg, after, RekeyInterval="..tostring(cfgs.RekeyInterval))
-    debug_write("__security_cfg, after, AuthMode="..tostring(cfgs.AuthMode))
-    debug_write("__security_cfg, after, EncrypType="..tostring(cfgs.EncrypType))
-    debug_write("__security_cfg, after, WscModeOption="..tostring(cfgs.WscModeOption))
-    debug_write("__security_cfg, after, RekeyMethod="..tostring(cfgs.RekeyMethod))
-    debug_write("__security_cfg, after, IEEE8021X="..tostring(cfgs.IEEE8021X))
-    debug_write("__security_cfg, after, DefaultKeyID="..tostring(cfgs.DefaultKeyID))
-    debug_write("__security_cfg, after, PMFMFPC="..tostring(cfgs.PMFMFPC))
-    debug_write("__security_cfg, after, PMFMFPR="..tostring(cfgs.PMFMFPR))
-    debug_write("__security_cfg, after, PMFSHA256="..tostring(cfgs.PMFSHA256))
-    debug_write("__security_cfg, after, RADIUS_Server="..tostring(cfgs.RADIUS_Server))
-    debug_write("__security_cfg, after, RADIUS_Port="..tostring(cfgs.RADIUS_Port))
-    debug_write("__security_cfg, after, session_timeout_interval="..tostring(cfgs.session_timeout_interval))
-    debug_write("__security_cfg, after, PMKCachePeriod="..tostring(cfgs.PMKCachePeriod))
-    debug_write("__security_cfg, after, PreAuth="..tostring(cfgs.PreAuth))
-    debug_write("__security_cfg, after, Wapiifname="..tostring(cfgs.Wapiifname))
 end
 
 function initialize_multiBssParameters(cfgs,vif_idx)
@@ -799,7 +757,7 @@ function __set_wifi_wpsconf(cfgs, wsc_enable, vif_idx)
 end
 
 function __update_mbss_para(cfgs, vif_idx)
-    debug_write(vif_idx)
+    debug_write("update_mbss_para vif: ", vif_idx)
     cfgs.HT_STBC = mtkwifi.token_set(cfgs.HT_STBC, vif_idx, http.formvalue("__ht_stbc") or "0")
     cfgs.HT_LDPC = mtkwifi.token_set(cfgs.HT_LDPC, vif_idx, http.formvalue("__ht_ldpc") or "0")
     cfgs.VHT_STBC = mtkwifi.token_set(cfgs.VHT_STBC, vif_idx, http.formvalue("__vht_stbc") or "0")
@@ -840,13 +798,13 @@ function vif_cfg(dev, vif)
 
     local cfgs = mtkwifi.load_profile(profile)
 
-    for k,v in pairs(http.formvalue()) do
-        if type(v) == type("") or type(v) == type(0) then
-            nixio.syslog("debug", "post."..k.."="..tostring(v))
-        else
-            nixio.syslog("debug", "post."..k.." invalid, type="..type(v))
-        end
-    end
+    --for k,v in pairs(http.formvalue()) do
+    --    if type(v) == type("") or type(v) == type(0) then
+    --        nixio.syslog("debug", "post."..k.."="..tostring(v))
+    --    else
+    --        nixio.syslog("debug", "post."..k.." invalid, type="..type(v))
+    --    end
+    --end
 
     -- sometimes vif_idx start from 0, like AccessPolicy0
     -- sometimes it starts from 1, like WPAPSK1. nice!
@@ -870,7 +828,7 @@ function vif_cfg(dev, vif)
         if type(v) ~= type("") and type(v) ~= type(0) then
             nixio.syslog("err", "vif_cfg, invalid value type for "..k..","..type(v))
         elseif string.byte(k) ~= string.byte("_") then
-            debug_write("vif_cfg: Copying",k,v)
+            --debug_write("vif_cfg: Copying",k,v)
             cfgs[k] = v or ""
         end
     end

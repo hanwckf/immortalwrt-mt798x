@@ -16,6 +16,7 @@
 ]]
 
 require("datconf")
+local inspect = require "inspect"
 local ioctl_help = require "ioctl_helper"
 local mtkwifi = {}
 local logDisable = 0
@@ -210,6 +211,13 @@ function mtkwifi.save_profile(cfgs, path)
     if not cfgs then
         debug_write("configuration was empty, nothing saved")
         return
+    end
+
+    local diff = mtkwifi.diff_profile(path)
+
+    if next(diff) then
+        nixio.syslog("info", "mtkwifi wifi profile diff:")
+        nixio.syslog("info", inspect(diff))
     end
 
     -- Keep a backup of last profile settings
