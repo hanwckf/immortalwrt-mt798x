@@ -20,16 +20,6 @@ config MEDIATEK_NETSYS_V2
 	---help---
 	  This options enable MTK Ethernet NETSYS V2 support
 
-config MEDIATEK_NETSYS_V3
-	tristate "MediaTek Ethernet NETSYS V3 support"
-	depends on ARCH_MEDIATEK && NET_MEDIATEK_SOC
-	---help---
-	  This options enable MTK Ethernet NETSYS V3 support for
-	  XGMAC and USXGMII.
-
-	  If you have a network system belong to this class, say Y.
-	  If unsure, say N.
-
 config NET_MEDIATEK_HNAT
 	tristate "MediaTek HW NAT support"
 	depends on NET_MEDIATEK_SOC && NF_CONNTRACK && IP_NF_NAT

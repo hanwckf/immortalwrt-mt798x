@@ -297,11 +297,11 @@ int hnat_mcast_enable(u32 ppe_id)
 	INIT_WORK(&pmcast->work, hnat_mcast_nlmsg_handler);
 	pmcast->queue = create_singlethread_workqueue("ppe_mcast");
 	if (!pmcast->queue)
-		goto err1;
+		goto err;
 
 	pmcast->msock = hnat_mcast_netlink_open(&init_net);
 	if (!pmcast->msock)
-		goto err2;
+		goto err;
 
 	hnat_priv->pmcast = pmcast;
 
@@ -325,10 +325,11 @@ int hnat_mcast_enable(u32 ppe_id)
 	cr_set_field(hnat_priv->ppe_base[ppe_id] + PPE_MCAST_PPSE, MC_P3_PPSE, 5);
 
 	return 0;
-err2:
+err:
 	if (pmcast->queue)
 		destroy_workqueue(pmcast->queue);
-err1:
+	if (pmcast->msock)
+		sock_release(pmcast->msock);
 	kfree(pmcast);
 
 	return -1;
