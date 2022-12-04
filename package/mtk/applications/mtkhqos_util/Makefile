@@ -14,10 +14,11 @@ PKG_CONFIG_DEPENDS:=
 include $(INCLUDE_DIR)/package.mk
 
 define Package/mtkhqos_util
-  SECTION:=net
-  CATEGORY:=Network
+  SECTION:=MTK Properties
+  CATEGORY:=MTK Properties
   TITLE:=mtk hqos utility
   VERSION:=$(PKG_RELEASE)-$(REVISION)
+  SUBMENU:=Applications
 endef
 
 define Package/mtkhqos_util/description

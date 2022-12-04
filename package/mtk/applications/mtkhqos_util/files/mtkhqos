@@ -2,11 +2,10 @@
 
 . /lib/functions.sh
 
-[ "$1" = "dbg" ] && debug=1
-
 hqos_path="/sys/kernel/debug/hnat"
 
 config_load mtkhqos
+config_get hnat global hnat 1
 config_get hqos global hqos 0
 config_get txq_num global txq_num 16
 
@@ -26,18 +25,9 @@ config_get sch3_enable global sch3_enable 0
 config_get sch3_mode global sch3_mode 0
 config_get sch3_bw global sch3_bw 1000000
 
-# disable bridge netfilter module to avoid high cpu usage
-echo 0 > /proc/sys/net/bridge/bridge-nf-call-arptables
-echo 0 > /proc/sys/net/bridge/bridge-nf-call-iptables
-echo 0 > /proc/sys/net/bridge/bridge-nf-call-ip6tables
-echo 0 > /proc/sys/net/bridge/bridge-nf-filter-pppoe-tagged
-echo 0 > /proc/sys/net/bridge/bridge-nf-filter-vlan-tagged
-echo 0 > /proc/sys/net/bridge/bridge-nf-pass-vlan-input-dev
-
 dbg() {
-	if [ "$debug" = "1" ]; then
-		echo "$1"
-	fi
+	logger -t "mtkhqos_util" "$1"
+	echo "$1"
 }
 
 sch_mode2str() {
@@ -58,13 +48,47 @@ sch2bw()
 	fi
 }
 
-if [ "$hqos" -eq 0 ] && [ -d $hqos_path ]; then
-	# disable hqos
-	dbg "disable hqos"
+# disable bridge netfilter module to avoid high cpu usage
+echo 0 > /proc/sys/net/bridge/bridge-nf-call-arptables
+echo 0 > /proc/sys/net/bridge/bridge-nf-call-iptables
+echo 0 > /proc/sys/net/bridge/bridge-nf-call-ip6tables
+echo 0 > /proc/sys/net/bridge/bridge-nf-filter-pppoe-tagged
+echo 0 > /proc/sys/net/bridge/bridge-nf-filter-vlan-tagged
+echo 0 > /proc/sys/net/bridge/bridge-nf-pass-vlan-input-dev
+
+if [ ! -d $hqos_path ]; then
+	modprobe mtkhnat
+	if [ "$?" != "0" ]; then
+		exit 1
+	fi
+fi
+
+if [ "$hnat" -eq "0" ]; then
+	# disable hnat & hqos
+	dbg "disable hnat & hqos"
 	echo 0 $(sch_mode2str $sch0_mode) ${sch0_bw} > $hqos_path/qdma_sch0
 	echo 0 $(sch_mode2str $sch1_mode) ${sch1_bw} > $hqos_path/qdma_sch1
 	echo 0 $(sch_mode2str $sch2_mode) ${sch2_bw} > $hqos_path/qdma_sch2
 	echo 0 $(sch_mode2str $sch3_mode) ${sch3_bw} > $hqos_path/qdma_sch3
+	echo 0 0 0 0 0 0 4 > $hqos_path/qdma_txq0
+	for i in $(seq 1 $((txq_num - 1))); do
+		echo 0 0 0 0 0 0 0 > $hqos_path/qdma_txq$i
+	done
+
+	echo 0 > $hqos_path/qos_toggle
+	echo 0 > $hqos_path/hook_toggle
+
+	exit 0
+fi
+
+if [ "$hqos" -eq 0 ]; then
+	# disable hqos, enable hnat
+	dbg "disable hqos, enable hnat"
+	echo 0 $(sch_mode2str $sch0_mode) ${sch0_bw} > $hqos_path/qdma_sch0
+	echo 0 $(sch_mode2str $sch1_mode) ${sch1_bw} > $hqos_path/qdma_sch1
+	echo 0 $(sch_mode2str $sch2_mode) ${sch2_bw} > $hqos_path/qdma_sch2
+	echo 0 $(sch_mode2str $sch3_mode) ${sch3_bw} > $hqos_path/qdma_sch3
+
 	for i in $(seq 0 $((txq_num - 1))); do
 		if [ "${i}" -le $(((txq_num / 2) - 1)) ]; then
 			echo 0 0 0 0 0 0 4 > $hqos_path/qdma_txq$i
@@ -72,28 +96,23 @@ if [ "$hqos" -eq 0 ] && [ -d $hqos_path ]; then
 			echo 1 0 0 0 0 0 4 > $hqos_path/qdma_txq$i
 		fi
 	done
+
 	echo 0 > $hqos_path/qos_toggle
+
 	exit 0
 fi
 
-if [ "$hqos" -eq 1 ] && [ ! -d $hqos_path ]; then
-	modprobe mtkhnat
-	if [ "$?" != "0" ]; then
-		exit 1
-	fi
-fi
-
-# enable qdma_sch
-dbg "sch0: ${sch0_enable}, mode: $(sch_mode2str $sch0_mode), bw: ${sch0_bw}"
+# enable hnat & hqos
+dbg "sch0=${sch0_enable}, mode=$(sch_mode2str $sch0_mode), bw=${sch0_bw}"
 echo ${sch0_enable} $(sch_mode2str $sch0_mode) ${sch0_bw} > $hqos_path/qdma_sch0
 
-dbg "sch1: ${sch1_enable}, mode: $(sch_mode2str $sch1_mode), bw: ${sch1_bw}"
+dbg "sch1=${sch1_enable}, mode=$(sch_mode2str $sch1_mode), bw=${sch1_bw}"
 echo ${sch1_enable} $(sch_mode2str $sch1_mode) ${sch1_bw} > $hqos_path/qdma_sch1
 
-dbg "sch2: ${sch2_enable}, mode: $(sch_mode2str $sch2_mode), bw: ${sch2_bw}"
+dbg "sch2=${sch2_enable}, mode=$(sch_mode2str $sch2_mode), bw=${sch2_bw}"
 echo ${sch2_enable} $(sch_mode2str $sch2_mode) ${sch2_bw} > $hqos_path/qdma_sch2
 
-dbg "sch3: ${sch3_enable}, mode: $(sch_mode2str $sch3_mode), bw: ${sch3_bw}"
+dbg "sch3=${sch3_enable}, mode=$(sch_mode2str $sch3_mode), bw=${sch3_bw}"
 echo ${sch3_enable} $(sch_mode2str $sch3_mode) ${sch3_bw} > $hqos_path/qdma_sch3
 
 # enable bridge netfilter module to allow skb being marked
@@ -133,9 +152,9 @@ setup_queue() {
 	maxrate=$((sch_bw * $queue_maxrate))
 	maxrate=$((maxrate / 100))
 
-	dbg "qid: $queue_id, sch: $queue_scheduler, schbw: $sch_bw, \
-		minbw: $minrate maxbw: $maxrate, weight: $queue_weight, \
-		resv: $queue_resv"
+	dbg "qid=$queue_id, sch=$queue_scheduler, schbw=$sch_bw, \
+		minbw=$minrate maxbw=$maxrate, weight=$queue_weight, \
+		resv=$queue_resv"
 
 	echo ${queue_scheduler} ${queue_minebl} ${minrate} \
 		${queue_maxebl} ${maxrate} ${queue_weight} \
@@ -144,5 +163,6 @@ setup_queue() {
 
 config_foreach setup_queue queue
 
-# enable qos_toggle
+# enable hooks
+echo 1 > $hqos_path/hook_toggle
 echo 1 > $hqos_path/qos_toggle
