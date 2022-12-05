@@ -1688,6 +1688,9 @@ int mtk_sw_nat_hook_tx(struct sk_buff *skb, int gmac_no)
 	    (gmac_no != NR_WHNAT_WDMA_PORT))
 		return NF_ACCEPT;
 
+	if (unlikely(!skb_mac_header_was_set(skb)))
+		return NF_ACCEPT;
+
 	if (!skb_hnat_is_hashed(skb))
 		return NF_ACCEPT;
 
@@ -1865,6 +1868,9 @@ void mtk_ppe_dev_register_hook(struct net_device *dev)
 				__func__, dev->name, i);
 			return;
 		}
+	}
+
+	for (i = 1; i < MAX_IF_NUM; i++) {
 		if (!hnat_priv->wifi_hook_if[i]) {
 			if (find_extif_from_devname(dev->name)) {
 				extif_set_dev(dev);
@@ -2008,6 +2014,9 @@ static unsigned int mtk_hnat_nf_post_routing(
 
 	if (skb_hnat_alg(skb) || unlikely(!is_magic_tag_valid(skb) ||
 					  !IS_SPACE_AVAILABLE_HEAD(skb)))
+		return 0;
+
+	if (unlikely(!skb_mac_header_was_set(skb)))
 		return 0;
 
 	if (unlikely(!skb_hnat_is_hashed(skb)))

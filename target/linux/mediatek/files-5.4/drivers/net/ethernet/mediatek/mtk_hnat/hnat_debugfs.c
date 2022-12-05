@@ -1066,6 +1066,7 @@ static ssize_t hnat_whnat_write(struct file *file, const char __user *buf,
 			mtk_ppe_dev_unregister_hook(dev);
 			pr_info("unregister wifi extern if = %s\n", dev->name);
 		}
+		dev_put(dev);
 	} else {
 		pr_info("no such device!\n");
 	}
