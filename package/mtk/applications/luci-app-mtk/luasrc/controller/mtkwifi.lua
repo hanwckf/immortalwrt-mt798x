@@ -941,9 +941,15 @@ function sta_info(ifname)
 
     for i=0, count - 1 do
         if stalist[i].MacAddr then
-            stalist[i].ipv4 = hosts[stalist[i].MacAddr].ipv4 or ""
-            stalist[i].ipv6 = hosts[stalist[i].MacAddr].ipv6 or ""
-            stalist[i].hostname = hosts[stalist[i].MacAddr].name or "-"
+            if hosts[stalist[i].MacAddr] then
+                stalist[i].ipv4 = hosts[stalist[i].MacAddr].ipv4 or ""
+                stalist[i].ipv6 = hosts[stalist[i].MacAddr].ipv6 or ""
+                stalist[i].hostname = hosts[stalist[i].MacAddr].name or "-"
+            else
+                stalist[i].ipv4 = ""
+                stalist[i].ipv6 = ""
+                stalist[i].hostname = "-"
+            end
             table.insert(output, stalist[i])
         end
     end
