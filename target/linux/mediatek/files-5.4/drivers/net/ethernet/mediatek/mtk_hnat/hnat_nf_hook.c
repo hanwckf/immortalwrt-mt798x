@@ -1265,13 +1265,15 @@ static unsigned int skb_to_hnat_info(struct sk_buff *skb,
 
 				entry.ipv4_hnapt.vlan1 = hw_path->vlan_id;
 
-				if (skb->vlan_tci && FROM_GE_WAN(skb) && IS_LAN(dev)) {
+				if (skb_vlan_tag_present(skb)) {
 					entry.bfib1.vlan_layer += 1;
 
 					if (entry.ipv4_hnapt.vlan1)
-						entry.ipv4_hnapt.vlan2 = (skb->vlan_tci & VLAN_VID_MASK);
+						entry.ipv4_hnapt.vlan2 =
+							skb->vlan_tci;
 					else
-						entry.ipv4_hnapt.vlan1 = (skb->vlan_tci & VLAN_VID_MASK);
+						entry.ipv4_hnapt.vlan1 =
+							skb->vlan_tci;
 				}
 
 				entry.ipv4_hnapt.sip = foe->ipv4_hnapt.sip;
@@ -1317,13 +1319,15 @@ static unsigned int skb_to_hnat_info(struct sk_buff *skb,
 
 			entry.ipv6_5t_route.vlan1 = hw_path->vlan_id;
 
-			if (skb->vlan_tci && FROM_GE_WAN(skb) && IS_LAN(dev)) {
+			if (skb_vlan_tag_present(skb)) {
 				entry.bfib1.vlan_layer += 1;
 
 				if (entry.ipv6_5t_route.vlan1)
-					entry.ipv6_5t_route.vlan2 = (skb->vlan_tci & VLAN_VID_MASK);
+					entry.ipv6_5t_route.vlan2 =
+						skb->vlan_tci;
 				else
-					entry.ipv6_5t_route.vlan1 = (skb->vlan_tci & VLAN_VID_MASK);
+					entry.ipv6_5t_route.vlan1 =
+						skb->vlan_tci;
 			}
 
 			if (hnat_priv->data->per_flow_accounting)
