@@ -16,7 +16,7 @@
  static SPINAND_OP_VARIANTS(write_cache_variants,
  		SPINAND_PROG_LOAD_X4(true, 0, NULL, 0),
  		SPINAND_PROG_LOAD(true, 0, NULL, 0));
-@@ -265,6 +274,16 @@ static int gd5fxgq4ufxxg_ecc_get_status(
+@@ -236,6 +245,16 @@ static int gd5fxgq4ufxxg_ecc_get_status(
  }
  
  static const struct spinand_info gigadevice_spinand_table[] = {
@@ -33,7 +33,7 @@
  	SPINAND_INFO("GD5F1GQ4xA",
  		     SPINAND_ID(SPINAND_READID_METHOD_OPCODE_ADDR, 0xf1),
  		     NAND_MEMORG(1, 2048, 64, 64, 1024, 20, 1, 1, 1),
-@@ -337,7 +356,7 @@ static const struct spinand_info gigadev
+@@ -290,7 +309,7 @@ static const struct spinand_info gigadev
  		     SPINAND_ID(SPINAND_READID_METHOD_OPCODE_DUMMY, 0x51),
  		     NAND_MEMORG(1, 2048, 128, 64, 1024, 20, 1, 1, 1),
  		     NAND_ECCREQ(4, 512),

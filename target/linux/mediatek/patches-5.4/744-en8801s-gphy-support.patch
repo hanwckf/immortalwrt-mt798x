@@ -1,5 +1,3 @@
-Index: drivers/net/phy/Kconfig
-===================================================================
 --- a/drivers/net/phy/Kconfig
 +++ b/drivers/net/phy/Kconfig
 @@ -345,6 +345,11 @@ config SFP
@@ -14,8 +12,6 @@ Index: drivers/net/phy/Kconfig
  config ADIN_PHY
  	tristate "Analog Devices Industrial Ethernet PHYs"
  	help
-Index: drivers/net/phy/Makefile
-===================================================================
 --- a/drivers/net/phy/Makefile
 +++ b/drivers/net/phy/Makefile
 @@ -67,6 +67,7 @@ aquantia-objs			+= aquantia_main.o
@@ -26,8 +22,6 @@ Index: drivers/net/phy/Makefile
  obj-$(CONFIG_AQUANTIA_PHY)	+= aquantia.o
  obj-$(CONFIG_AX88796B_PHY)	+= ax88796b.o
  obj-$(CONFIG_AT803X_PHY)	+= at803x.o
-Index: drivers/net/phy/en8801s.c
-===================================================================
 --- /dev/null
 +++ b/drivers/net/phy/en8801s.c
 @@ -0,0 +1,434 @@
@@ -465,8 +459,6 @@ Index: drivers/net/phy/en8801s.c
 +};
 +
 +MODULE_DEVICE_TABLE(mdio, Airoha_tbl);
-Index: drivers/net/phy/en8801s.h
-===================================================================
 --- /dev/null
 +++ b/drivers/net/phy/en8801s.h
 @@ -0,0 +1,158 @@

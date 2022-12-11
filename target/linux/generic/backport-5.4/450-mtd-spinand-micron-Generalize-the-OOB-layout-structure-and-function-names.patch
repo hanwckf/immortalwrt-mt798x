@@ -15,11 +15,9 @@ Link: https://lore.kernel.org/linux-mtd/20200311175735.2007-2-sshivamurthy@micro
  drivers/mtd/nand/spi/micron.c | 28 ++++++++++++++--------------
  1 file changed, 14 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/mtd/nand/spi/micron.c b/drivers/mtd/nand/spi/micron.c
-index f56f81325e10ac..cc1ee68421c8e1 100644
 --- a/drivers/mtd/nand/spi/micron.c
 +++ b/drivers/mtd/nand/spi/micron.c
-@@ -34,38 +34,38 @@ static SPINAND_OP_VARIANTS(update_cache_variants,
+@@ -34,38 +34,38 @@ static SPINAND_OP_VARIANTS(update_cache_
  		SPINAND_PROG_LOAD_X4(false, 0, NULL, 0),
  		SPINAND_PROG_LOAD(false, 0, NULL, 0));
  
@@ -70,7 +68,7 @@ index f56f81325e10ac..cc1ee68421c8e1 100644
  {
  	switch (status & MICRON_STATUS_ECC_MASK) {
  	case STATUS_ECC_NO_BITFLIPS:
-@@ -99,8 +99,8 @@ static const struct spinand_info micron_spinand_table[] = {
+@@ -99,8 +99,8 @@ static const struct spinand_info micron_
  					      &write_cache_variants,
  					      &update_cache_variants),
  		     0,

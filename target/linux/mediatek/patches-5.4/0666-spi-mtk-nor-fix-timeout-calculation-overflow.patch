@@ -153,8 +153,6 @@ Change since v1: fix transfer size cap to 4M
  drivers/spi/spi-mtk-nor.c | 6 +++++-
  1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/spi/spi-mtk-nor.c b/drivers/spi/spi-mtk-nor.c
-index 6e6ca2b8e6c82..62f5ff2779884 100644
 --- a/drivers/spi/spi-mtk-nor.c
 +++ b/drivers/spi/spi-mtk-nor.c
 @@ -89,7 +89,7 @@
@@ -166,7 +164,7 @@ index 6e6ca2b8e6c82..62f5ff2779884 100644
  
  struct mtk_nor {
  	struct spi_controller *ctlr;
-@@ -177,6 +177,10 @@ static int mtk_nor_adjust_op_size(struct spi_mem *mem, struct spi_mem_op *op)
+@@ -177,6 +177,10 @@ static int mtk_nor_adjust_op_size(struct
  	if ((op->addr.nbytes == 3) || (op->addr.nbytes == 4)) {
  		if ((op->data.dir == SPI_MEM_DATA_IN) &&
  		    mtk_nor_match_read(op)) {

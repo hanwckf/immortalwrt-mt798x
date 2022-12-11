@@ -17,11 +17,9 @@ Link: https://lore.kernel.org/linux-mtd/1595404978-31079-2-git-send-email-ycllin
  drivers/mtd/nand/spi/macronix.c | 10 ++++++++++
  1 file changed, 10 insertions(+)
 
-diff --git a/drivers/mtd/nand/spi/macronix.c b/drivers/mtd/nand/spi/macronix.c
-index 9ff8debd599418..9ae48ce1c46f91 100644
 --- a/drivers/mtd/nand/spi/macronix.c
 +++ b/drivers/mtd/nand/spi/macronix.c
-@@ -119,6 +119,16 @@ static const struct spinand_info macronix_spinand_table[] = {
+@@ -118,6 +118,16 @@ static const struct spinand_info macroni
  					      &update_cache_variants),
  		     SPINAND_HAS_QE_BIT,
  		     SPINAND_ECCINFO(&mx35lfxge4ab_ooblayout, NULL)),

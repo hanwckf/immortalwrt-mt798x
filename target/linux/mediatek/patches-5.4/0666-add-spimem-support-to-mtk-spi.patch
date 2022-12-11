@@ -14,8 +14,6 @@ Reviewed-by: Qii Wang <qii.wang@mediatek.com>
  include/linux/platform_data/spi-mt65xx.h |   2 +-
  2 files changed, 370 insertions(+), 27 deletions(-)
 
-diff --git a/drivers/spi/spi-mt65xx.c b/drivers/spi/spi-mt65xx.c
-index 8acf24f7c..9183c64e4 100644
 --- a/drivers/spi/spi-mt65xx.c
 +++ b/drivers/spi/spi-mt65xx.c
 @@ -17,6 +17,7 @@
@@ -111,7 +109,7 @@ index 8acf24f7c..9183c64e4 100644
  };
  
  static const struct mtk_spi_compatible mtk_common_compat;
-@@ -112,6 +147,14 @@ static const struct mtk_spi_compatible mt2712_compat = {
+@@ -112,6 +147,14 @@ static const struct mtk_spi_compatible m
  	.must_tx = true,
  };
  
@@ -126,7 +124,7 @@ index 8acf24f7c..9183c64e4 100644
  static const struct mtk_spi_compatible mt6765_compat = {
  	.need_pad_sel = true,
  	.must_tx = true,
-@@ -140,11 +183,14 @@ static const struct mtk_spi_compatible mt8183_compat = {
+@@ -140,11 +183,14 @@ static const struct mtk_spi_compatible m
   * supplies it.
   */
  static const struct mtk_chip_config mtk_default_chip_info = {
@@ -142,7 +140,7 @@ index 8acf24f7c..9183c64e4 100644
  	{ .compatible = "mediatek,mt2701-spi",
  		.data = (void *)&mtk_common_compat,
  	},
-@@ -190,19 +236,48 @@ static void mtk_spi_reset(struct mtk_spi *mdata)
+@@ -190,19 +236,48 @@ static void mtk_spi_reset(struct mtk_spi
  	writel(reg_val, mdata->base + SPI_CMD_REG);
  }
  
@@ -194,7 +192,7 @@ index 8acf24f7c..9183c64e4 100644
  	if (cpha)
  		reg_val |= SPI_CMD_CPHA;
  	else
-@@ -231,10 +306,12 @@ static int mtk_spi_prepare_message(struct spi_master *master,
+@@ -231,10 +306,12 @@ static int mtk_spi_prepare_message(struc
  #endif
  
  	if (mdata->dev_comp->enhance_timing) {
@@ -208,7 +206,7 @@ index 8acf24f7c..9183c64e4 100644
  		if (chip_config->sample_sel)
  			reg_val |= SPI_CMD_SAMPLE_SEL;
  		else
-@@ -260,11 +337,20 @@ static int mtk_spi_prepare_message(struct spi_master *master,
+@@ -260,11 +337,20 @@ static int mtk_spi_prepare_message(struc
  	return 0;
  }
  
@@ -229,7 +227,7 @@ index 8acf24f7c..9183c64e4 100644
  	reg_val = readl(mdata->base + SPI_CMD_REG);
  	if (!enable) {
  		reg_val |= SPI_CMD_PAUSE_EN;
-@@ -278,14 +364,14 @@ static void mtk_spi_set_cs(struct spi_device *spi, bool enable)
+@@ -278,14 +364,14 @@ static void mtk_spi_set_cs(struct spi_de
  }
  
  static void mtk_spi_prepare_transfer(struct spi_master *master,
@@ -247,7 +245,7 @@ index 8acf24f7c..9183c64e4 100644
  	else
  		div = 1;
  
-@@ -323,12 +409,24 @@ static void mtk_spi_setup_packet(struct spi_master *master)
+@@ -323,12 +409,24 @@ static void mtk_spi_setup_packet(struct
  	u32 packet_size, packet_loop, reg_val;
  	struct mtk_spi *mdata = spi_master_get_devdata(master);
  
@@ -274,7 +272,7 @@ index 8acf24f7c..9183c64e4 100644
  	reg_val |= (packet_loop - 1) << SPI_CFG1_PACKET_LOOP_OFFSET;
  	writel(reg_val, mdata->base + SPI_CFG1_REG);
  }
-@@ -423,7 +521,7 @@ static int mtk_spi_fifo_transfer(struct spi_master *master,
+@@ -423,7 +521,7 @@ static int mtk_spi_fifo_transfer(struct
  	mdata->cur_transfer = xfer;
  	mdata->xfer_len = min(MTK_SPI_MAX_FIFO_SIZE, xfer->len);
  	mdata->num_xfered = 0;
@@ -282,8 +280,8 @@ index 8acf24f7c..9183c64e4 100644
 +	mtk_spi_prepare_transfer(master, xfer->speed_hz);
  	mtk_spi_setup_packet(master);
  
- 	cnt = xfer->len / 4;
-@@ -455,7 +553,7 @@ static int mtk_spi_dma_transfer(struct spi_master *master,
+ 	if (xfer->tx_buf) {
+@@ -456,7 +554,7 @@ static int mtk_spi_dma_transfer(struct s
  	mdata->cur_transfer = xfer;
  	mdata->num_xfered = 0;
  
@@ -292,7 +290,7 @@ index 8acf24f7c..9183c64e4 100644
  
  	cmd = readl(mdata->base + SPI_CMD_REG);
  	if (xfer->tx_buf)
-@@ -532,6 +630,13 @@ static irqreturn_t mtk_spi_interrupt(int irq, void *dev_id)
+@@ -533,6 +631,13 @@ static irqreturn_t mtk_spi_interrupt(int
  	else
  		mdata->state = MTK_SPI_IDLE;
  
@@ -306,7 +304,7 @@ index 8acf24f7c..9183c64e4 100644
  	if (!master->can_dma(master, NULL, trans)) {
  		if (trans->rx_buf) {
  			cnt = mdata->xfer_len / 4;
-@@ -615,12 +720,241 @@ static irqreturn_t mtk_spi_interrupt(int irq, void *dev_id)
+@@ -616,12 +721,241 @@ static irqreturn_t mtk_spi_interrupt(int
  	return IRQ_HANDLED;
  }
  
@@ -549,7 +547,7 @@ index 8acf24f7c..9183c64e4 100644
  	int i, irq, ret, addr_bits;
  
  	master = spi_alloc_master(&pdev->dev, sizeof(*mdata));
-@@ -629,7 +963,7 @@ static int mtk_spi_probe(struct platform_device *pdev)
+@@ -630,7 +964,7 @@ static int mtk_spi_probe(struct platform
  		return -ENOMEM;
  	}
  
@@ -558,7 +556,7 @@ index 8acf24f7c..9183c64e4 100644
  	master->dev.of_node = pdev->dev.of_node;
  	master->mode_bits = SPI_CPOL | SPI_CPHA | SPI_LSB_FIRST;
  
-@@ -648,9 +982,25 @@ static int mtk_spi_probe(struct platform_device *pdev)
+@@ -649,9 +983,25 @@ static int mtk_spi_probe(struct platform
  
  	mdata = spi_master_get_devdata(master);
  	mdata->dev_comp = of_id->data;
@@ -584,7 +582,7 @@ index 8acf24f7c..9183c64e4 100644
  	if (mdata->dev_comp->need_pad_sel) {
  		mdata->pad_num = of_property_count_u32_elems(
  			pdev->dev.of_node,
-@@ -683,15 +1033,7 @@ static int mtk_spi_probe(struct platform_device *pdev)
+@@ -684,15 +1034,7 @@ static int mtk_spi_probe(struct platform
  	}
  
  	platform_set_drvdata(pdev, master);
@@ -601,7 +599,7 @@ index 8acf24f7c..9183c64e4 100644
  	if (IS_ERR(mdata->base)) {
  		ret = PTR_ERR(mdata->base);
  		goto err_put_master;
-@@ -713,6 +1055,7 @@ static int mtk_spi_probe(struct platform_device *pdev)
+@@ -714,6 +1056,7 @@ static int mtk_spi_probe(struct platform
  		goto err_put_master;
  	}
  
@@ -609,7 +607,7 @@ index 8acf24f7c..9183c64e4 100644
  	mdata->parent_clk = devm_clk_get(&pdev->dev, "parent-clk");
  	if (IS_ERR(mdata->parent_clk)) {
  		ret = PTR_ERR(mdata->parent_clk);
-@@ -750,7 +1093,7 @@ static int mtk_spi_probe(struct platform_device *pdev)
+@@ -751,7 +1094,7 @@ static int mtk_spi_probe(struct platform
  	clk_disable_unprepare(mdata->spi_clk);
  
  	pm_runtime_enable(&pdev->dev);
@@ -618,8 +616,6 @@ index 8acf24f7c..9183c64e4 100644
  	ret = devm_spi_register_master(&pdev->dev, master);
  	if (ret) {
  		dev_err(&pdev->dev, "failed to register master (%d)\n", ret);
-diff --git a/include/linux/platform_data/spi-mt65xx.h b/include/linux/platform_data/spi-mt65xx.h
-index f0e6d6483..fae9bc15c 100644
 --- a/include/linux/platform_data/spi-mt65xx.h
 +++ b/include/linux/platform_data/spi-mt65xx.h
 @@ -11,7 +11,7 @@
@@ -631,6 +627,3 @@ index f0e6d6483..fae9bc15c 100644
 +	u32 get_tick_dly;
  };
  #endif
--- 
-2.17.1
-

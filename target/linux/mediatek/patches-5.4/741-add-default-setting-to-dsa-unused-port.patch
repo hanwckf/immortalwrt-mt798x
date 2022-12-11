@@ -1,8 +1,6 @@
-Index: linux-5.4.124/drivers/net/dsa/mt7530.c
-===================================================================
---- linux-5.4.124.orig/drivers/net/dsa/mt7530.c
-+++ linux-5.4.124/drivers/net/dsa/mt7530.c
-@@ -1021,6 +1021,9 @@ mt7530_stp_state_set(struct dsa_switch *
+--- a/drivers/net/dsa/mt7530.c
++++ b/drivers/net/dsa/mt7530.c
+@@ -1022,6 +1022,9 @@ mt7530_stp_state_set(struct dsa_switch *
  	struct mt7530_priv *priv = ds->priv;
  	u32 stp_state;
  
@@ -12,7 +10,7 @@ Index: linux-5.4.124/drivers/net/dsa/mt7530.c
  	switch (state) {
  	case BR_STATE_DISABLED:
  		stp_state = MT7530_STP_DISABLED;
-@@ -1676,10 +1679,58 @@ mt7530_setup(struct dsa_switch *ds)
+@@ -1674,10 +1677,58 @@ mt7530_setup(struct dsa_switch *ds)
  }
  
  static int
@@ -71,7 +69,7 @@ Index: linux-5.4.124/drivers/net/dsa/mt7530.c
  	u32 val, id;
  	int ret, i;
  
-@@ -1767,7 +1818,9 @@ mt7531_setup(struct dsa_switch *ds)
+@@ -1765,7 +1816,9 @@ mt7531_setup(struct dsa_switch *ds)
  
  		mt7530_set(priv, MT7531_DBG_CNT(i), MT7531_DIS_CLR);
  
@@ -82,7 +80,7 @@ Index: linux-5.4.124/drivers/net/dsa/mt7530.c
  			mt753x_cpu_port_enable(ds, i);
  		else
  			mt7530_port_disable(ds, i);
-@@ -1777,6 +1830,9 @@ mt7531_setup(struct dsa_switch *ds)
+@@ -1775,6 +1828,9 @@ mt7531_setup(struct dsa_switch *ds)
  			   PVC_EG_TAG(MT7530_VLAN_EG_CONSISTENT));
  	}
  
@@ -92,7 +90,7 @@ Index: linux-5.4.124/drivers/net/dsa/mt7530.c
  	ds->configure_vlan_while_not_filtering = true;
  
  	/* Flush the FDB table */
-@@ -2101,7 +2157,7 @@ mt7531_mac_config(struct dsa_switch *ds,
+@@ -2099,7 +2155,7 @@ mt7531_mac_config(struct dsa_switch *ds,
  	case PHY_INTERFACE_MODE_RGMII_RXID:
  	case PHY_INTERFACE_MODE_RGMII_TXID:
  		dp = dsa_to_port(ds, port);
@@ -101,7 +99,7 @@ Index: linux-5.4.124/drivers/net/dsa/mt7530.c
  		return mt7531_rgmii_setup(priv, port, interface, phydev);
  	case PHY_INTERFACE_MODE_SGMII:
  		return mt7531_sgmii_setup_mode_an(priv, port, interface);
-@@ -2641,7 +2697,7 @@ mt7530_probe(struct mdio_device *mdiodev
+@@ -2639,7 +2695,7 @@ mt7530_probe(struct mdio_device *mdiodev
  	if (!priv)
  		return -ENOMEM;
  
@@ -110,10 +108,8 @@ Index: linux-5.4.124/drivers/net/dsa/mt7530.c
  	if (!priv->ds)
  		return -ENOMEM;
  
-Index: linux-5.4.124/drivers/net/dsa/mt7530.h
-===================================================================
---- linux-5.4.124.orig/drivers/net/dsa/mt7530.h
-+++ linux-5.4.124/drivers/net/dsa/mt7530.h
+--- a/drivers/net/dsa/mt7530.h
++++ b/drivers/net/dsa/mt7530.h
 @@ -10,6 +10,7 @@
  #define MT7530_CPU_PORT			6
  #define MT7530_NUM_FDB_RECORDS		2048

@@ -60,11 +60,9 @@ Reviewed-by: Dust Li <dust.li@linux.alibaba.com>
  net/core/dev.c | 16 ++++++++++------
  1 file changed, 10 insertions(+), 6 deletions(-)
 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 74fd402d26dd..7ee9fecd3aff 100644
 --- a/net/core/dev.c
 +++ b/net/core/dev.c
-@@ -6923,12 +6923,16 @@ EXPORT_SYMBOL(napi_disable);
+@@ -6438,12 +6438,16 @@ EXPORT_SYMBOL(napi_disable);
   */
  void napi_enable(struct napi_struct *n)
  {
@@ -87,8 +85,3 @@ index 74fd402d26dd..7ee9fecd3aff 100644
  }
  EXPORT_SYMBOL(napi_enable);
  
-
--- 
-2.31.0
-
-

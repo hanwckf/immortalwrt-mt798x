@@ -12,13 +12,11 @@ Signed-off-by: Zhanyong Wang <zhanyong.wang@mediatek.com>
  drivers/usb/host/xhci-mtk.c | 15 +++++++++++++++
  1 file changed, 15 insertions(+)
 
-diff --git a/drivers/usb/host/xhci-mtk.c b/drivers/usb/host/xhci-mtk.c
-index 2a4b73a658f9..b1201fb65fd6 100644
 --- a/drivers/usb/host/xhci-mtk.c
 +++ b/drivers/usb/host/xhci-mtk.c
-@@ -24,6 +24,11 @@
+@@ -22,6 +22,11 @@
+ #include "xhci.h"
  #include "xhci-mtk.h"
- #include "xhci-mtk-test.h"
  
 +/* COMPLIANCE_CP5_CP7_TXDEEMPH_10G register */
 +#define COMPLIANCE_CP5_CP7_TXDEEMPH_10G  0x2428
@@ -28,7 +26,7 @@ index 2a4b73a658f9..b1201fb65fd6 100644
  /* ip_pw_ctrl0 register */
  #define CTRL0_IP_SW_RST	BIT(0)
  
-@@ -415,6 +420,7 @@ static int xhci_mtk_setup(struct usb_hcd *hcd)
+@@ -413,6 +418,7 @@ static int xhci_mtk_setup(struct usb_hcd
  {
  	struct xhci_hcd_mtk *mtk = hcd_to_mtk(hcd);
  	int ret;
@@ -36,7 +34,7 @@ index 2a4b73a658f9..b1201fb65fd6 100644
  
  	if (usb_hcd_is_primary_hcd(hcd)) {
  		ret = xhci_mtk_ssusb_config(mtk);
-@@ -432,6 +438,15 @@ static int xhci_mtk_setup(struct usb_hcd *hcd)
+@@ -430,6 +436,15 @@ static int xhci_mtk_setup(struct usb_hcd
  			return ret;
  	}
  
@@ -52,6 +50,3 @@ index 2a4b73a658f9..b1201fb65fd6 100644
  	return ret;
  }
  
--- 
-2.18.0
-

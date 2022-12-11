@@ -1,6 +1,6 @@
---- linux-5.4.77.orig/net/dsa/tag_mtk.c
-+++ linux-5.4.77/net/dsa/tag_mtk.c
-@@ -73,22 +73,28 @@ static struct sk_buff *mtk_tag_rcv(struc
+--- a/net/dsa/tag_mtk.c
++++ b/net/dsa/tag_mtk.c
+@@ -80,22 +80,28 @@ static struct sk_buff *mtk_tag_rcv(struc
  	bool is_multicast_skb = is_multicast_ether_addr(dest) &&
  				!is_broadcast_ether_addr(dest);
  

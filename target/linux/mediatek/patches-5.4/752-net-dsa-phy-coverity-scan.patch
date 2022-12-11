@@ -1,7 +1,6 @@
-diff -Naur a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
---- a/drivers/net/dsa/mt7530.c	2022-11-25 14:10:39.452491570 +0800
-+++ b/drivers/net/dsa/mt7530.c	2022-11-28 09:47:11.157096408 +0800
-@@ -2476,7 +2476,7 @@
+--- a/drivers/net/dsa/mt7530.c
++++ b/drivers/net/dsa/mt7530.c
+@@ -2491,7 +2491,7 @@ static int
  mt7531_cpu_port_config(struct dsa_switch *ds, int port)
  {
  	struct mt7530_priv *priv = ds->priv;
@@ -10,7 +9,7 @@ diff -Naur a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
  	int speed;
  
  	switch (port) {
-@@ -2496,6 +2496,8 @@
+@@ -2511,6 +2511,8 @@ mt7531_cpu_port_config(struct dsa_switch
  		priv->p6_interface = interface;
  		break;
  	};
@@ -19,10 +18,9 @@ diff -Naur a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
  
  	if (interface == PHY_INTERFACE_MODE_2500BASEX)
  		speed = SPEED_2500;
-diff -Naur a/drivers/net/dsa/mt7531_phy.c b/drivers/net/dsa/mt7531_phy.c
---- a/drivers/net/dsa/mt7531_phy.c	2022-11-25 14:10:47.032465430 +0800
-+++ b/drivers/net/dsa/mt7531_phy.c	2022-11-29 09:56:05.024665073 +0800
-@@ -252,7 +252,7 @@
+--- a/drivers/net/dsa/mt7531_phy.c
++++ b/drivers/net/dsa/mt7531_phy.c
+@@ -252,7 +252,7 @@ static int ge_cal_rext(struct dsa_switch
  	u16 dev1e_17a_tmp, dev1e_e0_tmp;
  
  	/* *** Iext/Rext Cal start ************ */
@@ -31,7 +29,7 @@ diff -Naur a/drivers/net/dsa/mt7531_phy.c b/drivers/net/dsa/mt7531_phy.c
  	/* analog calibration enable, Rext calibration enable */
  	/* 1e_db[12]:rg_cal_ckinv, [8]:rg_ana_calen, [4]:rg_rext_calen, [0]:rg_zcalen_a */
  	/* 1e_dc[0]:rg_txvos_calen */
-@@ -296,7 +296,7 @@
+@@ -296,7 +296,7 @@ static int ge_cal_rext(struct dsa_switch
  			all_ana_cal_status = ANACAL_FINISH;
  			//printk("  GE Rext AnaCal Done! (%d)(0x%x)  \r\n", cnt, rg_zcal_ctrl);
  		} else {
@@ -40,7 +38,7 @@ diff -Naur a/drivers/net/dsa/mt7531_phy.c b/drivers/net/dsa/mt7531_phy.c
  			dev1e_e0_tmp =	tc_phy_read_dev_reg(ds, PHY0, 0x1e, 0xe0);
  			if ((rg_zcal_ctrl == 0x3F) || (rg_zcal_ctrl == 0x00)) {
  				all_ana_cal_status = ANACAL_SATURATION;  /* need to FT(IC fail?) */
-@@ -718,32 +718,34 @@
+@@ -718,32 +718,34 @@ static int ge_cal_tx_amp(struct dsa_swit
  				} else if (phyaddr == 1) {
  					if (calibration_pair == ANACAL_PAIR_A)
  						tx_amp_temp = tx_amp_temp - 1;
@@ -91,7 +89,7 @@ diff -Naur a/drivers/net/dsa/mt7531_phy.c b/drivers/net/dsa/mt7531_phy.c
  				}
  				reg_temp = tc_phy_read_dev_reg(ds,  phyaddr, 0x1e, tx_amp_reg)&(~0xff00);
  				tc_phy_write_dev_reg(ds, phyaddr, 0x1e, tx_amp_reg_100,(tx_amp_temp|((tx_amp_temp)<<tx_amp_reg_shift)));
-@@ -858,7 +860,7 @@
+@@ -858,7 +860,7 @@ static int ge_cal_tx_amp(struct dsa_swit
  					reg_backup = 0x0000;
  					reg_backup |= ((tx_amp_temp << 10) | (tx_amp_temp << 0));
  					tc_phy_write_dev_reg(ds, phyaddr, 0x1e, 0x12, reg_backup);
@@ -100,7 +98,7 @@ diff -Naur a/drivers/net/dsa/mt7531_phy.c b/drivers/net/dsa/mt7531_phy.c
  					//printk("PORT[%d] 1e.012 = %x (OFFSET_1000M_PAIR_A)\n", phyaddr, reg_backup);
  					reg_backup = tc_phy_read_dev_reg(ds,  phyaddr, 0x1e, 0x16);
  					reg_tmp = ((reg_backup & 0x3f) >> 0);
-@@ -866,7 +868,7 @@
+@@ -866,7 +868,7 @@ static int ge_cal_tx_amp(struct dsa_swit
  					reg_backup = (reg_backup & (~0x3f));
  					reg_backup |= (tx_amp_temp << 0);
  					tc_phy_write_dev_reg(ds, phyaddr, 0x1e, 0x16, reg_backup);
@@ -109,7 +107,7 @@ diff -Naur a/drivers/net/dsa/mt7531_phy.c b/drivers/net/dsa/mt7531_phy.c
  					//printk("PORT[%d] 1e.016 = %x (OFFSET_TESTMODE_1000M_PAIR_A)\n", phyaddr, reg_backup);
  				}
  				else if(calibration_pair == ANACAL_PAIR_B){
-@@ -876,7 +878,7 @@
+@@ -876,7 +878,7 @@ static int ge_cal_tx_amp(struct dsa_swit
  					reg_backup = 0x0000;
                                         reg_backup |= ((tx_amp_temp << 8) | (tx_amp_temp << 0));
  					tc_phy_write_dev_reg(ds, phyaddr, 0x1e, 0x17, reg_backup);
@@ -118,7 +116,7 @@ diff -Naur a/drivers/net/dsa/mt7531_phy.c b/drivers/net/dsa/mt7531_phy.c
  					//printk("PORT[%d] 1e.017 = %x (OFFSET_1000M_PAIR_B)\n", phyaddr, reg_backup);
  					reg_backup = tc_phy_read_dev_reg(ds,  phyaddr, 0x1e, 0x18);
  					reg_tmp = ((reg_backup & 0x3f) >> 0);
-@@ -884,7 +886,7 @@
+@@ -884,7 +886,7 @@ static int ge_cal_tx_amp(struct dsa_swit
  					reg_backup = (reg_backup & (~0x3f));
  					reg_backup |= (tx_amp_temp << 0);
  					tc_phy_write_dev_reg(ds, phyaddr, 0x1e, 0x18, reg_backup);
@@ -127,7 +125,7 @@ diff -Naur a/drivers/net/dsa/mt7531_phy.c b/drivers/net/dsa/mt7531_phy.c
  					//printk("PORT[%d] 1e.018 = %x (OFFSET_TESTMODE_1000M_PAIR_B)\n", phyaddr, reg_backup);
  				}
  				else if(calibration_pair == ANACAL_PAIR_C){
-@@ -894,7 +896,7 @@
+@@ -894,7 +896,7 @@ static int ge_cal_tx_amp(struct dsa_swit
  					reg_backup = (reg_backup & (~0x3f00));
  					reg_backup |= (tx_amp_temp << 8);
  					tc_phy_write_dev_reg(ds, phyaddr, 0x1e, 0x19, reg_backup);
@@ -136,7 +134,7 @@ diff -Naur a/drivers/net/dsa/mt7531_phy.c b/drivers/net/dsa/mt7531_phy.c
  					//printk("PORT[%d] 1e.019 = %x (OFFSET_1000M_PAIR_C)\n", phyaddr, reg_backup);
  					reg_backup = tc_phy_read_dev_reg(ds,  phyaddr, 0x1e, 0x20);
  					reg_tmp = ((reg_backup & 0x3f) >> 0);
-@@ -902,7 +904,7 @@
+@@ -902,7 +904,7 @@ static int ge_cal_tx_amp(struct dsa_swit
  					reg_backup = (reg_backup & (~0x3f));
  					reg_backup |= (tx_amp_temp << 0);
  					tc_phy_write_dev_reg(ds, phyaddr, 0x1e, 0x20, reg_backup);
@@ -145,7 +143,7 @@ diff -Naur a/drivers/net/dsa/mt7531_phy.c b/drivers/net/dsa/mt7531_phy.c
  					//printk("PORT[%d] 1e.020 = %x (OFFSET_TESTMODE_1000M_PAIR_C)\n", phyaddr, reg_backup);
  				}
  				else if(calibration_pair == ANACAL_PAIR_D){
-@@ -912,7 +914,7 @@
+@@ -912,7 +914,7 @@ static int ge_cal_tx_amp(struct dsa_swit
  					reg_backup = (reg_backup & (~0x3f00));
  					reg_backup |= (tx_amp_temp << 8);
  					tc_phy_write_dev_reg(ds, phyaddr, 0x1e, 0x21, reg_backup);
@@ -154,7 +152,7 @@ diff -Naur a/drivers/net/dsa/mt7531_phy.c b/drivers/net/dsa/mt7531_phy.c
  					//printk("PORT[%d] 1e.021 = %x (OFFSET_1000M_PAIR_D)\n", phyaddr, reg_backup);
  					reg_backup = tc_phy_read_dev_reg(ds,  phyaddr, 0x1e, 0x22);
  					reg_tmp = ((reg_backup & 0x3f) >> 0);
-@@ -920,7 +922,7 @@
+@@ -920,7 +922,7 @@ static int ge_cal_tx_amp(struct dsa_swit
  					reg_backup = (reg_backup & (~0x3f));
  					reg_backup |= (tx_amp_temp << 0);
  					tc_phy_write_dev_reg(ds, phyaddr, 0x1e, 0x22, reg_backup);
@@ -163,7 +161,7 @@ diff -Naur a/drivers/net/dsa/mt7531_phy.c b/drivers/net/dsa/mt7531_phy.c
  					//printk("PORT[%d] 1e.022 = %x (OFFSET_TESTMODE_1000M_PAIR_D)\n", phyaddr, reg_backup);
  				}
  
-@@ -1352,7 +1354,7 @@
+@@ -1352,7 +1354,7 @@ static void mt7531_eee_setting(struct ds
  
  int mt7531_phy_setup(struct dsa_switch *ds)
  {
@@ -172,10 +170,9 @@ diff -Naur a/drivers/net/dsa/mt7531_phy.c b/drivers/net/dsa/mt7531_phy.c
  	int i;
  
  	mt7531_phy_setting(ds);
-diff -Naur a/drivers/net/phy/mtk/mt753x/mt7531.c b/drivers/net/phy/mtk/mt753x/mt7531.c
---- a/drivers/net/phy/mtk/mt753x/mt7531.c	2022-11-25 14:11:51.944272549 +0800
-+++ b/drivers/net/phy/mtk/mt753x/mt7531.c	2022-11-25 14:19:49.970820719 +0800
-@@ -1062,6 +1062,7 @@
+--- a/drivers/net/phy/mtk/mt753x/mt7531.c
++++ b/drivers/net/phy/mtk/mt753x/mt7531.c
+@@ -1062,6 +1062,7 @@ static int mt7988_sw_init(struct gsw_mt7
  	u32 pmcr;
  	u32 speed;
  
@@ -183,7 +180,7 @@ diff -Naur a/drivers/net/phy/mtk/mt753x/mt7531.c b/drivers/net/phy/mtk/mt753x/mt
  	switch_node = of_find_node_by_name(NULL, "switch0");
  	if (switch_node == NULL) {
  		dev_err(&pdev->dev, "switch node invaild\n");
-@@ -1074,7 +1075,6 @@
+@@ -1074,7 +1075,6 @@ static int mt7988_sw_init(struct gsw_mt7
  		return -EIO;
  	}
  
@@ -191,10 +188,9 @@ diff -Naur a/drivers/net/phy/mtk/mt753x/mt7531.c b/drivers/net/phy/mtk/mt753x/mt
  	gsw->sysctrl_base = syscon_regmap_lookup_by_phandle(pdev->dev.of_node,
  							"mediatek,sysctrl");
  	if (IS_ERR(gsw->sysctrl_base)) {
-diff -Naur a/drivers/net/phy/mtk/mt753x/mt753x_common.c b/drivers/net/phy/mtk/mt753x/mt753x_common.c
---- a/drivers/net/phy/mtk/mt753x/mt753x_common.c	2022-11-25 14:12:06.308223474 +0800
-+++ b/drivers/net/phy/mtk/mt753x/mt753x_common.c	2022-11-25 14:21:52.038450276 +0800
-@@ -49,6 +49,9 @@
+--- a/drivers/net/phy/mtk/mt753x/mt753x_common.c
++++ b/drivers/net/phy/mtk/mt753x/mt753x_common.c
+@@ -49,6 +49,9 @@ static void display_port_link_status(str
  	case MAC_SPD_2500:
  		speed = "2.5Gbps";
  		break;
@@ -204,10 +200,9 @@ diff -Naur a/drivers/net/phy/mtk/mt753x/mt753x_common.c b/drivers/net/phy/mtk/mt
  	}
  
  	if (pmsr & MAC_LNK_STS) {
-diff -Naur a/drivers/net/phy/mtk/mt753x/mt753x_mdio.c b/drivers/net/phy/mtk/mt753x/mt753x_mdio.c
---- a/drivers/net/phy/mtk/mt753x/mt753x_mdio.c	2022-11-25 14:12:29.064162894 +0800
-+++ b/drivers/net/phy/mtk/mt753x/mt753x_mdio.c	2022-11-25 17:04:01.973949052 +0800
-@@ -495,7 +495,7 @@
+--- a/drivers/net/phy/mtk/mt753x/mt753x_mdio.c
++++ b/drivers/net/phy/mtk/mt753x/mt753x_mdio.c
+@@ -497,7 +497,7 @@ static int mt753x_hw_reset(struct gsw_mt
  	struct device_node *np = gsw->dev->of_node;
  	struct reset_control *rstc;
  	int mcm;
@@ -216,10 +211,9 @@ diff -Naur a/drivers/net/phy/mtk/mt753x/mt753x_mdio.c b/drivers/net/phy/mtk/mt75
  
  	mcm = of_property_read_bool(np, "mediatek,mcm");
  	if (mcm) {
-diff -Naur a/drivers/net/phy/mtk/mt753x/mt753x_nl.c b/drivers/net/phy/mtk/mt753x/mt753x_nl.c
---- a/drivers/net/phy/mtk/mt753x/mt753x_nl.c	2022-11-25 14:12:12.292202033 +0800
-+++ b/drivers/net/phy/mtk/mt753x/mt753x_nl.c	2022-11-25 17:01:26.881930912 +0800
-@@ -75,8 +75,10 @@
+--- a/drivers/net/phy/mtk/mt753x/mt753x_nl.c
++++ b/drivers/net/phy/mtk/mt753x/mt753x_nl.c
+@@ -75,8 +75,10 @@ static int mt753x_nl_list_devs(char *buf
  		len = snprintf(buf, sizeof(buf),
  			       "id: %d, model: %s, node: %s\n",
  			       gsw->id, gsw->name, gsw->dev->of_node->name);
@@ -232,10 +226,9 @@ diff -Naur a/drivers/net/phy/mtk/mt753x/mt753x_nl.c b/drivers/net/phy/mtk/mt753x
  	}
  
  	mt753x_put_gsw();
-diff -Naur a/drivers/net/phy/mtk/mt753x/mt753x_phy.c b/drivers/net/phy/mtk/mt753x/mt753x_phy.c
---- a/drivers/net/phy/mtk/mt753x/mt753x_phy.c	2022-11-25 14:12:34.160149995 +0800
-+++ b/drivers/net/phy/mtk/mt753x/mt753x_phy.c	2022-11-29 14:12:28.261884707 +0800
-@@ -141,7 +141,7 @@
+--- a/drivers/net/phy/mtk/mt753x/mt753x_phy.c
++++ b/drivers/net/phy/mtk/mt753x/mt753x_phy.c
+@@ -141,7 +141,7 @@ int ge_cal_rext(struct gsw_mt753x *gsw,
  	u16 dev1e_17a_tmp, dev1e_e0_tmp;
  
  	/* *** Iext/Rext Cal start ************ */
@@ -244,7 +237,7 @@ diff -Naur a/drivers/net/phy/mtk/mt753x/mt753x_phy.c b/drivers/net/phy/mtk/mt753
  	/* analog calibration enable, Rext calibration enable */
  	/* 1e_db[12]:rg_cal_ckinv, [8]:rg_ana_calen, [4]:rg_rext_calen, [0]:rg_zcalen_a */
  	/* 1e_dc[0]:rg_txvos_calen */
-@@ -185,7 +185,7 @@
+@@ -185,7 +185,7 @@ int ge_cal_rext(struct gsw_mt753x *gsw,
  			all_ana_cal_status = ANACAL_FINISH;
  			//printk("  GE Rext AnaCal Done! (%d)(0x%x)  \r\n", cnt, rg_zcal_ctrl);
  		} else {
@@ -253,7 +246,7 @@ diff -Naur a/drivers/net/phy/mtk/mt753x/mt753x_phy.c b/drivers/net/phy/mtk/mt753
  			dev1e_e0_tmp =	tc_phy_read_dev_reg(gsw, PHY0, 0x1e, 0xe0);
  			if ((rg_zcal_ctrl == 0x3F) || (rg_zcal_ctrl == 0x00)) {
  				all_ana_cal_status = ANACAL_SATURATION;  /* need to FT(IC fail?) */
-@@ -580,33 +580,35 @@
+@@ -580,33 +580,35 @@ int ge_cal_tx_amp(struct gsw_mt753x *gsw
  				} else if (phyaddr == 1) {
  					if (calibration_pair == ANACAL_PAIR_A)
  						tx_amp_temp = tx_amp_temp - 1;
@@ -306,7 +299,7 @@ diff -Naur a/drivers/net/phy/mtk/mt753x/mt753x_phy.c b/drivers/net/phy/mtk/mt753
  				reg_temp = tc_phy_read_dev_reg(gsw,  phyaddr, 0x1e, tx_amp_reg)&(~0xff00);
  				tc_phy_write_dev_reg(gsw, phyaddr, 0x1e, tx_amp_reg_100,(tx_amp_temp|((tx_amp_temp)<<tx_amp_reg_shift)));
  				tc_phy_write_dev_reg(gsw, phyaddr, 0x1e, tx_amp_reg, (tx_amp_temp|((tx_amp_temp)<<tx_amp_reg_shift)));
-@@ -704,7 +706,7 @@
+@@ -704,7 +706,7 @@ int ge_cal_tx_amp(struct gsw_mt753x *gsw
                                         reg_backup = 0x0000;
                                         reg_backup |= ((reg_tmp << 10) | (reg_tmp << 0));
  					tc_phy_write_dev_reg(gsw, phyaddr, 0x1e, 0x12, reg_backup);
@@ -315,7 +308,7 @@ diff -Naur a/drivers/net/phy/mtk/mt753x/mt753x_phy.c b/drivers/net/phy/mtk/mt753
  					//printk("PORT[%d] 1e.012 = %x (OFFSET_1000M_PAIR_A)\n", phyaddr, reg_backup);
  					reg_backup = tc_phy_read_dev_reg(gsw,  phyaddr, 0x1e, 0x16);
  					reg_tmp = ((reg_backup & 0x3f) >> 0);
-@@ -712,7 +714,7 @@
+@@ -712,7 +714,7 @@ int ge_cal_tx_amp(struct gsw_mt753x *gsw
  					reg_backup = (reg_backup & (~0x3f));
  					reg_backup |= (reg_tmp << 0);
  					tc_phy_write_dev_reg(gsw, phyaddr, 0x1e, 0x16, reg_backup);
@@ -324,7 +317,7 @@ diff -Naur a/drivers/net/phy/mtk/mt753x/mt753x_phy.c b/drivers/net/phy/mtk/mt753
  					//printk("PORT[%d] 1e.016 = %x (OFFSET_TESTMODE_1000M_PAIR_A)\n", phyaddr, reg_backup);
  				}
  				else if(calibration_pair == ANACAL_PAIR_B){
-@@ -722,7 +724,7 @@
+@@ -722,7 +724,7 @@ int ge_cal_tx_amp(struct gsw_mt753x *gsw
                                         reg_backup = 0x0000;
                                         reg_backup |= ((reg_tmp << 8) | (reg_tmp << 0));
  					tc_phy_write_dev_reg(gsw, phyaddr, 0x1e, 0x17, reg_backup);
@@ -333,7 +326,7 @@ diff -Naur a/drivers/net/phy/mtk/mt753x/mt753x_phy.c b/drivers/net/phy/mtk/mt753
  					//printk("PORT[%d] 1e.017 = %x (OFFSET_1000M_PAIR_B)\n", phyaddr, reg_backup);
  					reg_backup = tc_phy_read_dev_reg(gsw,  phyaddr, 0x1e, 0x18);
  					reg_tmp = ((reg_backup & 0x3f) >> 0);
-@@ -730,7 +732,7 @@
+@@ -730,7 +732,7 @@ int ge_cal_tx_amp(struct gsw_mt753x *gsw
  					reg_backup = (reg_backup & (~0x3f));
  					reg_backup |= (reg_tmp << 0);
  					tc_phy_write_dev_reg(gsw, phyaddr, 0x1e, 0x18, reg_backup);
@@ -342,7 +335,7 @@ diff -Naur a/drivers/net/phy/mtk/mt753x/mt753x_phy.c b/drivers/net/phy/mtk/mt753
  					//printk("PORT[%d] 1e.018 = %x (OFFSET_TESTMODE_1000M_PAIR_B)\n", phyaddr, reg_backup);
  				}
  				else if(calibration_pair == ANACAL_PAIR_C){
-@@ -740,7 +742,7 @@
+@@ -740,7 +742,7 @@ int ge_cal_tx_amp(struct gsw_mt753x *gsw
  					reg_backup = (reg_backup & (~0x3f00));
  					reg_backup |= (reg_tmp << 8);
  					tc_phy_write_dev_reg(gsw, phyaddr, 0x1e, 0x19, reg_backup);
@@ -351,7 +344,7 @@ diff -Naur a/drivers/net/phy/mtk/mt753x/mt753x_phy.c b/drivers/net/phy/mtk/mt753
  					//printk("PORT[%d] 1e.019 = %x (OFFSET_1000M_PAIR_C)\n", phyaddr, reg_backup);
  					reg_backup = tc_phy_read_dev_reg(gsw,  phyaddr, 0x1e, 0x20);
  					reg_tmp = ((reg_backup & 0x3f) >> 0);
-@@ -748,7 +750,7 @@
+@@ -748,7 +750,7 @@ int ge_cal_tx_amp(struct gsw_mt753x *gsw
  					reg_backup = (reg_backup & (~0x3f));
  					reg_backup |= (reg_tmp << 0);
  					tc_phy_write_dev_reg(gsw, phyaddr, 0x1e, 0x20, reg_backup);
@@ -360,7 +353,7 @@ diff -Naur a/drivers/net/phy/mtk/mt753x/mt753x_phy.c b/drivers/net/phy/mtk/mt753
  					//printk("PORT[%d] 1e.020 = %x (OFFSET_TESTMODE_1000M_PAIR_C)\n", phyaddr, reg_backup);
  				}
  				else if(calibration_pair == ANACAL_PAIR_D){
-@@ -758,7 +760,7 @@
+@@ -758,7 +760,7 @@ int ge_cal_tx_amp(struct gsw_mt753x *gsw
  					reg_backup = (reg_backup & (~0x3f00));
  					reg_backup |= (reg_tmp << 8);
  					tc_phy_write_dev_reg(gsw, phyaddr, 0x1e, 0x21, reg_backup);
@@ -369,7 +362,7 @@ diff -Naur a/drivers/net/phy/mtk/mt753x/mt753x_phy.c b/drivers/net/phy/mtk/mt753
  					//printk("PORT[%d] 1e.021 = %x (OFFSET_1000M_PAIR_D)\n", phyaddr, reg_backup);
  					reg_backup = tc_phy_read_dev_reg(gsw,  phyaddr, 0x1e, 0x22);
  					reg_tmp = ((reg_backup & 0x3f) >> 0);
-@@ -766,7 +768,7 @@
+@@ -766,7 +768,7 @@ int ge_cal_tx_amp(struct gsw_mt753x *gsw
  					reg_backup = (reg_backup & (~0x3f));
  					reg_backup |= (reg_tmp << 0);
  					tc_phy_write_dev_reg(gsw, phyaddr, 0x1e, 0x22, reg_backup);

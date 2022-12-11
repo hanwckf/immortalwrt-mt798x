@@ -7,11 +7,9 @@ Subject: [PATCH] [Modify tick_delay for spi work safety]
  drivers/spi/spi-mt65xx.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/spi/spi-mt65xx.c b/drivers/spi/spi-mt65xx.c
-index bef03bd8c..c19e2d4d7 100644
 --- a/drivers/spi/spi-mt65xx.c
 +++ b/drivers/spi/spi-mt65xx.c
-@@ -195,7 +195,7 @@ static const struct mtk_spi_compatible mt8183_compat = {
+@@ -195,7 +195,7 @@ static const struct mtk_spi_compatible m
   */
  static const struct mtk_chip_config mtk_default_chip_info = {
  	.sample_sel = 0,
@@ -20,6 +18,3 @@ index bef03bd8c..c19e2d4d7 100644
  };
  
  static const struct of_device_id mtk_spi_of_match[] = {
--- 
-2.18.0
-

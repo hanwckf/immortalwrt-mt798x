@@ -15,8 +15,6 @@ Signed-off-by: Leilk Liu <leilk.liu@mediatek.com>
  drivers/spi/spi-mt65xx.c | 77 ++++++++++++++++++++++++++++++++++------
  1 file changed, 67 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/spi/spi-mt65xx.c b/drivers/spi/spi-mt65xx.c
-index 7e54984..ff2d825 100644
 --- a/drivers/spi/spi-mt65xx.c
 +++ b/drivers/spi/spi-mt65xx.c
 @@ -119,6 +119,8 @@ struct mtk_spi_compatible {
@@ -37,7 +35,7 @@ index 7e54984..ff2d825 100644
  	struct spi_transfer *cur_transfer;
  	u32 xfer_len;
  	u32 num_xfered;
-@@ -147,12 +149,21 @@ static const struct mtk_spi_compatible mt2712_compat = {
+@@ -147,12 +149,21 @@ static const struct mtk_spi_compatible m
  	.must_tx = true,
  };
  
@@ -60,7 +58,7 @@ index 7e54984..ff2d825 100644
  };
  
  static const struct mtk_spi_compatible mt6765_compat = {
-@@ -188,8 +199,11 @@ static const struct mtk_chip_config mtk_default_chip_info = {
+@@ -188,8 +199,11 @@ static const struct mtk_chip_config mtk_
  };
  
  static const struct of_device_id mtk_spi_of_match[] = {
@@ -74,7 +72,7 @@ index 7e54984..ff2d825 100644
  	},
  	{ .compatible = "mediatek,mt2701-spi",
  		.data = (void *)&mtk_common_compat,
-@@ -992,7 +1006,7 @@ static int mtk_spi_probe(struct platform_device *pdev)
+@@ -993,7 +1007,7 @@ static int mtk_spi_probe(struct platform
  		return -ENOMEM;
  	}
  
@@ -83,7 +81,7 @@ index 7e54984..ff2d825 100644
  	master->dev.of_node = pdev->dev.of_node;
  	master->mode_bits = SPI_CPOL | SPI_CPHA | SPI_LSB_FIRST;
  
-@@ -1106,22 +1120,40 @@ static int mtk_spi_probe(struct platform_device *pdev)
+@@ -1107,22 +1121,40 @@ static int mtk_spi_probe(struct platform
  		goto err_put_master;
  	}
  
@@ -127,7 +125,7 @@ index 7e54984..ff2d825 100644
  
  	ret = devm_spi_register_master(&pdev->dev, master);
  	if (ret) {
-@@ -1201,8 +1233,11 @@ static int mtk_spi_suspend(struct device *dev)
+@@ -1202,8 +1234,11 @@ static int mtk_spi_suspend(struct device
  	if (ret)
  		return ret;
  
@@ -140,7 +138,7 @@ index 7e54984..ff2d825 100644
  
  	return ret;
  }
-@@ -1214,6 +1249,14 @@ static int mtk_spi_resume(struct device *dev)
+@@ -1215,6 +1250,14 @@ static int mtk_spi_resume(struct device
  	struct mtk_spi *mdata = spi_master_get_devdata(master);
  
  	if (!pm_runtime_suspended(dev)) {
@@ -155,7 +153,7 @@ index 7e54984..ff2d825 100644
  		ret = clk_prepare_enable(mdata->spi_clk);
  		if (ret < 0) {
  			dev_err(dev, "failed to enable spi_clk (%d)\n", ret);
-@@ -1222,8 +1265,11 @@ static int mtk_spi_resume(struct device *dev)
+@@ -1223,8 +1266,11 @@ static int mtk_spi_resume(struct device
  	}
  
  	ret = spi_master_resume(master);
@@ -168,7 +166,7 @@ index 7e54984..ff2d825 100644
  
  	return ret;
  }
-@@ -1237,6 +1283,9 @@ static int mtk_spi_runtime_suspend(struct device *dev)
+@@ -1238,6 +1284,9 @@ static int mtk_spi_runtime_suspend(struc
  
  	clk_disable_unprepare(mdata->spi_clk);
  
@@ -178,7 +176,7 @@ index 7e54984..ff2d825 100644
  	return 0;
  }
  
-@@ -1246,6 +1295,14 @@ static int mtk_spi_runtime_resume(struct device *dev)
+@@ -1247,6 +1296,14 @@ static int mtk_spi_runtime_resume(struct
  	struct mtk_spi *mdata = spi_master_get_devdata(master);
  	int ret;
  
@@ -193,6 +191,3 @@ index 7e54984..ff2d825 100644
  	ret = clk_prepare_enable(mdata->spi_clk);
  	if (ret < 0) {
  		dev_err(dev, "failed to enable spi_clk (%d)\n", ret);
--- 
-2.18.0
-

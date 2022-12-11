@@ -1,5 +1,3 @@
-diff --git a/drivers/watchdog/mtk_wdt.c b/drivers/watchdog/mtk_wdt.c
-index 9c3d003..30127d1 100644
 --- a/drivers/watchdog/mtk_wdt.c
 +++ b/drivers/watchdog/mtk_wdt.c
 @@ -9,6 +9,8 @@
@@ -131,7 +129,7 @@ index 9c3d003..30127d1 100644
  static int mtk_wdt_restart(struct watchdog_device *wdt_dev,
  			   unsigned long action, void *data)
  {
-@@ -89,12 +179,19 @@ static int mtk_wdt_set_timeout(struct watchdog_device *wdt_dev,
+@@ -89,12 +179,19 @@ static int mtk_wdt_set_timeout(struct wa
  	u32 reg;
  
  	wdt_dev->timeout = timeout;
@@ -152,7 +150,7 @@ index 9c3d003..30127d1 100644
  	iowrite32(reg, wdt_base + WDT_LENGTH);
  
  	mtk_wdt_ping(wdt_dev);
-@@ -102,6 +199,19 @@ static int mtk_wdt_set_timeout(struct watchdog_device *wdt_dev,
+@@ -102,6 +199,19 @@ static int mtk_wdt_set_timeout(struct wa
  	return 0;
  }
  
@@ -172,7 +170,7 @@ index 9c3d003..30127d1 100644
  static int mtk_wdt_stop(struct watchdog_device *wdt_dev)
  {
  	struct mtk_wdt_dev *mtk_wdt = watchdog_get_drvdata(wdt_dev);
-@@ -128,13 +238,50 @@ static int mtk_wdt_start(struct watchdog_device *wdt_dev)
+@@ -128,13 +238,50 @@ static int mtk_wdt_start(struct watchdog
  		return ret;
  
  	reg = ioread32(wdt_base + WDT_MODE);
@@ -224,7 +222,7 @@ index 9c3d003..30127d1 100644
  static const struct watchdog_info mtk_wdt_info = {
  	.identity	= DRV_NAME,
  	.options	= WDIOF_SETTIMEOUT |
-@@ -142,12 +289,21 @@ static const struct watchdog_info mtk_wdt_info = {
+@@ -142,12 +289,21 @@ static const struct watchdog_info mtk_wd
  			  WDIOF_MAGICCLOSE,
  };
  
@@ -246,7 +244,7 @@ index 9c3d003..30127d1 100644
  	.restart	= mtk_wdt_restart,
  };
  
-@@ -155,7 +311,8 @@ static int mtk_wdt_probe(struct platform_device *pdev)
+@@ -155,7 +311,8 @@ static int mtk_wdt_probe(struct platform
  {
  	struct device *dev = &pdev->dev;
  	struct mtk_wdt_dev *mtk_wdt;
@@ -256,7 +254,7 @@ index 9c3d003..30127d1 100644
  
  	mtk_wdt = devm_kzalloc(dev, sizeof(*mtk_wdt), GFP_KERNEL);
  	if (!mtk_wdt)
-@@ -167,10 +324,25 @@ static int mtk_wdt_probe(struct platform_device *pdev)
+@@ -167,10 +324,25 @@ static int mtk_wdt_probe(struct platform
  	if (IS_ERR(mtk_wdt->wdt_base))
  		return PTR_ERR(mtk_wdt->wdt_base);
  
@@ -284,7 +282,7 @@ index 9c3d003..30127d1 100644
  	mtk_wdt->wdt_dev.min_timeout = WDT_MIN_TIMEOUT;
  	mtk_wdt->wdt_dev.parent = dev;
  
-@@ -180,7 +352,7 @@ static int mtk_wdt_probe(struct platform_device *pdev)
+@@ -180,7 +352,7 @@ static int mtk_wdt_probe(struct platform
  
  	watchdog_set_drvdata(&mtk_wdt->wdt_dev, mtk_wdt);
  
@@ -293,7 +291,7 @@ index 9c3d003..30127d1 100644
  
  	watchdog_stop_on_reboot(&mtk_wdt->wdt_dev);
  	err = devm_watchdog_register_device(dev, &mtk_wdt->wdt_dev);
-@@ -190,6 +362,17 @@ static int mtk_wdt_probe(struct platform_device *pdev)
+@@ -190,6 +362,17 @@ static int mtk_wdt_probe(struct platform
  	dev_info(dev, "Watchdog enabled (timeout=%d sec, nowayout=%d)\n",
  		 mtk_wdt->wdt_dev.timeout, nowayout);
  
@@ -311,7 +309,7 @@ index 9c3d003..30127d1 100644
  	return 0;
  }
  
-@@ -219,6 +402,7 @@ static int mtk_wdt_resume(struct device *dev)
+@@ -219,6 +402,7 @@ static int mtk_wdt_resume(struct device
  
  static const struct of_device_id mtk_wdt_dt_ids[] = {
  	{ .compatible = "mediatek,mt6589-wdt" },
@@ -319,7 +317,7 @@ index 9c3d003..30127d1 100644
  	{ /* sentinel */ }
  };
  MODULE_DEVICE_TABLE(of, mtk_wdt_dt_ids);
-@@ -249,4 +433,4 @@ MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started (default="
+@@ -249,4 +433,4 @@ MODULE_PARM_DESC(nowayout, "Watchdog can
  MODULE_LICENSE("GPL");
  MODULE_AUTHOR("Matthias Brugger <matthias.bgg@gmail.com>");
  MODULE_DESCRIPTION("Mediatek WatchDog Timer Driver");

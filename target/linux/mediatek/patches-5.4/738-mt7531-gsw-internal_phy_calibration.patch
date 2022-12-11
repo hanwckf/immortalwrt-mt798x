@@ -1,5 +1,3 @@
-Index: drivers/net/phy/mtk/mt753x/Makefile
-===================================================================
 --- a/drivers/net/phy/mtk/mt753x/Makefile
 +++ b/drivers/net/phy/mtk/mt753x/Makefile
 @@ -7,5 +7,5 @@ obj-$(CONFIG_MT753X_GSW)	+= mt753x.o
@@ -9,11 +7,9 @@ Index: drivers/net/phy/mtk/mt753x/Makefile
 -					mt753x_common.o mt753x_vlan.o mt753x_nl.o
 +					mt753x_common.o mt753x_vlan.o mt753x_nl.o mt753x_phy.o
  
-Index: drivers/net/phy/mtk/mt753x/mt7531.c
-===================================================================
 --- a/drivers/net/phy/mtk/mt753x/mt7531.c
 +++ b/drivers/net/phy/mtk/mt753x/mt7531.c
-@@ -658,6 +658,27 @@ static void mt7531_core_pll_setup(struct
+@@ -662,6 +662,27 @@ static void mt7531_core_pll_setup(struct
  
  static int mt7531_internal_phy_calibration(struct gsw_mt753x *gsw)
  {
@@ -41,11 +37,9 @@ Index: drivers/net/phy/mtk/mt753x/mt7531.c
  	return 0;
  }
  
-Index: drivers/net/phy/mtk/mt753x/mt753x.h
-===================================================================
 --- a/drivers/net/phy/mtk/mt753x/mt753x.h
 +++ b/drivers/net/phy/mtk/mt753x/mt753x.h
-@@ -140,6 +140,8 @@ void mt753x_irq_enable(struct gsw_mt753x
+@@ -146,6 +146,8 @@ void mt753x_irq_enable(struct gsw_mt753x
  int mt753x_phy_calibration(struct gsw_mt753x *gsw, u8 phyaddr);
  int extphy_init(struct gsw_mt753x *gsw, int addr);
  
@@ -54,9 +48,6 @@ Index: drivers/net/phy/mtk/mt753x/mt753x.h
  /* MDIO Indirect Access Registers */
  #define MII_MMD_ACC_CTL_REG		0x0d
  #define MMD_CMD_S			14
-Index: drivers/net/phy/mtk/mt753x/mt753x_phy.c
-===================================================================
-new file mode 100644
 --- /dev/null
 +++ b/drivers/net/phy/mtk/mt753x/mt753x_phy.c
 @@ -0,0 +1,1069 @@
@@ -1129,9 +1120,6 @@ new file mode 100644
 +
 +	return ret;
 +}
-Index: drivers/net/phy/mtk/mt753x/mt753x_phy.h
-===================================================================
-new file mode 100644
 --- /dev/null
 +++ b/drivers/net/phy/mtk/mt753x/mt753x_phy.h
 @@ -0,0 +1,145 @@

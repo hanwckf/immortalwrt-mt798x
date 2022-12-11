@@ -11,7 +11,7 @@ Link: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/
 
 --- a/drivers/spi/spi.c
 +++ b/drivers/spi/spi.c
-@@ -3170,7 +3170,29 @@ int spi_setup(struct spi_device *spi)
+@@ -3175,7 +3175,29 @@ int spi_setup(struct spi_device *spi)
  	if (spi->controller->setup)
  		status = spi->controller->setup(spi);
  
@@ -42,6 +42,3 @@ Link: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/
  
  	if (spi->rt && !spi->controller->rt) {
  		spi->controller->rt = true;
--- 
-2.18.0
-

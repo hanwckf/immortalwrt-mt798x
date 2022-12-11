@@ -1,6 +1,6 @@
---- a/net/Kconfig	2020-04-29 17:25:49.750444000 +0800
-+++ b/net/Kconfig	2020-04-29 17:42:40.950424000 +0800
-@@ -451,6 +451,18 @@
+--- a/net/Kconfig
++++ b/net/Kconfig
+@@ -460,6 +460,18 @@ config FAILOVER
  	  migration of VMs with direct attached VFs by failing over to the
  	  paravirtual datapath when the VF is unplugged.
  
@@ -19,9 +19,9 @@
  endif   # if NET
  
  # Used by archs to tell that they support BPF JIT compiler plus which flavour.
---- a/net/Makefile	2020-04-23 16:36:46.000000000 +0800
-+++ b/net/Makefile	2020-04-29 17:42:58.106487000 +0800
-@@ -62,6 +62,9 @@
+--- a/net/Makefile
++++ b/net/Makefile
+@@ -62,6 +62,9 @@ endif
  obj-$(CONFIG_6LOWPAN)		+= 6lowpan/
  obj-$(CONFIG_IEEE802154)	+= ieee802154/
  obj-$(CONFIG_MAC802154)		+= mac802154/

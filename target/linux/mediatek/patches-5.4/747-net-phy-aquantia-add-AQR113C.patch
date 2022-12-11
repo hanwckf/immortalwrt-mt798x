@@ -1,5 +1,3 @@
-diff --git a/drivers/net/phy/aquantia_main.c b/drivers/net/phy/aquantia_main.c
-index 75d8351..ac8dd8e 100644
 --- a/drivers/net/phy/aquantia_main.c
 +++ b/drivers/net/phy/aquantia_main.c
 @@ -22,6 +22,7 @@
@@ -10,7 +8,7 @@ index 75d8351..ac8dd8e 100644
  
  #define MDIO_PHYXS_VEND_IF_STATUS		0xe812
  #define MDIO_PHYXS_VEND_IF_STATUS_TYPE_MASK	GENMASK(7, 3)
-@@ -352,6 +352,13 @@ static int aqr107_read_status(struct phy_device *phydev)
+@@ -388,6 +389,13 @@ static int aqr107_read_status(struct phy
  		break;
  	}
  
@@ -24,7 +22,7 @@ index 75d8351..ac8dd8e 100644
  	val = aqr107_read_downshift_event(phydev);
  	if (val <= 0)
  		return val;
-@@ -695,6 +696,24 @@ static struct phy_driver aqr_driver[] = {
+@@ -695,6 +703,24 @@ static struct phy_driver aqr_driver[] =
  	.ack_interrupt	= aqr_ack_interrupt,
  	.read_status	= aqr_read_status,
  },
@@ -49,7 +47,7 @@ index 75d8351..ac8dd8e 100644
  };
  
  module_phy_driver(aqr_driver);
-@@ -707,6 +726,7 @@ static struct mdio_device_id __maybe_unused aqr_tbl[] = {
+@@ -707,6 +733,7 @@ static struct mdio_device_id __maybe_unu
  	{ PHY_ID_MATCH_MODEL(PHY_ID_AQR107) },
  	{ PHY_ID_MATCH_MODEL(PHY_ID_AQCS109) },
  	{ PHY_ID_MATCH_MODEL(PHY_ID_AQR405) },

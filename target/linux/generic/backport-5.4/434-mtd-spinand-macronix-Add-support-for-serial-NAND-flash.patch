@@ -45,11 +45,9 @@ Link: https://lore.kernel.org/linux-mtd/1621475108-22523-1-git-send-email-jaimel
  drivers/mtd/nand/spi/macronix.c | 112 ++++++++++++++++++++++++++++++++
  1 file changed, 112 insertions(+)
 
-diff --git a/drivers/mtd/nand/spi/macronix.c b/drivers/mtd/nand/spi/macronix.c
-index 6701aaa21a49df..a9890350db0293 100644
 --- a/drivers/mtd/nand/spi/macronix.c
 +++ b/drivers/mtd/nand/spi/macronix.c
-@@ -186,6 +186,118 @@ static const struct spinand_info macronix_spinand_table[] = {
+@@ -185,6 +185,118 @@ static const struct spinand_info macroni
  		     0 /*SPINAND_HAS_QE_BIT*/,
  		     SPINAND_ECCINFO(&mx35lfxge4ab_ooblayout,
  				     mx35lf1ge4ab_ecc_get_status)),

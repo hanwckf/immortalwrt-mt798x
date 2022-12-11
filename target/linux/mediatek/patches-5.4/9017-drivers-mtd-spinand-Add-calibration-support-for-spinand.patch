@@ -8,11 +8,9 @@ Signed-off-by: SkyLake.Huang <skylake.huang@mediatek.com>
  drivers/mtd/nand/spi/core.c | 58 +++++++++++++++++++++++++++++++++++++
  1 file changed, 58 insertions(+)
 
-diff --git a/drivers/mtd/nand/spi/core.c b/drivers/mtd/nand/spi/core.c
-index 9f5f95ff7..b346c7a8a 100644
 --- a/drivers/mtd/nand/spi/core.c
 +++ b/drivers/mtd/nand/spi/core.c
-@@ -789,6 +789,60 @@ static int spinand_manufacturer_match(struct spinand_device *spinand,
+@@ -789,6 +789,60 @@ static int spinand_manufacturer_match(st
  	return -ENOTSUPP;
  }
  
@@ -73,7 +71,7 @@ index 9f5f95ff7..b346c7a8a 100644
  static int spinand_id_detect(struct spinand_device *spinand)
  {
  	u8 *id = spinand->id.data;
-@@ -1004,6 +1058,10 @@ static int spinand_init(struct spinand_device *spinand)
+@@ -1004,6 +1058,10 @@ static int spinand_init(struct spinand_d
  	if (!spinand->scratchbuf)
  		return -ENOMEM;
  
@@ -84,6 +82,3 @@ index 9f5f95ff7..b346c7a8a 100644
  	ret = spinand_detect(spinand);
  	if (ret)
  		goto err_free_bufs;
--- 
-2.18.0
-

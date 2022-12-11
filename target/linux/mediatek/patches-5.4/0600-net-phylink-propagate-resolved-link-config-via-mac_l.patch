@@ -111,8 +111,8 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  	u32 val;
 --- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
 +++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-@@ -449,9 +449,10 @@ static void mtk_mac_link_down(struct phy
- 	mtk_w32(mac->hw, mcr, MTK_MAC_MCR(mac->id));
+@@ -603,9 +603,10 @@ static void mtk_mac_link_down(struct phy
+ 	}
  }
  
 -static void mtk_mac_link_up(struct phylink_config *config, unsigned int mode,

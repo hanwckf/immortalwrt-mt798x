@@ -11,11 +11,9 @@ Signed-off-by: Zhanyong Wang <zhanyong.wang@mediatek.com>
  drivers/phy/mediatek/phy-mtk-tphy.c | 140 ++++++++++++++++++++++++++++
  1 file changed, 140 insertions(+)
 
-diff --git a/drivers/phy/mediatek/phy-mtk-tphy.c b/drivers/phy/mediatek/phy-mtk-tphy.c
-index 05a1ad4..59d6ac3 100644
 --- a/drivers/phy/mediatek/phy-mtk-tphy.c
 +++ b/drivers/phy/mediatek/phy-mtk-tphy.c
-@@ -39,6 +39,15 @@
+@@ -41,6 +41,15 @@
  #define SSUSB_SIFSLV_V2_U3PHYD		0x200
  #define SSUSB_SIFSLV_V2_U3PHYA		0x400
  
@@ -31,7 +29,7 @@ index 05a1ad4..59d6ac3 100644
  #define U3P_MISC_REG1		0x04
  #define MR1_EFUSE_AUTO_LOAD_DIS		BIT(6)
  
-@@ -294,6 +303,7 @@ enum mtk_phy_version {
+@@ -307,6 +316,7 @@ enum mtk_phy_version {
  	MTK_PHY_V1 = 1,
  	MTK_PHY_V2,
  	MTK_PHY_V3,
@@ -39,7 +37,7 @@ index 05a1ad4..59d6ac3 100644
  };
  
  struct mtk_phy_pdata {
-@@ -338,6 +348,9 @@ struct mtk_phy_instance {
+@@ -351,6 +361,9 @@ struct mtk_phy_instance {
  	u32 efuse_intr;
  	u32 efuse_tx_imp;
  	u32 efuse_rx_imp;
@@ -47,9 +45,9 @@ index 05a1ad4..59d6ac3 100644
 +	u32 efuse_tx_imp_ln1;
 +	u32 efuse_rx_imp_ln1;
  	u32 index;
- 	u8 type;
- 	int eye_src;
-@@ -878,6 +891,36 @@ static void phy_v2_banks_init(struct mtk_tphy *tphy,
+ 	u32 type;
+ 	struct regmap *type_sw;
+@@ -899,6 +912,36 @@ static void phy_v2_banks_init(struct mtk
  	}
  }
  
@@ -86,7 +84,7 @@ index 05a1ad4..59d6ac3 100644
  static void phy_parse_property(struct mtk_tphy *tphy,
  				struct mtk_phy_instance *instance)
  {
-@@ -1002,6 +1045,40 @@ static int phy_efuse_get(struct mtk_tphy *tphy, struct mtk_phy_instance *instanc
+@@ -1081,6 +1124,40 @@ static int phy_efuse_get(struct mtk_tphy
  		dev_info(dev, "u3 efuse - intr %x, rx_imp %x, tx_imp %x\n",
  			 instance->efuse_intr, instance->efuse_rx_imp,
  			 instance->efuse_tx_imp);
@@ -127,7 +125,7 @@ index 05a1ad4..59d6ac3 100644
  		break;
  	default:
  		dev_err(dev, "no sw efuse for type %d\n", instance->type);
-@@ -1035,6 +1112,31 @@ static void phy_efuse_set(struct mtk_phy_instance *instance)
+@@ -1114,6 +1191,31 @@ static void phy_efuse_set(struct mtk_phy
  
  		break;
  	case PHY_TYPE_USB3:
@@ -159,7 +157,7 @@ index 05a1ad4..59d6ac3 100644
  	case PHY_TYPE_PCIE:
  		tmp = readl(u3_banks->phyd + U3P_U3_PHYD_RSV);
  		tmp |= P3D_RG_EFUSE_AUTO_LOAD_DIS;
-@@ -1059,6 +1161,35 @@ static void phy_efuse_set(struct mtk_phy_instance *instance)
+@@ -1138,6 +1240,35 @@ static void phy_efuse_set(struct mtk_phy
  		pr_err("%s set efuse, tx_imp %x, rx_imp %x intr %x\n",
  			__func__, instance->efuse_tx_imp,
  			instance->efuse_rx_imp, instance->efuse_intr);
@@ -195,7 +193,7 @@ index 05a1ad4..59d6ac3 100644
  		break;
  	default:
  		dev_warn(dev, "no sw efuse for type %d\n", instance->type);
-@@ -1197,6 +1328,8 @@ static struct phy *mtk_phy_xlate(struct device *dev,
+@@ -1280,6 +1411,8 @@ static struct phy *mtk_phy_xlate(struct
  		phy_v1_banks_init(tphy, instance);
  	} else if (tphy->pdata->version == MTK_PHY_V2) {
  		phy_v2_banks_init(tphy, instance);
@@ -204,7 +202,7 @@ index 05a1ad4..59d6ac3 100644
  	} else {
  		dev_err(dev, "phy version is not supported\n");
  		return ERR_PTR(-EINVAL);
-@@ -1247,12 +1380,19 @@ static const struct mtk_phy_pdata mt8195_pdata = {
+@@ -1331,12 +1464,19 @@ static const struct mtk_phy_pdata mt8195
  	.version = MTK_PHY_V3,
  };
  
@@ -224,6 +222,3 @@ index 05a1ad4..59d6ac3 100644
  	{ },
  };
  MODULE_DEVICE_TABLE(of, mtk_tphy_id_table);
--- 
-2.18.0
-

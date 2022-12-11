@@ -1,5 +1,3 @@
-diff --git a/drivers/pci/controller/Kconfig b/drivers/pci/controller/Kconfig
-index 70e0782..67988f8 100644
 --- a/drivers/pci/controller/Kconfig
 +++ b/drivers/pci/controller/Kconfig
 @@ -241,6 +241,19 @@ config PCIE_MEDIATEK
@@ -22,11 +20,9 @@ index 70e0782..67988f8 100644
  config PCIE_MOBIVEIL
  	bool "Mobiveil AXI PCIe controller"
  	depends on ARCH_ZYNQMP || COMPILE_TEST
-diff --git a/drivers/pci/controller/Makefile b/drivers/pci/controller/Makefile
-index a2a22c9..54a496a 100644
 --- a/drivers/pci/controller/Makefile
 +++ b/drivers/pci/controller/Makefile
-@@ -27,6 +27,7 @@ obj-$(CONFIG_PCIE_ROCKCHIP) += pcie-rockchip.o
+@@ -27,6 +27,7 @@ obj-$(CONFIG_PCIE_ROCKCHIP) += pcie-rock
  obj-$(CONFIG_PCIE_ROCKCHIP_EP) += pcie-rockchip-ep.o
  obj-$(CONFIG_PCIE_ROCKCHIP_HOST) += pcie-rockchip-host.o
  obj-$(CONFIG_PCIE_MEDIATEK) += pcie-mediatek.o

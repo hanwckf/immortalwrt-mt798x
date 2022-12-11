@@ -1,8 +1,6 @@
-Index: linux-5.4.124/drivers/net/dsa/mt7530.c
-===================================================================
---- linux-5.4.124.orig/drivers/net/dsa/mt7530.c
-+++ linux-5.4.124/drivers/net/dsa/mt7530.c
-@@ -1830,6 +1830,8 @@ mt7531_setup(struct dsa_switch *ds)
+--- a/drivers/net/dsa/mt7530.c
++++ b/drivers/net/dsa/mt7530.c
+@@ -1828,6 +1828,8 @@ mt7531_setup(struct dsa_switch *ds)
  			   PVC_EG_TAG(MT7530_VLAN_EG_CONSISTENT));
  	}
  
@@ -11,20 +9,16 @@ Index: linux-5.4.124/drivers/net/dsa/mt7530.c
  	/* Group and enable unused ports as a standalone dumb switch. */
  	setup_unused_ports(ds, unused_pm);
  
-Index: linux-5.4.124/drivers/net/dsa/mt7530.h
-===================================================================
---- linux-5.4.124.orig/drivers/net/dsa/mt7530.h
-+++ linux-5.4.124/drivers/net/dsa/mt7530.h
+--- a/drivers/net/dsa/mt7530.h
++++ b/drivers/net/dsa/mt7530.h
 @@ -782,4 +782,5 @@ static inline void INIT_MT7530_DUMMY_POL
  	p->reg = reg;
  }
  
 +int mt7531_phy_setup(struct dsa_switch *ds);
  #endif /* __MT7530_H */
-Index: linux-5.4.124/drivers/net/dsa/mt7531_phy.c
-===================================================================
 --- /dev/null
-+++ linux-5.4.124/drivers/net/dsa/mt7531_phy.c
++++ b/drivers/net/dsa/mt7531_phy.c
 @@ -0,0 +1,1378 @@
 +// SPDX-License-Identifier:	GPL-2.0+
 +/*
@@ -1404,10 +1398,8 @@ Index: linux-5.4.124/drivers/net/dsa/mt7531_phy.c
 +
 +	return ret;
 +}
-Index: linux-5.4.124/drivers/net/dsa/mt7531_phy.h
-===================================================================
 --- /dev/null
-+++ linux-5.4.124/drivers/net/dsa/mt7531_phy.h
++++ b/drivers/net/dsa/mt7531_phy.h
 @@ -0,0 +1,262 @@
 +/* SPDX-License-Identifier:	GPL-2.0+ */
 +/*
@@ -1671,10 +1663,8 @@ Index: linux-5.4.124/drivers/net/dsa/mt7531_phy.h
 +	DSP_MAX = 0x3e,
 +};
 +#endif /* _MT753X_REGS_H_ */
-Index: linux-5.4.124/drivers/net/dsa/Makefile
-===================================================================
---- linux-5.4.124.orig/drivers/net/dsa/Makefile
-+++ linux-5.4.124/drivers/net/dsa/Makefile
+--- a/drivers/net/dsa/Makefile
++++ b/drivers/net/dsa/Makefile
 @@ -6,7 +6,8 @@ ifdef CONFIG_NET_DSA_LOOP
  obj-$(CONFIG_FIXED_PHY)		+= dsa_loop_bdinfo.o
  endif

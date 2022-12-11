@@ -1,6 +1,6 @@
 --- a/sound/soc/mediatek/Kconfig
 +++ b/sound/soc/mediatek/Kconfig
-@@ -53,6 +53,36 @@
+@@ -53,6 +53,36 @@ config SND_SOC_MT6797_MT6351
  	  Select Y if you have such device.
  	  If unsure select "N".
  

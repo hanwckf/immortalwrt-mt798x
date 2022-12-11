@@ -11,8 +11,6 @@ Signed-off-by: SkyLake.Huang <skylake.huang@mediatek.com>
  2 files changed, 14 insertions(+), 34 deletions(-)
  delete mode 100644 include/linux/platform_data/spi-mt65xx.h
 
-diff --git a/drivers/spi/spi-mt65xx.c b/drivers/spi/spi-mt65xx.c
-index c19e2d4d7..0afd00891 100644
 --- a/drivers/spi/spi-mt65xx.c
 +++ b/drivers/spi/spi-mt65xx.c
 @@ -14,7 +14,6 @@
@@ -43,7 +41,7 @@ index c19e2d4d7..0afd00891 100644
  
  	struct completion spimem_done;
  	bool use_spimem;
-@@ -189,15 +194,6 @@ static const struct mtk_spi_compatible mt8183_compat = {
+@@ -189,15 +194,6 @@ static const struct mtk_spi_compatible m
  	.enhance_timing = true,
  };
  
@@ -59,7 +57,7 @@ index c19e2d4d7..0afd00891 100644
  static const struct of_device_id mtk_spi_of_match[] = {
  	{ .compatible = "mediatek,ipm-spi-single",
  		.data = (void *)&ipm_compat_single,
-@@ -255,7 +251,6 @@ static int mtk_spi_hw_init(struct spi_master *master,
+@@ -255,7 +251,6 @@ static int mtk_spi_hw_init(struct spi_ma
  {
  	u16 cpha, cpol;
  	u32 reg_val;
@@ -67,7 +65,7 @@ index c19e2d4d7..0afd00891 100644
  	struct mtk_spi *mdata = spi_master_get_devdata(master);
  
  	cpha = spi->mode & SPI_CPHA ? 1 : 0;
-@@ -270,13 +265,13 @@ static int mtk_spi_hw_init(struct spi_master *master,
+@@ -270,13 +265,13 @@ static int mtk_spi_hw_init(struct spi_ma
  
  			reg_val = readl(mdata->base + SPI_CMD_REG);
  			reg_val &= ~SPI_CMD_IPM_GET_TICKDLY_MASK;
@@ -83,7 +81,7 @@ index c19e2d4d7..0afd00891 100644
  				   << SPI_CFG1_GET_TICKDLY_OFFSET;
  			writel(reg_val, mdata->base + SPI_CFG1_REG);
  		}
-@@ -326,7 +321,7 @@ static int mtk_spi_hw_init(struct spi_master *master,
+@@ -326,7 +321,7 @@ static int mtk_spi_hw_init(struct spi_ma
  		else
  			reg_val &= ~SPI_CMD_CS_POL;
  
@@ -92,7 +90,7 @@ index c19e2d4d7..0afd00891 100644
  			reg_val |= SPI_CMD_SAMPLE_SEL;
  		else
  			reg_val &= ~SPI_CMD_SAMPLE_SEL;
-@@ -623,9 +618,6 @@ static int mtk_spi_setup(struct spi_device *spi)
+@@ -623,9 +618,6 @@ static int mtk_spi_setup(struct spi_devi
  {
  	struct mtk_spi *mdata = spi_master_get_devdata(spi->master);
  
@@ -102,7 +100,7 @@ index c19e2d4d7..0afd00891 100644
  	if (mdata->dev_comp->need_pad_sel && gpio_is_valid(spi->cs_gpio))
  		gpio_direction_output(spi->cs_gpio, !(spi->mode & SPI_CS_HIGH));
  
-@@ -1025,6 +1017,11 @@ static int mtk_spi_probe(struct platform_device *pdev)
+@@ -1025,6 +1017,11 @@ static int mtk_spi_probe(struct platform
  	}
  
  	mdata = spi_master_get_devdata(master);
@@ -114,9 +112,6 @@ index c19e2d4d7..0afd00891 100644
  	mdata->dev_comp = of_id->data;
  
  	if (mdata->dev_comp->enhance_timing)
-diff --git a/include/linux/platform_data/spi-mt65xx.h b/include/linux/platform_data/spi-mt65xx.h
-deleted file mode 100644
-index fae9bc15c..000000000
 --- a/include/linux/platform_data/spi-mt65xx.h
 +++ /dev/null
 @@ -1,17 +0,0 @@
@@ -137,6 +132,3 @@ index fae9bc15c..000000000
 -	u32 get_tick_dly;
 -};
 -#endif
--- 
-2.18.0
-

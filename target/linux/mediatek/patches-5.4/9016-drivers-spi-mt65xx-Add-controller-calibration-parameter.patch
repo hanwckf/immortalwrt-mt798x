@@ -8,11 +8,9 @@ Signed-off-by: SkyLake.Huang <skylake.huang@mediatek.com>
  drivers/spi/spi-mt65xx.c | 17 +++++++++++++++++
  1 file changed, 17 insertions(+)
 
-diff --git a/drivers/spi/spi-mt65xx.c b/drivers/spi/spi-mt65xx.c
-index 0afd00891..1b272d15c 100644
 --- a/drivers/spi/spi-mt65xx.c
 +++ b/drivers/spi/spi-mt65xx.c
-@@ -727,6 +727,21 @@ static irqreturn_t mtk_spi_interrupt(int irq, void *dev_id)
+@@ -727,6 +727,21 @@ static irqreturn_t mtk_spi_interrupt(int
  	return IRQ_HANDLED;
  }
  
@@ -34,7 +32,7 @@ index 0afd00891..1b272d15c 100644
  static int mtk_spi_mem_adjust_op_size(struct spi_mem *mem,
                                        struct spi_mem_op *op)
  {
-@@ -1009,6 +1024,8 @@ static int mtk_spi_probe(struct platform_device *pdev)
+@@ -1009,6 +1024,8 @@ static int mtk_spi_probe(struct platform
  	master->can_dma = mtk_spi_can_dma;
  	master->setup = mtk_spi_setup;
  
@@ -43,6 +41,3 @@ index 0afd00891..1b272d15c 100644
  	of_id = of_match_node(mtk_spi_of_match, pdev->dev.of_node);
  	if (!of_id) {
  		dev_err(&pdev->dev, "failed to probe of_node\n");
--- 
-2.18.0
-

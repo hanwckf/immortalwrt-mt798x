@@ -1,5 +1,3 @@
-diff --git a/drivers/thermal/Kconfig b/drivers/thermal/Kconfig
-index 001a21ab..67d3da48 100644
 --- a/drivers/thermal/Kconfig
 +++ b/drivers/thermal/Kconfig
 @@ -348,6 +348,11 @@ config MTK_THERMAL
@@ -14,8 +12,6 @@ index 001a21ab..67d3da48 100644
  menu "Intel thermal drivers"
  depends on X86 || X86_INTEL_QUARK || COMPILE_TEST
  source "drivers/thermal/intel/Kconfig"
-diff --git a/drivers/thermal/Makefile b/drivers/thermal/Makefile
-index 74a37c7f..6be9ff19 100644
 --- a/drivers/thermal/Makefile
 +++ b/drivers/thermal/Makefile
 @@ -51,6 +51,7 @@ obj-$(CONFIG_QCOM_TSENS)	+= qcom/

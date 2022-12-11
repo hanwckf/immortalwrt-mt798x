@@ -14,7 +14,7 @@
  #include "mtk-afe-fe-dai.h"
  #include "mtk-base-afe.h"
  
-@@ -120,50 +122,64 @@
+@@ -120,50 +122,64 @@ int mtk_afe_fe_hw_params(struct snd_pcm_
  {
  	struct snd_soc_pcm_runtime *rtd = substream->private_data;
  	struct mtk_base_afe *afe = snd_soc_dai_get_drvdata(dai);
@@ -112,7 +112,7 @@
  
  	return 0;
  }
-@@ -172,6 +188,11 @@
+@@ -172,6 +188,11 @@ EXPORT_SYMBOL_GPL(mtk_afe_fe_hw_params);
  int mtk_afe_fe_hw_free(struct snd_pcm_substream *substream,
  		       struct snd_soc_dai *dai)
  {
@@ -124,7 +124,7 @@
  	return snd_pcm_lib_free_pages(substream);
  }
  EXPORT_SYMBOL_GPL(mtk_afe_fe_hw_free);
-@@ -182,20 +203,25 @@
+@@ -182,20 +203,25 @@ int mtk_afe_fe_trigger(struct snd_pcm_su
  	struct snd_soc_pcm_runtime *rtd = substream->private_data;
  	struct snd_pcm_runtime * const runtime = substream->runtime;
  	struct mtk_base_afe *afe = snd_soc_dai_get_drvdata(dai);
@@ -154,7 +154,7 @@
  
  		/* set irq counter */
  		mtk_regmap_update_bits(afe->regmap, irq_data->irq_cnt_reg,
-@@ -219,15 +245,19 @@
+@@ -219,15 +245,19 @@ int mtk_afe_fe_trigger(struct snd_pcm_su
  		return 0;
  	case SNDRV_PCM_TRIGGER_STOP:
  	case SNDRV_PCM_TRIGGER_SUSPEND:
@@ -177,7 +177,7 @@
  	default:
  		return -EINVAL;
  	}
-@@ -239,34 +269,15 @@
+@@ -239,34 +269,15 @@ int mtk_afe_fe_prepare(struct snd_pcm_su
  {
  	struct snd_soc_pcm_runtime *rtd  = substream->private_data;
  	struct mtk_base_afe *afe = snd_soc_dai_get_drvdata(dai);

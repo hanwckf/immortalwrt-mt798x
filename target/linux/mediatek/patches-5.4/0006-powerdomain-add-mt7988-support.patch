@@ -1,8 +1,6 @@
-diff --git a/drivers/soc/mediatek/Makefile b/drivers/soc/mediatek/Makefile
-index b017330..1c485e3 100644
 --- a/drivers/soc/mediatek/Makefile
 +++ b/drivers/soc/mediatek/Makefile
-@@ -3,3 +3,4 @@ obj-$(CONFIG_MTK_CMDQ) += mtk-cmdq-helper.o
+@@ -3,3 +3,4 @@ obj-$(CONFIG_MTK_CMDQ) += mtk-cmdq-helpe
  obj-$(CONFIG_MTK_INFRACFG) += mtk-infracfg.o
  obj-$(CONFIG_MTK_PMIC_WRAP) += mtk-pmic-wrap.o
  obj-$(CONFIG_MTK_SCPSYS) += mtk-scpsys.o

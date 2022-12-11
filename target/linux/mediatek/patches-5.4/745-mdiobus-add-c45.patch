@@ -1,5 +1,3 @@
-diff --git a/include/linux/mdio.h b/include/linux/mdio.h
-index 0f1f784de..006d1c1e9 100644
 --- a/include/linux/mdio.h
 +++ b/include/linux/mdio.h
 @@ -7,8 +7,17 @@
@@ -20,7 +18,7 @@ index 0f1f784de..006d1c1e9 100644
  struct gpio_desc;
  struct mii_bus;
  
-@@ -325,6 +334,46 @@ int mdiobus_read_nested(struct mii_bus *bus, int addr, u32 regnum);
+@@ -325,6 +334,46 @@ int mdiobus_read_nested(struct mii_bus *
  int mdiobus_write(struct mii_bus *bus, int addr, u32 regnum, u16 val);
  int mdiobus_write_nested(struct mii_bus *bus, int addr, u32 regnum, u16 val);
  
@@ -67,6 +65,3 @@ index 0f1f784de..006d1c1e9 100644
  int mdiobus_register_device(struct mdio_device *mdiodev);
  int mdiobus_unregister_device(struct mdio_device *mdiodev);
  bool mdiobus_is_registered_device(struct mii_bus *bus, int addr);
--- 
-2.18.0
-

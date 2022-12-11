@@ -1,11 +1,9 @@
-Index: linux-5.4.203/drivers/net/dsa/mt7530.c
-===================================================================
---- linux-5.4.203.orig/drivers/net/dsa/mt7530.c
-+++ linux-5.4.203/drivers/net/dsa/mt7530.c
+--- a/drivers/net/dsa/mt7530.c
++++ b/drivers/net/dsa/mt7530.c
 @@ -847,6 +847,132 @@ mt7531_ind_phy_write(struct dsa_switch *
  	return ret;
  }
-
+ 
 +static int mt753x_mdio_read(struct mii_bus *bus, int addr, int regnum)
 +{
 +	struct mt7530_priv *priv = bus->priv;
@@ -140,21 +138,19 @@ Index: linux-5.4.203/drivers/net/dsa/mt7530.c
  	}
  	mt7530_nl_init(&priv);
 +	mt753x_mdio_init(priv);
-
+ 
  	return 0;
  }
 @@ -2919,6 +3046,7 @@ mt7530_remove(struct mdio_device *mdiode
  		iounmap(priv->base);
-
+ 
  	mt7530_nl_exit();
 +	mt753x_mdio_exit(priv);
  }
-
+ 
  static struct mdio_driver mt7530_mdio_driver = {
-Index: linux-5.4.203/drivers/net/dsa/mt7530.h
-===================================================================
---- linux-5.4.203.orig/drivers/net/dsa/mt7530.h
-+++ linux-5.4.203/drivers/net/dsa/mt7530.h
+--- a/drivers/net/dsa/mt7530.h
++++ b/drivers/net/dsa/mt7530.h
 @@ -730,6 +730,7 @@ struct mt7530_priv {
  	struct device		*dev;
  	struct dsa_switch	*ds;

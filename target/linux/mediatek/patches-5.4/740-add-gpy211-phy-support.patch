@@ -1,7 +1,5 @@
-Index: linux-5.4.119/drivers/net/phy/Kconfig
-===================================================================
---- linux-5.4.119.orig/drivers/net/phy/Kconfig
-+++ linux-5.4.119/drivers/net/phy/Kconfig
+--- a/drivers/net/phy/Kconfig
++++ b/drivers/net/phy/Kconfig
 @@ -468,6 +468,11 @@ config FIXED_PHY
  
  	  Currently tested with mpc866ads and mpc8349e-mitx.
@@ -14,10 +12,8 @@ Index: linux-5.4.119/drivers/net/phy/Kconfig
  config ICPLUS_PHY
  	tristate "ICPlus PHYs"
  	---help---
-Index: linux-5.4.119/drivers/net/phy/Makefile
-===================================================================
---- linux-5.4.119.orig/drivers/net/phy/Makefile
-+++ linux-5.4.119/drivers/net/phy/Makefile
+--- a/drivers/net/phy/Makefile
++++ b/drivers/net/phy/Makefile
 @@ -86,6 +86,7 @@ obj-$(CONFIG_DP83TC811_PHY)	+= dp83tc811
  obj-$(CONFIG_DP83848_PHY)	+= dp83848.o
  obj-$(CONFIG_DP83867_PHY)	+= dp83867.o

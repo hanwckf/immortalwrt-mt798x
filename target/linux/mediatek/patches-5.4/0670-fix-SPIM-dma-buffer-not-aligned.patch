@@ -9,7 +9,7 @@
  };
  
  static const struct of_device_id mtk_spi_of_match[] = {
-@@ -730,8 +730,11 @@ static int mtk_spi_mem_adjust_op_size(st
+@@ -731,8 +731,11 @@ static int mtk_spi_mem_adjust_op_size(st
  
  	if (op->data.dir != SPI_MEM_NO_DATA) {
  		opcode_len = 1 + op->addr.nbytes + op->dummy.nbytes;
@@ -22,7 +22,7 @@
  	}
  
  	return 0;
-@@ -758,10 +761,6 @@ static bool mtk_spi_mem_supports_op(stru
+@@ -759,10 +762,6 @@ static bool mtk_spi_mem_supports_op(stru
  			return false;
  	}
  
@@ -33,7 +33,7 @@
  	return true;
  }
  
-@@ -820,6 +819,7 @@ static int mtk_spi_mem_exec_op(struct sp
+@@ -821,6 +820,7 @@ static int mtk_spi_mem_exec_op(struct sp
  	struct mtk_spi *mdata = spi_master_get_devdata(mem->spi->master);
  	u32 reg_val, nio = 1, tx_size;
  	char *tx_tmp_buf;
@@ -41,7 +41,7 @@
  	int ret = 0;
  
  	mdata->use_spimem = true;
-@@ -914,10 +914,18 @@ static int mtk_spi_mem_exec_op(struct sp
+@@ -915,10 +915,18 @@ static int mtk_spi_mem_exec_op(struct sp
  	}
  
  	if (op->data.dir == SPI_MEM_DATA_IN) {
@@ -63,7 +63,7 @@
  		if (dma_mapping_error(mdata->dev, mdata->rx_dma)) {
  			ret = -ENOMEM;
  			goto unmap_tx_dma;
-@@ -947,9 +955,14 @@ static int mtk_spi_mem_exec_op(struct sp
+@@ -948,9 +956,14 @@ static int mtk_spi_mem_exec_op(struct sp
  	writel(reg_val, mdata->base + SPI_CMD_REG);
  
  unmap_rx_dma:

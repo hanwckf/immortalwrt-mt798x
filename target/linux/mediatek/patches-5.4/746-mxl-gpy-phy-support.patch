@@ -1,8 +1,6 @@
-diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
-index e0f724a..1f74ff2 100644
 --- a/drivers/net/phy/Kconfig
 +++ b/drivers/net/phy/Kconfig
-@@ -511,6 +511,12 @@ config MARVELL_10G_PHY
+@@ -516,6 +516,12 @@ config MARVELL_10G_PHY
  	---help---
  	  Support for the Marvell Alaska MV88X3310 and compatible PHYs.
  
@@ -15,21 +13,16 @@ index e0f724a..1f74ff2 100644
  config MESON_GXL_PHY
  	tristate "Amlogic Meson GXL Internal PHY"
  	depends on ARCH_MESON || COMPILE_TEST
-diff --git a/drivers/net/phy/Makefile b/drivers/net/phy/Makefile
-index e3c411f..7b44a98 100644
 --- a/drivers/net/phy/Makefile
 +++ b/drivers/net/phy/Makefile
-@@ -94,6 +94,7 @@ obj-$(CONFIG_LSI_ET1011C_PHY)	+= et1011c.o
+@@ -95,6 +95,7 @@ obj-$(CONFIG_LSI_ET1011C_PHY)	+= et1011c
  obj-$(CONFIG_LXT_PHY)		+= lxt.o
  obj-$(CONFIG_MARVELL_PHY)	+= marvell.o
  obj-$(CONFIG_MARVELL_10G_PHY)	+= marvell10g.o
 +obj-$(CONFIG_MAXLINEAR_GPHY)	+= mxl-gpy.o
  obj-$(CONFIG_MEDIATEK_GE_PHY)	+= mediatek-ge.o
+ obj-$(CONFIG_MEDIATEK_2P5GE_PHY)+= mediatek-2p5ge.o
  obj-$(CONFIG_MESON_GXL_PHY)	+= meson-gxl.o
- obj-$(CONFIG_MICREL_KS8995MA)	+= spi_ks8995.o
-diff --git a/drivers/net/phy/mxl-gpy.c b/drivers/net/phy/mxl-gpy.c
-new file mode 100644
-index 0000000..7304278
 --- /dev/null
 +++ b/drivers/net/phy/mxl-gpy.c
 @@ -0,0 +1,738 @@
@@ -771,8 +764,6 @@ index 0000000..7304278
 +MODULE_DESCRIPTION("Maxlinear Ethernet GPY Driver");
 +MODULE_AUTHOR("Xu Liang");
 +MODULE_LICENSE("GPL");
-diff --git a/include/linux/phy.h b/include/linux/phy.h
-index 19444cd..34bdd16 100644
 --- a/include/linux/phy.h
 +++ b/include/linux/phy.h
 @@ -21,6 +21,7 @@
@@ -783,7 +774,7 @@ index 19444cd..34bdd16 100644
  
  #include <linux/atomic.h>
  
-@@ -711,6 +712,18 @@ static inline int phy_read(struct phy_device *phydev, u32 regnum)
+@@ -711,6 +712,18 @@ static inline int phy_read(struct phy_de
  	return mdiobus_read(phydev->mdio.bus, phydev->mdio.addr, regnum);
  }
  

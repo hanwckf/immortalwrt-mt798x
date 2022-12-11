@@ -1,8 +1,6 @@
-diff --git a/drivers/cpufreq/mediatek-cpufreq.c b/drivers/cpufreq/mediatek-cpufreq.c
-index 03bb7b5..010a947 100644
 --- a/drivers/cpufreq/mediatek-cpufreq.c
 +++ b/drivers/cpufreq/mediatek-cpufreq.c
-@@ -351,6 +351,12 @@ static int mtk_cpu_dvfs_info_init(struct mtk_cpu_dvfs_info *info, int cpu)
+@@ -351,6 +351,12 @@ static int mtk_cpu_dvfs_info_init(struct
  		goto out_free_resources;
  	}
  
@@ -15,7 +13,7 @@ index 03bb7b5..010a947 100644
  	/* Both presence and absence of sram regulator are valid cases. */
  	sram_reg = regulator_get_exclusive(cpu_dev, "sram");
  
-@@ -368,13 +374,21 @@ static int mtk_cpu_dvfs_info_init(struct mtk_cpu_dvfs_info *info, int cpu)
+@@ -368,13 +374,21 @@ static int mtk_cpu_dvfs_info_init(struct
  		goto out_free_resources;
  	}
  
@@ -38,7 +36,7 @@ index 03bb7b5..010a947 100644
  	}
  	info->intermediate_voltage = dev_pm_opp_get_voltage(opp);
  	dev_pm_opp_put(opp);
-@@ -393,10 +407,23 @@ static int mtk_cpu_dvfs_info_init(struct mtk_cpu_dvfs_info *info, int cpu)
+@@ -393,10 +407,23 @@ static int mtk_cpu_dvfs_info_init(struct
  
  	return 0;
  

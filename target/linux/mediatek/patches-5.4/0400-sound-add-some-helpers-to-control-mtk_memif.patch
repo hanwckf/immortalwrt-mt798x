@@ -1,6 +1,6 @@
 --- a/sound/soc/mediatek/common/mtk-afe-fe-dai.c
 +++ b/sound/soc/mediatek/common/mtk-afe-fe-dai.c
-@@ -361,6 +361,222 @@
+@@ -361,6 +361,222 @@ int mtk_afe_dai_resume(struct snd_soc_da
  }
  EXPORT_SYMBOL_GPL(mtk_afe_dai_resume);
  
@@ -225,7 +225,7 @@
  MODULE_LICENSE("GPL v2");
 --- a/sound/soc/mediatek/common/mtk-afe-fe-dai.h
 +++ b/sound/soc/mediatek/common/mtk-afe-fe-dai.h
-@@ -34,4 +34,20 @@
+@@ -34,4 +34,20 @@ int mtk_dynamic_irq_release(struct mtk_b
  int mtk_afe_dai_suspend(struct snd_soc_dai *dai);
  int mtk_afe_dai_resume(struct snd_soc_dai *dai);
  
@@ -248,7 +248,7 @@
  #endif
 --- a/sound/soc/mediatek/common/mtk-base-afe.h
 +++ b/sound/soc/mediatek/common/mtk-base-afe.h
-@@ -16,21 +16,38 @@
+@@ -16,21 +16,38 @@ struct mtk_base_memif_data {
  	const char *name;
  	int reg_ofs_base;
  	int reg_ofs_cur;
@@ -288,7 +288,7 @@
  };
  
  struct mtk_base_irq_data {
-@@ -84,6 +101,12 @@
+@@ -84,6 +101,12 @@ struct mtk_base_afe {
  			unsigned int rate);
  	int (*irq_fs)(struct snd_pcm_substream *substream,
  		      unsigned int rate);
@@ -301,7 +301,7 @@
  
  	void *platform_priv;
  };
-@@ -95,6 +118,9 @@
+@@ -95,6 +118,9 @@ struct mtk_base_afe_memif {
  	const struct mtk_base_memif_data *data;
  	int irq_usage;
  	int const_irq;

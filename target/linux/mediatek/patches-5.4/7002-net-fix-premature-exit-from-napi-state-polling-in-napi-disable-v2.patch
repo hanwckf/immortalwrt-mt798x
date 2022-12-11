@@ -87,11 +87,9 @@ Reviewed-by: Eric Dumazet <edumazet@google.com>
  net/core/dev.c | 7 +++++--
  1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index c8f7c15..fe2c856 100644
 --- a/net/core/dev.c
 +++ b/net/core/dev.c
-@@ -6391,7 +6391,7 @@ void napi_disable(struct napi_struct *n)
+@@ -6419,7 +6419,7 @@ void napi_disable(struct napi_struct *n)
  	might_sleep();
  	set_bit(NAPI_STATE_DISABLE, &n->state);
  
@@ -100,7 +98,7 @@ index c8f7c15..fe2c856 100644
  		val = READ_ONCE(n->state);
  		if (val & (NAPIF_STATE_SCHED | NAPIF_STATE_NPSVC)) {
  			usleep_range(20, 200);
-@@ -6400,7 +6400,10 @@ void napi_disable(struct napi_struct *n)
+@@ -6428,7 +6428,10 @@ void napi_disable(struct napi_struct *n)
  
  		new = val | NAPIF_STATE_SCHED | NAPIF_STATE_NPSVC;
  		new &= ~(NAPIF_STATE_THREADED);

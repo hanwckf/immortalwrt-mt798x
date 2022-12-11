@@ -1,5 +1,3 @@
-Index: drivers/net/phy/en8801sc.c
-===================================================================
 --- /dev/null
 +++ b/drivers/net/phy/en8801sc.c
 @@ -0,0 +1,449 @@
@@ -452,8 +450,6 @@ Index: drivers/net/phy/en8801sc.c
 +};
 +
 +MODULE_DEVICE_TABLE(mdio, Airoha_tbl);
-Index: drivers/net/phy/en8801sc.h
-===================================================================
 --- /dev/null
 +++ b/drivers/net/phy/en8801sc.h
 @@ -0,0 +1,158 @@
@@ -615,8 +611,6 @@ Index: drivers/net/phy/en8801sc.h
 +} gephy_all_REG_dev1Eh_reg017h, *Pgephy_all_REG_dev1Eh_reg017h;
 +
 +#endif /* End of __AIROHA_H */
-Index: drivers/net/phy/Kconfig
-===================================================================
 --- a/drivers/net/phy/Kconfig
 +++ b/drivers/net/phy/Kconfig
 @@ -350,6 +350,11 @@ config AIROHA_EN8801S_PHY
@@ -631,8 +625,6 @@ Index: drivers/net/phy/Kconfig
  config ADIN_PHY
  	tristate "Analog Devices Industrial Ethernet PHYs"
  	help
-Index: drivers/net/phy/Makefile
-===================================================================
 --- a/drivers/net/phy/Makefile
 +++ b/drivers/net/phy/Makefile
 @@ -68,6 +68,7 @@ ifdef CONFIG_HWMON

@@ -19,11 +19,9 @@ Signed-off-by: Zhanyong Wang <zhanyong.wang@mediatek.com>
  drivers/usb/host/xhci-mtk.c      |  2 ++
  3 files changed, 47 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
-index 4cf0dc7f330d..f2f330606d0c 100644
 --- a/drivers/usb/core/hub.c
 +++ b/drivers/usb/core/hub.c
-@@ -2422,6 +2422,8 @@ static int usb_enumerate_device(struct usb_device *udev)
+@@ -2422,6 +2422,8 @@ static int usb_enumerate_device(struct u
  			if (err < 0)
  				dev_dbg(&udev->dev, "HNP fail, %d\n", err);
  		}
@@ -32,7 +30,7 @@ index 4cf0dc7f330d..f2f330606d0c 100644
  		return -ENOTSUPP;
  	}
  
-@@ -4779,9 +4781,10 @@ hub_port_init(struct usb_hub *hub, struct usb_device *udev, int port1,
+@@ -4779,9 +4781,10 @@ hub_port_init(struct usb_hub *hub, struc
  				goto fail;
  			}
  			if (r) {
@@ -46,11 +44,9 @@ index 4cf0dc7f330d..f2f330606d0c 100644
  				retval = -EMSGSIZE;
  				continue;
  			}
-diff --git a/drivers/usb/core/otg_whitelist.h b/drivers/usb/core/otg_whitelist.h
-index 2ae90158ded7..a8dd221334c1 100644
 --- a/drivers/usb/core/otg_whitelist.h
 +++ b/drivers/usb/core/otg_whitelist.h
-@@ -39,9 +39,44 @@ static struct usb_device_id whitelist_table[] = {
+@@ -39,9 +39,44 @@ static struct usb_device_id whitelist_ta
  { USB_DEVICE(0x0525, 0xa4a0), },
  #endif
  
@@ -95,7 +91,7 @@ index 2ae90158ded7..a8dd221334c1 100644
  static int is_targeted(struct usb_device *dev)
  {
  	struct usb_device_id	*id = whitelist_table;
-@@ -90,6 +125,10 @@ static int is_targeted(struct usb_device *dev)
+@@ -90,6 +125,10 @@ static int is_targeted(struct usb_device
  		    (id->bDeviceProtocol != dev->descriptor.bDeviceProtocol))
  			continue;
  
@@ -106,11 +102,9 @@ index 2ae90158ded7..a8dd221334c1 100644
  		return 1;
  	}
  
-diff --git a/drivers/usb/host/xhci-mtk.c b/drivers/usb/host/xhci-mtk.c
-index d4345657945d..2a4b73a658f9 100644
 --- a/drivers/usb/host/xhci-mtk.c
 +++ b/drivers/usb/host/xhci-mtk.c
-@@ -571,6 +571,8 @@ static int xhci_mtk_probe(struct platform_device *pdev)
+@@ -575,6 +575,8 @@ static int xhci_mtk_probe(struct platfor
  		goto disable_device_wakeup;
  	}
  
@@ -119,6 +113,3 @@ index d4345657945d..2a4b73a658f9 100644
  	ret = usb_add_hcd(hcd, irq, IRQF_SHARED);
  	if (ret)
  		goto put_usb3_hcd;
--- 
-2.18.0
-

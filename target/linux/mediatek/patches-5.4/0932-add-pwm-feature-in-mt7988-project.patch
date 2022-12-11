@@ -1,9 +1,7 @@
-diff --git a/drivers/pwm/pwm-mediatek.c b/drivers/pwm/pwm-mediatek.c
-index 3a5a456..6d6206e 100644
 --- a/drivers/pwm/pwm-mediatek.c
 +++ b/drivers/pwm/pwm-mediatek.c
-@@ -350,6 +350,12 @@ static const struct pwm_mediatek_of_data mt7986_pwm_data = {
- 	.reg_ver = REG_V2,
+@@ -350,6 +350,12 @@ static const struct pwm_mediatek_of_data
+ 	.reg_ver = REG_V1,
  };
  
 +static const struct pwm_mediatek_of_data mt7988_pwm_data = {
@@ -15,7 +13,7 @@ index 3a5a456..6d6206e 100644
  static const struct pwm_mediatek_of_data mt8516_pwm_data = {
  	.num_pwms = 5,
  	.pwm45_fixup = false,
-@@ -364,6 +370,7 @@ static const struct of_device_id pwm_mediatek_of_match[] = {
+@@ -364,6 +370,7 @@ static const struct of_device_id pwm_med
  	{ .compatible = "mediatek,mt7629-pwm", .data = &mt7629_pwm_data },
  	{ .compatible = "mediatek,mt7981-pwm", .data = &mt7981_pwm_data },
  	{ .compatible = "mediatek,mt7986-pwm", .data = &mt7986_pwm_data },

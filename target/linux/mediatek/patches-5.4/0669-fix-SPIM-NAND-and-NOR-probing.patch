@@ -1,6 +1,6 @@
 --- a/drivers/spi/spi-mt65xx.c
 +++ b/drivers/spi/spi-mt65xx.c
-@@ -1073,7 +1073,7 @@ static int mtk_spi_probe(struct platform
+@@ -1072,7 +1072,7 @@ static int mtk_spi_probe(struct platform
  		goto err_put_master;
  	}
  
@@ -9,7 +9,7 @@
  	mdata->parent_clk = devm_clk_get(&pdev->dev, "parent-clk");
  	if (IS_ERR(mdata->parent_clk)) {
  		ret = PTR_ERR(mdata->parent_clk);
-@@ -1101,17 +1101,17 @@ static int mtk_spi_probe(struct platform
+@@ -1100,17 +1100,17 @@ static int mtk_spi_probe(struct platform
  		goto err_put_master;
  	}
  

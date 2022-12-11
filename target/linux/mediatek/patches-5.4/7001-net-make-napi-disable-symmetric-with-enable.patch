@@ -25,11 +25,9 @@ Signed-off-by: Jakub Kicinski <kuba@kernel.org>
  net/core/dev.c | 17 ++++++++++++-----
  1 file changed, 12 insertions(+), 5 deletions(-)
 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index f24c3a9..f0a556a 100644
 --- a/net/core/dev.c
 +++ b/net/core/dev.c
-@@ -6386,18 +6386,25 @@ EXPORT_SYMBOL(netif_napi_add);
+@@ -6414,18 +6414,25 @@ EXPORT_SYMBOL(netif_napi_add);
  
  void napi_disable(struct napi_struct *n)
  {
@@ -60,5 +58,3 @@ index f24c3a9..f0a556a 100644
  }
  EXPORT_SYMBOL(napi_disable);
  
--- 
-2.31.1

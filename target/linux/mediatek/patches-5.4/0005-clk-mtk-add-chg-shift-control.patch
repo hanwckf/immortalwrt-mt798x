@@ -1,5 +1,3 @@
-diff --git a/drivers/clk/mediatek/clk-mtk.h b/drivers/clk/mediatek/clk-mtk.h
-index c3d6756..d84c45d 100644
 --- a/drivers/clk/mediatek/clk-mtk.h
 +++ b/drivers/clk/mediatek/clk-mtk.h
 @@ -231,6 +231,7 @@ struct mtk_pll_data {
@@ -10,11 +8,9 @@ index c3d6756..d84c45d 100644
  	const struct mtk_pll_div_table *div_table;
  	const char *parent_name;
  };
-diff --git a/drivers/clk/mediatek/clk-pll.c b/drivers/clk/mediatek/clk-pll.c
-index f440f2c..db318fe 100644
 --- a/drivers/clk/mediatek/clk-pll.c
 +++ b/drivers/clk/mediatek/clk-pll.c
-@@ -136,7 +136,10 @@ static void mtk_pll_set_rate_regs(struct mtk_clk_pll *pll, u32 pcw,
+@@ -136,7 +136,10 @@ static void mtk_pll_set_rate_regs(struct
  			pll->data->pcw_shift);
  	val |= pcw << pll->data->pcw_shift;
  	writel(val, pll->pcw_addr);

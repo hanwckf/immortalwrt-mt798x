@@ -1,5 +1,3 @@
-diff --git a/drivers/phy/mediatek/phy-mtk-xsphy.c b/drivers/phy/mediatek/phy-mtk-xsphy.c
-index 8c51131..e77092c 100644
 --- a/drivers/phy/mediatek/phy-mtk-xsphy.c
 +++ b/drivers/phy/mediatek/phy-mtk-xsphy.c
 @@ -12,10 +12,12 @@
@@ -38,7 +36,7 @@ index 8c51131..e77092c 100644
  	/* only for HQA test */
  	int efuse_intr;
  	int efuse_tx_imp;
-@@ -365,6 +377,62 @@ static void u3_phy_props_set(struct mtk_xsphy *xsphy,
+@@ -365,6 +377,62 @@ static void u3_phy_props_set(struct mtk_
  	}
  }
  
@@ -112,7 +110,7 @@ index 8c51131..e77092c 100644
  	default:
  		dev_err(xsphy->dev, "incompatible phy type\n");
  		clk_disable_unprepare(inst->ref_clk);
-@@ -463,12 +535,15 @@ static struct phy *mtk_phy_xlate(struct device *dev,
+@@ -463,12 +535,15 @@ static struct phy *mtk_phy_xlate(struct
  
  	inst->type = args->args[0];
  	if (!(inst->type == PHY_TYPE_USB2 ||
@@ -129,7 +127,7 @@ index 8c51131..e77092c 100644
  
  	return inst->phy;
  }
-@@ -575,6 +650,10 @@ static int mtk_xsphy_probe(struct platform_device *pdev)
+@@ -575,6 +650,10 @@ static int mtk_xsphy_probe(struct platfo
  			retval = PTR_ERR(inst->ref_clk);
  			goto put_child;
  		}

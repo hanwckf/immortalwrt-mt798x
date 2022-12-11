@@ -15,11 +15,9 @@ Link: https://lore.kernel.org/linux-mtd/aa69e455beedc5ce0d7141359b9364ed8aec9e65
  drivers/mtd/nand/spi/toshiba.c | 128 ++++++++++++++++++++++++++++-----
  1 file changed, 111 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/mtd/nand/spi/toshiba.c b/drivers/mtd/nand/spi/toshiba.c
-index 5d217dd4b2539a..bc801d83343e5c 100644
 --- a/drivers/mtd/nand/spi/toshiba.c
 +++ b/drivers/mtd/nand/spi/toshiba.c
-@@ -20,6 +20,18 @@ static SPINAND_OP_VARIANTS(read_cache_variants,
+@@ -19,6 +19,18 @@ static SPINAND_OP_VARIANTS(read_cache_va
  		SPINAND_PAGE_READ_FROM_CACHE_OP(true, 0, 1, NULL, 0),
  		SPINAND_PAGE_READ_FROM_CACHE_OP(false, 0, 1, NULL, 0));
  
@@ -38,7 +36,7 @@ index 5d217dd4b2539a..bc801d83343e5c 100644
  static SPINAND_OP_VARIANTS(write_cache_variants,
  		SPINAND_PROG_LOAD(true, 0, NULL, 0));
  
-@@ -95,7 +107,7 @@ static int tx58cxgxsxraix_ecc_get_status(struct spinand_device *spinand,
+@@ -94,7 +106,7 @@ static int tx58cxgxsxraix_ecc_get_status
  }
  
  static const struct spinand_info toshiba_spinand_table[] = {
@@ -47,7 +45,7 @@ index 5d217dd4b2539a..bc801d83343e5c 100644
  	SPINAND_INFO("TC58CVG0S3HRAIG",
  		     SPINAND_ID(SPINAND_READID_METHOD_OPCODE_DUMMY, 0xC2),
  		     NAND_MEMORG(1, 2048, 128, 64, 1024, 20, 1, 1, 1),
-@@ -106,7 +118,7 @@ static const struct spinand_info toshiba_spinand_table[] = {
+@@ -105,7 +117,7 @@ static const struct spinand_info toshiba
  		     0,
  		     SPINAND_ECCINFO(&tx58cxgxsxraix_ooblayout,
  				     tx58cxgxsxraix_ecc_get_status)),
@@ -56,7 +54,7 @@ index 5d217dd4b2539a..bc801d83343e5c 100644
  	SPINAND_INFO("TC58CVG1S3HRAIG",
  		     SPINAND_ID(SPINAND_READID_METHOD_OPCODE_DUMMY, 0xCB),
  		     NAND_MEMORG(1, 2048, 128, 64, 2048, 40, 1, 1, 1),
-@@ -117,7 +129,7 @@ static const struct spinand_info toshiba_spinand_table[] = {
+@@ -116,7 +128,7 @@ static const struct spinand_info toshiba
  		     0,
  		     SPINAND_ECCINFO(&tx58cxgxsxraix_ooblayout,
  				     tx58cxgxsxraix_ecc_get_status)),
@@ -65,7 +63,7 @@ index 5d217dd4b2539a..bc801d83343e5c 100644
  	SPINAND_INFO("TC58CVG2S0HRAIG",
  		     SPINAND_ID(SPINAND_READID_METHOD_OPCODE_DUMMY, 0xCD),
  		     NAND_MEMORG(1, 4096, 256, 64, 2048, 40, 1, 1, 1),
-@@ -128,18 +140,7 @@ static const struct spinand_info toshiba_spinand_table[] = {
+@@ -127,18 +139,7 @@ static const struct spinand_info toshiba
  		     0,
  		     SPINAND_ECCINFO(&tx58cxgxsxraix_ooblayout,
  				     tx58cxgxsxraix_ecc_get_status)),
@@ -85,7 +83,7 @@ index 5d217dd4b2539a..bc801d83343e5c 100644
  	SPINAND_INFO("TC58CYG0S3HRAIG",
  		     SPINAND_ID(SPINAND_READID_METHOD_OPCODE_DUMMY, 0xB2),
  		     NAND_MEMORG(1, 2048, 128, 64, 1024, 20, 1, 1, 1),
-@@ -150,7 +151,7 @@ static const struct spinand_info toshiba_spinand_table[] = {
+@@ -149,7 +150,7 @@ static const struct spinand_info toshiba
  		     0,
  		     SPINAND_ECCINFO(&tx58cxgxsxraix_ooblayout,
  				     tx58cxgxsxraix_ecc_get_status)),
@@ -94,7 +92,7 @@ index 5d217dd4b2539a..bc801d83343e5c 100644
  	SPINAND_INFO("TC58CYG1S3HRAIG",
  		     SPINAND_ID(SPINAND_READID_METHOD_OPCODE_DUMMY, 0xBB),
  		     NAND_MEMORG(1, 2048, 128, 64, 2048, 40, 1, 1, 1),
-@@ -161,7 +162,7 @@ static const struct spinand_info toshiba_spinand_table[] = {
+@@ -160,7 +161,7 @@ static const struct spinand_info toshiba
  		     0,
  		     SPINAND_ECCINFO(&tx58cxgxsxraix_ooblayout,
  				     tx58cxgxsxraix_ecc_get_status)),
@@ -103,7 +101,7 @@ index 5d217dd4b2539a..bc801d83343e5c 100644
  	SPINAND_INFO("TC58CYG2S0HRAIG",
  		     SPINAND_ID(SPINAND_READID_METHOD_OPCODE_DUMMY, 0xBD),
  		     NAND_MEMORG(1, 4096, 256, 64, 2048, 40, 1, 1, 1),
-@@ -172,6 +173,99 @@ static const struct spinand_info toshiba_spinand_table[] = {
+@@ -171,6 +172,99 @@ static const struct spinand_info toshiba
  		     0,
  		     SPINAND_ECCINFO(&tx58cxgxsxraix_ooblayout,
  				     tx58cxgxsxraix_ecc_get_status)),

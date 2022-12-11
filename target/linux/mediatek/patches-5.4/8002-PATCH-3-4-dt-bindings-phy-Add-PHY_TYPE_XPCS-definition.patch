@@ -14,8 +14,6 @@ Signed-off-by: Kishon Vijay Abraham I <kishon@ti.com>
  include/dt-bindings/phy/phy.h | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/include/dt-bindings/phy/phy.h b/include/dt-bindings/phy/phy.h
-index 1f3f866fae7b..3727ef72138b 100644
 --- a/include/dt-bindings/phy/phy.h
 +++ b/include/dt-bindings/phy/phy.h
 @@ -17,5 +17,6 @@
@@ -25,6 +23,3 @@ index 1f3f866fae7b..3727ef72138b 100644
 +#define PHY_TYPE_XPCS		7
  
  #endif /* _DT_BINDINGS_PHY */
--- 
-2.18.0
-

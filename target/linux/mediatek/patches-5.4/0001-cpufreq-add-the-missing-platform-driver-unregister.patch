@@ -1,8 +1,6 @@
-diff --git a/drivers/cpufreq/mediatek-cpufreq.c b/drivers/cpufreq/mediatek-cpufreq.c
-index 927ebc5..03bb7b5 100644
 --- a/drivers/cpufreq/mediatek-cpufreq.c
 +++ b/drivers/cpufreq/mediatek-cpufreq.c
-@@ -573,6 +573,7 @@ static int __init mtk_cpufreq_driver_init(void)
+@@ -573,6 +573,7 @@ static int __init mtk_cpufreq_driver_ini
  	pdev = platform_device_register_simple("mtk-cpufreq", -1, NULL, 0);
  	if (IS_ERR(pdev)) {
  		pr_err("failed to register mtk-cpufreq platform device\n");

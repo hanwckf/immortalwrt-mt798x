@@ -1,5 +1,3 @@
-diff --git a/drivers/clk/mediatek/Kconfig b/drivers/clk/mediatek/Kconfig
-index 1c48fe9..23393d5 100644
 --- a/drivers/clk/mediatek/Kconfig
 +++ b/drivers/clk/mediatek/Kconfig
 @@ -267,6 +267,14 @@ config COMMON_CLK_MT7986
@@ -17,11 +15,9 @@ index 1c48fe9..23393d5 100644
  config COMMON_CLK_MT8135
  	bool "Clock driver for MediaTek MT8135"
  	depends on (ARCH_MEDIATEK && ARM) || COMPILE_TEST
-diff --git a/drivers/clk/mediatek/Makefile b/drivers/clk/mediatek/Makefile
-index 8c392f4..ffe0850 100644
 --- a/drivers/clk/mediatek/Makefile
 +++ b/drivers/clk/mediatek/Makefile
-@@ -40,6 +40,7 @@ obj-$(CONFIG_COMMON_CLK_MT7629) += clk-mt7629.o
+@@ -40,6 +40,7 @@ obj-$(CONFIG_COMMON_CLK_MT7629) += clk-m
  obj-$(CONFIG_COMMON_CLK_MT7629_ETHSYS) += clk-mt7629-eth.o
  obj-$(CONFIG_COMMON_CLK_MT7629_HIFSYS) += clk-mt7629-hif.o
  obj-$(CONFIG_COMMON_CLK_MT7986) += clk-mt7986.o
@@ -29,6 +25,3 @@ index 8c392f4..ffe0850 100644
  obj-$(CONFIG_COMMON_CLK_MT8135) += clk-mt8135.o
  obj-$(CONFIG_COMMON_CLK_MT8173) += clk-mt8173.o
  obj-$(CONFIG_COMMON_CLK_MT8183) += clk-mt8183.o
--- 
-2.18.0
-
