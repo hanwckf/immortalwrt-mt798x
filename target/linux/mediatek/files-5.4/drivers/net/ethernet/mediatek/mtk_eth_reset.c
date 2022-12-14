@@ -345,7 +345,8 @@ void mtk_prepare_reset_fe(struct mtk_eth *eth)
 	mtk_w32(eth, val & ~(MAC_MCR_RX_EN), MTK_MAC_MCR(1));
 
 	/* Enable GDM drop */
-	mtk_gdm_config(eth, MTK_GDMA_DROP_ALL);
+	for (i = 0; i < MTK_MAC_COUNT; i++)
+		mtk_gdm_config(eth, i, MTK_GDMA_DROP_ALL);
 
 	/* Disable ADMA Rx */
 	val = mtk_r32(eth, MTK_PDMA_GLO_CFG);

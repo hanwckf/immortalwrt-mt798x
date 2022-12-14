@@ -1316,7 +1316,7 @@ void mtk_sgmii_restart_an(struct mtk_eth *eth, int mac_id);
 int mtk_gmac_sgmii_path_setup(struct mtk_eth *eth, int mac_id);
 int mtk_gmac_gephy_path_setup(struct mtk_eth *eth, int mac_id);
 int mtk_gmac_rgmii_path_setup(struct mtk_eth *eth, int mac_id);
-void mtk_gdm_config(struct mtk_eth *eth, u32 config);
+void mtk_gdm_config(struct mtk_eth *eth, u32 id, u32 config);
 void ethsys_reset(struct mtk_eth *eth, u32 reset_bits);
 
 #endif /* MTK_ETH_H */
