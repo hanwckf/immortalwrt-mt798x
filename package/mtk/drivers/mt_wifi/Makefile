@@ -9,8 +9,8 @@ include $(INCLUDE_DIR)/kernel.mk
 PKG_NAME:=mt_wifi
 
 ifeq ($(CONFIG_MTK_CHIP_MT7981),y)
-PKG_VERSION:=7.6.4.1-mt7981
-PKG_SOURCE:=mt7981_20220425-4c770b-obj.tar.xz
+PKG_VERSION:=7.6.6.1-mt7981
+PKG_SOURCE:=mt7981-7.6.6.1-obj.tar.xz
 else
 ifeq ($(CONFIG_MTK_CHIP_MT7986),y)
 PKG_VERSION:=7.6.6.1-mt7986
