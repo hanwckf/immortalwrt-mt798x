@@ -9,15 +9,6 @@ include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/kernel.mk
 
 PKG_NAME:=conninfra
-
-ifeq ($(CONFIG_MTK_CONNINFRA_APSOC_MT7981),y)
-PKG_SOURCE:=mt7981_conninfra_20220425-bbf588-obj.tar.xz
-else
-ifeq ($(CONFIG_MTK_CONNINFRA_APSOC_MT7986),y)
-PKG_SOURCE:=mt7986_conninfra-bbf588-obj.tar.xz
-endif
-endif
-
 PKG_VERSION:=bbf588
 PKG_BUILD_DIR:=$(KERNEL_BUILD_DIR)/$(PKG_NAME)
 PKG_MAINTAINER:=Kun-Ze Syue<kun-ze.syue@mediatek.com>
