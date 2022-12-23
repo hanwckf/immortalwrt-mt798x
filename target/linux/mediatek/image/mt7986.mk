@@ -359,6 +359,7 @@ define Device/xiaomi_redmi-router-ax6000
   DEVICE_MODEL := Redmi Router AX6000
   DEVICE_DTS := mt7986a-xiaomi-redmi-router-ax6000
   DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
+  DEVICE_PACKAGES := kmod-leds-ws2812b
   SUPPORTED_DEVICES := xiaomi,redmi-router-ax6000
   UBINIZE_OPTS := -E 5
   BLOCKSIZE := 128k
@@ -376,6 +377,7 @@ define Device/xiaomi_redmi-router-ax6000-stock
   DEVICE_MODEL := Redmi Router AX6000 (stock layout)
   DEVICE_DTS := mt7986a-xiaomi-redmi-router-ax6000-stock
   DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
+  DEVICE_PACKAGES := kmod-leds-ws2812b
   SUPPORTED_DEVICES := xiaomi,redmi-router-ax6000-stock
   UBINIZE_OPTS := -E 5
   BLOCKSIZE := 128k
