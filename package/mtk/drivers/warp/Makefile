@@ -9,12 +9,12 @@ include $(INCLUDE_DIR)/kernel.mk
 PKG_NAME:=warp
 
 ifeq ($(CONFIG_WARP_CHIPSET),"mt7981")
-PKG_VERSION:=20220907-791160
-PKG_SOURCE:=mt7981_warp-20220907-791160-obj.tar.xz
+PKG_VERSION:=20221209-3e6ae1
+PKG_SOURCE:=mt7981_warp-20221209-3e6ae1-obj.tar.xz
 else
 ifeq ($(CONFIG_WARP_CHIPSET),"mt7986")
-PKG_VERSION:=20220907-791160
-PKG_SOURCE:=mt7986_warp-20220907-791160-obj.tar.xz
+PKG_VERSION:=20221209-3e6ae1
+PKG_SOURCE:=mt7986_warp-20221209-3e6ae1-obj.tar.xz
 endif
 endif
 
@@ -51,7 +51,11 @@ define KernelPackage/warp/config
 endef
 
 
+ifeq ($(CONFIG_WARP_VERSION), 3)
+MTK_WIFI_DIR:=$(TOPDIR)/../ko_module/wlan_driver/logan
+else
 MTK_WIFI_DIR:=$(TOPDIR)/../ko_module/wlan_driver/jedi
+endif
 USE_BIN_DIR:=$(MTK_WIFI_DIR)/warp_driver/bin
 
 define Build/Compile

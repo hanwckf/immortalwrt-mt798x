@@ -630,6 +630,20 @@ config MTK_OCE_SUPPORT
 	depends on MTK_CHIP_MT7915 || MTK_CHIP_MT7986
 	default y
 
+config MTK_WTBL_TDD_SUPPORT
+	bool "S/W WTBL TDD SWAP Support"
+	depends on MTK_WIFI_DRIVER
+	depends on MTK_MT_AP_SUPPORT
+	depends on MTK_CHIP_MT7915 || MTK_CHIP_MT7916 || MTK_CHIP_MT7986 || MTK_CHIP_MT7981
+	default n
+
+config MTK_SW_CONNECT_SUPPORT
+	bool "Pure S/W STA Increase Connection Support"
+	depends on MTK_WIFI_DRIVER
+	depends on MTK_MT_AP_SUPPORT
+	depends on MTK_CHIP_MT7915 || MTK_CHIP_MT7916 || MTK_CHIP_MT7986 || MTK_CHIP_MT7981
+	default n
+
 config MTK_MAP_SUPPORT
         bool "MAP Support"
         depends on MTK_WIFI_DRIVER
@@ -656,6 +670,11 @@ config MTK_MAP_R2_6E_SUPPORT
         depends on MTK_MAP_SUPPORT
         default n
 
+config MTK_MAP_R3_6E_SUPPORT
+	bool "Multi-AP R3 6E support"
+        depends on MTK_MAP_SUPPORT
+        depends on MTK_MAP_R2_6E_SUPPORT
+        default n
 
 #config TRACE_TCP_PKT
 #	   bool "TCP DATA/ACK packets trace log"
@@ -1013,7 +1032,7 @@ config MTK_RADIUS_MAC_AUTH_SUPPORT
     depends on MTK_CFG80211_SUPPORT
     default n
 
-config ZERO_LOSS_CSA_SUPPORT
+config MTK_ZERO_LOSS_CSA_SUPPORT
 	bool "Zero Loss CSA Support"
 	depends on MTK_MT_AP_SUPPORT
 	default n
@@ -1027,6 +1046,11 @@ config MTK_DYNAMIC_VLAN_SUPPORT
 config MTK_CFG80211_SUPPORT
 	bool "CFG80211"
 	depends on MTK_MT_AP_SUPPORT
+	default n
+
+config MTK_IAP_VENDOR1_FEATURE_SUPPORT
+	bool "IAP Vendor1 Feature enable"
+	depends on MTK_ENTERPRISE_AP_SUPPORT
 	default n
 
 #CUSTOMISED HOSTAPD
@@ -1174,6 +1198,12 @@ config MTK_WIFI_CSI_CN_INFO_SUPPORT
 	depends on MTK_MT_AP_SUPPORT
 	default n
 
+config MTK_6G_AFC_SUPPORT
+	bool "6G Band AFC Support"
+	depends on MTK_WIFI_DRIVER
+	depends on MTK_MT_AP_SUPPORT
+	default n
+
 config MTK_VENDOR_FEATURE11_SUPPORT
         bool "Vendor11 Feature Enable"
         depends on MTK_WIFI_DRIVER
@@ -1253,6 +1283,13 @@ config MTK_6G_SUPPORT
         default n
         help
           Supporting 6GHz Wi-Fi
+
+config MTK_BSSMGR_CROSS_MODULE_SUPPORT
+        bool "WIFI 6G BSS Manager Cross Module Support"
+        depends on MTK_6G_SUPPORT
+        default n
+        help
+          Supporting 6GHz Wi-Fi BSS Manager Cross Module
 
 endmenu
 
