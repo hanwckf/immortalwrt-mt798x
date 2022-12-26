@@ -10,6 +10,7 @@ board_config_update
 
 case $board in
 xiaomi,redmi-router-ax6000*)
+	ucidef_set_led_default "status" "status" "rgb:status" "1"
 	ucidef_set_led_netdev "wan" "wan" "rgb:network" "eth1"
 	;;
 esac
