@@ -379,6 +379,14 @@ var waiting_count = 0;
         div.appendChild(table);
     }
 
+    function decodeURISafe(str) {
+        try {
+            return decodeURI(str);
+        } catch(e) {
+            return "???";
+        }
+    }
+
     function get_ap_list(vifname) {
         document.getElementById("apcli_body_div").style.display="none";
         document.getElementById("BusyText_ApCli").style.display="";
@@ -399,7 +407,7 @@ var waiting_count = 0;
                             for(j=0; j<rawStr.length; j+=2){
                                 tmp += "%" + rawStr.charAt(j) + rawStr.charAt(j+1);
                             }
-                            ap_list[i].ssid = decodeURI(tmp);
+                            ap_list[i].ssid = decodeURISafe(tmp);
                         }
                     }
                     create_ap_table(ap_list);
