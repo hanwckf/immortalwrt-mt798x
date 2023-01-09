@@ -9,7 +9,7 @@
 #include "pinctrl-moore.h"
 
 #define MT7986_PIN(_number, _name)				\
-	MTK_PIN(_number, _name, 0, _number, DRV_GRP1)
+	MTK_PIN(_number, _name, 0, _number, DRV_GRP4)
 
 #define PIN_FIELD_BASE(_s_pin, _e_pin, _i_base, _s_addr, _x_addrs, _s_bit, _x_bits)	\
 	PIN_FIELD_CALC(_s_pin, _e_pin, _i_base, _s_addr, _x_addrs, _s_bit,	\
@@ -45,8 +45,8 @@ static const struct mtk_pin_field_calc mt7981_pin_ies_range[] = {
 	PIN_FIELD_BASE(6, 6, 4, 0x20, 0x10, 3, 1),
 	PIN_FIELD_BASE(7, 7, 4, 0x20, 0x10, 0, 1),
 	PIN_FIELD_BASE(8, 8, 4, 0x20, 0x10, 4, 1),
-	PIN_FIELD_BASE(9, 9, 4, 0x20, 0x10, 9, 1),
 
+	PIN_FIELD_BASE(9, 9, 5, 0x20, 0x10, 9, 1),
 	PIN_FIELD_BASE(10, 10, 5, 0x20, 0x10, 8, 1),
 	PIN_FIELD_BASE(11, 11, 5, 0x40, 0x10, 10, 1),
 	PIN_FIELD_BASE(12, 12, 5, 0x20, 0x10, 7, 1),
@@ -114,8 +114,8 @@ static const struct mtk_pin_field_calc mt7981_pin_smt_range[] = {
 	PIN_FIELD_BASE(6, 6, 4, 0x80, 0x10, 3, 1),
 	PIN_FIELD_BASE(7, 7, 4, 0x80, 0x10, 0, 1),
 	PIN_FIELD_BASE(8, 8, 4, 0x80, 0x10, 4, 1),
-	PIN_FIELD_BASE(9, 9, 4, 0x80, 0x10, 9, 1),
 
+	PIN_FIELD_BASE(9, 9, 5, 0x90, 0x10, 9, 1),
 	PIN_FIELD_BASE(10, 10, 5, 0x90, 0x10, 8, 1),
 	PIN_FIELD_BASE(11, 11, 5, 0x90, 0x10, 10, 1),
 	PIN_FIELD_BASE(12, 12, 5, 0x90, 0x10, 7, 1),
@@ -227,8 +227,8 @@ static const struct mtk_pin_field_calc mt7981_pin_drv_range[] = {
 	PIN_FIELD_BASE(6, 6, 4, 0x00, 0x10, 9, 3),
 	PIN_FIELD_BASE(7, 7, 4, 0x00, 0x10, 0, 3),
 	PIN_FIELD_BASE(8, 8, 4, 0x00, 0x10, 12, 3),
-	PIN_FIELD_BASE(9, 9, 4, 0x00, 0x10, 27, 3),
 
+	PIN_FIELD_BASE(9, 9, 5, 0x00, 0x10, 27, 3),
 	PIN_FIELD_BASE(10, 10, 5, 0x00, 0x10, 24, 3),
 	PIN_FIELD_BASE(11, 11, 5, 0x00, 0x10, 0, 3),
 	PIN_FIELD_BASE(12, 12, 5, 0x00, 0x10, 21, 3),
@@ -296,8 +296,8 @@ static const struct mtk_pin_field_calc mt7981_pin_pupd_range[] = {
 	PIN_FIELD_BASE(6, 6, 4, 0x30, 0x10, 3, 1),
 	PIN_FIELD_BASE(7, 7, 4, 0x30, 0x10, 0, 1),
 	PIN_FIELD_BASE(8, 8, 4, 0x30, 0x10, 4, 1),
-	PIN_FIELD_BASE(9, 9, 4, 0x30, 0x10, 9, 1),
 
+	PIN_FIELD_BASE(9, 9, 5, 0x30, 0x10, 9, 1),
 	PIN_FIELD_BASE(10, 10, 5, 0x30, 0x10, 8, 1),
 	PIN_FIELD_BASE(11, 11, 5, 0x30, 0x10, 10, 1),
 	PIN_FIELD_BASE(12, 12, 5, 0x30, 0x10, 7, 1),
@@ -346,8 +346,8 @@ static const struct mtk_pin_field_calc mt7981_pin_r0_range[] = {
 	PIN_FIELD_BASE(6, 6, 4, 0x40, 0x10, 3, 1),
 	PIN_FIELD_BASE(7, 7, 4, 0x40, 0x10, 0, 1),
 	PIN_FIELD_BASE(8, 8, 4, 0x40, 0x10, 4, 1),
-	PIN_FIELD_BASE(9, 9, 4, 0x40, 0x10, 9, 1),
 
+	PIN_FIELD_BASE(9, 9, 5, 0x40, 0x10, 9, 1),
 	PIN_FIELD_BASE(10, 10, 5, 0x40, 0x10, 8, 1),
 	PIN_FIELD_BASE(11, 11, 5, 0x40, 0x10, 10, 1),
 	PIN_FIELD_BASE(12, 12, 5, 0x40, 0x10, 7, 1),
@@ -396,8 +396,8 @@ static const struct mtk_pin_field_calc mt7981_pin_r1_range[] = {
 	PIN_FIELD_BASE(6, 6, 4, 0x50, 0x10, 3, 1),
 	PIN_FIELD_BASE(7, 7, 4, 0x50, 0x10, 0, 1),
 	PIN_FIELD_BASE(8, 8, 4, 0x50, 0x10, 4, 1),
-	PIN_FIELD_BASE(9, 9, 4, 0x50, 0x10, 9, 1),
 
+	PIN_FIELD_BASE(9, 9, 5, 0x50, 0x10, 9, 1),
 	PIN_FIELD_BASE(10, 10, 5, 0x50, 0x10, 8, 1),
 	PIN_FIELD_BASE(11, 11, 5, 0x50, 0x10, 10, 1),
 	PIN_FIELD_BASE(12, 12, 5, 0x50, 0x10, 7, 1),
