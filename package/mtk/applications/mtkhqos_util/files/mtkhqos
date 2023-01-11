@@ -97,6 +97,7 @@ if [ "$hqos" -eq 0 ]; then
 		fi
 	done
 
+	echo 1 > $hqos_path/hook_toggle
 	echo 0 > $hqos_path/qos_toggle
 
 	exit 0
