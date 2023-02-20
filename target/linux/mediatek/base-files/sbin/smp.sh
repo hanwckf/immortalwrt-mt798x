@@ -713,6 +713,10 @@ setup_model()
 	*7986*)
 		MT7986_whnat $num_of_wifi
 		;;
+	*mt3000* |\
+	*x3000* |\
+	*xe3000* |\
+	*mt2500* |\	
 	*360,t7* |\
 	*7981*)
 		MT7981_whnat $num_of_wifi
