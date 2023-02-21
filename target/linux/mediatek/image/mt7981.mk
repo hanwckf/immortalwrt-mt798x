@@ -218,8 +218,7 @@ define Device/glinet_gl-mt3000
   PAGESIZE := 2048
   IMAGE_SIZE := 65536k
   KERNEL_IN_UBI := 1
-  IMAGES := factory.img sysupgrade.tar
-  IMAGE/factory.img := append-ubi | check-size $$$$(IMAGE_SIZE)
+  IMAGES := sysupgrade.tar
   IMAGE/sysupgrade.tar := sysupgrade-tar | append-metadata
 endef
 TARGET_DEVICES += glinet_gl-mt3000
