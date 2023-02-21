@@ -31,7 +31,7 @@ mediatek_setup_interfaces()
 	*x3000* |\
 	*xe3000* |\
 	*mt2500*)
-		ucidef_set_interfaces_lan_wan "eth0" "eth1"
+		ucidef_set_interfaces_lan_wan "eth1" "eth0"
 		;;
 	*)
 		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 lan4" eth1
