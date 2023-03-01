@@ -14,6 +14,7 @@
 #include <linux/netfilter_bridge.h>
 #include <linux/netfilter_ipv6.h>
 
+#include <linux/of.h>
 #include <net/arp.h>
 #include <net/neighbour.h>
 #include <net/netfilter/nf_conntrack_helper.h>
@@ -231,6 +232,11 @@ int nf_hnat_netdevice_event(struct notifier_block *unused, unsigned long event,
 
 	switch (event) {
 	case NETDEV_UP:
+		if (!hnat_priv->guest_en && dev->name) {
+			if (!strcmp(dev->name, "ra1") || !strcmp(dev->name, "rax1"))
+				break;
+		}
+
 		gmac_ppe_fwd_enable(dev);
 
 		extif_set_dev(dev);
@@ -1529,8 +1535,12 @@ static unsigned int skb_to_hnat_info(struct sk_buff *skb,
 		if (IS_BOND_MODE)
 			gmac = ((skb_hnat_entry(skb) >> 1) % hnat_priv->gmac_num) ?
 				 NR_GMAC2_PORT : NR_GMAC1_PORT;
-		else
-			gmac = NR_GMAC1_PORT;
+		else {
+			if (of_machine_is_compatible("glinet,gl-mt3000")||of_machine_is_compatible("glinet,mt3000-snand"))
+			gmac = NR_GMAC2_PORT;
+			else
+				gmac = NR_GMAC1_PORT;
+		}
 	} else if (IS_WAN(dev)) {
 		if (IS_DSA_WAN(dev))
 			port_id = hnat_dsa_fill_stag(dev,&entry, hw_path,
@@ -1541,7 +1551,10 @@ static unsigned int skb_to_hnat_info(struct sk_buff *skb,
 			/* Set act_dp = wan_dev */
 			entry.ipv4_hnapt.act_dp = dev->ifindex;
 		} else {
-			gmac = (IS_GMAC1_MODE) ? NR_GMAC1_PORT : NR_GMAC2_PORT;
+			if (of_machine_is_compatible("glinet,gl-mt3000")||of_machine_is_compatible("glinet,mt3000-snand"))
+			gmac = NR_GMAC1_PORT;
+			else
+				gmac = (IS_GMAC1_MODE) ? NR_GMAC1_PORT : NR_GMAC2_PORT;
 		}
 	} else if (IS_EXT(dev) && (FROM_GE_PPD(skb) || FROM_GE_LAN(skb) ||
 		   FROM_GE_WAN(skb) || FROM_GE_VIRTUAL(skb) || FROM_WED(skb))) {
@@ -1866,6 +1879,11 @@ void mtk_ppe_dev_register_hook(struct net_device *dev)
 	int i, number = 0;
 	struct extdev_entry *ext_entry;
 
+	if (!hnat_priv->guest_en && dev->name) {
+		if (!strcmp(dev->name, "ra1") || !strcmp(dev->name, "rax1"))
+			return;
+	}
+
 	for (i = 1; i < MAX_IF_NUM; i++) {
 		if (hnat_priv->wifi_hook_if[i] == dev) {
 			pr_info("%s : %s has been registered in wifi_hook_if table[%d]\n",
@@ -2015,6 +2033,10 @@ static unsigned int mtk_hnat_nf_post_routing(
 	struct flow_offload_hw_path hw_path = { .dev = (struct net_device*)out,
 						.virt_dev = (struct net_device*)out };
 	const struct net_device *arp_dev = out;
+
+	if (skb->protocol == htons(ETH_P_IPV6) && !hnat_priv->ipv6_en) {
+		return 0;
+	}
 
 	if (skb_hnat_alg(skb) || unlikely(!is_magic_tag_valid(skb) ||
 					  !IS_SPACE_AVAILABLE_HEAD(skb)))

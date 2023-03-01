@@ -681,6 +681,8 @@ struct mtk_hnat {
 	struct timer_list hnat_reset_timestamp_timer;
 	struct timer_list hnat_mcast_check_timer;
 	bool nf_stat_en;
+	bool ipv6_en;
+	bool guest_en;
 };
 
 struct extdev_entry {

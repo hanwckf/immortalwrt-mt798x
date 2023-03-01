@@ -571,6 +571,8 @@ int cr_set_usage(int level)
 	pr_info("              5     0~255      Set TCP keep alive interval\n");
 	pr_info("              6     0~255      Set UDP keep alive interval\n");
 	pr_info("              7     0~1        Set hnat counter update to nf_conntrack\n");
+	pr_info("              8     0~1        Set hnat disable/enable ipv6\n");
+	pr_info("              9     0~1        Set hnat disable/enable guest (rax1/ra1)\n");
 
 	return 0;
 }
@@ -682,6 +684,52 @@ int set_nf_update_toggle(int toggle)
 	return 0;
 }
 
+int set_ipv6_toggle(int toggle)
+{
+	struct mtk_hnat *h = hnat_priv;
+
+	if (toggle == 1)
+		pr_info("Enable hnat ipv6\n");
+	else if (toggle == 0)
+		pr_info("Disable hnat ipv6\n");
+	else
+		pr_info("input error\n");
+	h->ipv6_en = toggle;
+
+	return 0;
+}
+
+void mtk_ppe_dev_hook(const char *name, int toggle)
+{
+	struct net_device *dev;
+	dev = dev_get_by_name(&init_net, name);
+	if (dev) {
+		if (toggle) {
+			mtk_ppe_dev_register_hook(dev);
+		} else {
+			mtk_ppe_dev_unregister_hook(dev);
+		}
+	}
+	return;
+}
+
+int set_guest_toggle(int toggle)
+{
+	struct mtk_hnat *h = hnat_priv;
+
+	if (toggle == 1)
+		pr_info("Enable hnat guest interface\n");
+	else if (toggle == 0)
+		pr_info("Disable hnat guest interface\n");
+	else
+		pr_info("input error\n");
+	h->guest_en = toggle;
+
+	mtk_ppe_dev_hook("ra1", toggle);
+	mtk_ppe_dev_hook("rax1", toggle);
+	return 0;
+}
+
 static const debugfs_write_func hnat_set_func[] = {
 	[0] = hnat_set_usage,
 	[1] = hnat_cpu_reason,
@@ -701,6 +749,7 @@ static const debugfs_write_func cr_set_func[] = {
 	[2] = tcp_bind_lifetime, [3] = fin_bind_lifetime,
 	[4] = udp_bind_lifetime, [5] = tcp_keep_alive,
 	[6] = udp_keep_alive,    [7] = set_nf_update_toggle,
+	[8] = set_ipv6_toggle,   [9] = set_guest_toggle,
 };
 
 int read_mib(struct mtk_hnat *h, u32 ppe_id,
@@ -1476,6 +1525,8 @@ ssize_t hnat_setting_write(struct file *file, const char __user *buffer,
 	case 5:
 	case 6:
 	case 7:
+	case 8:
+	case 9:
 		p_token = strsep(&p_buf, p_delimiter);
 		if (!p_token)
 			arg1 = 0;
