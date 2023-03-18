@@ -488,7 +488,14 @@ unsigned int do_hnat_ge_to_ext(struct sk_buff *skb, const char *func)
 	else
 		index = entry->ipv6_5t_route.act_dp;
 
-	skb->dev = get_dev_from_index(index);
+	dev = get_dev_from_index(index);
+	if (!dev) {
+		trace_printk("%s: called from %s. Get wifi interface fail\n",
+			     __func__, func);
+		return 0;
+	}
+
+	skb->dev = dev;
 
 	if (IS_HQOS_MODE && eth_hdr(skb)->h_proto == HQOS_MAGIC_TAG) {
 		skb = skb_unshare(skb, GFP_ATOMIC);
