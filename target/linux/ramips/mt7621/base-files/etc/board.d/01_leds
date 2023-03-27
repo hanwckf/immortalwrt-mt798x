@@ -81,7 +81,9 @@ netgear,wndr3700-v5)
 	ucidef_set_led_netdev "wan" "wan" "green:wan" "wan"
 	;;
 netgear,r6700-v2|\
-netgear,r6800)
+netgear,r6800|\
+netgear,r6900-v2|\
+netgear,r7200)
 	ucidef_set_led_netdev "wan" "WAN" "white:wan" "wan"
 	ucidef_set_led_netdev "lan1" "LAN1" "white:lan1" "lan1"
 	ucidef_set_led_netdev "lan2" "LAN2" "white:lan2" "lan2"
@@ -103,6 +105,9 @@ tplink,re500-v1|\
 tplink,re650-v1)
 	ucidef_set_led_netdev "eth_act" "LAN act" "green:eth_act" "lan" "tx rx"
 	ucidef_set_led_netdev "eth_link" "LAN link" "green:eth_link" "lan" "link"
+	;;
+xiaomi,mi-router-4a-gigabit-v2)
+	ucidef_set_led_netdev "wan" "wan" "blue:wan" "wan" "link"
 	;;
 xiaomi,mi-router-ac2100)
 	ucidef_set_led_netdev "wan-blue" "WAN (blue)" "blue:wan" "wan"

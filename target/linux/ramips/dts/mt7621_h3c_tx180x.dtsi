@@ -16,6 +16,7 @@
 
 	chosen {
 		bootargs = "console=ttyS0,115200";
+		bootargs-override = "console=ttyS0,115200";
 	};
 
 	keys {
@@ -117,11 +118,19 @@
 		compatible = "mediatek,mt76";
 		reg = <0x0000 0 0 0 0>;
 		mediatek,mtd-eeprom = <&factory 0x0>;
+		mediatek,disable-radar-background;
 	};
 };
 
 &pcie2 {
 	status = "disabled";
+};
+
+&state_default {
+	gpio {
+		groups = "jtag";
+		function = "gpio";
+	};
 };
 
 &switch0 {

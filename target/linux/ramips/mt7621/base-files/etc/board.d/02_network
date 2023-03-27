@@ -43,13 +43,16 @@ ramips_setup_interfaces()
 	asiarf,ap7621-nv1|\
 	glinet,gl-mt1300|\
 	jcg,q20|\
+	jcg,q20-lzma-loader|\
+	jcg,q20-pb-boot|\
 	jdcloud,re-sp-01b|\
 	lenovo,newifi-d1|\
 	mikrotik,routerboard-m33g|\
 	xiaomi,mi-router-3g|\
 	xiaomi,mi-router-3g-v2|\
 	xiaomi,mi-router-4|\
-	xiaomi,mi-router-4a-gigabit)
+	xiaomi,mi-router-4a-gigabit|\
+	xiaomi,mi-router-4a-gigabit-v2)
 		ucidef_set_interfaces_lan_wan "lan1 lan2" "wan"
 		;;
 	gnubee,gb-pc1)
@@ -179,6 +182,11 @@ ramips_setup_macs()
 		label_mac=$(cat "/sys/firmware/mikrotik/hard_config/mac_base")
 		wan_mac=$label_mac
 		lan_mac=$(macaddr_add $label_mac 1)
+		;;
+	raisecom,msg1500-x-00)
+		lan_mac=$(mtd_get_mac_ascii Config protest_lan_mac)
+		wan_mac=$(mtd_get_mac_ascii Config protest_wan_mac)
+		label_mac=$lan_mac
 		;;
 	yuncore,ax820)
 		label_mac=$(mtd_get_mac_binary Factory 0x4)

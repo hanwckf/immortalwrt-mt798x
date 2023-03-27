@@ -6,12 +6,12 @@ include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/kernel.mk
 
 PKG_NAME:=i40e
-PKG_VERSION:=2.22.8
-PKG_RELEASE:=2
+PKG_VERSION:=2.22.18
+PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=@IMMORTALWRT
-PKG_HASH:=938eac24067e385d6e7e47788c7a1c47987bbe0ed36f3360809cbaa8caf85c6b
+PKG_SOURCE_URL:=@SF/e1000/i40e%20stable/$(PKG_VERSION)/
+PKG_HASH:=ba3fed07b178bc78bfeab3ba309f812243cbc88032333edca891eb74022468f6
 
 PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
 PKG_LICENSE:=GPL-2.0-only
@@ -35,6 +35,17 @@ endef
 
 define KernelPackage/i40e-vendor/description
   Kernel modules for Intel(R) Ethernet Controller XL710 Family 40 Gigabit Ethernet adapters.
+endef
+
+define Build/Configure
+	( \
+		pushd $(PKG_BUILD_DIR)/src ; \
+		KSRC=$(LINUX_DIR) \
+		OUT=kcompat_generated_defs.h \
+		CONFFILE=$(LINUX_DIR)/include/generated/autoconf.h \
+		bash kcompat-generator.sh ; \
+		popd ; \
+	)
 endef
 
 define Build/Compile
