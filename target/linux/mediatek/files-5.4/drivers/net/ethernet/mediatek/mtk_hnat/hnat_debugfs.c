@@ -692,8 +692,10 @@ int set_ipv6_toggle(int toggle)
 		pr_info("Enable hnat ipv6\n");
 	else if (toggle == 0)
 		pr_info("Disable hnat ipv6\n");
-	else
-		pr_info("input error\n");
+	else {
+		pr_info("input error, current ipv6_en=%d\n", h->ipv6_en);
+		return 0;
+	}
 	h->ipv6_en = toggle;
 
 	return 0;
@@ -721,8 +723,10 @@ int set_guest_toggle(int toggle)
 		pr_info("Enable hnat guest interface\n");
 	else if (toggle == 0)
 		pr_info("Disable hnat guest interface\n");
-	else
-		pr_info("input error\n");
+	else {
+		pr_info("input error, current guest_en=%d\n", h->guest_en);
+		return 0;
+	}
 	h->guest_en = toggle;
 
 	mtk_ppe_dev_hook("ra1", toggle);
