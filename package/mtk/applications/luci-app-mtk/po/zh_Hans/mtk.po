@@ -334,6 +334,9 @@ msgstr "上行MU-MIMO"
 msgid "SCAN WIRELESS NETWORK"
 msgstr "扫描无线网络"
 
+msgid "Scan Wireless Network"
+msgstr "扫描无线网络"
+
 msgid "ApClient Mode"
 msgstr "ApClient模式"
 
@@ -432,3 +435,6 @@ msgstr "请输入有效的Radius空闲超时时间。"
 
 msgid "Radius idle time out is empty."
 msgstr "Radius空闲超时时间为空。"
+
+msgid "IGMP Snooping"
+msgstr "IGMP 侦听"
