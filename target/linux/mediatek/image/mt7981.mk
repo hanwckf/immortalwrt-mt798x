@@ -255,3 +255,37 @@ define Device/glinet_gl-mt2500
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
 endef
 TARGET_DEVICES += glinet_gl-mt2500
+
+define Device/xiaomi_wr30u
+  DEVICE_VENDOR := Xiaomi
+  DEVICE_MODEL := WR30U
+  DEVICE_DTS := mt7981-xiaomi-wr30u
+  DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
+  SUPPORTED_DEVICES := xiaomi,wr30u
+  UBINIZE_OPTS := -E 5
+  BLOCKSIZE := 128k
+  PAGESIZE := 2048
+  IMAGE_SIZE := 34816k
+  KERNEL_IN_UBI := 1
+  IMAGES += factory.bin
+  IMAGE/factory.bin := append-ubi | check-size $$$$(IMAGE_SIZE)
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+endef
+TARGET_DEVICES += xiaomi_wr30u
+
+define Device/xiaomi_wr30u-112M
+  DEVICE_VENDOR := Xiaomi
+  DEVICE_MODEL := WR30U (with 112M ubi)
+  DEVICE_DTS := mt7981-xiaomi-wr30u-112M
+  DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
+  SUPPORTED_DEVICES := xiaomi,wr30u
+  UBINIZE_OPTS := -E 5
+  BLOCKSIZE := 128k
+  PAGESIZE := 2048
+  IMAGE_SIZE := 114688k
+  KERNEL_IN_UBI := 1
+  IMAGES += factory.bin
+  IMAGE/factory.bin := append-ubi | check-size $$$$(IMAGE_SIZE)
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+endef
+TARGET_DEVICES += xiaomi_wr30u-112M

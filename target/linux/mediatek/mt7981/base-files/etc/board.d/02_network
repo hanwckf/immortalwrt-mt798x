@@ -33,6 +33,11 @@ mediatek_setup_interfaces()
 	*mt2500*)
 		ucidef_set_interfaces_lan_wan "eth1" "eth0"
 		;;
+        *wr30u*)
+                ucidef_set_interfaces_lan_wan "eth0" "eth1"
+                ucidef_add_switch "switch0" \
+                        "1:lan" "2:lan" "3:lan" "0:wan" "6u@eth0" "5u@eth1"
+                ;;
 	*)
 		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 lan4" eth1
 		;;
@@ -86,6 +91,10 @@ mediatek_setup_macs()
 	wan_mac=$(mtd_get_mac_binary $part_name $wan_mac_offset)
 
 	case $board in
+        *wr30u*)
+                wan_mac=$(dd if=/dev/mtd3ro bs=1 count=256 2>/dev/null |grep "^ethaddr_wan=" | awk -F '=' '{print $2}')
+                lan_mac=$(dd if=/dev/mtd3ro bs=1 count=256 2>/dev/null |grep "^ethaddr=" | awk -F '=' '{print $2}')
+                ;;
 	*mt3000*)
 		wan_mac=$(mtd_get_mac_binary $part_name 0x0a)
 		lan_mac=$(macaddr_add "$wan_mac" 1)

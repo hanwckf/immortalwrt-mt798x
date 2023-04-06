@@ -4,6 +4,7 @@ platform_do_upgrade() {
 	local board=$(board_name)
 
 	case "$board" in
+        *wr30u* |\
 	*mt3000* |\
 	*x3000* |\
 	*xe3000* |\
@@ -30,6 +31,7 @@ platform_check_image() {
 	[ "$#" -gt 1 ] && return 1
 
 	case "$board" in
+        *wr30u* |\
 	*mt3000* |\
 	*x3000* |\
 	*xe3000* |\
