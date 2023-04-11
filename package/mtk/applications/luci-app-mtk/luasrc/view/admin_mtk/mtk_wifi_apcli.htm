@@ -84,7 +84,7 @@ var waiting_count = 0;
             <fieldset class="cbi-section" id="vif-cfg-apcli">
                 <h3><%:ApCli Available Wireless Networks%></h3>
                 <p class="left">
-                    <input id="scan" type="button" class="cbi-button cbi-button-find" onclick="get_ap_list('<%=vifname%>')" value="Scan Wireless Network"/>
+                    <input id="scan" type="button" class="cbi-button cbi-button-find" onclick="get_ap_list('<%=vifname%>')" value="<%:Scan Wireless Network%>"/>
                 </p>
                 <div id="aplist">
                     <!--
@@ -107,16 +107,16 @@ var waiting_count = 0;
                     <tr>
                         <td><%:ApClient Mode%></td>
                         <td>
-                            <input type="radio" name="ApCliEnable" id="ApCliEnableRadioOn" value="1" <% if cfgs.ApCliEnable == "1" then %> checked="checked"<% end %> onclick="toggle_apcli(true)"/> Enable
-                            <input type="radio" name="ApCliEnable" id="ApCliEnableRadioOff" value="0" <% if cfgs.ApCliEnable ~= "1" then %> checked="checked"<% end %> onclick="toggle_apcli(false)"/> Disable
+                            <input type="radio" name="ApCliEnable" id="ApCliEnableRadioOn" value="1" <% if cfgs.ApCliEnable == "1" then %> checked="checked"<% end %> onclick="toggle_apcli(true)"/> <%:Enable%>
+                            <input type="radio" name="ApCliEnable" id="ApCliEnableRadioOff" value="0" <% if cfgs.ApCliEnable ~= "1" then %> checked="checked"<% end %> onclick="toggle_apcli(false)"/> <%:Disable%>
                         </td>
                     </tr>
                     <tbody id="apcli_cfg" <% if cfgs.ApCliEnable ~= "1" then %> style="display:none;" <% end %> >
                         <tr>
                             <td><%:MAC Repeater Mode%></td>
                             <td>
-                                <input type="radio" name="MACRepeaterEn" value="1" <% if cfgs.MACRepeaterEn == "1" then %> checked="checked"<% end %>/> Enable
-                                <input type="radio" name="MACRepeaterEn" value="0" <% if cfgs.MACRepeaterEn ~= "1" then %> checked="checked"<% end %>/> Disable
+                                <input type="radio" name="MACRepeaterEn" value="1" <% if cfgs.MACRepeaterEn == "1" then %> checked="checked"<% end %>/> <%:Enable%>
+                                <input type="radio" name="MACRepeaterEn" value="0" <% if cfgs.MACRepeaterEn ~= "1" then %> checked="checked"<% end %>/> <%:Disable%>
                             </td>
                         </tr>
                         <tr>
