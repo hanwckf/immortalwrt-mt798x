@@ -12,6 +12,11 @@ case "$(board_name)" in
 	ucidef_set_led_default "green" "GREEN" "360t7:green" "1"
 	ucidef_set_led_default "red" "RED" "360t7:red" "0"
 	;;
+*wr30u*)
+        ucidef_set_led_default "sys_blue" "BLUE" "led_blue" "1"
+        ucidef_set_led_default "sys_yellow" "YELLOW" "led_yellow" "0"
+        ucidef_set_led_netdev "net_blue" "NET_BLUE" "net_blue" "eth1"
+	;;
 esac
 board_config_flush
 
