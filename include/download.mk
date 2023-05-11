@@ -203,7 +203,7 @@ define DownloadMethod/rawgit
 	cd $(TMP_DIR)/dl && \
 	rm -rf $(SUBDIR) && \
 	[ \! -d $(SUBDIR) ] && \
-	git clone $(OPTS) $(URL) $(SUBDIR) && \
+	git clone --filter=blob:none $(OPTS) $(URL) $(SUBDIR) && \
 	(cd $(SUBDIR) && git checkout $(VERSION) && \
 	git submodule update --init --recursive) && \
 	echo "Packing checkout..." && \
