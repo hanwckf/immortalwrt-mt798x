@@ -13,7 +13,8 @@ touch /etc/config/ubootenv
 board=$(board_name)
 
 case "$board" in
-*360,t7*)
+*360,t7* |\
+livinet,zr-3020*)
 	ubootenv_add_uci_config "/dev/mtd2" "0x0" "0x20000" "0x20000" "1"
 	;;
 xiaomi,redmi-router-ax6000*)
