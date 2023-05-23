@@ -301,7 +301,8 @@ void foe_clear_entry(struct neighbour *neigh)
 		for (hash_index = 0; hash_index < hnat_priv->foe_etry_num; hash_index++) {
 			entry = hnat_priv->foe_table_cpu[i] + hash_index;
 			if (entry->bfib1.state == BIND &&
-			    entry->ipv4_hnapt.new_dip == ntohl(dip)) {
+			    entry->ipv4_hnapt.new_dip == ntohl(dip) &&
+			    IS_IPV4_HNAPT(entry)) {
 				*((u32 *)h_dest) = swab32(entry->ipv4_hnapt.dmac_hi);
 				*((u16 *)&h_dest[4]) =
 					swab16(entry->ipv4_hnapt.dmac_lo);
