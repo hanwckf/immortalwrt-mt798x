@@ -223,6 +223,35 @@ define Device/cetron_ct3003
 endef
 TARGET_DEVICES += cetron_ct3003
 
+define Device/xiaomi_mi-router-wr30u-stock
+  DEVICE_VENDOR := Xiaomi
+  DEVICE_MODEL := Mi Router WR30U (stock layout)
+  DEVICE_DTS := mt7981-xiaomi-mi-router-wr30u-stock
+  DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
+  UBINIZE_OPTS := -E 5
+  BLOCKSIZE := 128k
+  PAGESIZE := 2048
+  IMAGE_SIZE := 34816k
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+endef
+TARGET_DEVICES += xiaomi_mi-router-wr30u-stock
+
+define Device/xiaomi_mi-router-wr30u-112m
+  DEVICE_VENDOR := Xiaomi
+  DEVICE_MODEL := Mi Router WR30U (112M UBI layout)
+  DEVICE_DTS := mt7981-xiaomi-mi-router-wr30u-112m
+  DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
+  UBINIZE_OPTS := -E 5
+  BLOCKSIZE := 128k
+  PAGESIZE := 2048
+  IMAGE_SIZE := 114688k
+  KERNEL_IN_UBI := 1
+  IMAGES += factory.ubi
+  IMAGE/factory.ubi := append-ubi | check-size $$$$(IMAGE_SIZE)
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+endef
+TARGET_DEVICES += xiaomi_mi-router-wr30u-112m
+
 define Device/glinet_gl-mt3000
   DEVICE_VENDOR := GL.iNet
   DEVICE_MODEL := GL-MT3000

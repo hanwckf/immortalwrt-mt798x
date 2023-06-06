@@ -22,6 +22,11 @@ mediatek_setup_interfaces()
 	*2500wan-p5*)
 		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 lan4" wan
 		;;
+	xiaomi,mi-router-wr30u*)
+                ucidef_set_interfaces_lan_wan "eth0" "eth1"
+                ucidef_add_switch "switch0" \
+                        "1:lan" "2:lan" "3:lan" "0:wan" "6u@eth0" "5u@eth1"
+		;;
 	*360,t7*)
 		ucidef_set_interfaces_lan_wan "eth0" "eth1"
 		ucidef_add_switch "switch0" \
@@ -118,6 +123,10 @@ mediatek_setup_macs()
 			local wifi_mac="$(mtd_get_mac_ascii config2 wifi2gmac)"
 			mtk_facrory_write_mac Factory 4 "$wifi_mac"
 		fi
+		;;
+	xiaomi,mi-router-wr30u*)
+		wan_mac=$(mtd_get_mac_ascii Bdata ethaddr_wan)
+		lan_mac=$(mtd_get_mac_ascii Bdata ethaddr)
 		;;
 	*360,t7*)
 		local part=$(find_mtd_part "stock-factory")
