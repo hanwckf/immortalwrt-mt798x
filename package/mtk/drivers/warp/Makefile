@@ -8,15 +8,8 @@ include $(INCLUDE_DIR)/kernel.mk
 
 PKG_NAME:=warp
 
-ifeq ($(CONFIG_WARP_CHIPSET),"mt7981")
 PKG_VERSION:=20221209-3e6ae1
-PKG_SOURCE:=mt7981_warp-20221209-3e6ae1-obj.tar.xz
-else
-ifeq ($(CONFIG_WARP_CHIPSET),"mt7986")
-PKG_VERSION:=20221209-3e6ae1
-PKG_SOURCE:=mt7986_warp-20221209-3e6ae1-obj.tar.xz
-endif
-endif
+PKG_SOURCE:=warp_20221209-3e6ae1-src.tar.xz
 
 PKG_BUILD_DIR:=$(KERNEL_BUILD_DIR)/$(PKG_NAME)
 PKG_KCONFIG:= \

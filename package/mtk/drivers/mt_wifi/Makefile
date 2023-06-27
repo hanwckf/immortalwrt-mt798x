@@ -9,16 +9,16 @@ include $(INCLUDE_DIR)/kernel.mk
 PKG_NAME:=mt_wifi
 
 ifeq ($(CONFIG_MTK_CHIP_MT7981),y)
-PKG_VERSION:=7.6.7.0-mt7981
-PKG_SOURCE:=mt7981-7.6.7.0-20221209-b9c02f-obj.tar.xz
+PKG_SUFFIX:=mt7981
 else
 ifeq ($(CONFIG_MTK_CHIP_MT7986),y)
-PKG_VERSION:=7.6.7.0-mt7986
-PKG_SOURCE:=mt7986-7.6.7.0-20221209-b9c02f-obj.tar.xz
+PKG_SUFFIX:=mt7986
 endif
 endif
 
 PKG_BUILD_DEPENDS:=warp
+PKG_SOURCE:=mt798x-7.6.6.1-src.tar.xz
+PKG_VERSION:=7.6.6.1-$(PKG_SUFFIX)
 
 PKG_BUILD_PARALLEL:=1
 PKG_BUILD_DIR:=$(KERNEL_BUILD_DIR)/$(PKG_NAME)
@@ -284,7 +284,7 @@ define KernelPackage/mt_wifi
   DEPENDS+=+kmod-conninfra
   DEPENDS+=+kmod-mediatek_hnat
   FILES:=$(PKG_BUILD_DIR)/mt_wifi_ap/mt_wifi.ko \
-	$(PKG_BUILD_DIR)/mt_wifi_ap/mtk_warp_proxy.ko
+	$(PKG_BUILD_DIR)/mt_wifi/embedded/plug_in/warp_proxy/mtk_warp_proxy.ko
   DEPENDS+=+kmod-warp
   AUTOLOAD:=$(call AutoProbe,mt_wifi mtk_warp_proxy)
   SUBMENU:=Drivers
