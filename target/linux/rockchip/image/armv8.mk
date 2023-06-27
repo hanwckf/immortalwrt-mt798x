@@ -2,6 +2,16 @@
 #
 # Copyright (C) 2020 Tobias Maedel
 
+define Device/firefly_roc-rk3328-cc
+  DEVICE_VENDOR := Firefly
+  DEVICE_MODEL := ROC-RK3328-CC
+  SOC := rk3328
+  DEVICE_DTS := rockchip/rk3328-roc-cc
+  UBOOT_DEVICE_NAME := roc-cc-rk3328
+  IMAGE/sysupgrade.img.gz := boot-common | boot-script nanopi-r2s | pine64-bin | gzip | append-metadata
+endef
+TARGET_DEVICES += firefly_roc-rk3328-cc
+
 define Device/friendlyarm_nanopi-r2c
   DEVICE_VENDOR := FriendlyARM
   DEVICE_MODEL := NanoPi R2C
@@ -31,6 +41,16 @@ define Device/friendlyarm_nanopi-r4s
   DEVICE_PACKAGES := kmod-r8168 -urngd
 endef
 TARGET_DEVICES += friendlyarm_nanopi-r4s
+
+define Device/friendlyarm_nanopi-r4se
+  DEVICE_VENDOR := FriendlyARM
+  DEVICE_MODEL := NanoPi R4SE
+  SOC := rk3399
+  UBOOT_DEVICE_NAME := nanopi-r4se-rk3399
+  IMAGE/sysupgrade.img.gz := boot-common | boot-script nanopi-r4s | pine64-bin | gzip | append-metadata
+  DEVICE_PACKAGES := kmod-r8168 -urngd
+endef
+TARGET_DEVICES += friendlyarm_nanopi-r4se
 
 define Device/pine64_rockpro64
   DEVICE_VENDOR := Pine64
