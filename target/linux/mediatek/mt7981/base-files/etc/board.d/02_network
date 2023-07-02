@@ -27,6 +27,11 @@ mediatek_setup_interfaces()
 		ucidef_add_switch "switch0" \
 			"0:lan" "1:lan" "2:lan" "3:wan" "6u@eth0" "5u@eth1"
 		;;
+	*jcg,q30*)
+		ucidef_set_interfaces_lan_wan "eth0.1" "eth0.2"
+		ucidef_add_switch "switch0" \
+			"1:lan" "2:lan" "3:lan" "0:wan" "6t@eth0"
+		;;
 	*mt3000* |\
 	*x3000* |\
 	*xe3000* |\
@@ -122,6 +127,11 @@ mediatek_setup_macs()
 				fi
 			fi
 		fi
+		;;
+	*jcg,q30*)
+		wan_mac=$(mtd_get_mac_binary $part_name 0xa0024)
+		lan_mac=$(mtd_get_mac_binary $part_name 0xa002a)
+		label_mac=$lan_mac
 		;;
 	*)
 		wan_mac=$(mtd_get_mac_binary $part_name $wan_mac_offset)
