@@ -256,6 +256,23 @@ define Device/glinet_gl-mt2500
 endef
 TARGET_DEVICES += glinet_gl-mt2500
 
+define Device/jcg_q30
+  DEVICE_VENDOR := JCG
+  DEVICE_MODEL := Q30
+  DEVICE_DTS := mt7981-jcg-q30
+  DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
+  SUPPORTED_DEVICES := jcg,q30
+  UBINIZE_OPTS := -E 5
+  BLOCKSIZE := 128k
+  PAGESIZE := 2048
+  IMAGE_SIZE := 114816k
+  KERNEL_IN_UBI := 1
+  IMAGES += factory.bin
+  IMAGE/factory.bin := append-ubi | check-size $$$$(IMAGE_SIZE)
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+endef
+TARGET_DEVICES += jcg_q30
+
 define Device/livinet_zr-3020
   DEVICE_VENDOR := Livinet
   DEVICE_MODEL := ZR-3020
