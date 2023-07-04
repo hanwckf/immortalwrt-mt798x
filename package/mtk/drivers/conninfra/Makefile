@@ -48,15 +48,14 @@ if PACKAGE_kmod-conninfra
 if MTK_CONNINFRA_APSOC
 choice
 	prompt "Choose APSOC Chip"
+
 	config MTK_CONNINFRA_APSOC_MT7986
 	bool "MT7986"
-	default n
 
 	config MTK_CONNINFRA_APSOC_MT7981
 	bool "MT7981"
-	default n
-
 endchoice
+
 	config CONNINFRA_EMI_SUPPORT
 	bool "EMI Support"
 	default n
