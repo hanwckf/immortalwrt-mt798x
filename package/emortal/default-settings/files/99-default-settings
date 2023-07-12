@@ -10,13 +10,13 @@ if ! uci -q get system.@imm_init[0].lang > "/dev/null"; then
 	uci -q commit system
 fi
 
-if ! uci -q get system.@imm_init[0].anon_mount > "/dev/null"; then
-	uci -q set fstab.@global[0].anon_mount="1"
-	uci -q commit fstab
+#if ! uci -q get system.@imm_init[0].anon_mount > "/dev/null"; then
+#	uci -q set fstab.@global[0].anon_mount="1"
+#	uci -q commit fstab
 
-	uci -q set system.@imm_init[0].anon_mount="1"
-	uci -q commit system
-fi
+#	uci -q set system.@imm_init[0].anon_mount="1"
+#	uci -q commit system
+#fi
 
 ln -sf "/sbin/ip" "/usr/bin/ip"
 
