@@ -1298,7 +1298,7 @@ static unsigned int skb_to_hnat_info(struct sk_buff *skb,
 
 				entry.ipv4_hnapt.vlan1 = hw_path->vlan_id;
 
-				if (skb_vlan_tag_present(skb)) {
+				if (skb_vlan_tagged(skb)) {
 					entry.bfib1.vlan_layer += 1;
 
 					if (entry.ipv4_hnapt.vlan1)
@@ -1352,7 +1352,7 @@ static unsigned int skb_to_hnat_info(struct sk_buff *skb,
 
 			entry.ipv6_5t_route.vlan1 = hw_path->vlan_id;
 
-			if (skb_vlan_tag_present(skb)) {
+			if (skb_vlan_tagged(skb)) {
 				entry.bfib1.vlan_layer += 1;
 
 				if (entry.ipv6_5t_route.vlan1)
@@ -1787,7 +1787,7 @@ int mtk_sw_nat_hook_tx(struct sk_buff *skb, int gmac_no)
 		break;
 	}
 
-	if (skb->vlan_tci) {
+	if (skb_vlan_tagged(skb)) {
 		bfib1_tx.vlan_layer = 1;
 		bfib1_tx.vpm = 1;
 		if (IS_IPV4_GRP(entry)) {
