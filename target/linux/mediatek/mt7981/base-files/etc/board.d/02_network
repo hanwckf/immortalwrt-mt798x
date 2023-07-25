@@ -23,9 +23,9 @@ mediatek_setup_interfaces()
 		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 lan4" wan
 		;;
 	xiaomi,mi-router-wr30u*)
-                ucidef_set_interfaces_lan_wan "eth0" "eth1"
-                ucidef_add_switch "switch0" \
-                        "1:lan" "2:lan" "3:lan" "0:wan" "6u@eth0" "5u@eth1"
+		ucidef_set_interfaces_lan_wan "eth0" "eth1"
+		ucidef_add_switch "switch0" \
+			"1:lan" "2:lan" "3:lan" "0:wan" "6u@eth0" "5u@eth1"
 		;;
 	*360,t7*)
 		ucidef_set_interfaces_lan_wan "eth0" "eth1"
@@ -43,7 +43,7 @@ mediatek_setup_interfaces()
 			"1:lan" "2:lan" "3:lan" "0:wan" "6t@eth0"
 		;;
 	*mt3000* |\
-	*x3000* |\
+	glinet,x3000-emmc |\
 	*xe3000* |\
 	*mt2500*)
 		ucidef_set_interfaces_lan_wan "eth1" "eth0"
@@ -112,7 +112,7 @@ mediatek_setup_macs()
 		lan_mac=$(macaddr_add "$wan_mac" 1)
 		;;
 	*xe3000*|\
-	*x3000*)
+	glinet,x3000-emmc)
 		wan_mac=$(get_mac_binary /dev/mmcblk0p3 0x0a)
 		lan_mac=$(macaddr_add "$wan_mac" 1)
 		;;
