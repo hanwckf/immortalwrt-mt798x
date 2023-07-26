@@ -335,3 +335,23 @@ define Device/livinet_zr-3020
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
 endef
 TARGET_DEVICES += livinet_zr-3020
+
+define Device/cmcc_rax3000m
+  DEVICE_VENDOR := CMCC
+  DEVICE_MODEL := RAX3000M
+  DEVICE_DTS := mt7981-cmcc-rax3000m
+  DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
+  DEVICE_PACKAGES := mkf2fs e2fsprogs blkid blockdev losetup kmod-usb-printer \
+			kmod-fs-ext4 kmod-fs-exfat kmod-fs-ksmbd kmod-fs-ntfs3 \
+			kmod-fs-vfat kmod-nls-cp437 kmod-nls-iso8859-1
+  SUPPORTED_DEVICES := cmcc,rax3000m
+  UBINIZE_OPTS := -E 5
+  BLOCKSIZE := 128k
+  PAGESIZE := 2048
+  IMAGE_SIZE := 116736k
+  KERNEL_IN_UBI := 1
+  IMAGES += factory.bin
+  IMAGE/factory.bin := append-ubi | check-size $$$$(IMAGE_SIZE)
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+endef
+TARGET_DEVICES += cmcc_rax3000m

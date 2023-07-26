@@ -195,6 +195,7 @@ platform_do_upgrade() {
 	*360,t7* |\
 	*cetron,ct3003* |\
 	*jcg,q30* |\
+	cmcc,rax3000m |\
 	*snand*)
 		nand_do_upgrade "$1"
 		;;
@@ -229,6 +230,7 @@ platform_check_image() {
 	xiaomi,mi-router-wr30u-112m|\
 	*cetron,ct3003* |\
 	*jcg,q30* |\
+	cmcc,rax3000m |\
 	*snand* |\
 	*emmc*)
 		# tar magic `ustar`

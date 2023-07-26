@@ -17,6 +17,9 @@ case "$board" in
 livinet,zr-3020*)
 	ubootenv_add_uci_config "/dev/mtd2" "0x0" "0x20000" "0x20000" "1"
 	;;
+cmcc,rax3000m)
+	ubootenv_add_uci_config "/dev/mtd2" "0x0" "0x80000" "0x20000" "4"
+	;;
 xiaomi,mi-router-wr30u* |\
 xiaomi,redmi-router-ax6000*)
 	ubootenv_add_uci_config "/dev/mtd2" "0x0" "0x10000" "0x20000" "1"
