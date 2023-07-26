@@ -154,7 +154,7 @@
 
 	port6: port@6 {
 		compatible = "mediatek,mt753x-port";
-		//mediatek,ssc-on;
+		mediatek,ssc-on;
 		reg = <6>;
 		phy-mode = "sgmii";
 
