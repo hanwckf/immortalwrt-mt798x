@@ -49,9 +49,10 @@
 		};
 
 		mesh {
-			label = "wps";
-			linux,code = <KEY_WPS_BUTTON>;
+			label = "mesh";
 			gpios = <&pio 0 GPIO_ACTIVE_LOW>;
+			linux,code = <BTN_9>;
+			linux,input-type = <EV_SW>;
 		};
 	};
 
