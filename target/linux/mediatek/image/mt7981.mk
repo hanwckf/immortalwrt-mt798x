@@ -341,8 +341,8 @@ define Device/cmcc_rax3000m
   DEVICE_MODEL := RAX3000M
   DEVICE_DTS := mt7981-cmcc-rax3000m
   DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
-  DEVICE_PACKAGES := mkf2fs e2fsprogs blkid blockdev losetup kmod-usb-printer \
-			kmod-fs-ext4 kmod-fs-exfat kmod-fs-ksmbd kmod-fs-ntfs3 \
+  DEVICE_PACKAGES := mkf2fs e2fsprogs blkid blockdev losetup luci-app-ksmbd luci-app-usb-printer \
+			kmod-usb-printer kmod-fs-ext4 kmod-fs-exfat kmod-fs-ksmbd kmod-fs-ntfs3 \
 			kmod-fs-vfat kmod-nls-cp437 kmod-nls-iso8859-1
   SUPPORTED_DEVICES := cmcc,rax3000m
   UBINIZE_OPTS := -E 5
