@@ -78,7 +78,6 @@
 			partition@0 {
 				label = "BL2";
 				reg = <0x0 0x100000>;
-				read-only;
 			};
 			partition@100000 {
 				label = "u-boot-env";
