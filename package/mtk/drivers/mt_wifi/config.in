@@ -766,7 +766,7 @@ endchoice
 config MTK_MT7981_NEW_FW
        depends on MTK_CHIP_MT7981
        bool "mt7981 new firmware from h3c blobs"
-       default n
+       default y
 
 config MTK_WIFI_FW_BIN_LOAD
        depends on MTK_CHIP_MT7986 || MTK_CHIP_MT7916 || MTK_CHIP_MT7981
