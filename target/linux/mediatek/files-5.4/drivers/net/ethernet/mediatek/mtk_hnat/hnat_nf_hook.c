@@ -300,8 +300,6 @@ void foe_clear_entry(struct neighbour *neigh)
 				*((u16 *)&h_dest[4]) =
 					swab16(entry->ipv4_hnapt.dmac_lo);
 				if (memcmp(h_dest, neigh->ha, ETH_ALEN) != 0) {
-					pr_info("%s: state=%d\n", __func__,
-						neigh->nud_state);
 					cr_set_field(hnat_priv->ppe_base[i] + PPE_TB_CFG,
 						     SMA, SMA_ONLY_FWD_CPU);
 
@@ -314,10 +312,13 @@ void foe_clear_entry(struct neighbour *neigh)
 
 					mod_timer(&hnat_priv->hnat_sma_build_entry_timer,
 						  jiffies + 3 * HZ);
-
-					pr_info("Delete old entry: dip =%pI4\n", &dip);
-					pr_info("Old mac= %pM\n", h_dest);
-					pr_info("New mac= %pM\n", neigh->ha);
+					if (debug_level >= 7) {
+						pr_info("%s: state=%d\n", __func__,
+							neigh->nud_state);
+						pr_info("Delete old entry: dip =%pI4\n", &dip);
+						pr_info("Old mac= %pM\n", h_dest);
+						pr_info("New mac= %pM\n", neigh->ha);
+					}
 				}
 			}
 		}
