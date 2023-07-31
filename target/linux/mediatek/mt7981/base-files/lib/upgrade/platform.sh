@@ -196,6 +196,7 @@ platform_do_upgrade() {
 	*cetron,ct3003* |\
 	*jcg,q30* |\
 	cmcc,rax3000m |\
+	h3c,nx30pro |\
 	*snand*)
 		nand_do_upgrade "$1"
 		;;
@@ -231,6 +232,7 @@ platform_check_image() {
 	*cetron,ct3003* |\
 	*jcg,q30* |\
 	cmcc,rax3000m |\
+	h3c,nx30pro |\
 	*snand* |\
 	*emmc*)
 		# tar magic `ustar`

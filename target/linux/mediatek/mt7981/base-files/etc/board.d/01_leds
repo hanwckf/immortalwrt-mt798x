@@ -23,6 +23,10 @@ xiaomi,mi-router-wr30u*)
 	ucidef_set_led_default "green" "GREEN" "360t7:green" "1"
 	ucidef_set_led_default "red" "RED" "360t7:red" "0"
 	;;
+h3c,nx30pro)
+	ucidef_set_led_default "green" "GREEN" "nx30pro:green" "1"
+	ucidef_set_led_default "red" "RED" "nx30pro:red" "0"
+	;;
 esac
 
 board_config_flush
