@@ -14,6 +14,8 @@ local http = require("luci.http")
 local i18n = require("luci.i18n")
 local mtkwifi = require("mtkwifi")
 local sys = require "luci.sys"
+local jsc = require "luci.jsonc"
+local nfs = require "nixio.fs"
 
 local logDisable = 0
 function debug_write(...)
@@ -129,12 +131,23 @@ function __mtkwifi_save_profile(cfgs, path, isProfileSettingsAppliedToDriver)
     end
 end
 
+local __get_default_wan_ifname = function()
+    local boardinfo = jsc.parse(nfs.readfile("/etc/board.json") or "")
+    local wan_ifname = "eth1"
+
+    if type(boardinfo) == "table" and type(boardinfo.network.wan.device) == "string" then
+        wan_ifname = boardinfo.network.wan.device
+    end
+
+    return wan_ifname
+end
+
 local __setup_wan = function(devname)
     local devs = mtkwifi.get_all_devs()
     local profiles = mtkwifi.search_dev_and_profile()
     local cfgs = mtkwifi.load_profile(profiles[devname])
     local dev = devs and devs[devname]
-    local vif = "eth1"
+    local vif = __get_default_wan_ifname()
 
     if cfgs.ApCliEnable ~= "0" and cfgs.ApCliEnable ~= "" and dev.apcli.vifname then
         vif = dev.apcli.vifname
