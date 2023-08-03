@@ -44,5 +44,8 @@ config WARP_WO_EMBEDDED_LOAD
 	help
 	Once enabled, firmware download flow try embedded version once externel version being invalid.
 
+config WARP_NEW_FW
+	bool "Use new warp firmware"
+	default n
 endif
 
