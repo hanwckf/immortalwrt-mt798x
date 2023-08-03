@@ -8,6 +8,9 @@ include $(INCLUDE_DIR)/kernel.mk
 
 PKG_NAME:=mt_wifi
 
+MT7981_FW_DIR := mt7981-fw-20230306
+MT7986_FW_DIR := mt7986-fw-20221208
+
 ifeq ($(CONFIG_MTK_CHIP_MT7981),y)
 PKG_SUFFIX:=mt7981
 else
@@ -310,11 +313,19 @@ if [ "$$(CONFIG_MTK_WIFI_FW_BIN_LOAD)" = "y" ]; then \
 	rm -rf $(1)/lib/firmware/; \
 	$(INSTALL_DIR) $(1)/lib/firmware/; \
 	if [ "$$(CONFIG_MTK_CHIP_MT7986)" = "y" ] ; then \
-		$(INSTALL_BIN) $(PKG_BUILD_DIR)/bin/mt7986/rebb/WIFI_RAM_CODE_MT7986.bin \
-		$(PKG_BUILD_DIR)/bin/mt7986/rebb/WIFI_RAM_CODE_MT7986_MT7975.bin \
-		$(PKG_BUILD_DIR)/bin/mt7986/rebb/mt7986_patch_e1_hdr.bin \
-		$(PKG_BUILD_DIR)/bin/mt7986/rebb/mt7986_patch_e1_hdr_mt7975.bin \
-		$(PKG_BUILD_DIR)/bin/mt7986/rebb/7986_WACPU_RAM_CODE_release.bin $(1)/lib/firmware/; \
+		if [  "$$(CONFIG_MTK_MT7986_NEW_FW)" = "y" ]; then \
+			$(INSTALL_BIN) ./files/$$(MT7986_FW_DIR)/WIFI_RAM_CODE_MT7986.bin \
+			./files/$$(MT7986_FW_DIR)/WIFI_RAM_CODE_MT7986_MT7975.bin \
+			./files/$$(MT7986_FW_DIR)/mt7986_patch_e1_hdr.bin \
+			./files/$$(MT7986_FW_DIR)/mt7986_patch_e1_hdr_mt7975.bin \
+			./files/$$(MT7986_FW_DIR)/7986_WACPU_RAM_CODE_release.bin $(1)/lib/firmware/; \
+		else \
+			$(INSTALL_BIN) $(PKG_BUILD_DIR)/bin/mt7986/rebb/WIFI_RAM_CODE_MT7986.bin \
+			$(PKG_BUILD_DIR)/bin/mt7986/rebb/WIFI_RAM_CODE_MT7986_MT7975.bin \
+			$(PKG_BUILD_DIR)/bin/mt7986/rebb/mt7986_patch_e1_hdr.bin \
+			$(PKG_BUILD_DIR)/bin/mt7986/rebb/mt7986_patch_e1_hdr_mt7975.bin \
+			$(PKG_BUILD_DIR)/bin/mt7986/rebb/7986_WACPU_RAM_CODE_release.bin $(1)/lib/firmware/; \
+		fi ; \
 		if [ "$$(CONFIG_MTK_WIFI_SKU_TYPE)" = "AX6000" -o "$$(CONFIG_MTK_WIFI_SKU_TYPE)" = "AX8400" ] ; then \
 			$(INSTALL_BIN) $(PKG_BUILD_DIR)/bin/mt7986/rebb/MT7986_iPAiLNA_EEPROM_AX6000.bin $(PKG_BUILD_DIR)/bin/mt7986/rebb/MT7986_ePAeLNA_EEPROM_AX6000.bin \
 			$(1)/lib/firmware/; \
@@ -331,9 +342,9 @@ if [ "$$(CONFIG_MTK_WIFI_FW_BIN_LOAD)" = "y" ]; then \
 		$(INSTALL_BIN) $(PKG_BUILD_DIR)/bin/mt7981/rebb/MT7981_iPAiLNA_EEPROM.bin \
 		$(PKG_BUILD_DIR)/bin/mt7981/rebb/MT7981_ePAeLNA_EEPROM.bin $(1)/lib/firmware/; \
 		if [  "$$(CONFIG_MTK_MT7981_NEW_FW)" = "y" ]; then \
-			$(INSTALL_BIN) ./files/mt7981-fw-20230306/WIFI_RAM_CODE_MT7981.bin \
-			./files/mt7981-fw-20230306/7981_WACPU_RAM_CODE_release.bin \
-			./files/mt7981-fw-20230306/mt7981_patch_e1_hdr.bin \
+			$(INSTALL_BIN) ./files/$$(MT7981_FW_DIR)/WIFI_RAM_CODE_MT7981.bin \
+			./files/$$(MT7981_FW_DIR)/7981_WACPU_RAM_CODE_release.bin \
+			./files/$$(MT7981_FW_DIR)/mt7981_patch_e1_hdr.bin \
 			$(1)/lib/firmware/; \
 		else \
 			$(INSTALL_BIN) $(PKG_BUILD_DIR)/bin/mt7981/rebb/WIFI_RAM_CODE_MT7981.bin \
