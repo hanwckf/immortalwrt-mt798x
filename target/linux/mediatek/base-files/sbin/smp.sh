@@ -722,6 +722,7 @@ setup_model()
 	xiaomi,mi-router-wr30u* |\
 	*rax3000m* |\
 	h3c,nx30pro |\
+	konka,komi-a31 |\
 	*7981*)
 		MT7981_whnat $num_of_wifi
 		;;

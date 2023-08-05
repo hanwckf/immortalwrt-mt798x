@@ -197,6 +197,7 @@ platform_do_upgrade() {
 	*jcg,q30* |\
 	cmcc,rax3000m |\
 	h3c,nx30pro |\
+	*konka,komi-a31* |\
 	*snand*)
 		nand_do_upgrade "$1"
 		;;
