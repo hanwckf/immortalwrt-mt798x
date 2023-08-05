@@ -43,6 +43,7 @@ mediatek_setup_interfaces()
 			"1:lan" "2:lan" "3:lan" "0:wan" "6t@eth0"
 		;;
 	h3c,nx30pro |\
+	*konka,komi-a31* |\
 	*rax3000m*)
 		ucidef_set_interfaces_lan_wan "eth0" "eth1"
 		ucidef_add_switch "switch0" \
@@ -167,6 +168,12 @@ mediatek_setup_macs()
 			local wifi_mac="$(macaddr_add $wan_mac 2)"
 			mtk_facrory_write_mac "Factory" 4 $wifi_mac
 		fi
+		;;
+	*konka,komi-a31*)
+		lan_mac=$(mtd_get_mac_binary $part_name 0x2A)
+		wan_mac=$(mtd_get_mac_binary $part_name 0x24)
+		label_mac=$wan_mac
+		local wifi_mac="$(mtd_get_mac_binary $part_name 0x04)"
 		;;
 	*)
 		wan_mac=$(mtd_get_mac_binary $part_name $wan_mac_offset)
