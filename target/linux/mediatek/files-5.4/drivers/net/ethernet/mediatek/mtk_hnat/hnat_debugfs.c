@@ -2047,7 +2047,7 @@ static const struct file_operations hnat_mape_toggle_fops = {
 
 static int hnat_hook_toggle_read(struct seq_file *m, void *private)
 {
-	pr_info("value=%d, hook is %s now!\n", hook_toggle, (hook_toggle) ? "enabled" : "disabled");
+	seq_printf(m, "%s\n", (hook_toggle) ? "enabled" : "disabled");
 
 	return 0;
 }
@@ -2068,7 +2068,7 @@ static ssize_t hnat_hook_toggle_write(struct file *file, const char __user *buff
 		return -EFAULT;
 
 	if (buf[0] == '1' && !hook_toggle) {
-		pr_info("hook is going to be enabled !\n");
+		pr_info("hnat hook is going to be enabled !\n");
 		hnat_enable_hook();
 
 		if (IS_PPPQ_MODE) {
@@ -2076,7 +2076,7 @@ static ssize_t hnat_hook_toggle_write(struct file *file, const char __user *buff
 				hnat_qos_shaper_ebl(id, 1);
 		}
 	} else if (buf[0] == '0' && hook_toggle) {
-		pr_info("hook is going to be disabled !\n");
+		pr_info("hnat hook is going to be disabled !\n");
 		hnat_disable_hook();
 
 		if (IS_PPPQ_MODE) {
@@ -2098,7 +2098,7 @@ static const struct file_operations hnat_hook_toggle_fops = {
 
 static int hnat_qos_toggle_read(struct seq_file *m, void *private)
 {
-	pr_info("value=%d, HQoS is %s now!\n", qos_toggle, (qos_toggle) ? "enabled" : "disabled");
+	seq_printf(m, "%s\n", (qos_toggle) ? "enabled" : "disabled");
 
 	return 0;
 }
