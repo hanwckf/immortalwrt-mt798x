@@ -30,7 +30,8 @@ endef
 # 1: destination file
 define FeedSourcesAppend
 ( \
-  echo 'src/gz %d_core %U/targets/%S/packages'; \
+  $(if $(filter-out mt798%, $(if $(SUBTARGET),$(SUBTARGET),generic)), \
+    echo 'src/gz %d_core %U/targets/%S/packages';, echo -n '';) \
   $(strip $(if $(CONFIG_PER_FEED_REPO), \
 	echo 'src/gz %d_base %U/packages/%A/base'; \
 	$(if $(filter %SNAPSHOT-y,$(VERSION_NUMBER)-$(CONFIG_BUILDBOT)), \
