@@ -284,6 +284,10 @@ const char pair[4] = {'A', 'B', 'C', 'D'};
 		goto out;						\
 	}
 
+#define MTK_PHY_RG_DEV1E_REG2C7		0x2c7
+#define   MTK_PHY_MAX_GAIN_MASK		GENMASK(4, 0)
+#define   MTK_PHY_MIN_GAIN_MASK		GENMASK(12, 8)
+
 static int mtk_gephy_read_page(struct phy_device *phydev)
 {
 	return __phy_read(phydev, MTK_EXT_PAGE_ACCESS);
@@ -844,6 +848,11 @@ static int mt7531_phy_config_init(struct phy_device *phydev)
 	/* Set TX Pair delay selection */
 	phy_write_mmd(phydev, MDIO_MMD_VEND1, 0x13, 0x404);
 	phy_write_mmd(phydev, MDIO_MMD_VEND1, 0x14, 0x404);
+
+	/* Adjust RX min/max gain to fix CH395 100Mbps link up fail */
+	phy_write_mmd(phydev, MDIO_MMD_VEND1, MTK_PHY_RG_DEV1E_REG2C7,
+		      FIELD_PREP(MTK_PHY_MAX_GAIN_MASK, 0x8) |
+		      FIELD_PREP(MTK_PHY_MIN_GAIN_MASK, 0x13));
 
 	return 0;
 }

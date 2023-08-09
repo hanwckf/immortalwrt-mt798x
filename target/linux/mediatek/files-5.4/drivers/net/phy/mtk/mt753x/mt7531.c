@@ -132,6 +132,10 @@
 #define PHY_DEV1E_REG_189		0x189
 #define PHY_DEV1E_REG_234		0x234
 
+#define PHY_DEV1E_REG_2C7		0x2c7
+#define   MTK_PHY_MAX_GAIN_MASK		GENMASK(4, 0)
+#define   MTK_PHY_MIN_GAIN_MASK		GENMASK(12, 8)
+
 /* Fields of PHY_DEV1E_REG_0C6 */
 #define PHY_POWER_SAVING_S		8
 #define PHY_POWER_SAVING_M		0x300
@@ -877,6 +881,11 @@ static void mt7531_phy_setting(struct gsw_mt753x *gsw)
 		val = gsw->mii_read(gsw, i, MII_ADVERTISE);
 		val |= ADVERTISE_PAUSE_ASYM;
 		gsw->mii_write(gsw, i, MII_ADVERTISE, val);
+
+		/* Adjust RX min/max gain to fix CH395 100Mbps link up fail */
+		gsw->mmd_write(gsw, i, PHY_DEV1E, PHY_DEV1E_REG_2C7,
+			       FIELD_PREP(MTK_PHY_MAX_GAIN_MASK, 0x8) |
+			       FIELD_PREP(MTK_PHY_MIN_GAIN_MASK, 0x13));
 	}
 }
 
