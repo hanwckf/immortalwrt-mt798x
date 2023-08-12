@@ -6,12 +6,12 @@ include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/kernel.mk
 
 PKG_NAME:=ice
-PKG_VERSION:=1.11.14
+PKG_VERSION:=1.12.6
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=@SF/e1000/ice%20stable/$(PKG_VERSION)/
-PKG_HASH:=6419424dd82163d5965f646ec5c826c6706d93e6d3b5c33e2a4f8cef9070a812
+PKG_HASH:=55a7fb96c516c178180e07451beb621997148301f1b1be0bc52bf970850bc5cc
 
 PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
 PKG_LICENSE:=GPL-2.0-only
@@ -33,6 +33,17 @@ endef
 
 define KernelPackage/ice-vendor/description
   Kernel modules for Intel(R) Ethernet Controller E810 Series
+endef
+
+define Build/Configure
+	( \
+		pushd $(PKG_BUILD_DIR)/src ; \
+		KSRC=$(LINUX_DIR) \
+		OUT=kcompat_generated_defs.h \
+		CONFFILE=$(LINUX_DIR)/include/generated/autoconf.h \
+		bash kcompat-generator.sh ; \
+		popd ; \
+	)
 endef
 
 define Build/Compile

@@ -6,12 +6,12 @@ include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/kernel.mk
 
 PKG_NAME:=ixgbevf
-PKG_VERSION:=4.17.11
+PKG_VERSION:=4.18.7
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=@SF/e1000/ixgbevf%20stable/$(PKG_VERSION)/
-PKG_HASH:=59813a6f92e699b4cb6983b70b91137eece4609a113fa7bb60db0be9889d2b46
+PKG_HASH:=90f6cd614008839b6fc748ae0f4ad3503435f8b788318d4f40cfc83c7029025e
 
 PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
 PKG_LICENSE:=GPL-2.0-only
@@ -33,6 +33,17 @@ endef
 
 define KernelPackage/ixgbevf-vendor/description
   Kernel modules for Intel(R) 82599 Virtual Function Ethernet adapters.
+endef
+
+define Build/Configure
+	( \
+		pushd $(PKG_BUILD_DIR)/src ; \
+		KSRC=$(LINUX_DIR) \
+		OUT=kcompat_generated_defs.h \
+		CONFFILE=$(LINUX_DIR)/include/generated/autoconf.h \
+		bash kcompat-generator.sh ; \
+		popd ; \
+	)
 endef
 
 define Build/Compile
