@@ -243,17 +243,17 @@ int StaInfo(lua_State *L)
 {
 	int i, s;
 	struct iwreq iwr;
-	RT_802_11_MAC_TABLE *table;
+	RT_802_11_MAC_TABLE_FIX *table;
 	char tmpBuff[128] = {0};
 	char *phyMode[12] = {"CCK", "OFDM", "MM", "GF", "VHT", "HE",
 		"HE5G", "HE2G", "HE_SU", "HE_EXT_SU", "HE_TRIG", "HE_MU"};
 	const char *interface = luaL_checkstring(L, 1);
 
-	table = (RT_802_11_MAC_TABLE *)malloc(sizeof(RT_802_11_MAC_TABLE));
+	table = (RT_802_11_MAC_TABLE_FIX *)malloc(sizeof(RT_802_11_MAC_TABLE_FIX));
 	if (!table)
 		return -ENOMEM;
 
-	memset(table, 0, sizeof(RT_802_11_MAC_TABLE));
+	memset(table, 0, sizeof(RT_802_11_MAC_TABLE_FIX));
 
 	s = socket(AF_INET, SOCK_DGRAM, 0);
 
@@ -281,22 +281,22 @@ int StaInfo(lua_State *L)
 
 		lua_pushnumber(L, i);
 
-		RT_802_11_MAC_ENTRY *pe = &(table->Entry[i]);
+		RT_802_11_MAC_ENTRY_FIX *pe = &(table->Entry[i]);
 
-		HTTRANSMIT_SETTING RxRate;
-		RxRate.word = pe->LastRxRate;
+		HTTRANSMIT_SETTING_FIX RxRate;
+		HTTRANSMIT_SETTING_FIX TxRate;
+		RxRate.word = pe->LastRxRate.word;
+		TxRate.word = pe->TxRate.word;
 
-		/* vht tx mcs nss*/
-		unsigned int mcs = pe->TxRate.field.MCS;
+		unsigned int mcs = TxRate.field.MCS;
 		unsigned int nss = 0;
+		unsigned long DataRate = 0;
 
-		/* vht rx mcs nss*/
 		unsigned int mcs_r = RxRate.field.MCS;
 		unsigned int nss_r = 0;
+		unsigned long DataRate_r = 0;
 
 		int hr, min, sec;
-		unsigned long DataRate = 0;
-		unsigned long DataRate_r = 0;
 
 		hr = pe->ConnectedTime/3600;
 		min = (pe->ConnectedTime % 3600)/60;
@@ -324,56 +324,60 @@ int StaInfo(lua_State *L)
 		lua_pushstring(L, tmpBuff);
 		lua_setfield(L, -2, "MimoPs");
 
-		// TX Rate
-		if (pe->TxRate.field.MODE >= 4){
+		// TX Rate NSS-MCS
+		if (TxRate.field.MODE >= MODE_VHT) {
 			nss = ((mcs & (0x3 << 4)) >> 4) + 1;
 			mcs = mcs & 0xF;
 			snprintf(tmpBuff, sizeof(tmpBuff), "%dSS-MCS%d", nss, mcs);
 			lua_pushstring(L, tmpBuff);
 			lua_setfield(L, -2, "Mcs");
-		} else{
+		} else {
 			mcs = mcs & 0x3f;
-			snprintf(tmpBuff, sizeof(tmpBuff), "MCS%d", pe->TxRate.field.MCS);
+			snprintf(tmpBuff, sizeof(tmpBuff), "MCS%d", mcs);
 			lua_pushstring(L, tmpBuff);
 			lua_setfield(L, -2, "Mcs");
 		}
 
-		if (pe->TxRate.field.BW == 0){
+		// TX BW
+		if (TxRate.field.BW == BW_20) {
 			snprintf(tmpBuff, sizeof(tmpBuff), "%d", 20);
 			lua_pushstring(L, tmpBuff);
 			lua_setfield(L, -2, "Bw");
-		} else if (pe->TxRate.field.BW == 1){
+		} else if (TxRate.field.BW == BW_40) {
 			snprintf(tmpBuff, sizeof(tmpBuff), "%d", 40);
 			lua_pushstring(L, tmpBuff);
 			lua_setfield(L, -2, "Bw");
-		} else if (pe->TxRate.field.BW == 2){
+		} else if (TxRate.field.BW == BW_80) {
 			snprintf(tmpBuff, sizeof(tmpBuff), "%d", 80);
 			lua_pushstring(L, tmpBuff);
 			lua_setfield(L, -2, "Bw");
-		} else if (pe->TxRate.field.BW == 3){
+		} else if (TxRate.field.BW == BW_160) {
 			snprintf(tmpBuff, sizeof(tmpBuff), "%d", 160);
 			lua_pushstring(L, tmpBuff);
 			lua_setfield(L, -2, "Bw");
 		}
 
-		snprintf(tmpBuff, sizeof(tmpBuff), "%c", pe->TxRate.field.ShortGI ? 'S': 'L');
+		//TX SGI
+		snprintf(tmpBuff, sizeof(tmpBuff), "%c", TxRate.field.ShortGI ? 'S': 'L');
 		lua_pushstring(L, tmpBuff);
 		lua_setfield(L, -2, "Gi");
 
-		snprintf(tmpBuff, sizeof(tmpBuff), "%s", phyMode[pe->TxRate.field.MODE]);
+		//TX phy mode
+		snprintf(tmpBuff, sizeof(tmpBuff), "%s", phyMode[TxRate.field.MODE]);
 		lua_pushstring(L, tmpBuff);
 		lua_setfield(L, -2, "PhyMode");
 
-		snprintf(tmpBuff, sizeof(tmpBuff), "%s", pe->TxRate.field.STBC? "STBC": " ");
+		//TX STBC
+		snprintf(tmpBuff, sizeof(tmpBuff), "%s", TxRate.field.STBC? "STBC": " ");
 		lua_pushstring(L, tmpBuff);
 		lua_setfield(L, -2, "Stbc");
 
 		// TxBF configuration
-		snprintf(tmpBuff, sizeof(tmpBuff), "%c", pe->TxRate.field.iTxBF? 'I': '-');
+		snprintf(tmpBuff, sizeof(tmpBuff), "%c", TxRate.field.iTxBF ? 'I': '-');
 		lua_pushstring(L, tmpBuff);
 		lua_setfield(L, -2, "iTxBF");
 
-		snprintf(tmpBuff, sizeof(tmpBuff), "%c", pe->TxRate.field.eTxBF? 'E': '-');
+		snprintf(tmpBuff, sizeof(tmpBuff), "%c", TxRate.field.eTxBF ? 'E': '-');
 		lua_pushstring(L, tmpBuff);
 		lua_setfield(L, -2, "eTxBF");
 
@@ -390,6 +394,10 @@ int StaInfo(lua_State *L)
 		lua_pushstring(L, tmpBuff);
 		lua_setfield(L, -2, "AvgRssi2");
 
+		snprintf(tmpBuff, sizeof(tmpBuff), "%d", (int)(pe->AvgRssi3));
+		lua_pushstring(L, tmpBuff);
+		lua_setfield(L, -2, "AvgRssi3");
+
 		// Per Stream SNR
 		snprintf(tmpBuff, sizeof(tmpBuff), "%0.1f", pe->StreamSnr[0]*0.25);
 		lua_pushstring(L, tmpBuff);
@@ -402,7 +410,7 @@ int StaInfo(lua_State *L)
 		lua_setfield(L, -2, "StreamSnr2");
 
 		// Sounding Response SNR
-		if (pe->TxRate.field.eTxBF) {
+		if (TxRate.field.eTxBF) {
 			snprintf(tmpBuff, sizeof(tmpBuff), "%0.1f", pe->SoundingRespSnr[0]*0.25);
 			lua_pushstring(L, tmpBuff);
 			lua_setfield(L, -2, "SoundingRespSnr0");
@@ -414,63 +422,40 @@ int StaInfo(lua_State *L)
 			lua_setfield(L, -2, "SoundingRespSnr2");
 		}
 
-		// Last RX Rate
+		// Last RX NSS-MCS
 		if (RxRate.field.MODE >= MODE_VHT) {
-			nss_r = ((mcs_r & (0x3 << 4)) >> 4) + 1;
+			nss_r = (((mcs_r & (0x3 << 4)) >> 4) + 1) / (RxRate.field.STBC + 1);
 			mcs_r = mcs_r & 0xF;
 			snprintf(tmpBuff, sizeof(tmpBuff), "%dSS-MCS%d", nss_r, mcs_r);
-		} else if (RxRate.field.MODE == MODE_HTMIX) {
+		} else if (RxRate.field.MODE >= MODE_HTMIX) {
 			mcs_r = mcs_r & 0x3f;
 			snprintf(tmpBuff, sizeof(tmpBuff), "MCS%d", mcs_r);
 		} else if (RxRate.field.MODE == MODE_OFDM) {
-			mcs_r = mcs_r & 0xF;
-			if (mcs_r == TMI_TX_RATE_OFDM_6M)
-				snprintf(tmpBuff, sizeof(tmpBuff), "MCS%d", 0);
-			else if (mcs_r == TMI_TX_RATE_OFDM_9M)
-				snprintf(tmpBuff, sizeof(tmpBuff), "MCS%d", 1);
-			else if (mcs_r == TMI_TX_RATE_OFDM_12M)
-				snprintf(tmpBuff, sizeof(tmpBuff), "MCS%d", 2);
-			else if (mcs_r == TMI_TX_RATE_OFDM_18M)
-				snprintf(tmpBuff, sizeof(tmpBuff), "MCS%d", 3);
-			else if (mcs_r == TMI_TX_RATE_OFDM_24M)
-				snprintf(tmpBuff, sizeof(tmpBuff), "MCS%d", 4);
-			else if (mcs_r == TMI_TX_RATE_OFDM_36M)
-				snprintf(tmpBuff, sizeof(tmpBuff), "MCS%d", 5);
-			else if (mcs_r == TMI_TX_RATE_OFDM_48M)
-				snprintf(tmpBuff, sizeof(tmpBuff), "MCS%d", 6);
-			else if (mcs_r == TMI_TX_RATE_OFDM_54M)
-				snprintf(tmpBuff, sizeof(tmpBuff), "MCS%d", 7);
-			else
-				snprintf(tmpBuff, sizeof(tmpBuff), "MCS%d", 0);
+			mcs_r = mcs_r & 0xf;
+			snprintf(tmpBuff, sizeof(tmpBuff), "MCS%d", mcs_r);
+			RxRate.field.MCS = mcs_r;
 		} else if (RxRate.field.MODE == MODE_CCK) {
-			mcs_r = mcs_r & 0x7;
-			if (mcs_r == TMI_TX_RATE_CCK_1M_LP)
-				snprintf(tmpBuff, sizeof(tmpBuff), "MCS%d", 0);
-			else if (mcs_r == TMI_TX_RATE_CCK_2M_LP || mcs_r == TMI_TX_RATE_CCK_2M_SP)
-				snprintf(tmpBuff, sizeof(tmpBuff), "MCS%d", 1);
-			else if (mcs_r == TMI_TX_RATE_CCK_5M_LP || mcs_r == TMI_TX_RATE_CCK_5M_SP)
-				snprintf(tmpBuff, sizeof(tmpBuff), "MCS%d", 2);
-			else if (mcs_r == TMI_TX_RATE_CCK_11M_LP || mcs_r == TMI_TX_RATE_CCK_11M_SP)
-				snprintf(tmpBuff, sizeof(tmpBuff), "MCS%d", 3);
-			else
-				snprintf(tmpBuff, sizeof(tmpBuff), "MCS%d", 0);
+			mcs_r = cck_to_mcs(mcs_r & 0x7);
+			snprintf(tmpBuff, sizeof(tmpBuff), "MCS%d", mcs_r);
+			RxRate.field.MCS = mcs_r;
 		}
+
 		lua_pushstring(L, tmpBuff);
 		lua_setfield(L, -2, "LastMcs");
 
-		if (RxRate.field.BW == 0){
+		if (RxRate.field.BW == BW_20) {
 			snprintf(tmpBuff, sizeof(tmpBuff), "%d", 20);
 			lua_pushstring(L, tmpBuff);
 			lua_setfield(L, -2, "LastBw");
-		} else if (RxRate.field.BW == 1){
+		} else if (RxRate.field.BW == BW_40) {
 			snprintf(tmpBuff, sizeof(tmpBuff), "%d", 40);
 			lua_pushstring(L, tmpBuff);
 			lua_setfield(L, -2, "LastBw");
-		} else if (RxRate.field.BW == 2){
+		} else if (RxRate.field.BW == BW_80) {
 			snprintf(tmpBuff, sizeof(tmpBuff), "%d", 80);
 			lua_pushstring(L, tmpBuff);
 			lua_setfield(L, -2, "LastBw");
-		} else if (RxRate.field.BW == 3){
+		} else if (RxRate.field.BW == BW_160) {
 			snprintf(tmpBuff, sizeof(tmpBuff), "%d", 160);
 			lua_pushstring(L, tmpBuff);
 			lua_setfield(L, -2, "LastBw");
@@ -501,10 +486,14 @@ int StaInfo(lua_State *L)
 		lua_pushstring(L, tmpBuff);
 		lua_setfield(L, -2, "Sec");
 
-		if (pe->TxRate.field.MODE >= MODE_HE) {
-			get_rate_he((mcs & 0xf), pe->TxRate.field.BW, nss, 0, &DataRate);
+		if (TxRate.field.MODE >= MODE_HE) {
+			get_rate_he((mcs & 0xf), TxRate.field.BW, nss, 0, &DataRate);
+			if (TxRate.field.ShortGI == 1)
+				DataRate = (DataRate * 967) >> 10;
+			else if (TxRate.field.ShortGI == 2)
+				DataRate = (DataRate * 870) >> 10;
 		} else {
-			getRate(pe->TxRate, &DataRate);
+			getRate(TxRate, &DataRate);
 		}
 
 		snprintf(tmpBuff, sizeof(tmpBuff), "%ld", DataRate);
@@ -513,6 +502,10 @@ int StaInfo(lua_State *L)
 
 		if (RxRate.field.MODE >= MODE_HE) {
 			get_rate_he((mcs_r & 0xf), RxRate.field.BW, nss_r, 0, &DataRate_r);
+			if (RxRate.field.ShortGI == 1)
+				DataRate_r = (DataRate_r * 967) >> 10;
+			else if (RxRate.field.ShortGI == 2)
+				DataRate_r = (DataRate_r * 870) >> 10;
 		} else {
 			getRate(RxRate, &DataRate_r);
 		}
@@ -526,4 +519,3 @@ int StaInfo(lua_State *L)
 	free(table);
 	return 1;
 }
-

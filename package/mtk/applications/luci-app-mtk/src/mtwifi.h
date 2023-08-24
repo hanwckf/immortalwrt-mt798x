@@ -6,6 +6,7 @@
 #define ULONG	unsigned long
 #define UINT8	unsigned char
 #define UINT16	unsigned short
+#define UINT32	unsigned int
 #define INT32	int
 #define INT 	int
 
@@ -13,7 +14,7 @@
 #include <lauxlib.h>						   /* Always include this */
 #include <lualib.h>							/* Always include this */
 
-typedef union _HTTRANSMIT_SETTING {
+typedef union _HTTRANSMIT_SETTING_FIX {
 	struct {
 		USHORT MCS:6;
 		USHORT ldpc:1;
@@ -22,12 +23,12 @@ typedef union _HTTRANSMIT_SETTING {
 		USHORT STBC:1;
 		USHORT eTxBF:1;
 		USHORT iTxBF:1;
-		USHORT MODE:3;
+		USHORT MODE:4;
 	} field;
-	USHORT word;
-} HTTRANSMIT_SETTING, *PHTTRANSMIT_SETTING;
+	UINT32 word;
+} HTTRANSMIT_SETTING_FIX, *PHTTRANSMIT_SETTING_FIX;
 
-typedef struct _RT_802_11_MAC_ENTRY {
+typedef struct _RT_802_11_MAC_ENTRY_FIX {
 	unsigned char           ApIdx;
 	unsigned char           Addr[6];
 	unsigned short          Aid;
@@ -36,21 +37,20 @@ typedef struct _RT_802_11_MAC_ENTRY {
 	signed char             AvgRssi0;
 	signed char             AvgRssi1;
 	signed char             AvgRssi2;
+	signed char             AvgRssi3;
 	unsigned int            ConnectedTime;
-	HTTRANSMIT_SETTING      TxRate;
-	unsigned int            LastRxRate;
+	HTTRANSMIT_SETTING_FIX      TxRate;
+	HTTRANSMIT_SETTING_FIX      LastRxRate;
 	short                   StreamSnr[3];
 	short                   SoundingRespSnr[3];
-	//short                   TxPER;
-	//short                   reserved;
-} RT_802_11_MAC_ENTRY;
+} RT_802_11_MAC_ENTRY_FIX;
 
 #define MAX_NUMBER_OF_MAC               544
 
 typedef struct _RT_802_11_MAC_TABLE {
 	unsigned long            Num;
-	RT_802_11_MAC_ENTRY      Entry[MAX_NUMBER_OF_MAC];
-} RT_802_11_MAC_TABLE;
+	RT_802_11_MAC_ENTRY_FIX      Entry[MAX_NUMBER_OF_MAC];
+} RT_802_11_MAC_TABLE_FIX;
 
 #define IF_NAMESIZE			16
 #define SIOCIWFIRSTPRIV			0x8BE0
@@ -122,6 +122,8 @@ int StaInfo(lua_State *L);
 int getWMOde(lua_State *L);
 int getTempature(lua_State *L);
 int scanResult(lua_State *L);
-void getRate(HTTRANSMIT_SETTING HTSetting, ULONG *fLastTxRxRate);
+void getRate(HTTRANSMIT_SETTING_FIX HTSetting, ULONG *fLastTxRxRate);
 void get_rate_he(UINT8 mcs, UINT8 bw, UINT8 nss, UINT8 dcm, ULONG *last_tx_rate);
+UINT32 cck_to_mcs(UINT32 mcs);
+
 #endif

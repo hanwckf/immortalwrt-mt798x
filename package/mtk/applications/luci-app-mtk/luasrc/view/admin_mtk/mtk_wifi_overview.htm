@@ -234,6 +234,13 @@ local chipname
             table.deleteRow(-1);
     }
 
+    function is_rssi_valid(rssi)
+    {
+        if (rssi == "-109" || rssi == "-127")
+            return false;
+        return true;
+    }
+
     function insert_stalist_table(ifname, ssid, sta_list)
     {
         var i, tr_row, td_cell;
@@ -262,9 +269,13 @@ local chipname
             td_cell = tr_row.insertCell(-1);
             td_cell.innerHTML = host_str;
             
-            rssi_str = sta_list[i].AvgRssi0 + ", " + sta_list[i].AvgRssi1;
-            if (sta_list[i].AvgRssi2 != "-127")
+            rssi_str = sta_list[i].AvgRssi0;
+            if (is_rssi_valid(sta_list[i].AvgRssi1))
+                rssi_str = rssi_str + ", " + sta_list[i].AvgRssi1;
+            if (is_rssi_valid(sta_list[i].AvgRssi2))
                 rssi_str = rssi_str + ", " + sta_list[i].AvgRssi2;
+            if (is_rssi_valid(sta_list[i].AvgRssi3))
+                rssi_str = rssi_str + ", " + sta_list[i].AvgRssi3;
             td_cell = tr_row.insertCell(-1);
             td_cell.innerHTML = rssi_str;
 

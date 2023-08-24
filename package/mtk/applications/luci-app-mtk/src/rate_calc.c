@@ -4,6 +4,26 @@
 #define MAX_NUM_HE_SPATIAL_STREAMS 4
 #define MAX_NUM_HE_MCS_ENTRIES 12
 
+UINT32 cck_to_mcs(UINT32 mcs) {
+	UINT32 ret = 0;
+	if (mcs == TMI_TX_RATE_CCK_1M_LP)
+		ret = 0;
+	else if (mcs == TMI_TX_RATE_CCK_2M_LP)
+		ret = 1;
+	else if (mcs == TMI_TX_RATE_CCK_5M_LP)
+		ret = 2;
+	else if (mcs == TMI_TX_RATE_CCK_11M_LP)
+		ret = 3;
+	else if (mcs == TMI_TX_RATE_CCK_2M_SP)
+		ret = 1;
+	else if (mcs == TMI_TX_RATE_CCK_5M_SP)
+		ret = 2;
+	else if (mcs == TMI_TX_RATE_CCK_11M_SP)
+		ret = 3;
+
+	return ret;
+}
+
 static UINT16 he_mcs_phyrate_mapping_table[MAX_NUM_HE_BANDWIDTHS][MAX_NUM_HE_SPATIAL_STREAMS][MAX_NUM_HE_MCS_ENTRIES] = {
 	{ /*20 Mhz*/
 		/* 1 SS */
@@ -390,7 +410,7 @@ static INT MCSMappingRateTable[] = {
 }; /* 3*3 */
 
 
-void getRate(HTTRANSMIT_SETTING HTSetting, ULONG *fLastTxRxRate)
+void getRate(HTTRANSMIT_SETTING_FIX HTSetting, ULONG *fLastTxRxRate)
 {
 	UINT8					Antenna = 0;
 	UINT8					MCS = HTSetting.field.MCS;
