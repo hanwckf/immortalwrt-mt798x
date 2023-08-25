@@ -223,6 +223,40 @@ define Device/cetron_ct3003
 endef
 TARGET_DEVICES += cetron_ct3003
 
+define Device/mt7981-clt-r30b1
+  DEVICE_VENDOR := MediaTek
+  DEVICE_MODEL := CLT R30B1
+  DEVICE_DTS := mt7981-clt-r30b1
+  DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
+  SUPPORTED_DEVICES := clt,30rb1
+  UBINIZE_OPTS := -E 5
+  BLOCKSIZE := 128k
+  PAGESIZE := 2048
+  IMAGE_SIZE := 65536k
+  KERNEL_IN_UBI := 1
+  IMAGES += factory.bin
+  IMAGE/factory.bin := append-ubi | check-size $$$$(IMAGE_SIZE)
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+endef
+TARGET_DEVICES += mt7981-clt-r30b1
+
+define Device/mt7981-clt-r30b1-112M
+  DEVICE_VENDOR := MediaTek
+  DEVICE_MODEL := CLT R30B1 (with 112M ubi)
+  DEVICE_DTS := mt7981-clt-r30b1-112M
+  DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
+  SUPPORTED_DEVICES := clt,r30b1
+  UBINIZE_OPTS := -E 5
+  BLOCKSIZE := 128k
+  PAGESIZE := 2048
+  IMAGE_SIZE := 114688k
+  KERNEL_IN_UBI := 1
+  IMAGES += factory.bin
+  IMAGE/factory.bin := append-ubi | check-size $$$$(IMAGE_SIZE)
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+endef
+TARGET_DEVICES += mt7981-clt-r30b1-112M
+
 define Device/xiaomi_mi-router-wr30u-stock
   DEVICE_VENDOR := Xiaomi
   DEVICE_MODEL := Mi Router WR30U (stock layout)
