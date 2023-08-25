@@ -358,7 +358,18 @@ int StaInfo(lua_State *L)
 		}
 
 		//TX SGI
-		snprintf(tmpBuff, sizeof(tmpBuff), "%c", TxRate.field.ShortGI ? 'S': 'L');
+		if (TxRate.field.MODE < MODE_HTMIX) {
+			snprintf(tmpBuff, sizeof(tmpBuff), "%s", "LGI");
+		} else if (TxRate.field.MODE >= MODE_HE) {
+			if (TxRate.field.ShortGI == 0)
+				snprintf(tmpBuff, sizeof(tmpBuff), "%s", "SGI");
+			else if (TxRate.field.ShortGI == 1)
+				snprintf(tmpBuff, sizeof(tmpBuff), "%s", "MGI");
+			else if (TxRate.field.ShortGI == 2)
+				snprintf(tmpBuff, sizeof(tmpBuff), "%s", "LGI");
+		} else {
+			snprintf(tmpBuff, sizeof(tmpBuff), "%s", TxRate.field.ShortGI ? "SGI" : "LGI");
+		}
 		lua_pushstring(L, tmpBuff);
 		lua_setfield(L, -2, "Gi");
 
@@ -461,7 +472,18 @@ int StaInfo(lua_State *L)
 			lua_setfield(L, -2, "LastBw");
 		}
 
-		snprintf(tmpBuff, sizeof(tmpBuff), "%c", RxRate.field.ShortGI ? 'S': 'L');
+		if (RxRate.field.MODE < MODE_HTMIX) {
+			snprintf(tmpBuff, sizeof(tmpBuff), "%s", "LGI");
+		} else if (RxRate.field.MODE >= MODE_HE) {
+			if (RxRate.field.ShortGI == 0)
+				snprintf(tmpBuff, sizeof(tmpBuff), "%s", "SGI");
+			else if (RxRate.field.ShortGI == 1)
+				snprintf(tmpBuff, sizeof(tmpBuff), "%s", "MGI");
+			else if (RxRate.field.ShortGI == 2)
+				snprintf(tmpBuff, sizeof(tmpBuff), "%s", "LGI");
+		} else {
+			snprintf(tmpBuff, sizeof(tmpBuff), "%s", RxRate.field.ShortGI ? "SGI" : "LGI");
+		}
 		lua_pushstring(L, tmpBuff);
 		lua_setfield(L, -2, "LastGi");
 

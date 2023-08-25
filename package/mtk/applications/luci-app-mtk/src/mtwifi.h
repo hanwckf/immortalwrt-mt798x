@@ -19,7 +19,7 @@ typedef union _HTTRANSMIT_SETTING_FIX {
 		USHORT MCS:6;
 		USHORT ldpc:1;
 		USHORT BW:2;
-		USHORT ShortGI:1;
+		USHORT ShortGI:2;
 		USHORT STBC:1;
 		USHORT eTxBF:1;
 		USHORT iTxBF:1;

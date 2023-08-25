@@ -281,11 +281,11 @@ local chipname
 
             //TxRate
             td_cell = tr_row.insertCell(-1);
-            td_cell.innerHTML = sta_list[i].TxRate + "Mbps," + sta_list[i].Bw+ "MHz" + "<br>" + sta_list[i].PhyMode + ", " + sta_list[i].Mcs + ", " + sta_list[i].Gi + "GI";
+            td_cell.innerHTML = sta_list[i].TxRate + "Mbps," + sta_list[i].Bw+ "MHz" + "<br>" + sta_list[i].PhyMode + ", " + sta_list[i].Mcs + ", " + sta_list[i].Gi;
 
             //RxRate
             td_cell = tr_row.insertCell(-1);
-            td_cell.innerHTML = sta_list[i].RxRate + "Mbps," + sta_list[i].LastBw + "MHz" + "<br>" + sta_list[i].LastPhyMode + ", " + sta_list[i].LastMcs + ", " + sta_list[i].LastGi + "GI";
+            td_cell.innerHTML = sta_list[i].RxRate + "Mbps," + sta_list[i].LastBw + "MHz" + "<br>" + sta_list[i].LastPhyMode + ", " + sta_list[i].LastMcs + ", " + sta_list[i].LastGi;
 
             td_cell = tr_row.insertCell(-1);
             td_cell.innerHTML = sta_list[i].Hr + ":" + sta_list[i].Min + ":" + sta_list[i].Sec;
