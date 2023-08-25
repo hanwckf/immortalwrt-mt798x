@@ -11,6 +11,11 @@ board=$(board_name)
 board_config_update
 
 case "$board" in
+clt,r30b1)
+	ucidef_set_led_default "green" "GREEN" "r30b1:green" "1"
+	ucidef_set_led_default "red" "RED" "r30b1:red" "0"
+	ucidef_set_led_netdev "blue" "BLUE" "r30b1:blue" "eth1"
+	;;
 imou,lc-hx3001)
 	ucidef_set_led_netdev "wan" "WAN" "green:wan" "eth1" "link"
 	ucidef_set_led_netdev "lan" "LAN" "green:lan" "eth0" "link"
