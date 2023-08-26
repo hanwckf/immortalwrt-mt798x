@@ -302,8 +302,8 @@ int StaInfo(lua_State *L)
 		min = (pe->ConnectedTime % 3600)/60;
 		sec = pe->ConnectedTime - hr*3600 - min*60;
 
-		 /*Creates first child table of size 32 non-array elements: */
-		lua_createtable(L, 0, 32);
+		/* Creates first child table of size 34 non-array elements: */
+		lua_createtable(L, 0, 34);
 
 		// MAC Address
 		snprintf(tmpBuff, sizeof(tmpBuff), "%02X:%02X:%02X:%02X:%02X:%02X", pe->Addr[0], pe->Addr[1], pe->Addr[2], pe->Addr[3],
@@ -535,6 +535,14 @@ int StaInfo(lua_State *L)
 		snprintf(tmpBuff, sizeof(tmpBuff), "%ld", DataRate_r);
 		lua_pushstring(L, tmpBuff);
 		lua_setfield(L, -2, "RxRate");
+
+		snprintf(tmpBuff, sizeof(tmpBuff), "%s", GetEncryModeStr(pe->EncryMode));
+		lua_pushstring(L, tmpBuff);
+		lua_setfield(L, -2, "EncryptMode");
+
+		snprintf(tmpBuff, sizeof(tmpBuff), "%s", GetAuthModeStr(pe->AuthMode));
+		lua_pushstring(L, tmpBuff);
+		lua_setfield(L, -2, "AuthMode");
 
 		lua_settable(L, -3);
 	}

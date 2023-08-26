@@ -210,6 +210,7 @@ local chipname
                 <th class="cbi-section-table-cell">SSID</th>
                 <th class="cbi-section-table-cell"><%:MAC-Address%></th>
                 <th class="cbi-section-table-cell"><%:Hostname%></th>
+                <th class="cbi-section-table-cell"><%:Security%></th>
                 <th class="cbi-section-table-cell"><%:Signal%> (dBm)</th>
                 <th class="cbi-section-table-cell"><%:TX Rate%></th>
                 <th class="cbi-section-table-cell"><%:RX Rate%></th>
@@ -268,7 +269,10 @@ local chipname
                 host_str = host_str + "<br>" + sta_list[i].ipv6
             td_cell = tr_row.insertCell(-1);
             td_cell.innerHTML = host_str;
-            
+
+            td_cell = tr_row.insertCell(-1);
+            td_cell.innerHTML = sta_list[i].security;
+
             rssi_str = sta_list[i].AvgRssi0;
             if (is_rssi_valid(sta_list[i].AvgRssi1))
                 rssi_str = rssi_str + ", " + sta_list[i].AvgRssi1;

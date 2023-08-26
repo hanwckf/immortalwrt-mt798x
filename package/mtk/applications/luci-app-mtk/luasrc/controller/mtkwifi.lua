@@ -965,6 +965,7 @@ function sta_info(ifname)
             end
             table.insert(output, stalist[i])
         end
+        stalist[i].security = stalist[i].AuthMode.."-"..stalist[i].EncryptMode
     end
     http.write_json(output)
 end

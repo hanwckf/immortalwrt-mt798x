@@ -438,3 +438,6 @@ msgstr "Radius空闲超时时间为空。"
 
 msgid "IGMP Snooping"
 msgstr "IGMP 侦听"
+
+msgid "Security"
+msgstr "安全性"
