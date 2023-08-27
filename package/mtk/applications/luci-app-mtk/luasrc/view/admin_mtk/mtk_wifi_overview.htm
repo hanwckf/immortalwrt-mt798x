@@ -63,7 +63,8 @@ local chipname
                         </td>
                         <td style="width:310px;text-align:right">
                             <div id="ActionBtns_<%=string.split(dev.devname,".")[1]%>">
-                                <button class="cbi-button cbi-button-edit" onclick="visit_url('<%=string.split(dev.devname,".")[1]%>','<%=luci.dispatcher.build_url("admin", "network", "wifi", "chip_cfg_view", dev.devname)%>')"><%:CONFIG%></button>
+                                <button class="cbi-button cbi-button-edit" onclick="visit_url('<%=string.split(dev.devname,".")[1]%>',
+                                    '<%=luci.dispatcher.build_url("admin", "network", "wifi", "chip_cfg_view", dev.devname)%>')"><%:CONFIG%></button>
                             </div>
                             <div id="BusyText_<%=string.split(dev.devname,".")[1]%>" style="display:none">
                                 <big><strong><%:Processing request.%></strong></big>
@@ -87,10 +88,13 @@ local chipname
                     <td style="width:310px;text-align:right">
                         <div id="ActionBtns_<%=dev.devname%>">
                             <%if not dev.vifs then%>
-                                <button class="cbi-button cbi-button-apply" id="reset" onclick="visit_url('<%=dev.devname%>','<%=luci.dispatcher.build_url("admin", "network", "wifi", "reset_to_defaults", dev.devname)%>')"><%:Restore Profile to Factory Settings%></button>
+                                <button class="cbi-button cbi-button-apply" id="reset" onclick="visit_url('<%=dev.devname%>',
+                                    '<%=luci.dispatcher.build_url("admin", "network", "wifi", "reset_to_defaults", dev.devname)%>')"><%:Restore Profile to Factory Settings%></button>
                             <%else%>
-                                <button class="cbi-button cbi-button-reset" onclick="visit_url('<%=dev.devname%>','<%=luci.dispatcher.build_url("admin", "network", "wifi", "reload", dev.devname)%>')"><%:RELOAD%></button>
-                                <button class="cbi-button cbi-button-edit" onclick="visit_url('<%=dev.devname%>','<%=luci.dispatcher.build_url("admin", "network", "wifi", "dev_cfg_view", dev.devname)%>')"><%:CONFIG%></button>
+                                <button class="cbi-button cbi-button-reset" onclick="visit_url_confirm('<%:Are you sure to RELOAD%> <%=dev.devname%>?',
+                                    '<%=dev.devname%>','<%=luci.dispatcher.build_url("admin", "network", "wifi", "reload", dev.devname)%>')"><%:RELOAD%></button>
+                                <button class="cbi-button cbi-button-edit" onclick="visit_url('<%=dev.devname%>',
+                                    '<%=luci.dispatcher.build_url("admin", "network", "wifi", "dev_cfg_view", dev.devname)%>')"><%:CONFIG%></button>
                                 <button class="cbi-button cbi-button-add" onclick='add_vif("<%=dev.devname%>","<%=dev.vifs.__prefix%>","<%=dev.maxVif%>")'><%:ADD%></button>
                             <%end%>
                         </div>
@@ -136,12 +140,16 @@ local chipname
                                 <% if not vif.state then %>
                                 <button class="cbi-button cbi-button-apply" onclick="alert('Please click on Reload button of ' + '<%=dev.devname%>' + ' device to enable this interface.')"><%:ENABLE%></button>
                                 <% elseif vif.state == "up" then %>
-                                <button class="cbi-button cbi-button-reset" onclick="visit_url('<%=vif.vifname%>','<%=luci.dispatcher.build_url("admin", "network", "wifi", "vif_disable", vif.vifname)%>')"><%:DISABLE%></button>
+                                <button class="cbi-button cbi-button-reset" onclick="visit_url_confirm('<%:Are you sure to DISABLE%> <%=vif.vifname%>?',
+                                    '<%=vif.vifname%>','<%=luci.dispatcher.build_url("admin", "network", "wifi", "vif_disable", vif.vifname)%>')"><%:DISABLE%></button>
                                 <% else %>
-                                <button class="cbi-button cbi-button-apply" onclick="visit_url('<%=vif.vifname%>','<%=luci.dispatcher.build_url("admin", "network", "wifi", "vif_enable", vif.vifname)%>')"><%:ENABLE%></button>
+                                <button class="cbi-button cbi-button-apply" onclick="visit_url('<%=vif.vifname%>',
+                                    '<%=luci.dispatcher.build_url("admin", "network", "wifi", "vif_enable", vif.vifname)%>')"><%:ENABLE%></button>
                                 <% end %>
-                                <button class="cbi-button cbi-button-edit" onclick="visit_url('<%=vif.vifname%>','<%=luci.dispatcher.build_url("admin", "network", "wifi", "vif_cfg_view", dev.devname, vif.vifname)%>')"><%:CONFIG%></button>
-                                <button class="cbi-button cbi-button-remove" onclick="visit_url('<%=vif.vifname%>','<%=luci.dispatcher.build_url("admin", "network", "wifi", "vif_del", dev.devname, vif.vifname)%>')"><%:REMOVE%></button>
+                                <button class="cbi-button cbi-button-edit" onclick="visit_url('<%=vif.vifname%>',
+                                    '<%=luci.dispatcher.build_url("admin", "network", "wifi", "vif_cfg_view", dev.devname, vif.vifname)%>')"><%:CONFIG%></button>
+                                <button class="cbi-button cbi-button-remove" onclick="visit_url_confirm('<%:Are you sure to REMOVE%> <%=vif.vifname%>?',
+                                    '<%=vif.vifname%>','<%=luci.dispatcher.build_url("admin", "network", "wifi", "vif_del", dev.devname, vif.vifname)%>')"><%:REMOVE%></button>
                             </div>
                             <div id="BusyText_<%=vif.vifname%>" style="display:none">
                                 <big><strong><%:Processing request.%></strong></big>
@@ -176,16 +184,24 @@ local chipname
                             <div id="ActionBtns_<%=dev.apcli.devname%>">
                                 <% if dev.ApCliEnable ~= "1" then %>
                                     <% if dev.apcli.state == "up" then %>
-                                    <button class="cbi-button cbi-button-reset" onclick="visit_url('<%=dev.apcli.devname%>','<%=luci.dispatcher.build_url("admin", "network", "wifi", "vif_disable", dev.apcli.vifname)%>')"><%:DISABLE%></button>
-                                    <button class="cbi-button cbi-button-reload" onclick="visit_url('<%=dev.apcli.devname%>','<%=luci.dispatcher.build_url("admin", "network", "wifi", "apcli_connect", dev.devname, dev.apcli.vifname)%>')"><%:RECONNECT%></button>
+                                    <button class="cbi-button cbi-button-reset" onclick="visit_url_confirm('<%:Are you sure to DISABLE%> <%=dev.apcli.devname%>?',
+                                        '<%=dev.apcli.devname%>','<%=luci.dispatcher.build_url("admin", "network", "wifi", "vif_disable", dev.apcli.vifname)%>')"><%:DISABLE%></button>
+                                    <button class="cbi-button cbi-button-reload" onclick="visit_url_confirm('<%:Are you sure to RECONNECT%> <%=dev.apcli.devname%>?',
+                                        '<%=dev.apcli.devname%>','<%=luci.dispatcher.build_url("admin", "network", "wifi", "apcli_connect", dev.devname, dev.apcli.vifname)%>')"><%:RECONNECT%></button>
                                     <% end %>
-                                    <button class="cbi-button cbi-button-edit" onclick="visit_url('<%=dev.apcli.devname%>','<%=luci.dispatcher.build_url("admin", "network", "wifi", "apcli_cfg_view", dev.devname, dev.apcli.vifname)%>')"><%:CONFIG%></button>
+                                    <button class="cbi-button cbi-button-edit" onclick="visit_url('<%=dev.apcli.devname%>',
+                                        '<%=luci.dispatcher.build_url("admin", "network", "wifi", "apcli_cfg_view", dev.devname, dev.apcli.vifname)%>')"><%:CONFIG%></button>
                                 <% else %>
-                                    <button class="cbi-button cbi-button-reset" style="display:none" id="ApCliDownBtn_<%=dev.apcli.devname%>" onclick="visit_url('<%=dev.apcli.devname%>','<%=luci.dispatcher.build_url("admin", "network", "wifi", "vif_disable", dev.apcli.vifname)%>')"><%:DISABLE%></button>
-                                    <button class="cbi-button cbi-button-apply" style="display:none" id="ApCliUpBtn_<%=dev.apcli.devname%>" onclick="visit_url('<%=dev.apcli.devname%>','<%=luci.dispatcher.build_url("admin", "network", "wifi", "vif_enable", dev.apcli.vifname)%>')"><%:ENABLE%></button>
-                                    <button class="cbi-button cbi-button-remove" style="display:none" id="ApCliDisConnBtn_<%=dev.apcli.devname%>" onclick="visit_url('<%=dev.apcli.devname%>','<%=luci.dispatcher.build_url("admin", "network", "wifi", "apcli_disconnect", dev.devname, dev.apcli.vifname)%>')"><%:DISCONNECT%></button>
-                                    <button class="cbi-button cbi-button-reload" style="display:none" id="ApCliConnBtn_<%=dev.apcli.devname%>" onclick="visit_url('<%=dev.apcli.devname%>','<%=luci.dispatcher.build_url("admin", "network", "wifi", "apcli_connect", dev.devname, dev.apcli.vifname)%>')"><%:RECONNECT%></button>
-                                    <button class="cbi-button cbi-button-edit"  style="display:none" id="ApCliCfgBtn_<%=dev.apcli.devname%>" onclick="visit_url('<%=dev.apcli.devname%>','<%=luci.dispatcher.build_url("admin", "network", "wifi", "apcli_cfg_view", dev.devname, dev.apcli.vifname)%>')"><%:CONFIG%></button>
+                                    <button class="cbi-button cbi-button-reset" style="display:none" id="ApCliDownBtn_<%=dev.apcli.devname%>" onclick="visit_url_confirm('<%:Are you sure to DISABLE%> <%=dev.apcli.devname%>?',
+                                        '<%=dev.apcli.devname%>','<%=luci.dispatcher.build_url("admin", "network", "wifi", "vif_disable", dev.apcli.vifname)%>')"><%:DISABLE%></button>
+                                    <button class="cbi-button cbi-button-apply" style="display:none" id="ApCliUpBtn_<%=dev.apcli.devname%>" onclick="visit_url('<%=dev.apcli.devname%>',
+                                        '<%=luci.dispatcher.build_url("admin", "network", "wifi", "vif_enable", dev.apcli.vifname)%>')"><%:ENABLE%></button>
+                                    <button class="cbi-button cbi-button-remove" style="display:none" id="ApCliDisConnBtn_<%=dev.apcli.devname%>" onclick="visit_url_confirm('<%:Are you sure to DISCONNECT%> <%=dev.apcli.devname%>?',
+                                        '<%=dev.apcli.devname%>','<%=luci.dispatcher.build_url("admin", "network", "wifi", "apcli_disconnect", dev.devname, dev.apcli.vifname)%>')"><%:DISCONNECT%></button>
+                                    <button class="cbi-button cbi-button-reload" style="display:none" id="ApCliConnBtn_<%=dev.apcli.devname%>" onclick="visit_url_confirm('<%:Are you sure to RECONNECT%> <%=dev.apcli.devname%>?',
+                                        '<%=dev.apcli.devname%>','<%=luci.dispatcher.build_url("admin", "network", "wifi", "apcli_connect", dev.devname, dev.apcli.vifname)%>')"><%:RECONNECT%></button>
+                                    <button class="cbi-button cbi-button-edit"  style="display:none" id="ApCliCfgBtn_<%=dev.apcli.devname%>" onclick="visit_url('<%=dev.apcli.devname%>',
+                                        '<%=luci.dispatcher.build_url("admin", "network", "wifi", "apcli_cfg_view", dev.devname, dev.apcli.vifname)%>')"><%:CONFIG%></button>
                                 <% end %>
                             </div>
                             <div id="BusyText_<%=dev.apcli.devname%>" style="display:none">
@@ -320,8 +336,16 @@ local chipname
         location.href = to;
     }
 
+    function visit_url_confirm(msg, idSuffix, to) {
+        var i = confirm(msg);
+        if (i)
+            visit_url(idSuffix,to);
+    }
+
     function add_vif(devName, vifPrefix, maxVif)
     {
+        if (!confirm('<%:Are you sure to ADD wireless interface?%>'))
+            return;
         disable_all_buttons();
         document.getElementById("ActionBtns_"+devName).style.display = "none";
         document.getElementById("BusyText_"+devName).style.display = "";

@@ -441,3 +441,24 @@ msgstr "IGMP 侦听"
 
 msgid "Security"
 msgstr "安全性"
+
+msgid "Restore Profile to Factory Settings"
+msgstr "恢复无线配置文件为出厂设置"
+
+msgid "Are you sure to RELOAD"
+msgstr "你确认要重载"
+
+msgid "Are you sure to DISABLE"
+msgstr "你确认要禁用"
+
+msgid "Are you sure to REMOVE"
+msgstr "你确认要移除"
+
+msgid "Are you sure to RECONNECT"
+msgstr "你确认要重新连接"
+
+msgid "Are you sure to DISCONNECT"
+msgstr "你确认要断开"
+
+msgid "Are you sure to ADD wireless interface?"
+msgstr "你确认要新增无线interface?"
