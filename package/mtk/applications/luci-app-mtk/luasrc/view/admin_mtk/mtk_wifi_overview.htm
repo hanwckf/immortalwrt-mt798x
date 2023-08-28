@@ -56,10 +56,6 @@ local chipname
                             <%if dev.version then%>
                                 <span> <%:Driver version%>: <%=dev.version%> <br/></span>
                             <%end%>
-                            <%local temp = mtkwifi.get_temp(main_ifname)%>
-                            <%if temp then%>
-                                <span> <%:Tempature%>: <%=temp%>&#176;C</span>
-                            <%end%>
                         </td>
                         <td style="width:310px;text-align:right">
                             <div id="ActionBtns_<%=string.split(dev.devname,".")[1]%>">
@@ -83,7 +79,15 @@ local chipname
                         <br>
                         <%local cfgs = mtkwifi.load_profile(dev.profile)%>
                         <span> <%:Current Band%>: <%=mtkwifi.band(string.split(cfgs.WirelessMode,";")[1])%> <br/> </span>
-                        <span> <%:Work mode%>: <% if dev.ApCliEnable == "1" then %> APCli <% else %> AP <% end %></span>
+                        <% if dev.Enable == "0" then%>
+                        <span style="color:red;"> <%:Wireless device is disabled%> </span>
+                        <%else%>
+                        <span> <%:Work mode%>: <% if dev.ApCliEnable == "1" then %> APCli <% else %> AP <% end %> <br/> </span>
+                        <%local temp = mtkwifi.get_temp(dev.devname)%>
+                        <%if temp then%>
+                            <span> <%:Tempature%>: <%=temp%>&#176;C</span>
+                        <%end%>
+                        <%end%>
                     </td>
                     <td style="width:310px;text-align:right">
                         <div id="ActionBtns_<%=dev.devname%>">
@@ -104,7 +108,7 @@ local chipname
                     </td>
                 </tr>
                 <!-- /physical device -->
-                <% if dev.vifs then%>
+                <% if dev.vifs and dev.Enable == "1" then%>
                     <!-- network list -->
                     <% for _,vif in ipairs(dev.vifs) do %>
                     <tr class="cbi-section-table-row cbi-rowstyle-1">

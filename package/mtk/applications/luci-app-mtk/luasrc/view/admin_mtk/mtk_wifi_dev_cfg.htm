@@ -41,6 +41,13 @@ local bands = mtkwifi.detect_triband()
 
         <table id="dev-cfg-basic" class="cbi-section-table">
             <tr>
+                <td><%:Enable wireless device%></td>
+                <td>
+                    <input type="radio" name="DevEnable" value="1" <% if cfgs.DevEnable == "1" then %> checked="checked"<% end %>/> Enable
+                    <input type="radio" name="DevEnable" value="0" <% if cfgs.DevEnable == "0" then %> checked="checked"<% end %>/> Disable
+                </td>
+            </tr>
+            <tr>
                 <td><%:Channel%></td>
                 <td>
                     <select style="width:auto; min-width:180px;" name="Channel" id="Channel" onchange="Channel_onchange(this.value)" <% if cfgs.ApCliEnable == "1" then %> disabled="disabled" <% end %>>

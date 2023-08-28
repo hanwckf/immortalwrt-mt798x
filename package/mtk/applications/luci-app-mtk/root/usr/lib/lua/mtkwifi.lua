@@ -344,8 +344,27 @@ function mtkwifi.__profile_applied_settings_path(profile)
     return bak
 end
 
-function mtkwifi.get_temp(ifname)
-    return c_getTempature(ifname)['tempature']
+function mtkwifi.get_temp(devname)
+    local vif_name = nil
+    local devs = mtkwifi.get_all_devs()
+    local dev = {}
+    dev = devs and devs[devname]
+
+    if dev.apcli and dev.apcli["state"] == "up" then
+        vif_name = dev.apcli["vifname"]
+    elseif dev.vifs then
+        for _,vif in ipairs(dev.vifs) do
+            if vif["state"] == "up" then
+                vif_name = vif["vifname"]
+                break
+            end
+        end
+    end
+
+    if vif_name then
+        return c_getTempature(vif_name)['tempature']
+    end
+        return nil
 end
 
 -- if path2 is not given, use backup of path1.
@@ -1113,7 +1132,11 @@ function mtkwifi.__setup_vifs(cfgs, devname, mainidx, subidx)
         if string.gsub(vifs[j].__temp_channel, "^%s*(.-)%s*$", "%1") == "" then
             vifs[j].__temp_channel = mtkwifi.read_pipe("iwconfig "..vifs[j].vifname.." | grep Channel | cut -d : -f 3 | cut -d \" \" -f 1")
         end
-        vifs[j].__wirelessmode_table = c_getWMode(vifs[j].vifname)
+        if vifs[j].state == "up" then
+            vifs[j].__wirelessmode_table = c_getWMode(vifs[j].vifname)
+        else
+            vifs[j].__wirelessmode_table = { ["getwmode"] = "" }
+        end
         vifs[j].__temp_wirelessmode = vifs[j].__wirelessmode_table['getwmode']
 
         if (vifs[j].__temp_ssid ~= "") then
@@ -1258,6 +1281,7 @@ function mtkwifi.get_all_devs()
     local profiles = mtkwifi.search_dev_and_profile()
     local wpa_support = 0
     local wapi_support = 0
+    local wifi_driver_version = ""
 
     for devname,profile in mtkwifi.__spairs(profiles, function(a,b) return string.upper(a) < string.upper(b) end) do
         local fd = io.open(profile,"r")
@@ -1291,6 +1315,12 @@ function mtkwifi.get_all_devs()
                     -- Make 1st band as 2.4G and 2nd band as 5G.
                     devs[i].dbdcBandName = (devs[i].devband == 1) and "2.4G" or "5G"
                 end
+            end
+
+            if cfgs.DevEnable ~= nil then
+                devs[i].Enable = cfgs.DevEnable
+            else
+                devs[i].Enable = "1"
             end
 
             devs[i].ApCliEnable = cfgs.ApCliEnable
@@ -1404,6 +1434,10 @@ function mtkwifi.get_all_devs()
                 devs[i].version = version ~= "" and version or nil
             end
 
+            if devs[i].version ~= nil then
+                wifi_driver_version = devs[i].version
+            end
+
             -- Setup reverse indices by devname
             devs[devname] = devs[i]
 
@@ -1412,6 +1446,11 @@ function mtkwifi.get_all_devs()
             end
 
             i = i + 1
+        end
+    end
+    for _,dev in ipairs(devs) do
+        if dev.version == nil and dev.dbdc == true then
+            dev.version = wifi_driver_version
         end
     end
     devs['etherInfo'] = mtkwifi.__setup_eths()

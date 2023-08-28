@@ -462,3 +462,9 @@ msgstr "你确认要断开"
 
 msgid "Are you sure to ADD wireless interface?"
 msgstr "你确认要新增无线interface?"
+
+msgid "Enable wireless device"
+msgstr "启用此无线设备"
+
+msgid "Wireless device is disabled"
+msgstr "无线设备已禁用"
