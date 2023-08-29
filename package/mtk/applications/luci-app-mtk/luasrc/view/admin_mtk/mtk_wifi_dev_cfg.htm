@@ -40,11 +40,11 @@ local bands = mtkwifi.detect_triband()
         </h2>
 
         <table id="dev-cfg-basic" class="cbi-section-table">
-            <tr>
+           <tr>
                 <td><%:Enable wireless device%></td>
                 <td>
-                    <input type="radio" name="DevEnable" value="1" <% if cfgs.DevEnable == "1" then %> checked="checked"<% end %>/> Enable
-                    <input type="radio" name="DevEnable" value="0" <% if cfgs.DevEnable == "0" then %> checked="checked"<% end %>/> Disable
+                    <input type="radio" name="DevEnable" value="1" <% if cfgs.DevEnable == "1" then %> checked="checked"<% end %>/><%:Enable%>
+                    <input type="radio" name="DevEnable" value="0" <% if cfgs.DevEnable == "0" then %> checked="checked"<% end %>/><%:Disable%>
                 </td>
             </tr>
             <tr>
@@ -82,9 +82,9 @@ local bands = mtkwifi.detect_triband()
                     <td><%:TWT Support%></td>
                     <td>
                         <select name="TWTSupport" style="width:auto">
-                            <option value="0" <% if cfgs.TWTSupport == "0" then %> selected="selected" <% end %>> Disable</option>
-                            <option value="1" <% if cfgs.TWTSupport == "1" then %> selected="selected" <% end %>> Enable</option>
-                            <option value="2" <% if cfgs.TWTSupport == "2" then %> selected="selected" <% end %>> Mandatory</option>
+                            <option value="0" <% if cfgs.TWTSupport == "0" then %> selected="selected" <% end %>><%:Disable%></option>
+                            <option value="1" <% if cfgs.TWTSupport == "1" then %> selected="selected" <% end %>><%:Enable%></option>
+                            <option value="2" <% if cfgs.TWTSupport == "2" then %> selected="selected" <% end %>><%:Mandatory%></option>
                         </select>
                     </td>
                 </tr>
@@ -95,12 +95,12 @@ local bands = mtkwifi.detect_triband()
                 <td><%:Country Code%></td>
                 <td>
                     <select name="CountryCode" style="width:auto" id="CountryCode" onchange="CountryCode_onchange()">
-                        <option value="US" id="advCountryCodeUS" <% if cfgs.CountryCode == "US" then %> selected="selected"<% end %>>US (United States)</option>
-                        <option value="JP" id="advCountryCodeJP" <% if cfgs.CountryCode == "JP" then %> selected="selected"<% end %>>JP (Japan)</option>
-                        <option value="FR" id="advCountryCodeFR" <% if cfgs.CountryCode == "FR" then %> selected="selected"<% end %>>FR (France)</option>
-                        <option value="IE" id="advCountryCodeIE" <% if cfgs.CountryCode == "IE" then %> selected="selected"<% end %>>IE (Ireland)</option>
-                        <option value="CN" id="advCountryCodeCN" <% if cfgs.CountryCode == "CN" then %> selected="selected"<% end %>>CN (China)</option>
-                        <option value="NONE" id="advCountryCodeNONE"<% if cfgs.CountryCode == "NONE" then %> selected="selected"<% end %>>NONE</option>
+                        <option value="US" id="advCountryCodeUS" <% if cfgs.CountryCode == "US" then %> selected="selected"<% end %>><%:US%></option>
+                        <option value="JP" id="advCountryCodeJP" <% if cfgs.CountryCode == "JP" then %> selected="selected"<% end %>><%:JP%></option>
+                        <option value="FR" id="advCountryCodeFR" <% if cfgs.CountryCode == "FR" then %> selected="selected"<% end %>><%:FR%></option>
+                        <option value="IE" id="advCountryCodeIE" <% if cfgs.CountryCode == "IE" then %> selected="selected"<% end %>><%:IE%></option>
+                        <option value="CN" id="advCountryCodeCN" <% if cfgs.CountryCode == "CN" then %> selected="selected"<% end %>><%:CN%></option>
+                        <option value="NONE" id="advCountryCodeNONE"<% if cfgs.CountryCode == "NONE" then %> selected="selected"<% end %>><%:NONE%></option>
                     </select>
                 </td>
             </tr>
@@ -168,15 +168,15 @@ local bands = mtkwifi.detect_triband()
                 <tr>
                     <td>802.11H</td>
                     <td>
-                        <input type="radio" name="IEEE80211H" value="1" <% if cfgs.IEEE80211H == "1" then %> checked="checked"<% end %>/> Enable
-                        <input type="radio" name="IEEE80211H" value="0" <% if cfgs.IEEE80211H == "0" then %> checked="checked"<% end %>/> Disable
+                        <input type="radio" name="IEEE80211H" value="1" <% if cfgs.IEEE80211H == "1" then %> checked="checked"<% end %>/><%:Enable%>
+                        <input type="radio" name="IEEE80211H" value="0" <% if cfgs.IEEE80211H == "0" then %> checked="checked"<% end %>/><%:Disable%>
                     </td>
                 </tr>
                 <tr>
                     <td><%:DFS%></td>
                     <td>
-                        <input type="radio" name="DfsEnable" value="1" <% if cfgs.DfsEnable == "1" then %> checked="checked"<% end %>/> Enable
-                        <input type="radio" name="DfsEnable" value="0" <% if cfgs.DfsEnable == "0" then %> checked="checked"<% end %>/> Disable
+                        <input type="radio" name="DfsEnable" value="1" <% if cfgs.DfsEnable == "1" then %> checked="checked"<% end %>/><%:Enable%>
+                        <input type="radio" name="DfsEnable" value="0" <% if cfgs.DfsEnable == "0" then %> checked="checked"<% end %>/><%:Disable%>
                     </td>
                 </tr>
             <% end %>
@@ -192,7 +192,7 @@ local bands = mtkwifi.detect_triband()
                             <option value="3"<% if tonumber(dev.__mimo) == 3 then %> selected="selected"<% end %>> ETxBF + MU-MIMO </option>
                             <option value="4"<% if tonumber(dev.__mimo) == 4 then %> selected="selected"<% end %>> ITxBF + ETxBF + MU-MIMO </option>
                         <% end %>
-                            <option value="5"<% if tonumber(dev.__mimo) == 5 then %> selected="selected"<% end %>> Disable TxBF </option>
+                            <option value="5"<% if tonumber(dev.__mimo) == 5 then %> selected="selected"<% end %>> <%:Disable%> TxBF </option>
                     </select>
                 </td>
             </tr>
@@ -201,8 +201,8 @@ local bands = mtkwifi.detect_triband()
             <tr>
                 <td><%:Spatial Reuse%></td>
                 <td>
-                    <input type="radio" name="SREnable" value="1" <% if cfgs.SREnable == "1" then %> checked="checked"<% end %>/> Enable
-                    <input type="radio" name="SREnable" value="0" <% if cfgs.SREnable == "0" then %> checked="checked"<% end %>/> Disable
+                    <input type="radio" name="SREnable" value="1" <% if cfgs.SREnable == "1" then %> checked="checked"<% end %>/><%:Enable%>
+                    <input type="radio" name="SREnable" value="0" <% if cfgs.SREnable == "0" then %> checked="checked"<% end %>/><%:Disable%>
                 </td>
             </tr>
             <% end %>
