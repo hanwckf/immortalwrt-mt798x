@@ -421,29 +421,29 @@ function hi(to, devname, vifname)
                 <tr>
                     <td><%:HT STBC%></td>
                     <td>
-                        <input type="radio" name="__ht_stbc" value="1" <% if vif.__ht_stbc == "1" then %> checked="checked"<% end %>/> <%:Enable%>
-                        <input type="radio" name="__ht_stbc" value="0" <% if vif.__ht_stbc == "0" then %> checked="checked"<% end %>/> <%:Disable%>
+                        <input type="radio" name="__ht_stbc" value="1" <% if vif.__ht_stbc == "1" then %> checked="checked"<% end %>/><%:Enable%>
+                        <input type="radio" name="__ht_stbc" value="0" <% if vif.__ht_stbc == "0" then %> checked="checked"<% end %>/><%:Disable%>
                     </td>
                 </tr>
                 <tr>
                     <td><%:HT LDPC%></td>
                     <td>
-                        <input type="radio" name="__ht_ldpc" value="1" <% if vif.__ht_ldpc == "1" then %> checked="checked"<% end %>/> <%:Enable%>
-                        <input type="radio" name="__ht_ldpc" value="0" <% if vif.__ht_ldpc == "0" then %> checked="checked"<% end %>/> <%:Disable%>
+                        <input type="radio" name="__ht_ldpc" value="1" <% if vif.__ht_ldpc == "1" then %> checked="checked"<% end %>/><%:Enable%>
+                        <input type="radio" name="__ht_ldpc" value="0" <% if vif.__ht_ldpc == "0" then %> checked="checked"<% end %>/><%:Disable%>
                     </td>
                 </tr>
                 <tr>
                     <td><%:VHT STBC%></td>
                     <td>
-                        <input type="radio" name="__vht_stbc" value="1" <% if vif.__vht_stbc == "1" then %> checked="checked"<% end %>/> <%:Enable%>
-                        <input type="radio" name="__vht_stbc" value="0" <% if vif.__vht_stbc == "0" then %> checked="checked"<% end %>/> <%:Disable%>
+                        <input type="radio" name="__vht_stbc" value="1" <% if vif.__vht_stbc == "1" then %> checked="checked"<% end %>/><%:Enable%>
+                        <input type="radio" name="__vht_stbc" value="0" <% if vif.__vht_stbc == "0" then %> checked="checked"<% end %>/><%:Disable%>
                     </td>
                 </tr>
                 <tr>
                     <td><%:VHT LDPC%></td>
                     <td>
-                        <input type="radio" name="__vht_ldpc" value="1" <% if vif.__vht_ldpc == "1" then %> checked="checked"<% end %>/> <%:Enable%>
-                        <input type="radio" name="__vht_ldpc" value="0" <% if vif.__vht_ldpc == "0" then %> checked="checked"<% end %>/> <%:Disable%>
+                        <input type="radio" name="__vht_ldpc" value="1" <% if vif.__vht_ldpc == "1" then %> checked="checked"<% end %>/><%:Enable%>
+                        <input type="radio" name="__vht_ldpc" value="0" <% if vif.__vht_ldpc == "0" then %> checked="checked"<% end %>/><%:Disable%>
                     </td>
                 </tr>
                 <tbody id="DEV_CFG_BASIC_SETTINGS">
@@ -469,22 +469,22 @@ function hi(to, devname, vifname)
                 <tr>
                     <td><%:DLS Capable%></td>
                     <td>
-                        <input type="radio" name="__dls_capable" value="1" <% if vif.__dls_capable == "1" then %> checked="checked"<% end %>/> <%:Enable%>
-                        <input type="radio" name="__dls_capable" value="0" <% if vif.__dls_capable == "0" then %> checked="checked"<% end %>/> <%:Disable%>
+                        <input type="radio" name="__dls_capable" value="1" <% if vif.__dls_capable == "1" then %> checked="checked"<% end %>/><%:Enable%>
+                        <input type="radio" name="__dls_capable" value="0" <% if vif.__dls_capable == "0" then %> checked="checked"<% end %>/><%:Disable%>
                     </td>
                 </tr>
                 <tr>
                     <td><%:802.11k RRM%></td>
                     <td>
-                        <input type="radio" name="__rrmenable" value="1" <% if vif.__rrmenable == "1" then %> checked="checked"<% end %>/> <%:Enable%>
-                        <input type="radio" name="__rrmenable" value="0" <% if vif.__rrmenable == "0" then %> checked="checked"<% end %>/> <%:Disable%>
+                        <input type="radio" name="__rrmenable" value="1" <% if vif.__rrmenable == "1" then %> checked="checked"<% end %>/><%:Enable%>
+                        <input type="radio" name="__rrmenable" value="0" <% if vif.__rrmenable == "0" then %> checked="checked"<% end %>/><%:Disable%>
                     </td>
                 </tr>
                 <tr>
                     <td><%:APSD Capable%></td>
                     <td>
-                        <input type="radio" name="__apsd_capable" value="1" <% if vif.__apsd_capable == "1" then %> checked="checked"<% end %>/> <%:Enable%>
-                        <input type="radio" name="__apsd_capable" value="0" <% if vif.__apsd_capable == "0" then %> checked="checked"<% end %>/> <%:Disable%>
+                        <input type="radio" name="__apsd_capable" value="1" <% if vif.__apsd_capable == "1" then %> checked="checked"<% end %>/><%:Enable%>
+                        <input type="radio" name="__apsd_capable" value="0" <% if vif.__apsd_capable == "0" then %> checked="checked"<% end %>/><%:Disable%>
                     </td>
                 </tr>
                 <tr>
@@ -503,33 +503,33 @@ function hi(to, devname, vifname)
                     <td><%:VHT Short GI%></td>
                     <td>
                         <select style="width:auto" name="__vht_sgi">
-                            <option value="0" <% if vif.__vht_sgi == "0" then %> selected="selected"<% end%>>Long</option>
-                            <option value="1" <% if vif.__vht_sgi == "1" then %> selected="selected"<% end%>>Short</option>
+                            <option value="0" <% if vif.__vht_sgi == "0" then %> selected="selected"<% end%>><%:long%></option>
+                            <option value="1" <% if vif.__vht_sgi == "1" then %> selected="selected"<% end%>><%:Short%></option>
                         </select>
                     </td>
                 </tr>
                 <tr>
                     <td><%:VHT BW Signaling%></td>
                     <td>
-                        <input type="radio" name="__vht_bw_signal" value="1" <% if vif.__vht_bw_signal == "1" then %> checked="checked"<% end %>/> <%:Enable%>
-                        <input type="radio" name="__vht_bw_signal" value="0" <% if vif.__vht_bw_signal == "0" then %> checked="checked"<% end %>/> <%:Disable%>
-                        <input type="radio" name="__vht_bw_signal" value="2" <% if vif.__vht_bw_signal == "2" then %> checked="checked"<% end %>/> <%:Dynamic%>
+                        <input type="radio" name="__vht_bw_signal" value="1" <% if vif.__vht_bw_signal == "1" then %> checked="checked"<% end %>/><%:Enable%>
+                        <input type="radio" name="__vht_bw_signal" value="0" <% if vif.__vht_bw_signal == "0" then %> checked="checked"<% end %>/><%:Disable%>
+                        <input type="radio" name="__vht_bw_signal" value="2" <% if vif.__vht_bw_signal == "2" then %> checked="checked"<% end %>/><%:Dynamic%>
                     </td>
                 </tr>
                 <tr>
                     <td><%:HT Protection%></td>
                     <td>
-                        <input type="radio" name="__ht_protect" value="1" <% if vif.__ht_protect == "1" then %> checked="checked"<% end %>/> <%:Enable%>
-                        <input type="radio" name="__ht_protect" value="0" <% if vif.__ht_protect == "0" then %> checked="checked"<% end %>/> <%:Disable%>
+                        <input type="radio" name="__ht_protect" value="1" <% if vif.__ht_protect == "1" then %> checked="checked"<% end %>/><%:Enable%>
+                        <input type="radio" name="__ht_protect" value="0" <% if vif.__ht_protect == "0" then %> checked="checked"<% end %>/><%:Disable%>
                     </td>
                 </tr>
                 <tr>
                     <td><%:HT Guard Interval%></td>
                     <td>
                         <select style="width:auto" name="__ht_gi">
-                            <option value="0" <% if vif.__ht_gi == "0" then %> selected="selected"<% end%>>Long</option>
-                            <option value="1" <% if vif.__ht_gi == "1" then %> selected="selected"<% end%>>Short</option>
-                            <option value="2" <% if vif.__ht_gi == "2" then %> selected="selected"<% end%>>Auto</option>
+                            <option value="0" <% if vif.__ht_gi == "0" then %> selected="selected"<% end%>><%:long%></option>
+                            <option value="1" <% if vif.__ht_gi == "1" then %> selected="selected"<% end%>><%:Short%></option>
+                            <option value="2" <% if vif.__ht_gi == "2" then %> selected="selected"<% end%>><%:Auto%></option>
                         </select>
                     </td>
                 </tr>
@@ -545,22 +545,22 @@ function hi(to, devname, vifname)
                 <tr>
                     <td>A-MSDU</td>
                     <td>
-                        <input type="radio" name="__ht_amsdu" value="1" <% if vif.__ht_amsdu == "1" then %> checked="checked"<% end %>/> <%:Enable%>
-                        <input type="radio" name="__ht_amsdu" value="0" <% if vif.__ht_amsdu == "0" then %> checked="checked"<% end %>/> <%:Disable%>
+                        <input type="radio" name="__ht_amsdu" value="1" <% if vif.__ht_amsdu == "1" then %> checked="checked"<% end %>/><%:Enable%>
+                        <input type="radio" name="__ht_amsdu" value="0" <% if vif.__ht_amsdu == "0" then %> checked="checked"<% end %>/><%:Disable%>
                    </td>
                 </tr>
                 <tr>
                     <td><%:Auto Block ACK%></td>
                     <td>
-                        <input type="radio" name="__ht_autoba" value="1" <% if vif.__ht_autoba == "1" then %> checked="checked"<% end %>/> <%:Enable%>
-                        <input type="radio" name="__ht_autoba" value="0" <% if vif.__ht_autoba == "0" then %> checked="checked"<% end %>/> <%:Disable%>
+                        <input type="radio" name="__ht_autoba" value="1" <% if vif.__ht_autoba == "1" then %> checked="checked"<% end %>/><%:Enable%>
+                        <input type="radio" name="__ht_autoba" value="0" <% if vif.__ht_autoba == "0" then %> checked="checked"<% end %>/><%:Disable%>
                     </td>
                 </tr>
                 <tr>
                     <td><%:IGMP Snooping%></td>
                     <td>
-                        <input type="radio" name="__igmp_snenable" value="1" <% if vif.__igmp_snenable == "1" then %> checked="checked"<% end %>/> <%:Enable%>
-                        <input type="radio" name="__igmp_snenable" value="0" <% if vif.__igmp_snenable == "0" then %> checked="checked"<% end %>/> <%:Disable%>
+                        <input type="radio" name="__igmp_snenable" value="1" <% if vif.__igmp_snenable == "1" then %> checked="checked"<% end %>/><%:Enable%>
+                        <input type="radio" name="__igmp_snenable" value="0" <% if vif.__igmp_snenable == "0" then %> checked="checked"<% end %>/><%:Disable%>
                     </td>
                 </tr>
             </tbody>
@@ -591,29 +591,29 @@ function hi(to, devname, vifname)
                 <tr>
                     <td><%:DL OFDMA%></td>
                     <td>
-                        <input type="radio" name="__muofdma_dlenable" value="1" <% if vif.__muofdma_dlenable == "1" then %> checked="checked"<% end %>/> <%:Enable%>
-                        <input type="radio" name="__muofdma_dlenable" value="0" <% if vif.__muofdma_dlenable == "0" then %> checked="checked"<% end %>/> <%:Disable%>
+                        <input type="radio" name="__muofdma_dlenable" value="1" <% if vif.__muofdma_dlenable == "1" then %> checked="checked"<% end %>/><%:Enable%>
+                        <input type="radio" name="__muofdma_dlenable" value="0" <% if vif.__muofdma_dlenable == "0" then %> checked="checked"<% end %>/><%:Disable%>
                     </td>
                 </tr>
                 <tr>
                     <td><%:UL OFDMA%></td>
                     <td>
-                        <input type="radio" name="__muofdma_ulenable" value="1" <% if vif.__muofdma_ulenable == "1" then%> checked="checked"<% end %>/> <%:Enable%>
-                        <input type="radio" name="__muofdma_ulenable" value="0" <% if vif.__muofdma_ulenable == "0" then%> checked="checked"<% end %>/> <%:Disable%>
+                        <input type="radio" name="__muofdma_ulenable" value="1" <% if vif.__muofdma_ulenable == "1" then%> checked="checked"<% end %>/><%:Enable%>
+                        <input type="radio" name="__muofdma_ulenable" value="0" <% if vif.__muofdma_ulenable == "0" then%> checked="checked"<% end %>/><%:Disable%>
                     </td>
                 </tr>
                 <tr>
                     <td><%:DL MU-MIMO%></td>
                     <td>
-                        <input type="radio" name="__mumimo_dlenable" value="1" <% if vif.__mumimo_dlenable == "1" then %> checked="checked"<% end %>/> <%:Enable%>
-                        <input type="radio" name="__mumimo_dlenable" value="0" <% if vif.__mumimo_dlenable == "0" then %> checked="checked"<% end %>/> <%:Disable%>
+                        <input type="radio" name="__mumimo_dlenable" value="1" <% if vif.__mumimo_dlenable == "1" then %> checked="checked"<% end %>/><%:Enable%>
+                        <input type="radio" name="__mumimo_dlenable" value="0" <% if vif.__mumimo_dlenable == "0" then %> checked="checked"<% end %>/><%:Disable%>
                     </td>
                 </tr>
                 <tr>
                     <td><%:UL MU-MIMO%></td>
                     <td>
-                        <input type="radio" name="__mumimo_ulenable" value="1" <% if vif.__mumimo_ulenable == "1" then%> checked="checked"<% end %>/> <%:Enable%>
-                        <input type="radio" name="__mumimo_ulenable" value="0" <% if vif.__mumimo_ulenable == "0" then%> checked="checked"<% end %>/> <%:Disable%>
+                        <input type="radio" name="__mumimo_ulenable" value="1" <% if vif.__mumimo_ulenable == "1" then%> checked="checked"<% end %>/><%:Enable%>
+                        <input type="radio" name="__mumimo_ulenable" value="0" <% if vif.__mumimo_ulenable == "0" then%> checked="checked"<% end %>/><%:Disable%>
                     </td>
                 </tr>
             </table>
