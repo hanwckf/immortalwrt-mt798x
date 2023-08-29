@@ -331,9 +331,6 @@ msgstr "下行MU-MIMO"
 msgid "UL MU-MIMO"
 msgstr "上行MU-MIMO"
 
-msgid "SCAN WIRELESS NETWORK"
-msgstr "扫描无线网络"
-
 msgid "Scan Wireless Network"
 msgstr "扫描无线网络"
 
@@ -461,7 +458,7 @@ msgid "Are you sure to DISCONNECT"
 msgstr "你确认要断开"
 
 msgid "Are you sure to ADD wireless interface?"
-msgstr "你确认要新增无线interface?"
+msgstr "你确认要新增无线接口？"
 
 msgid "Enable wireless device"
 msgstr "启用此无线设备"
