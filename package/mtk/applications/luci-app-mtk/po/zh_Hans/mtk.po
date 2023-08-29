@@ -7,6 +7,30 @@ msgstr "自动"
 msgid "Disable"
 msgstr "禁用"
 
+msgid "US"
+msgstr "US (美国)"
+
+msgid "JP"
+msgstr "JP (日本)"
+
+msgid "FR"
+msgstr "FR (法国)"
+
+msgid "IE"
+msgstr "IE (爱尔兰)"
+
+msgid "CN"
+msgstr "CN (中国)"
+
+msgid "NONE"
+msgstr "无"
+
+msgid "Short"
+msgstr "Short (短)"
+
+msgid "long"
+msgstr "Long (长)"
+
 msgid "Enable"
 msgstr "启用"
 
@@ -14,10 +38,10 @@ msgid "Mandatory"
 msgstr "强制"
 
 msgid "Always On"
-msgstr "强制开启"
+msgstr "始终开启"
 
 msgid "Always Off"
-msgstr "强制关闭"
+msgstr "始终关闭"
 
 msgid "Tempature"
 msgstr "温度"
@@ -135,6 +159,9 @@ msgstr "无线接口设置"
 
 msgid "ApCli Configurations"
 msgstr "ApCli设置"
+
+msgid "Loading connection information of"
+msgstr "正在加载连接信息"
 
 msgid "ApCli Available Wireless Networks"
 msgstr "ApCli可用无线网络列表"
@@ -262,6 +289,9 @@ msgstr "启用终端直通(DLS)"
 msgid "802.11k RRM"
 msgstr "启用 802.11k"
 
+msgid "802.11r FT"
+msgstr "启用 802.11r"
+
 msgid "APSD Capable"
 msgstr "启用节能模式(APSD)"
 
@@ -335,10 +365,10 @@ msgid "Scan Wireless Network"
 msgstr "扫描无线网络"
 
 msgid "ApClient Mode"
-msgstr "ApClient模式"
+msgstr "AP客户端模式"
 
 msgid "MAC Repeater Mode"
-msgstr "启用MAC Repeater模式"
+msgstr "启用MAC中继模式"
 
 msgid "Root AP SSID"
 msgstr "上级AP SSID"
@@ -458,7 +488,7 @@ msgid "Are you sure to DISCONNECT"
 msgstr "你确认要断开"
 
 msgid "Are you sure to ADD wireless interface?"
-msgstr "你确认要新增无线接口？"
+msgstr "你确认要新增无线接口?"
 
 msgid "Enable wireless device"
 msgstr "启用此无线设备"
