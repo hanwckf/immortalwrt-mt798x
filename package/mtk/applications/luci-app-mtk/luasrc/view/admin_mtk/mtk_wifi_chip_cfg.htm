@@ -42,8 +42,8 @@ local cfgs = mtkwifi.load_profile(dev.profile)
                 <td><%:Decline BA Request%></td>
                 <td>
                     <select style="width:auto" name="HT_BADecline">
-                        <option value="1" <% if cfgs.HT_BADecline == "1" then %> selected="selected"<% end%>>Enable</option>
-                        <option value="0" <% if cfgs.HT_BADecline == "0" then %> selected="selected"<% end%>>Disable</option>
+                        <option value="1" <% if cfgs.HT_BADecline == "1" then %> selected="selected"<% end%>><%:Enable%></option>
+                        <option value="0" <% if cfgs.HT_BADecline == "0" then %> selected="selected"<% end%>><%:Disable%></option>
                     </select>
                 </td>
             </tr>
@@ -51,8 +51,8 @@ local cfgs = mtkwifi.load_profile(dev.profile)
                 <td><%:Reverse Direction Grant (RDG)%></td>
                 <td>
                     <select style="width:auto" name="HT_RDG">
-                        <option value="1" <% if cfgs.HT_RDG == "1" then %> selected="selected"<% end%>>Enable</option>
-                        <option value="0" <% if cfgs.HT_RDG == "0" then %> selected="selected"<% end%>>Disable</option>
+                        <option value="1" <% if cfgs.HT_RDG == "1" then %> selected="selected"<% end%>><%:Enable%></option>
+                        <option value="0" <% if cfgs.HT_RDG == "0" then %> selected="selected"<% end%>><%:Disable%></option>
                     </select>
                 </td>
             </tr>
@@ -66,8 +66,8 @@ local cfgs = mtkwifi.load_profile(dev.profile)
                 <td><%:HT Disallow TKIP%></td>
                 <td>
                     <select style="width:auto" name="HT_DisallowTKIP">
-                        <option value="1" <% if cfgs.HT_DisallowTKIP == "1" then %> selected="selected"<% end%>>Enable</option>
-                        <option value="0" <% if cfgs.HT_DisallowTKIP == "0" then %> selected="selected"<% end%>>Disable</option>
+                        <option value="1" <% if cfgs.HT_DisallowTKIP == "1" then %> selected="selected"<% end%>><%:Enable%></option>
+                        <option value="0" <% if cfgs.HT_DisallowTKIP == "0" then %> selected="selected"<% end%>><%:Disable%></option>
                     </select>
                 </td>
             </tr>
@@ -75,8 +75,8 @@ local cfgs = mtkwifi.load_profile(dev.profile)
                 <td><%:Wi-Fi HWNAT%></td>
                 <td>
                     <select style="width:auto" name="WHNAT">
-                        <option value="1" <% if cfgs.WHNAT == "1" then %> selected="selected"<% end%>>Enable</option>
-                        <option value="0" <% if cfgs.WHNAT ~= "1" then %> selected="selected"<% end%>>Disable</option>
+                        <option value="1" <% if cfgs.WHNAT == "1" then %> selected="selected"<% end%>><%:Enable%></option>
+                        <option value="0" <% if cfgs.WHNAT ~= "1" then %> selected="selected"<% end%>><%:Disable%></option>
                     </select>
                 </td>
             </tr>
@@ -105,9 +105,9 @@ local cfgs = mtkwifi.load_profile(dev.profile)
                 <td><%:BG Protection Mode%></td>
                 <td>
                     <select name="BGProtection" style="width:auto">
-                        <option value="0" <% if cfgs.BGProtection == "0" then %>selected="selected"<% end %>>Auto</option>
-                        <option value="1" <% if cfgs.BGProtection == "1" then %>selected="selected"<% end %>>Always On</option>
-                        <option value="2" <% if cfgs.BGProtection == "2" then %>selected="selected"<% end %>>Always Off</option>
+                        <option value="0" <% if cfgs.BGProtection == "0" then %>selected="selected"<% end %>><%:Auto%></option>
+                        <option value="1" <% if cfgs.BGProtection == "1" then %>selected="selected"<% end %>><%:Always On%></option>
+                        <option value="2" <% if cfgs.BGProtection == "2" then %>selected="selected"<% end %>><%:Always Off%></option>
                     </select>
                 </td>
             </tr>
@@ -115,8 +115,8 @@ local cfgs = mtkwifi.load_profile(dev.profile)
                 <td><%:Short Preamble%></td>
                 <td>
                     <select style="width:auto" name="TxPreamble">
-                        <option value="1" <% if cfgs.TxPreamble == "1" then %> selected="selected"<% end%>>Enable</option>
-                        <option value="0" <% if cfgs.TxPreamble == "0" then %> selected="selected"<% end%>>Disable</option>
+                        <option value="1" <% if cfgs.TxPreamble == "1" then %> selected="selected"<% end%>><%:Enable%></option>
+                        <option value="0" <% if cfgs.TxPreamble == "0" then %> selected="selected"<% end%>><%:Disable%></option>
                     </select>
                 </td>
             </tr>
@@ -124,8 +124,8 @@ local cfgs = mtkwifi.load_profile(dev.profile)
                 <td><%:TX Burst%></td>
                 <td>
                     <select style="width:auto" name="TxBurst">
-                        <option value="1" <% if cfgs.TxBurst == "1" then %> selected="selected"<% end%>>Enable</option>
-                        <option value="0" <% if cfgs.TxBurst == "0" then %> selected="selected"<% end%>>Disable</option>
+                        <option value="1" <% if cfgs.TxBurst == "1" then %> selected="selected"<% end%>><%:Enable%></option>
+                        <option value="0" <% if cfgs.TxBurst == "0" then %> selected="selected"<% end%>><%:Disable%></option>
                     </select>
                 </td>
             </tr>
@@ -133,8 +133,8 @@ local cfgs = mtkwifi.load_profile(dev.profile)
                 <td><%:Short Slot%></td>
                 <td>
                     <select style="width:auto" name="ShortSlot">
-                        <option value="1" <% if cfgs.ShortSlot == "1" then %> selected="selected"<% end%>>Enable</option>
-                        <option value="0" <% if cfgs.ShortSlot == "0" then %> selected="selected"<% end%>>Disable</option>
+                        <option value="1" <% if cfgs.ShortSlot == "1" then %> selected="selected"<% end%>><%:Enable%></option>
+                        <option value="0" <% if cfgs.ShortSlot == "0" then %> selected="selected"<% end%>><%:Disable%></option>
                     </select>
                 </td>
             </tr>
