@@ -176,7 +176,7 @@ local chipname
                         <td class="cbi-value-field" style="vertical-align:middle; text-align:left; padding:3px"><strong><%:Interface%>:</strong> <%=dev.apcli.devname%> | <strong><%:Type%>:</strong> STA | <strong><%:Status%>:</strong> <span id="ConnStatus_<%=dev.apcli.devname%>"><% if dev.ApCliEnable ~= "1" then %> <%:Disconnected%> <% end %></span>
                             <br>
                             <div id="LoadingBar_<%=dev.apcli.devname%>" <% if dev.ApCliEnable ~= "1" then %> style="display:none" <% end %>>
-                                <img src="<%=resource%>/icons/loading.gif" alt="<%:Loading%>" style="width:20px;height:20px;vertical-align:middle;"/> <cite>&nbsp;Loading connection information of <%=dev.apcli.devname%></cite>
+                                <img src="<%=resource%>/icons/loading.gif" alt="<%:Loading%>" style="width:20px;height:20px;vertical-align:middle;"/> <cite>&nbsp;<%:Loading connection information of%> <%=dev.apcli.devname%></cite>
                             </div>
                             <div id="ConnInfo_<%=dev.apcli.devname%>" style="display:none">
                                 <strong>BSSID:</strong> <span id="ApCliBssid_<%=dev.apcli.devname%>"></span> |
