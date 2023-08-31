@@ -238,6 +238,7 @@ platform_check_image() {
 	*jcg,q30* |\
 	cmcc,rax3000m |\
 	h3c,nx30pro |\
+	*konka,komi-a31* |\
 	*snand* |\
 	*emmc*)
 		# tar magic `ustar`
