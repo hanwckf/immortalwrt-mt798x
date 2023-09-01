@@ -481,6 +481,13 @@ function hi(to, devname, vifname)
                     </td>
                 </tr>
                 <tr>
+                    <td><%:802.11r FT%></td>
+                    <td>
+                        <input type="radio" name="__ftsupport" value="1" <% if vif.__ftsupport == "1" then %> checked="checked"<% end %>/><%:Enable%>
+                        <input type="radio" name="__ftsupport" value="0" <% if vif.__ftsupport == "0" then %> checked="checked"<% end %>/><%:Disable%>
+                    </td>
+                </tr>
+                <tr>
                     <td><%:APSD Capable%></td>
                     <td>
                         <input type="radio" name="__apsd_capable" value="1" <% if vif.__apsd_capable == "1" then %> checked="checked"<% end %>/><%:Enable%>
