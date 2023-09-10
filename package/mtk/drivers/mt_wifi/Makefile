@@ -274,6 +274,7 @@ PKG_KCONFIG:= \
 	6G_AFC_SUPPORT \
 
 PKG_CONFIG_DEPENDS:=$(foreach c, $(PKG_KCONFIG),$(if $(CONFIG_MTK_$c),CONFIG_$(c)))
+PKG_PREPARED_DEPENDS:= CONFIG_MTK_MT7986_NEW_FW CONFIG_MTK_MT7981_NEW_FW
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -298,6 +299,14 @@ define KernelPackage/mt_wifi/config
 	source "$(SOURCE)/config.in"
 endef
 
+define FIXUP_NEW_MCU_FW_API
+	@if [ "$$(CONFIG_MTK_MT7981_NEW_FW)" = "y" ] || [ "$$(CONFIG_MTK_MT7986_NEW_FW)" = "y" ]; then \
+		echo "Fixup new mcu fw API"; \
+		patch -p1 -d $(PKG_BUILD_DIR) < ./files/fix-new-mcu-fw-api.patch; \
+	fi
+endef
+
+Hooks/Prepare/Post := FIXUP_NEW_MCU_FW_API
 
 define Build/Compile
 	+$(MAKE) $(PKG_JOBS) -C "$(LINUX_DIR)" \
