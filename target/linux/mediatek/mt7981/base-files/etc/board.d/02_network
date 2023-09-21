@@ -43,6 +43,11 @@ mediatek_setup_interfaces()
 		ucidef_add_switch "switch0" \
 			"0:lan" "1:lan" "2:lan" "6u@eth0"
 		;;
+	*cmcc,a10*)
+		ucidef_set_interfaces_lan_wan "eth0" "eth1"
+		ucidef_add_switch "switch0" \
+			"0:lan" "2:lan" "3:lan" "4:wan" "6u@eth0" "5u@eth1"
+		;;
 	*jcg,q30*)
 		ucidef_set_interfaces_lan_wan "eth0.1" "eth0.2"
 		ucidef_add_switch "switch0" \
@@ -204,6 +209,7 @@ mediatek_setup_macs()
 			mtk_facrory_write_mac "Factory" 4 $wifi_mac
 		fi
 		;;
+	*cmcc,a10* |\
 	*clt,r30b1* |\
 	*konka,komi-a31*)
 		lan_mac=$(mtd_get_mac_binary $part_name 0x2A)
