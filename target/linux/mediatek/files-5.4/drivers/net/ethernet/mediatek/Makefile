@@ -6,3 +6,4 @@
 obj-$(CONFIG_NET_MEDIATEK_SOC)			+= mtk_eth.o
 mtk_eth-y := mtk_eth_soc.o mtk_sgmii.o mtk_eth_path.o mtk_eth_dbg.o mtk_eth_reset.o
 obj-$(CONFIG_NET_MEDIATEK_HNAT)			+= mtk_hnat/
+obj-$(CONFIG_NET_MEDIATEK_EXT_PHY_RTL822X) += rtl822x/

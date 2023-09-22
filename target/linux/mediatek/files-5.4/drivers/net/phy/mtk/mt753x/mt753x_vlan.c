@@ -31,6 +31,12 @@ struct mt753x_mapping mt753x_def_mapping[] = {
 		.members = { 0, 0x7f },
 		.etags = { 0, 0 },
 		.vids = { 0, 1 },
+	}, {
+		.name = "lllwl",
+		.pvids = { 1, 1, 1, 2, 1, 2, 1 },
+		.members = { 0, 0x57, 0x28 },
+		.etags = { 0, 0, 0 },
+		.vids = { 0, 1, 2 },
 	},
 };
 

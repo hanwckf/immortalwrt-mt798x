@@ -60,6 +60,20 @@ define Device/mt7986a-ax6000-snfi-nand-rfb
 endef
 TARGET_DEVICES += mt7986a-ax6000-snfi-nand-rfb
 
+define Device/mt7986a-ax6000-emmc-re-cp-03
+  DEVICE_VENDOR := JDCloud
+  DEVICE_MODEL := JDCloud MT7986a RE-CP-03
+  DEVICE_TITLE := JDCloud AX6000 Baili(RE-CP-03)
+  DEVICE_DTS := mt7986a-emmc-re-cp-03
+  DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
+  SUPPORTED_DEVICES := mediatek,mt7986a-emmc-re-cp-03
+  DEVICE_PACKAGES := mkf2fs e2fsprogs blkid blockdev losetup kmod-fs-ext4 \
+		     kmod-mmc kmod-fs-f2fs kmod-fs-vfat kmod-nls-cp437 \
+		     kmod-nls-iso8859-1 fdisk
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+endef
+TARGET_DEVICES += mt7986a-ax6000-emmc-re-cp-03
+
 define Device/mt7986a-ax6000-emmc-rfb
   DEVICE_VENDOR := MediaTek
   DEVICE_MODEL := mt7986a-ax6000-emmc-rfb

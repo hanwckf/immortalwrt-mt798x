@@ -9,6 +9,11 @@ board=$(board_name)
 board_config_update
 
 case $board in
+*re-cp-03 | *rfb)
+	ucidef_set_led_default "power" "power" "led_r1" "0"
+	ucidef_set_led_default "network" "network" "led_b1" "0"
+	ucidef_set_led_default "system" "system" "led_g1" "1"
+	;;
 xiaomi,redmi-router-ax6000*)
 	ucidef_set_led_default "status" "status" "rgb:status" "1"
 	ucidef_set_led_netdev "wan" "wan" "rgb:network" "eth1"

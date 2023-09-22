@@ -1,0 +1,12 @@
+--- a/libfstools/mtd.c
++++ b/libfstools/mtd.c
+@@ -224,6 +224,9 @@ static int mtd_volume_identify(struct
+ 	if (v->type == UBIVOLUME && deadc0de == 0xffffffff) {
+ 		return FS_JFFS2;
+ 	}
++	if (v->type == NANDFLASH && deadc0de == 0xffffffff) {
++		return FS_JFFS2;
++	}
+ 
+ 	return FS_NONE;
+ }

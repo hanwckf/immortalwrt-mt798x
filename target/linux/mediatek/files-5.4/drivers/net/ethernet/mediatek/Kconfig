@@ -28,4 +28,11 @@ config NET_MEDIATEK_HNAT
 	  in the MediaTek MT7986/MT2701/MT7622/MT7629/MT7621 chipset
 	  family.
 
+config NET_MEDIATEK_EXT_PHY_RTL822X
+	tristate "MediaTek SOC PHY RTL822X"
+	depends on NET_MEDIATEK_SOC
+	select PHYLIB
+	---help---
+	  This driver supports the gigabit ethernet rtl phy rtl822x
+
 endif #NET_VENDOR_MEDIATEK

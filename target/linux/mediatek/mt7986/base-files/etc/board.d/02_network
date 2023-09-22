@@ -19,15 +19,42 @@ mediatek_setup_interfaces()
 		ucidef_add_switch "switch0" \
 			"0:lan" "1:lan" "2:lan" "3:lan" "4:lan" "5:lan" "6u@eth0"
 		;;
+	*re-cp-03)
+		ucidef_set_interfaces_lan_wan "eth0" "eth1"
+		ucidef_add_switch "switch0" "1:lan" "2:lan" "3:lan" "4:lan" "6u@eth0"
+		;;
 	xiaomi,redmi-router-ax6000*)
 		ucidef_set_interfaces_lan_wan "eth0" "eth1"
 		ucidef_add_switch "switch0" \
-			"1:lan:4" "2:lan:3" "3:lan:2"  "4:wan" "6u@eth0" "5u@eth1"
+			"1:lan:4" "2:lan:3" "3:lan:2" "4:wan" "6u@eth0" "5u@eth1"
 		;;
 	*)
 		ucidef_set_interfaces_lan_wan "lan0 lan1 lan2 lan3 lan4 lan5" eth1
 		;;
 	esac
+}
+
+mtk_factory_read_7986()
+{
+	
+	local input_dev=""
+	local offset=""
+	local size=""
+	local final_size=""
+	local FIRMWARE="MT7986_ePAeLNA_EEPROM_AX6000.bin"
+	
+	input_dev=`blkid -t PARTLABEL=factory -o device`
+	
+	[ -f "/etc/wireless/l1profile.dat" ] || exit 0
+	cat /etc/wireless/l1profile.dat | grep "EEPROM" > /tmp/l1profile.sh
+	. /tmp/l1profile.sh
+	offset=`printf "%d" $INDEX0_EEPROM_offset`
+	size=`printf "%d" $INDEX0_EEPROM_size`
+	final_size=`expr $offset + $size`
+	
+	dd if=$input_dev of=/lib/firmware/$FIRMWARE bs=$final_size skip=$offset count=1 2>/dev/null
+	
+	rm -f /tmp/l1profile.sh
 }
 
 mediatek_setup_macs()
@@ -40,6 +67,12 @@ mediatek_setup_macs()
 	xiaomi,redmi-router-ax6000*)
 		wan_mac=$(mtd_get_mac_ascii Bdata ethaddr_wan)
 		lan_mac=$(mtd_get_mac_ascii Bdata ethaddr)
+		;;
+	*re-cp-03)
+		part=`blkid -t PARTLABEL=factory -o device`
+		lan_mac=$(get_mac_binary $part "0x2A")
+		wan_mac=$(get_mac_binary $part "0x24")
+		mtk_factory_read_7986
 		;;
 	*)
 		lan_mac=$(mtd_get_mac_binary "Factory" "0x2A")
