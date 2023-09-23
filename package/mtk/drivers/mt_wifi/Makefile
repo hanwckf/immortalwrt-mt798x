@@ -8,7 +8,7 @@ include $(INCLUDE_DIR)/kernel.mk
 
 PKG_NAME:=mt_wifi
 
-MT7981_FW_DIR := mt7981-fw-20230411
+MT7981_FW_DIR := mt7981-fw-20230306
 MT7986_FW_DIR := mt7986-fw-20230421
 
 ifeq ($(CONFIG_MTK_CHIP_MT7981),y)
