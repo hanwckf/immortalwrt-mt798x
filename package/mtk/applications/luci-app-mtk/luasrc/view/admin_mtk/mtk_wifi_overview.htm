@@ -419,6 +419,10 @@ local chipname
 
     function printstainfo()
     {
+        if (stainfo.length == 0) {
+            clean_stalist_table();
+            return;
+        }
         if (stainfo_inited) {
             //console.log(stainfo);
             clean_stalist_table();
