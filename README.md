@@ -10,13 +10,6 @@ Default login address: http://192.168.1.1 or http://immortalwrt.lan, username: _
 ## About immortalwrt-mt798x 
 - https://cmi.hanwckf.top/p/immortalwrt-mt798x/
 
-## Download
-Built firmware images are available for many architectures and come with a package selection to be used as WiFi home router. To quickly find a factory image usable to migrate from a vendor stock firmware to ImmortalWrt, try the *Firmware Selector*.
-
-- [ImmortalWrt Firmware Selector](https://firmware-selector.immortalwrt.org/)
-
-If your device is supported, please follow the **Info** link to see install instructions or consult the support resources listed below.
-
 ## Development
 To build your own firmware you need a GNU/Linux, BSD or MacOSX system (case sensitive filesystem required). Cygwin is unsupported because of the lack of a case sensitive file system.<br/>
 
@@ -56,8 +49,8 @@ To build your own firmware you need a GNU/Linux, BSD or MacOSX system (case sens
   - For more details, please see [Build system setup](https://openwrt.org/docs/guide-developer/build-system/install-buildsystem) documentation.
 
   ### Quickstart
-  1. Run `git clone -b <branch> --single-branch --filter=blob:none https://github.com/immortalwrt/immortalwrt` to clone the source code.
-  2. Run `cd immortalwrt` to enter source directory.
+  1. Run `git clone --depth=1 https://github.com/hanwckf/immortalwrt-mt798x.git` to clone the source code.
+  2. Run `cd immortalwrt-mt798x` to enter source directory.
   3. Run `./scripts/feeds update -a` to obtain all the latest package definitions defined in feeds.conf / feeds.conf.default
   4. Run `./scripts/feeds install -a` to install symlinks for all obtained packages into package/feeds/
   5. Run `make menuconfig` to select your preferred configuration for the toolchain, target system & firmware packages.
