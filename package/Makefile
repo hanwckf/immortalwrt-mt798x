@@ -89,7 +89,7 @@ $(curdir)/index: FORCE
 		$(SCRIPT_DIR)/ipkg-make-index.sh . 2>&1 > Packages.manifest; \
 		grep -vE '^(Maintainer|LicenseFiles|Source|SourceName|Require|SourceDateEpoch)' Packages.manifest > Packages; \
 		case "$$(((64 + $$(stat -L -c%s Packages)) % 128))" in 110|111) \
-			$(call ERROR_MESSAGE,WARNING: Applying padding in $$d/Packages to workaround usign SHA-512 bug!); \
+			#$(call ERROR_MESSAGE,WARNING: Applying padding in $$d/Packages to workaround usign SHA-512 bug!); \
 			{ echo ""; echo ""; } >> Packages;; \
 		esac; \
 		echo -n '{"architecture": "$(ARCH_PACKAGES)", "packages":{' > index.json; \
