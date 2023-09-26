@@ -53,7 +53,7 @@ local bands = mtkwifi.detect_triband()
                     <select style="width:auto; min-width:180px;" name="Channel" id="Channel" onchange="Channel_onchange(this.value)" <% if cfgs.ApCliEnable == "1" then %> disabled="disabled" <% end %>>
                     </select>
                 </td>
-                <td><% if cfgs.ApCliEnable == "1" then %> APClient/Repeater Mode. <% end %></td>
+                <td><% if cfgs.ApCliEnable == "1" then %><%:APClient/Repeater Mode.%><% end %></td>
             </tr>
             <tr id="HT_EXTCHA_TR" style="display:none">
                 <td><%:40MHz HT Ext Channel%></td>
@@ -61,7 +61,7 @@ local bands = mtkwifi.detect_triband()
                     <select style="width:auto; min-width:180px;" name="HT_EXTCHA" id="HT_EXTCHA" <% if cfgs.ApCliEnable == "1" or dev.__bw ~= "40" or dev.__bw ~= "60" then %> disabled="disabled" <% end %>>
                     </select>
                 </td>
-                <td><% if cfgs.ApCliEnable == "1" then %> APClient/Repeater Mode. <% end %></td>
+                <td><% if cfgs.ApCliEnable == "1" then %><%:APClient/Repeater Mode.%><% end %></td>
             </tr>
             <tr id="VHT_Sec80_Channel_TR" style="display:none">
                 <td><%:80MHz Second VHT Channel%></td>
@@ -69,7 +69,7 @@ local bands = mtkwifi.detect_triband()
                     <select style="width:auto; min-width:180px; " name="VHT_Sec80_Channel" id="VHT_Sec80_Channel" <% if cfgs.ApCliEnable == "1" or dev.__bw ~= "161" then %> disabled="disabled" <% end %>>
                     </select>
                 </td>
-                <td><% if cfgs.ApCliEnable == "1" then %> APClient/Repeater Mode. <% end %></td>
+                <td><% if cfgs.ApCliEnable == "1" then %><%:APClient/Repeater Mode.%><% end %></td>
             </tr>
            <% if string.split(cfgs.WirelessMode,";")[1] == "16" or string.split(cfgs.WirelessMode,";")[1] == "17" or string.split(cfgs.WirelessMode,";")[1] == "18" then %>
                 <tr>

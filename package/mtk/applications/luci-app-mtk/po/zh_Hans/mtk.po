@@ -130,6 +130,12 @@ msgstr "已连接"
 msgid "Disconnected"
 msgstr "未连接"
 
+msgid "FATAL ERROR: Incorrect Profile Settings"
+msgstr "严重错误: 配置文件设置不正确"
+
+msgid "Error: value not present in dat file"
+msgstr "错误：dat文件中未指定SSID值"
+
 msgid "Wireless is disabled or not associated"
 msgstr "无线已禁用或未关联"
 
@@ -366,6 +372,9 @@ msgstr "扫描无线网络"
 
 msgid "ApClient Mode"
 msgstr "AP客户端模式"
+
+msgid "APClient/Repeater Mode."
+msgstr "AP客户端中继模式。"
 
 msgid "MAC Repeater Mode"
 msgstr "启用MAC中继模式"

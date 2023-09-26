@@ -50,7 +50,7 @@ local chipname
                         <td colspan="2" style="text-align:left">
                             <big><strong title="<%=dev.profile%>"> <%=string.split(dev.devname,".")[1]%></strong></big>
                             <%if not dev.vifs then%>
-                                <span style="color:red;">* FATAL ERROR: Incorrect Profile Settings</span>
+                                <span style="color:red;">* <%:FATAL ERROR: Incorrect Profile Settings%></span>
                             <%end%>
                             <br>
                             <%if dev.version then%>
@@ -126,7 +126,7 @@ local chipname
                             <strong>SSID:</strong>
                                 <span id="SSID_<%=vif.vifname%>">
                                     <% if vif.__ssid == "" then %>
-                                        <span style="color:red;"> Error: value not present in dat file </span>
+                                        <span style="color:red;"><%:Error: value not present in dat file%></span>
                                     <% else %>
                                         <span> <%=vif.__ssid and vif.__ssid:gsub(" ","&nbsp;") or nil%> <% end %> </span>
                                 </span> |
