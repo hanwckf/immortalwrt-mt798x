@@ -203,6 +203,11 @@ platform_do_upgrade() {
 	*snand*)
 		nand_do_upgrade "$1"
 		;;
+	cmcc,rax3000m-emmc)
+		CI_KERNPART="kernel"
+		CI_ROOTPART="rootfs"
+		emmc_do_upgrade "$1"
+		;;
 	*emmc*)
 		mtk_mmc_do_upgrade "$1"
 		;;
@@ -236,7 +241,7 @@ platform_check_image() {
 	*clt,r30b1* |\
 	*imou,lc-hx3001* |\
 	*jcg,q30* |\
-	cmcc,rax3000m |\
+	cmcc,rax3000m* |\
 	h3c,nx30pro |\
 	*konka,komi-a31* |\
 	*snand* |\

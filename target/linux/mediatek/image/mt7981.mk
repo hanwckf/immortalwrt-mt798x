@@ -391,6 +391,18 @@ define Device/cmcc_rax3000m
 endef
 TARGET_DEVICES += cmcc_rax3000m
 
+define Device/cmcc_rax3000m-emmc
+  DEVICE_VENDOR := CMCC
+  DEVICE_MODEL := RAX3000M eMMC version
+  DEVICE_DTS := mt7981-cmcc-rax3000m-emmc
+  DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
+  SUPPORTED_DEVICES := cmcc,rax3000m-emmc
+  DEVICE_PACKAGES := automount blkid blockdev f2fsck fdisk losetup mkf2fs \
+        kmod-fs-f2fs kmod-mmc kmod-nls-cp437 kmod-nls-iso8859-1 kmod-usb3
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+endef
+TARGET_DEVICES += cmcc_rax3000m-emmc
+
 define Device/h3c_nx30pro
   DEVICE_VENDOR := H3C
   DEVICE_MODEL := NX30PRO
