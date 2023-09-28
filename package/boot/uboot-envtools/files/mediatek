@@ -17,6 +17,9 @@ case "$board" in
 livinet,zr-3020*)
 	ubootenv_add_uci_config "/dev/mtd2" "0x0" "0x20000" "0x20000" "1"
 	;;
+cmcc,rax3000m-emmc)
+	ubootenv_add_uci_config "/dev/mmcblk0p1" "0x0" "0x80000" "0x80000"
+	;;
 h3c,nx30pro |\
 *clt,r30b1* |\
 cmcc,rax3000m)

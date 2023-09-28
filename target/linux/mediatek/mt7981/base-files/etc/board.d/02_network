@@ -166,6 +166,11 @@ mediatek_setup_macs()
 		local wifi_mac="$(macaddr_add $lan_mac 1)"
 		mtk_facrory_write_mac Factory 4 "$wifi_mac"
 		;;
+	cmcc,rax3000m-emmc)
+		lan_mac=$(mmc_get_mac_binary factory 0x24)
+		wan_mac=$(mmc_get_mac_binary factory 0x2a)
+		label_mac=$wan_mac
+		;;
 	*imou,lc-hx3001*)
 		if [ -n "$(mtd_get_mac_ascii u-boot-env mac)" ]; then
 			lan_mac=$(mtd_get_mac_ascii u-boot-env mac)
