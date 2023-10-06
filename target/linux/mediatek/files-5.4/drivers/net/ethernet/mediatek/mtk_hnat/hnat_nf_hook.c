@@ -2159,9 +2159,15 @@ mtk_hnat_ipv6_nf_local_out(void *priv, struct sk_buff *skb,
 	if (unlikely(!skb_hnat_is_hashed(skb)))
 		return NF_ACCEPT;
 
+	ip6h = ipv6_hdr(skb);
+
+	if (ip6h->nexthdr != NEXTHDR_IPIP) {
+		hnat_set_head_frags(state, skb, 1, hnat_set_alg);
+		return NF_ACCEPT;
+	}
+
 	entry = &hnat_priv->foe_table_cpu[skb_hnat_ppe(skb)][skb_hnat_entry(skb)];
 	if (skb_hnat_reason(skb) == HIT_UNBIND_RATE_REACH) {
-		ip6h = ipv6_hdr(skb);
 		if (ip6h->nexthdr == NEXTHDR_IPIP) {
 			/* Map-E LAN->WAN: need to record orig info before fn. */
 			if (mape_toggle) {
