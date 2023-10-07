@@ -75,7 +75,8 @@ if grep -sq config /etc/config/wireless; then
 	for dev in $(echo "$radio_devs" | sort -u); do
 		/sbin/wifi up "$dev"
 	done
-else
+elif [ "$1" = "lan" ]; then
+	# for mt798x, call wifi up when exec "ifup lan"
 	/sbin/wifi up
 fi
 fi
