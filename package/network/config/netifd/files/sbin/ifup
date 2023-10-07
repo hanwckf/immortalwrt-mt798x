@@ -50,7 +50,8 @@ else
 	if_call "$1"
 fi
 
-if [ -n "$setup_wifi" ] && grep -sq config /etc/config/wireless; then
+if [ -n "$setup_wifi" ]; then
+if grep -sq config /etc/config/wireless; then
 	. /lib/functions.sh
 
 	find_related_radios() {
@@ -74,4 +75,7 @@ if [ -n "$setup_wifi" ] && grep -sq config /etc/config/wireless; then
 	for dev in $(echo "$radio_devs" | sort -u); do
 		/sbin/wifi up "$dev"
 	done
+else
+	/sbin/wifi up
+fi
 fi
