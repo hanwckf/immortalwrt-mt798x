@@ -284,7 +284,7 @@ TAR_CMD=$(HOST_TAR) -C $(1)/ $(TAR_OPTIONS)
 define KernelPackage/mt_wifi
   CATEGORY:=MTK Properties
   TITLE:=MTK wifi AP driver
-  DEPENDS:=+wifi-profile
+  DEPENDS:=+wifi-dats
   DEPENDS+=+kmod-conninfra
   DEPENDS+=+kmod-mediatek_hnat
   FILES:=$(PKG_BUILD_DIR)/mt_wifi_ap/mt_wifi.ko \
