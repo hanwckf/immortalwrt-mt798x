@@ -389,7 +389,7 @@ TARGET_DEVICES += livinet_zr-3020
 
 define Device/cmcc_rax3000m
   DEVICE_VENDOR := CMCC
-  DEVICE_MODEL := RAX3000M
+  DEVICE_MODEL := RAX3000M NAND
   DEVICE_DTS := mt7981-cmcc-rax3000m
   DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
   DEVICE_PACKAGES := automount blkid luci-app-ksmbd luci-i18n-ksmbd-zh-cn ksmbd-utils \
@@ -410,7 +410,7 @@ TARGET_DEVICES += cmcc_rax3000m
 
 define Device/cmcc_rax3000m-emmc
   DEVICE_VENDOR := CMCC
-  DEVICE_MODEL := RAX3000M eMMC version
+  DEVICE_MODEL := RAX3000M eMMC
   DEVICE_DTS := mt7981-cmcc-rax3000m-emmc
   DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
   SUPPORTED_DEVICES := cmcc,rax3000m-emmc
