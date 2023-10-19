@@ -193,6 +193,7 @@ platform_do_upgrade() {
 	*mt2500* |\
 	*zr-3020* |\
 	*360,t7* |\
+	*abt,asr3000* |\
 	*cetron,ct3003* |\
 	*clt,r30b1* |\
 	*imou,lc-hx3001* |\
@@ -237,6 +238,7 @@ platform_check_image() {
 	*360,t7* |\
 	xiaomi,mi-router-wr30u-stock|\
 	xiaomi,mi-router-wr30u-112m|\
+	*abt,asr3000* |\
 	*cetron,ct3003* |\
 	*clt,r30b1* |\
 	*imou,lc-hx3001* |\

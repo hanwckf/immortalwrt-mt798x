@@ -11,6 +11,11 @@ board=$(board_name)
 board_config_update
 
 case "$board" in
+abt,asr3000)
+	ucidef_set_led_netdev "wan" "WAN" "green:wan" "eth1"
+	ucidef_set_led_netdev "wlan2g" "WLAN2G" "green:wlan2g" "ra0"
+	ucidef_set_led_netdev "wlan5g" "WLAN5G" "green:wlan5g" "rax0"
+	;;
 clt,r30b1)
 	ucidef_set_led_default "green" "GREEN" "r30b1:green" "1"
 	ucidef_set_led_default "red" "RED" "r30b1:red" "0"
