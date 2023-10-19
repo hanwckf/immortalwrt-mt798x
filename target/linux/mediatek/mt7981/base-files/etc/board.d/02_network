@@ -48,6 +48,7 @@ mediatek_setup_interfaces()
 		ucidef_add_switch "switch0" \
 			"1:lan" "2:lan" "3:lan" "0:wan" "6t@eth0"
 		;;
+	abt,asr3000 |\
 	h3c,nx30pro |\
 	*konka,komi-a31*)
 		ucidef_set_interfaces_lan_wan "eth0" "eth1"
@@ -158,6 +159,14 @@ mediatek_setup_macs()
 				fi
 			fi
 		fi
+		;;
+	*abt,asr3000*)
+		label_mac=$(mtd_get_mac_ascii art MAC_ADDRESS)
+		lan_mac=$label_mac
+		wan_mac=$label_mac
+
+		local wifi_mac="$(macaddr_add $label_mac 1)"
+		mtk_facrory_write_mac Factory 4 "$wifi_mac"
 		;;
 	*cetron,ct3003*)
 		lan_mac=$(mtd_get_mac_ascii art MAC_ADDRESS)

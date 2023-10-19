@@ -719,6 +719,7 @@ setup_model()
 	*mt2500* |\
 	*zr-3020* |\
 	*360,t7* |\
+	abt,asr3000* |\
 	xiaomi,mi-router-wr30u* |\
 	*rax3000m* |\
 	h3c,nx30pro |\

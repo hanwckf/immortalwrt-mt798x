@@ -206,6 +206,23 @@ define Device/mt7981-360-t7-108M
 endef
 TARGET_DEVICES += mt7981-360-t7-108M
 
+define Device/abt_asr3000
+  DEVICE_VENDOR := ABT
+  DEVICE_MODEL := ASR3000
+  DEVICE_DTS := mt7981-abt-asr3000
+  DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
+  SUPPORTED_DEVICES := abt,asr3000
+  UBINIZE_OPTS := -E 5
+  BLOCKSIZE := 128k
+  PAGESIZE := 2048
+  IMAGE_SIZE := 114816k
+  KERNEL_IN_UBI := 1
+  IMAGES += factory.bin
+  IMAGE/factory.bin := append-ubi | check-size $$$$(IMAGE_SIZE)
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+endef
+TARGET_DEVICES += abt_asr3000
+
 define Device/cetron_ct3003
   DEVICE_VENDOR := CETRON
   DEVICE_MODEL := CT3003
