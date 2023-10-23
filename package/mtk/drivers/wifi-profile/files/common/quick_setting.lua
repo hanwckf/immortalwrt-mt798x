@@ -160,9 +160,8 @@ function __set_wifi_apcli_security(cfgs, diff, device, devname)
             commands = string.format([[
                 iwpriv %s set ApCliAuthMode=WPAPSKWPA2PSK;
                 iwpriv %s set ApCliEncrypType=%s;
-                iwpriv %s set ApCliWpaMixPairCipher=WPA_TKIP_WPA2_AES;
                 iwpriv %s set ApCliWPAPSK="%s";]],
-            vif.vifname, vif.vifname, vif.EncrypType, vif.vifname, vif.vifname, vif.WPAPSK)
+            vif.vifname, vif.vifname, vif.EncrypType, vif.vifname, vif.WPAPSK)
         elseif vif.AuthMode == "WPA2PSKWPA3PSK" then
             commands = string.format([[
                 iwpriv %s set ApCliAuthMode=WPA2PSKWPA3PSK;
@@ -372,9 +371,8 @@ function __set_wifi_security(cfgs, diff, device, devname)
             commands = string.format([[
                 iwpriv %s set AuthMode=WPAPSKWPA2PSK;
                 iwpriv %s set EncrypType=%s;
-                iwpriv %s set WpaMixPairCipher=WPA_TKIP_WPA2_AES;
                 iwpriv %s set WPAPSK="%s";]],
-            vif.vifname, vif.vifname, vif.EncrypType, vif.vifname, vif.vifname, vif.WPAPSK)
+            vif.vifname, vif.vifname, vif.EncrypType, vif.vifname, vif.WPAPSK)
         elseif vif.AuthMode == "WPA2PSKWPA3PSK" then
             commands = string.format([[
                 iwpriv %s set AuthMode=WPA2PSKWPA3PSK;

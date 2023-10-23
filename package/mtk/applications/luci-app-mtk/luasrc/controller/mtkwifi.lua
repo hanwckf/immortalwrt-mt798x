@@ -583,7 +583,6 @@ local function __security_cfg(cfgs, vif_idx)
 
     local __authmode = http.formvalue("__authmode") or "Disable"
     cfgs.AuthMode = mtkwifi.token_set(cfgs.AuthMode, vif_idx, __authmode)
-    cfgs.WpaMixPairCipher = ""
     cfgs.PMFMFPC = "0"
     cfgs.PMFMFPR = "0"
     cfgs.PMFSHA256 = "0"
@@ -611,7 +610,6 @@ local function __security_cfg(cfgs, vif_idx)
     elseif __authmode == "WPAPSKWPA2PSK" then
         cfgs.EncrypType = mtkwifi.token_set(cfgs.EncrypType, vif_idx, http.formvalue("__encrypttype") or "AES")
         cfgs.RekeyMethod = mtkwifi.token_set(cfgs.RekeyMethod, vif_idx, "TIME")
-        cfgs.WpaMixPairCipher = "WPA_TKIP_WPA2_AES"
 
     elseif __authmode == "WPA2PSK" then
         cfgs.EncrypType = mtkwifi.token_set(cfgs.EncrypType, vif_idx, http.formvalue("__encrypttype") or "AES")
@@ -1188,10 +1186,6 @@ function apcli_cfg(dev, vif)
         end
     end
 
-    -- disable ACS for apcli
-    if cfgs.ApCliEnable ~= "0" and cfgs.ApCliEnable ~= "" then
-        cfgs.AutoChannelSelect = "0"
-    end
     -- http.write_json(http.formvalue())
 
     -- Mediatek Adaptive Network
