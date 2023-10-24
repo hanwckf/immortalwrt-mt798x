@@ -5,6 +5,12 @@
 
 static int gpy211_phy_config_init(struct phy_device *phydev)
 {
+	int sgmii_reg = phy_read_mmd(phydev, MDIO_MMD_VEND1, 8);
+
+	if (sgmii_reg != 0x24e2){
+		phy_write_mmd(phydev, MDIO_MMD_VEND1, 8, 0x24e2);
+	}
+	phy_write_mmd(phydev, MDIO_MMD_VEND1, 1, 0x03f0);
 	return 0;
 }
 

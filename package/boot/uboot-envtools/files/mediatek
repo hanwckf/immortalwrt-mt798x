@@ -32,6 +32,7 @@ xiaomi,mi-router-wr30u* |\
 xiaomi,redmi-router-ax6000*)
 	ubootenv_add_uci_config "/dev/mtd2" "0x0" "0x10000" "0x20000" "1"
 	;;
+nradio,wt9103 |\
 *konka,komi-a31*)
 	ubootenv_add_uci_config "/dev/mtd2" "0x0" "0x20000" "0x80000" "1"
 	;;
