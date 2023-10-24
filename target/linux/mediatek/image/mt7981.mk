@@ -487,3 +487,20 @@ define Device/imou_lc-hx3001
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
 endef
 TARGET_DEVICES += imou_lc-hx3001
+
+define Device/nradio_wt9103
+  DEVICE_VENDOR := NRADIO
+  DEVICE_MODEL := WT9103
+  DEVICE_DTS := mt7981-nradio-wt9103
+  DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
+  SUPPORTED_DEVICES := nradio,wt9103
+  UBINIZE_OPTS := -E 5
+  BLOCKSIZE := 128k
+  PAGESIZE := 2048
+  IMAGE_SIZE := 131072k
+  KERNEL_IN_UBI := 1
+  IMAGES += factory.bin
+  IMAGE/factory.bin := append-ubi | check-size $$$$(IMAGE_SIZE)
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+endef
+TARGET_DEVICES += nradio_wt9103

@@ -198,6 +198,7 @@ platform_do_upgrade() {
 	*clt,r30b1* |\
 	*imou,lc-hx3001* |\
 	*jcg,q30* |\
+	nradio,wt9103 |\
 	cmcc,a10 |\
 	cmcc,rax3000m |\
 	h3c,nx30pro |\
@@ -248,6 +249,7 @@ platform_check_image() {
 	cmcc,rax3000m* |\
 	h3c,nx30pro |\
 	*konka,komi-a31* |\
+	nradio,wt9103 |\
 	*snand* |\
 	*emmc*)
 		# tar magic `ustar`
