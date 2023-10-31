@@ -17,9 +17,9 @@ abt,asr3000)
 	ucidef_set_led_netdev "wlan5g" "WLAN5G" "green:wlan5g" "rax0"
 	;;
 clt,r30b1)
-	ucidef_set_led_default "green" "GREEN" "r30b1:green" "1"
-	ucidef_set_led_default "red" "RED" "r30b1:red" "0"
-	ucidef_set_led_netdev "blue" "BLUE" "r30b1:blue" "eth1"
+	ucidef_set_led_default "all_ctrl" "ALL_CTRL" "ctrl_led_all" "1"
+	ucidef_set_led_default "internet" "INTERNET" "led_internet" "1"
+	ucidef_set_led_default "power_red" "POWER_RED" "led_power" "0"
 	;;
 imou,lc-hx3001)
 	ucidef_set_led_netdev "wan" "WAN" "green:wan" "eth1" "link"
