@@ -2209,6 +2209,7 @@ void hnat_qos_shaper_ebl(u32 id, u32 enable)
 	struct mtk_hnat *h = hnat_priv;
 	u32 cfg;
 
+	cr_set_field(h->fe_base + QDMA_PAGE, QTX_CFG_PAGE, (id / NUM_OF_Q_PER_PAGE));
 	if (enable) {
 		cfg = QTX_SCH_MIN_RATE_EN | QTX_SCH_MAX_RATE_EN;
 		cfg |= (1 << QTX_SCH_MIN_RATE_MAN_OFFSET) |
