@@ -241,6 +241,21 @@ endef
 $(eval $(call KernelPackage,phy-realtek))
 
 
+define KernelPackage/phy-air-en8811h
+   SUBMENU:=$(NETWORK_DEVICES_MENU)
+   TITLE:=Airoha EN8811H PHY Driver
+   KCONFIG:=CONFIG_AIR_EN8811H_PHY
+   DEPENDS:=+kmod-libphy
+   FILES:=$(LINUX_DIR)/drivers/net/phy/air_en8811h.ko
+   AUTOLOAD:=$(call AutoLoad,20,air_en8811h,1)
+endef
+
+define KernelPackage/phy-air-en8811h/description
+   Supports the Airoha EN8811h PHY.
+endef
+
+$(eval $(call KernelPackage,phy-air-en8811h))
+
 define KernelPackage/swconfig
   SUBMENU:=$(NETWORK_DEVICES_MENU)
   TITLE:=switch configuration API
