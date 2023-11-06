@@ -724,6 +724,7 @@ setup_model()
 	*clt,r30b1* |\
 	cmcc,a10* |\
 	xiaomi,mi-router-wr30u* |\
+	xiaomi,mi-router-ax3000t* |\
 	*rax3000m* |\
 	h3c,nx30pro |\
 	konka,komi-a31 |\
