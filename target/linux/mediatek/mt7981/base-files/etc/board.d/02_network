@@ -37,8 +37,11 @@ mediatek_setup_interfaces()
 		ucidef_add_switch "switch0" \
 			"0:lan" "1:lan" "2:lan" "3:wan" "6t@eth0"
 		;;
+	abt,asr3000 |\
 	*clt,r30b1* |\
-	*imou,lc-hx3001*)
+	h3c,nx30pro |\
+	*imou,lc-hx3001* |\
+	*konka,komi-a31*)
 		ucidef_set_interfaces_lan_wan "eth0" "eth1"
 		ucidef_add_switch "switch0" \
 			"0:lan" "1:lan" "2:lan" "6u@eth0"
@@ -52,13 +55,6 @@ mediatek_setup_interfaces()
 		ucidef_set_interfaces_lan_wan "eth0.1" "eth0.2"
 		ucidef_add_switch "switch0" \
 			"1:lan" "2:lan" "3:lan" "0:wan" "6t@eth0"
-		;;
-	abt,asr3000 |\
-	h3c,nx30pro |\
-	*konka,komi-a31*)
-		ucidef_set_interfaces_lan_wan "eth0" "eth1"
-		ucidef_add_switch "switch0" \
-			"0:lan" "1:lan" "2:lan" "6u@eth0"
 		;;
 	*rax3000m*)
 		ucidef_set_interfaces_lan_wan "eth0" "eth1"
@@ -172,7 +168,6 @@ mediatek_setup_macs()
 		label_mac=$(mtd_get_mac_ascii art MAC_ADDRESS)
 		lan_mac=$label_mac
 		wan_mac=$label_mac
-
 		local wifi_mac="$(macaddr_add $label_mac 1)"
 		mtk_facrory_write_mac Factory 4 "$wifi_mac"
 		;;
@@ -182,6 +177,12 @@ mediatek_setup_macs()
 		label_mac=$lan_mac
 		local wifi_mac="$(macaddr_add $lan_mac 1)"
 		mtk_facrory_write_mac Factory 4 "$wifi_mac"
+		;;
+	*clt,r30b1*)
+		lan_mac=$(mtd_get_mac_binary $part_name 0x2A)
+		wan_mac=$(mtd_get_mac_binary $part_name 0x24)
+		label_mac=$lan_mac
+		local wifi_mac="$(mtd_get_mac_binary $part_name 0x04)"
 		;;
 	cmcc,rax3000m-emmc)
 		lan_mac=$(mmc_get_mac_binary factory 0x24)
@@ -219,7 +220,6 @@ mediatek_setup_macs()
 		fi
 		;;
 	*cmcc,a10* |\
-	*clt,r30b1* |\
 	*konka,komi-a31*)
 		lan_mac=$(mtd_get_mac_binary $part_name 0x2A)
 		wan_mac=$(mtd_get_mac_binary $part_name 0x24)

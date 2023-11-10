@@ -11,10 +11,11 @@
 	compatible = "clt,r30b1", "mediatek,mt7981";
 
 	aliases {
-		led-boot = &red_led;
-		led-failsafe = &red_led;
-		led-running = &green_led;
-		led-upgrade = &blue_led;
+		led-boot = &power_led;
+		led-failsafe = &power_led;
+		led-running = &system_led;
+		led-upgrade = &system_led;
+		#label-mac-device = &gmac0;
 	};
 
 	chosen {
@@ -24,25 +25,6 @@
 
 	memory {
 		reg = <0 0x40000000 0 0x10000000>;
-	};
-
-	leds {
-		compatible = "gpio-leds";
-
-		red_led: red {
-			label = "r30b1:red";
-			gpios = <&pio 10 GPIO_ACTIVE_LOW>;
-		};
-
-		green_led: green {
-			label = "r30b1:green";
-			gpios = <&pio 12 GPIO_ACTIVE_LOW>;
-		};
-
-		blue_led: blue {
-			label = "r30b1:blue";
-			gpios = <&pio 11 GPIO_ACTIVE_LOW>;
-		};
 	};
 
 	gpio-keys {
@@ -59,6 +41,49 @@
 			linux,code = <BTN_9>;
 			linux,input-type = <EV_SW>;
 			gpios = <&pio 0 GPIO_ACTIVE_LOW>;
+		};
+	};
+
+	leds {
+		compatible = "gpio-leds";
+
+		power_led: power_red {
+			label = "led_power";
+			gpios = <&pio 12 GPIO_ACTIVE_LOW>;
+			default-state = "on";
+			linux,default-trigger = "default-on";
+		};
+
+		system_led: wan_green {
+			label = "led_wan_green";
+			gpios = <&pio 6 GPIO_ACTIVE_LOW>;
+		};
+
+		wan_red {
+			label = "led_wan_red";
+			gpios = <&pio 5 GPIO_ACTIVE_LOW>;
+		};
+
+		mesh_blue {
+			label = "led_mesh";
+			gpios = <&pio 13 GPIO_ACTIVE_LOW>;
+		};
+
+		wifi_green {
+			label = "led_wifi";
+			gpios = <&pio 34 GPIO_ACTIVE_LOW>;
+		};
+
+		internet_blue {
+			label = "led_internet";
+			gpios = <&pio 11 GPIO_ACTIVE_LOW>;
+		};
+
+		all_ctrl {
+			label = "ctrl_led_all";
+			gpios = <&pio 8 GPIO_ACTIVE_LOW>;
+			default-state = "on";
+			linux,default-trigger = "default-on";
 		};
 	};
 
@@ -114,19 +139,19 @@
 };
 
 &eth {
-        status = "okay";
+	status = "okay";
 
-        gmac0: mac@0 {
-                compatible = "mediatek,eth-mac";
-                reg = <0>;
-                phy-mode = "2500base-x";
+	gmac0: mac@0 {
+		compatible = "mediatek,eth-mac";
+		reg = <0>;
+		phy-mode = "2500base-x";
 
-                fixed-link {
-                        speed = <2500>;
-                        full-duplex;
-                        pause;
-                };
-        };
+		fixed-link {
+			speed = <2500>;
+			full-duplex;
+			pause;
+		};
+	};
 
 	gmac1: mac@1 {
 		compatible = "mediatek,eth-mac";
@@ -135,9 +160,9 @@
 		phy-handle = <&phy0>;
 	};
 
-        mdio: mdio-bus {
-                #address-cells = <1>;
-                #size-cells = <0>;
+	mdio: mdio-bus {
+		#address-cells = <1>;
+		#size-cells = <0>;
 
 		phy0: ethernet-phy@0 {
 			compatible = "ethernet-phy-id03a2.9461";
@@ -172,7 +197,7 @@
 
 &hnat {
 	mtketh-wan = "eth1";
-        mtketh-lan = "eth0";
+	mtketh-lan = "eth0";
 	mtketh-max-gmac = <2>;
 	status = "okay";
 };
@@ -187,14 +212,13 @@
 		#size-cells = <1>;
 		compatible = "spi-nand";
 		reg = <0>;
-
 		spi-max-frequency = <52000000>;
-                spi-tx-bus-width = <4>;
-                spi-rx-bus-width = <4>;
+		spi-tx-bus-width = <4>;
+		spi-rx-bus-width = <4>;
 		spi-cal-enable;
 		spi-cal-mode = "read-data";
 		spi-cal-datalen = <7>;
-                spi-cal-data = /bits/ 8 <0x53 0x50 0x49 0x4E 0x41 0x4E 0x44>; /* 'SPINAND' */
+		spi-cal-data = /bits/ 8 <0x53 0x50 0x49 0x4E 0x41 0x4E 0x44>; /* 'SPINAND' */
 		spi-cal-addrlen = <5>;
 		spi-cal-addr = /bits/ 32 <0x0 0x0 0x0 0x0 0x0>;
 	};
@@ -219,7 +243,6 @@
 };
 
 &pio {
-
 	i2c_pins: i2c-pins-g0 {
                 mux {
                         function = "i2c";
@@ -234,26 +257,26 @@
                 };
         };
 
-        pwm0_pin: pwm0-pin-g0 {
-                mux {
-                        function = "pwm";
-                        groups = "pwm0_0";
-                };
-        };
+	pwm0_pin: pwm0-pin-g0 {
+		mux {
+			function = "pwm";
+			groups = "pwm0_0";
+		};
+	};
 
-        pwm1_pin: pwm1-pin-g0 {
-                mux {
-                        function = "pwm";
-                        groups = "pwm1_0";
-                };
-        };
+	pwm1_pin: pwm1-pin-g0 {
+		mux {
+			function = "pwm";
+			groups = "pwm1_0";
+		};
+	};
 
-        pwm2_pin: pwm2-pin {
-                mux {
-                        function = "pwm";
-                        groups = "pwm2";
-                };
-        };
+	pwm2_pin: pwm2-pin {
+		mux {
+			function = "pwm";
+			groups = "pwm2";
+		};
+	};
 
 	spi0_flash_pins: spi0-pins {
 		mux {
@@ -282,16 +305,16 @@
 	};
 
 	uart1_pins: uart1-pins-g1 {
-                mux {
-                        function = "uart";
-                        groups = "uart1_1";
-                };
-        };
+		mux {
+			function = "uart";
+			groups = "uart1_1";
+		};
+	};
 
 	uart2_pins: uart2-pins-g1 {
 		mux {
-                        function = "uart";
-                        groups = "uart2_1";
-                };
-        };
+			function = "uart";
+			groups = "uart2_1";
+		};
+	};
 };
