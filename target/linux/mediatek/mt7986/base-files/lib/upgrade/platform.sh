@@ -150,6 +150,7 @@ platform_do_upgrade() {
 	*snand*)
 		nand_do_upgrade "$1"
 		;;
+	bananapi,bpi-r3mini-emmc |\
 	*emmc*)
 		mtk_mmc_do_upgrade "$1"
 		;;
@@ -169,7 +170,7 @@ platform_check_image() {
 
 	case "$board" in
 	xiaomi,redmi-router-ax6000* |\
-	bananapi,bpi-r3mini |\
+	bananapi,bpi-r3mini* |\
 	*snand* |\
 	*emmc*)
 		# tar magic `ustar`

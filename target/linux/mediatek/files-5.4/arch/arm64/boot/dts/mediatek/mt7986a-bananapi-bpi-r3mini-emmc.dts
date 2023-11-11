@@ -3,7 +3,7 @@
 #include "mt7986a-pinctrl.dtsi"
 / {
 	model = "Bananapi BPI-R3MINI EMMC";
-	compatible = "bananapi,bpi-r3mini", "mediatek,mt7986a";
+	compatible = "bananapi,bpi-r3mini-emmc", "mediatek,mt7986a";
 	chosen {
 		bootargs = "console=ttyS0,115200n1 loglevel=8 \
 		earlycon=uart8250,mmio32,0x11002000 \
