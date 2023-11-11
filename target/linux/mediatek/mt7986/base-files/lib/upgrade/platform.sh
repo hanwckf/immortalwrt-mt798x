@@ -152,7 +152,7 @@ platform_do_upgrade() {
 		;;
 	bananapi,bpi-r3mini-emmc |\
 	*emmc*)
-		mtk_mmc_do_upgrade "$1"
+		emmc_do_upgrade "$1"
 		;;
 	*)
 		default_do_upgrade "$1"
