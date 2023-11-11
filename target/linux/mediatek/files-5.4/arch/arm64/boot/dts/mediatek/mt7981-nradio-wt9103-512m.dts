@@ -4,7 +4,7 @@
 #include "mt7981.dtsi"
 
 / {
-	model = "NRadio C8-660";
+	model = "NRadio C8-660-512M";
 	compatible = "nradio,wt9103", "mediatek,mt7981";
 	
 	aliases {
@@ -117,7 +117,8 @@
 
 			partition@580000 {
 				label = "ubi";
-				reg = <0x580000 0x7000000>;
+				// reg = <0x580000 0x7000000>;
+				reg = <0x580000 0x1f400000>;
 			};
 		};
 	};
