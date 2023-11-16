@@ -711,6 +711,7 @@ setup_model()
 	case $board in
 	xiaomi,redmi-router-ax6000* |\
 	bananapi,bpi-r3mini* |\
+	netcore,n60 |\
 	*7986*)
 		MT7986_whnat $num_of_wifi
 		;;
