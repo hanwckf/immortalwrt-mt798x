@@ -151,7 +151,9 @@ platform_do_upgrade() {
 	*snand*)
 		nand_do_upgrade "$1"
 		;;
-	bananapi,bpi-r3mini-emmc |\
+	bananapi,bpi-r3mini-emmc)
+		emmc_do_upgrade "$1"
+		;;
 	*emmc*)
 		mtk_mmc_do_upgrade "$1"
 		;;
