@@ -20,7 +20,9 @@
 #include <linux/pinctrl/devinfo.h>
 #include <linux/phylink.h>
 #include <net/dsa.h>
-
+#include <linux/of_platform.h>
+#include <linux/of_gpio.h>
+#include <linux/of_irq.h>
 #include "mtk_eth_soc.h"
 #include "mtk_eth_dbg.h"
 #include "mtk_eth_reset.h"
@@ -28,7 +30,7 @@
 #if defined(CONFIG_NET_MEDIATEK_HNAT) || defined(CONFIG_NET_MEDIATEK_HNAT_MODULE)
 #include "mtk_hnat/nf_hnat_mtk.h"
 #endif
-
+static struct mtk_eth *sg_eth;
 static int mtk_msg_level = -1;
 atomic_t reset_lock = ATOMIC_INIT(0);
 atomic_t force = ATOMIC_INIT(0);
@@ -87,7 +89,7 @@ u32 mtk_m32(struct mtk_eth *eth, u32 mask, u32 set, unsigned reg)
 	return reg;
 }
 
-static int mtk_mdio_busy_wait(struct mtk_eth *eth)
+int mtk_mdio_busy_wait(struct mtk_eth *eth)
 {
 	unsigned long t_start = jiffies;
 
@@ -3495,11 +3497,11 @@ static int mtk_probe(struct platform_device *pdev)
 	struct device_node *mac_np;
 	struct mtk_eth *eth;
 	int err, i;
-
+	static int ext_init = 0;
 	eth = devm_kzalloc(&pdev->dev, sizeof(*eth), GFP_KERNEL);
 	if (!eth)
 		return -ENOMEM;
-
+	sg_eth = eth;
 	eth->soc = of_device_get_match_data(&pdev->dev);
 
 	eth->dev = &pdev->dev;
@@ -3614,6 +3616,8 @@ static int mtk_probe(struct platform_device *pdev)
 	eth->hwlro = MTK_HAS_CAPS(eth->soc->caps, MTK_HWLRO);
 
 	for_each_child_of_node(pdev->dev.of_node, mac_np) {
+		int ext_reset_pin = -1;
+		int ret = -1;
 		if (!of_device_is_compatible(mac_np,
 					     "mediatek,eth-mac"))
 			continue;
@@ -3625,7 +3629,22 @@ static int mtk_probe(struct platform_device *pdev)
 		if (err) {
 			of_node_put(mac_np);
 			goto err_deinit_hw;
+			}
+			
+		ext_reset_pin = of_get_named_gpio(mac_np, "ext-phy-reset-gpios", 0);
+		if (ext_reset_pin >= 0){
+			dev_info(&pdev->dev, "Ext-phy gpio : %d\n", ext_reset_pin);
+			ret = devm_gpio_request(&pdev->dev, ext_reset_pin, "mt753x-reset");
+			if (!ret)
+			{
+				
+				gpio_direction_output(ext_reset_pin, 0);
+				msleep(300);
+				gpio_set_value(ext_reset_pin, 1);
+				msleep(500);
+			}
 		}
+		
 	}
 
 	err = mtk_napi_init(eth);
@@ -3721,6 +3740,19 @@ static int mtk_probe(struct platform_device *pdev)
 	add_timer(&eth->mtk_dma_monitor_timer);
 #endif
 
+	if (!ext_init){
+	for_each_child_of_node(pdev->dev.of_node, mac_np) {
+		unsigned int ext_phy_reg = 0;
+		int err = -1;
+		err = of_property_read_u32_index(mac_np, "ext-phy-reg", 0, &ext_phy_reg);
+		
+		if (err >= 0){
+			dev_info(&pdev->dev, "Ext-phy reg : %d\n", ext_phy_reg);
+			mtk_soc_extphy_init(eth, ext_phy_reg);
+		}	
+	}
+        ext_init = 1;
+	}
 	return 0;
 
 err_deinit_mdio:
