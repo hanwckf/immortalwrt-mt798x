@@ -299,7 +299,7 @@ void foe_clear_entry(struct neighbour *neigh)
 				*((u32 *)h_dest) = swab32(entry->ipv4_hnapt.dmac_hi);
 				*((u16 *)&h_dest[4]) =
 					swab16(entry->ipv4_hnapt.dmac_lo);
-				if (memcmp(h_dest, neigh->ha, ETH_ALEN) != 0) {
+				if (!ether_addr_equal(h_dest, neigh->ha)) {
 					cr_set_field(hnat_priv->ppe_base[i] + PPE_TB_CFG,
 						     SMA, SMA_ONLY_FWD_CPU);
 
