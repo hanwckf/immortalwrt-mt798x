@@ -152,11 +152,9 @@ platform_do_upgrade() {
 	*snand*)
 		nand_do_upgrade "$1"
 		;;
-	*emmc*)
-		mtk_mmc_do_upgrade "$1"
-		;;
 	bananapi,bpi-r3mini-emmc |\
-	glinet,gl-mt6000)
+	glinet,gl-mt6000 |\
+	*emmc*)
  		CI_KERNPART="kernel"
  		CI_ROOTPART="rootfs"
  		emmc_do_upgrade "$1"
