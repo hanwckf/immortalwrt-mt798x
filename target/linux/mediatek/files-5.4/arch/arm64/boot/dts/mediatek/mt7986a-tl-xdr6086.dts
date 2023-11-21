@@ -1,0 +1,8 @@
+/dts-v1/;
+#include "mt7986a-tl-xdr-common.dtsi"
+
+/ 
+ {
+ 	model = "TP-Link TL-XDR6086";
+ 	compatible = "tplink,tl-xdr6086", "mediatek,mt7986a";
+ };
