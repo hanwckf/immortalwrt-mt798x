@@ -1568,7 +1568,7 @@ static unsigned int skb_to_hnat_info(struct sk_buff *skb,
 			gmac = ((skb_hnat_entry(skb) >> 1) % hnat_priv->gmac_num) ?
 				 NR_GMAC2_PORT : NR_GMAC1_PORT;
 		else {
-			if (of_machine_is_compatible("glinet,gl-mt3000")||of_machine_is_compatible("glinet,mt3000-snand"))
+			if (of_machine_is_compatible("glinet,mt2500-emmc")||of_machine_is_compatible("glinet,mt3000-snand"))
 				gmac = NR_GMAC2_PORT;
 			else
 				gmac = NR_GMAC1_PORT;
@@ -1583,7 +1583,7 @@ static unsigned int skb_to_hnat_info(struct sk_buff *skb,
 			/* Set act_dp = wan_dev */
 			entry.ipv4_hnapt.act_dp = dev->ifindex;
 		} else {
-			if (of_machine_is_compatible("glinet,gl-mt3000")||of_machine_is_compatible("glinet,mt3000-snand"))
+			if (of_machine_is_compatible("glinet,mt2500-emmc")||of_machine_is_compatible("glinet,mt3000-snand"))
 				gmac = NR_GMAC1_PORT;
 			else
 				gmac = (IS_GMAC1_MODE) ? NR_GMAC1_PORT : NR_GMAC2_PORT;
