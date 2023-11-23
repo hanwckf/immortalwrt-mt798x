@@ -1,5 +1,10 @@
 KERNEL_LOADADDR := 0x48080000
 
+MT7981_USB_PKGS := automount blkid blockdev fdisk \
+    kmod-nls-cp437 kmod-nls-iso8859-1 kmod-usb2 kmod-usb3 \
+    luci-app-usb-printer luci-i18n-usb-printer-zh-cn \
+    kmod-usb-net-rndis usbutils
+
 define Device/mt7981-spim-nor-rfb
   DEVICE_VENDOR := MediaTek
   DEVICE_MODEL := mt7981-spim-nor-rfb
@@ -438,10 +443,7 @@ define Device/cmcc_rax3000m
   DEVICE_MODEL := RAX3000M NAND
   DEVICE_DTS := mt7981-cmcc-rax3000m
   DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
-  DEVICE_PACKAGES := automount blkid luci-app-ksmbd luci-i18n-ksmbd-zh-cn ksmbd-utils \
-			luci-app-usb-printer luci-i18n-usb-printer-zh-cn \
-			kmod-nls-cp437 kmod-nls-iso8859-1 \
-			kmod-usb-net-rndis usbutils
+  DEVICE_PACKAGES := $(MT7981_USB_PKGS) luci-app-ksmbd luci-i18n-ksmbd-zh-cn ksmbd-utils
   SUPPORTED_DEVICES := cmcc,rax3000m
   UBINIZE_OPTS := -E 5
   BLOCKSIZE := 128k
@@ -460,8 +462,8 @@ define Device/cmcc_rax3000m-emmc
   DEVICE_DTS := mt7981-cmcc-rax3000m-emmc
   DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
   SUPPORTED_DEVICES := cmcc,rax3000m-emmc
-  DEVICE_PACKAGES := automount blkid blockdev f2fsck fdisk losetup mkf2fs \
-        kmod-fs-f2fs kmod-mmc kmod-nls-cp437 kmod-nls-iso8859-1 kmod-usb3
+  DEVICE_PACKAGES := $(MT7981_USB_PKGS) f2fsck losetup mkf2fs kmod-fs-f2fs kmod-mmc \
+	luci-app-ksmbd luci-i18n-ksmbd-zh-cn ksmbd-utils 
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
 endef
 TARGET_DEVICES += cmcc_rax3000m-emmc

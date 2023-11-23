@@ -1,5 +1,15 @@
 KERNEL_LOADADDR := 0x48080000
 
+MT7986_USB_PKGS := automount blkid blockdev fdisk \
+    kmod-nls-cp437 kmod-nls-iso8859-1 kmod-usb2 kmod-usb3 \
+    luci-app-usb-printer luci-i18n-usb-printer-zh-cn \
+    kmod-usb-net-rndis usbutils
+
+MT7986_WWAN_PKGS := wwan uqmi modemmanager \
+    luci-proto-modemmanager luci-proto-qmi \
+    kmod-usb-net-cdc-ether kmod-usb-net-cdc-mbim kmod-usb-net-cdc-ncm \
+    kmod-usb-serial-option kmod-usb-serial-qualcomm
+
 define Device/mt7986a-ax6000-spim-nor-rfb
   DEVICE_VENDOR := MediaTek
   DEVICE_MODEL := mt7986a-ax6000-spim-nor-rfb
@@ -392,7 +402,8 @@ define Device/BPI-R3MINI-NAND
   DEVICE_TITLE := MTK7986a BPI R3MINI NAND
   DEVICE_DTS := mt7986a-bananapi-bpi-r3mini-nand
   DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
-  DEVICE_PACKAGES := kmod-phy-air-en8811h bpir3_mini-properties
+  DEVICE_PACKAGES := $(MT7986_USB_PKGS) $(MT7986_WWAN_PKGS) \
+        kmod-phy-air-en8811h bpir3_mini-properties pciutils
   SUPPORTED_DEVICES := bananapi,bpi-r3mini
   UBINIZE_OPTS := -E 5
   BLOCKSIZE := 128k
@@ -411,18 +422,18 @@ define Device/BPI-R3MINI-EMMC
   DEVICE_TITLE := MTK7986a BPI R3MINI EMMC
   DEVICE_DTS := mt7986a-bananapi-bpi-r3mini-emmc
   DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
-  DEVICE_PACKAGES := kmod-phy-air-en8811h bpir3_mini-properties \
-  	automount blkid blockdev f2fsck fdisk losetup mkf2fs f2fs-tools \
-        kmod-fs-f2fs kmod-mmc kmod-nls-cp437 kmod-nls-iso8859-1
+  DEVICE_PACKAGES := $(MT7986_USB_PKGS) $(MT7986_WWAN_PKGS) \
+        kmod-phy-air-en8811h bpir3_mini-properties pciutils \
+        f2fsck losetup mkf2fs f2fs-tools kmod-fs-f2fs kmod-mmc
   SUPPORTED_DEVICES := bananapi,bpi-r3mini-emmc
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
 endef
 TARGET_DEVICES += BPI-R3MINI-EMMC
 
 define Device/netcore_n60
-   DEVICE_VENDOR := Netcore
-   DEVICE_MODEL := N60
-   DEVICE_DTS := mt7986a-netcore-n60
+  DEVICE_VENDOR := Netcore
+  DEVICE_MODEL := N60
+  DEVICE_DTS := mt7986a-netcore-n60
   DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
   SUPPORTED_DEVICES := netcore,n60
   UBINIZE_OPTS := -E 5
@@ -440,26 +451,23 @@ define Device/glinet_gl-mt6000
    DEVICE_MODEL := GL-MT6000
    DEVICE_DTS := mt7986a-glinet-gl-mt6000
    DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
-   DEVICE_PACKAGES := automount blkid blockdev f2fsck fdisk losetup mkf2fs \
-         kmod-fs-f2fs kmod-mmc kmod-nls-cp437 kmod-nls-iso8859-1 kmod-usb3 \
-         e2fsprogs kmod-fs-ext4 kmod-fs-vfat
+   DEVICE_PACKAGES := $(MT7986_USB_PKGS) f2fsck losetup mkf2fs kmod-fs-f2fs kmod-mmc
    IMAGES += factory.bin
    IMAGE/factory.bin := append-kernel | pad-to 32M | append-rootfs
    IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
 endef
 TARGET_DEVICES += glinet_gl-mt6000
- 
+
 define Device/tplink_tl-common
     DEVICE_VENDOR := TP-Link
     DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
-    DEVICE_PACKAGES := automount blkid blockdev f2fsck fdisk losetup mkf2fs \
-         kmod-fs-f2fs  kmod-nls-cp437 kmod-nls-iso8859-1 kmod-usb3
+    DEVICE_PACKAGES := $(MT7986_USB_PKGS)
     UBINIZE_OPTS := -E 5
     BLOCKSIZE := 128k
     PAGESIZE := 2048
     KERNEL_IN_UBI := 1
     IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
- endef
+endef
 
 define Device/tplink_tl-xdr6086
     DEVICE_MODEL := TL-XDR6086
