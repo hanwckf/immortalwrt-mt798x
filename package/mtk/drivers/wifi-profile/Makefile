@@ -20,7 +20,8 @@ PKG_KCONFIG:= \
 	third_card \
 	third_card_name \
 	WIFI_NORMAL_SETTING \
-	WIFI_QUICK_SETTING
+	WIFI_QUICK_SETTING \
+	MTK_WIFI_SKU_TYPE
 
 PKG_CONFIG_DEPENDS:=$(foreach c, $(PKG_KCONFIG),$(if $(CONFIG_$c),CONFIG_$(c)))
 
@@ -66,7 +67,11 @@ define Package/wifi-profile/install
 	fi
 
 	if [ "$$(CONFIG_first_card_name)" = "MT7986" -o "$$(CONFIG_second_card_name)" = "MT7986" ] ; then \
-		$(INSTALL_DATA) ./files/mt7986/* $(1)/etc/wireless/mediatek/; \
+		if [ "$$(CONFIG_MTK_WIFI_SKU_TYPE)" = "AX4200" ] ; then \
+			$(INSTALL_DATA) ./files/mt7986-ax4200/* $(1)/etc/wireless/mediatek/; \
+		else \
+			$(INSTALL_DATA) ./files/mt7986/* $(1)/etc/wireless/mediatek/; \
+		fi ; \
 	fi
 
 	if [ "$$(CONFIG_first_card_name)" = "MT7981" -o "$$(CONFIG_second_card_name)" = "MT7981" ] ; then \
