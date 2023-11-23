@@ -1,0 +1,3 @@
+#!/bin/sh
+
+mv /www/luci-static/resources/view/network/wireless-mtk.js /www/luci-static/resources/view/network/wireless.js
