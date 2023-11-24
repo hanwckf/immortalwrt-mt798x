@@ -138,6 +138,7 @@ ppp_generic_setup() {
 		${localip:+$localip:} \
 		${lcp_failure:+lcp-echo-interval $lcp_interval lcp-echo-failure $lcp_failure $lcp_adaptive} \
 		${ipv6:++ipv6} \
+		${ipv6:-noipv6} \
 		${autoipv6:+set AUTOIPV6=1} \
 		${ip6table:+set IP6TABLE=$ip6table} \
 		${peerdns:+set PEERDNS=$peerdns} \
