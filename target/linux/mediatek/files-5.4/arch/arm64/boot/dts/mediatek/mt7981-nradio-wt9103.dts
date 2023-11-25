@@ -4,11 +4,14 @@
 #include "mt7981.dtsi"
 
 / {
-	model = "HC-WT9103";
+	model = "NRadio C8-660";
 	compatible = "nradio,wt9103", "mediatek,mt7981";
 	
 	aliases {
 		led-boot = &status_blue;
+		led-failsafe = &status_blue;
+		led-running = &status_blue;
+		led-upgrade = &status_blue;
 	};
 
 	chosen {
@@ -88,28 +91,28 @@
 
 			partition@0 {
 				label = "BL2";
-				reg = <0x00000 0x100000>;
+				reg = <0x00000 0x0100000>;
 				read-only;
 			};
 
 			partition@100000 {
 				label = "u-boot-env";
-				reg = <0x100000 0x80000>;
+				reg = <0x0100000 0x0080000>;
 			};
 
 			partition@180000 {
 				label = "factory";
-				reg = <0x180000 0x180000>;
+				reg = <0x180000 0x0180000>;
 			};
 
 			partition@300000 {
 				label = "bdinfo";
-				reg = <0x300000 0x80000>;
+				reg = <0x300000 0x0080000>;
 			};
 
 			partition@380000 {
 				label = "FIP";
-				reg = <0x380000 0x200000>;
+				reg = <0x380000 0x0200000>;
 			};
 
 			partition@580000 {
@@ -141,60 +144,8 @@
 	};
 };
 
-&spi1 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&spic_pins>;
-	status = "disabled";
-
-	slb9670: slb9670@0 {
-		compatible = "infineon,slb9670";
-		reg = <0>; /* CE0 */
-		#address-cells = <1>;
-		#size-cells = <0>;
-		spi-cal-enable;
-		spi-cal-mode = "read-data";
-		spi-cal-datalen = <2>;
-		spi-cal-data = /bits/ 8 <0x00 0x1b>;
-		spi-max-frequency = <20000000>;
-	};
-};
-
 &pio {
-	i2c_pins: i2c-pins-g0 {
-                mux {
-                        function = "i2c";
-                        groups = "i2c0_0";
-                };
-        };
-
-        pcm_pins: pcm-pins-g0 {
-                mux {
-                        function = "pcm";
-                        groups = "pcm";
-                };
-        };
-
-        pwm0_pin: pwm0-pin-g0 {
-                mux {
-                        function = "pwm";
-                        groups = "pwm0_0";
-                };
-        };
-
-        pwm1_pin: pwm1-pin-g0 {
-                mux {
-                        function = "pwm";
-                        groups = "pwm1_0";
-                };
-        };
-
-        pwm2_pin: pwm2-pin {
-                mux {
-                        function = "pwm";
-                        groups = "pwm2";
-                };
-        };
-
+	status = "okay";
 	spi0_flash_pins: spi0-pins {
 		mux {
 			function = "spi";
@@ -213,27 +164,6 @@
 			bias-pull-down = <MTK_PUPD_SET_R1R0_11>;
 		};
 	};
-
-	spic_pins: spi1-pins {
-		mux {
-			function = "spi";
-			groups = "spi1_1";
-		};
-	};
-
-	uart1_pins: uart1-pins-g1 {
-                mux {
-                        function = "uart";
-                        groups = "uart1_1";
-                };
-        };
-
-	uart2_pins: uart2-pins-g1 {
-		mux {
-                        function = "uart";
-                        groups = "uart2_1";
-                };
-        };
 };
 
 &eth {
@@ -268,6 +198,7 @@
 		#size-cells = <0>;
 
 		phy5: phy@5 {
+			// compatible = "ethernet-phy-ieee802.3-c45";
 			compatible = "ethernet-phy-id67c9.de0a";
 			reg = <5>;
 			reset-gpios = <&pio 7 1>;
@@ -277,6 +208,7 @@
 		};
 
 		phy6: phy@6 {
+			// compatible = "ethernet-phy-ieee802.3-c45";
 			compatible = "ethernet-phy-id67c9.de0a";
 			reg = <21>;
 			reset-gpios = <&pio 8 1>;
@@ -339,8 +271,9 @@
 
 &hnat {
 	mtketh-wan = "eth1";
-	mtketh-lan = "eth0";
+	mtketh-lan = "lan";
 	mtketh-max-gmac = <2>;
+	mtketh-ppe-num = <2>;
 	status = "okay";
 };
 

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 
 /dts-v1/;
 #include <dt-bindings/input/input.h>
@@ -40,7 +40,7 @@
 		};
 	};
 
-	leds {
+	leds: leds {
 		compatible = "gpio-leds";
 
 		led_system_blue: system_blue {
@@ -51,16 +51,6 @@
 		led_system_yellow: system_yellow {
 			label = "yellow:system";
 			gpios = <&pio 10 GPIO_ACTIVE_LOW>;
-		};
-
-		led_network_blue {
-			label = "blue:network";
-			gpios = <&pio 11 GPIO_ACTIVE_LOW>;
-		};
-
-		led_network_yellow {
-			label = "yellow:network";
-			gpios = <&pio 12 GPIO_ACTIVE_LOW>;
 		};
 	};
 
@@ -210,11 +200,6 @@
 			partition@5c0000 {
 				label = "crash_log";
 				reg = <0x5c0000 0x40000>;
-			};
-
-			partition@7600000 {
-				label = "KF";
-				reg = <0x7600000 0x40000>;
 			};
 		};
 };

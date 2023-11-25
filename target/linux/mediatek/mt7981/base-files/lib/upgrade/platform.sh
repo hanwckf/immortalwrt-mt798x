@@ -14,7 +14,7 @@ nand_remove_ubiblock() {
 	fi
 }
 
-xiaomi_wr30u_nand_upgrade_tar()
+xiaomi_mt7981_nand_upgrade_tar()
 {
 	CI_UBIPART=ubi
 	local tar_file="$1"
@@ -138,7 +138,7 @@ xiaomi_wr30u_nand_upgrade_tar()
 	nand_do_upgrade_success
 }
 
-xiaomi_wr30u_initial_setup()
+xiaomi_mt7981_initial_setup()
 {
 	# initialize UBI and setup uboot-env if it's running on initramfs
 	[ "$(rootfs_type)" = "tmpfs" ] || return 0
@@ -176,6 +176,7 @@ xiaomi_wr30u_initial_setup()
 
 	local board=$(board_name)
 	case "$board" in
+	xiaomi,mi-router-ax3000t-stock|\
 	xiaomi,mi-router-wr30u-stock)
 		fw_setenv mtdparts "nmbm0:1024k(bl2),256k(Nvram),256k(Bdata),2048k(factory),2048k(fip),256k(crash),256k(crash_log),34816k(ubi),34816k(ubi1),32768k(overlay),12288k(data),256k(KF)"
 		;;
@@ -187,6 +188,7 @@ platform_do_upgrade() {
 
 	case "$board" in
 	xiaomi,mi-router-wr30u-112m|\
+	xiaomi,mi-router-ax3000t|\
 	*mt3000* |\
 	glinet,x3000-emmc |\
 	*xe3000* |\
@@ -206,16 +208,15 @@ platform_do_upgrade() {
 	*snand*)
 		nand_do_upgrade "$1"
 		;;
-	cmcc,rax3000m-emmc)
+	cmcc,rax3000m-emmc |\
+	*emmc*)
 		CI_KERNPART="kernel"
 		CI_ROOTPART="rootfs"
 		emmc_do_upgrade "$1"
 		;;
-	*emmc*)
-		mtk_mmc_do_upgrade "$1"
-		;;
+	xiaomi,mi-router-ax3000t-stock|\
 	xiaomi,mi-router-wr30u-stock)
-		xiaomi_wr30u_nand_upgrade_tar "$1"
+		xiaomi_mt7981_nand_upgrade_tar "$1"
 		;;
 	*)
 		default_do_upgrade "$1"
@@ -240,6 +241,7 @@ platform_check_image() {
 	*360,t7* |\
 	xiaomi,mi-router-wr30u-stock|\
 	xiaomi,mi-router-wr30u-112m|\
+	xiaomi,mi-router-ax3000t* |\
 	*abt,asr3000* |\
 	*cetron,ct3003* |\
 	*clt,r30b1* |\
@@ -278,8 +280,9 @@ platform_pre_upgrade() {
 	local board=$(board_name)
 
 	case "$board" in
+	xiaomi,mi-router-ax3000t-stock|\
 	xiaomi,mi-router-wr30u-stock)
-		xiaomi_wr30u_initial_setup
+		xiaomi_mt7981_initial_setup
 		;;
 	esac
 }
