@@ -312,8 +312,8 @@ var CBIWifiFrequencyValue = form.Value.extend({
 			this.callFrequencyList(section_id)
 		]).then(L.bind(function(data) {
 			this.channels = {
-				'2g': L.hasSystemFeature('hostapd', 'acs') ? [ 'auto', 'auto', true ] : [],
-				'5g': L.hasSystemFeature('hostapd', 'acs') ? [ 'auto', 'auto', true ] : [],
+				'2g': [ 'auto', 'auto', true ],
+				'5g': [ 'auto', 'auto', true ],
 				'6g': [],
 				'60g': []
 			};
@@ -343,7 +343,7 @@ var CBIWifiFrequencyValue = form.Value.extend({
 				.reduce(function(o, v) { o[v] = true; return o }, {});
 
 			this.modes = [
-				'', 'Legacy', true,
+				'', 'Legacy', hwmodelist.a || hwmodelist.b || hwmodelist.g,
 				'n', 'N', hwmodelist.n,
 				'ac', 'AC', hwmodelist.ac,
 				'ax', 'AX', hwmodelist.ax
@@ -355,20 +355,20 @@ var CBIWifiFrequencyValue = form.Value.extend({
 			this.htmodes = {
 				'': [ '', '-', true ],
 				'n': [
-					'HT20', '20 MHz', htmodelist.HT20,
-					'HT40', '40 MHz', htmodelist.HT40
+					'HT40', '40 MHz', htmodelist.HT40,
+					'HT20', '20 MHz', htmodelist.HT20
 				],
 				'ac': [
-					'VHT20', '20 MHz', htmodelist.VHT20,
-					'VHT40', '40 MHz', htmodelist.VHT40,
+					'VHT160', '160 MHz', htmodelist.VHT160,
 					'VHT80', '80 MHz', htmodelist.VHT80,
-					'VHT160', '160 MHz', htmodelist.VHT160
+					'VHT40', '40 MHz', htmodelist.VHT40,
+					'VHT20', '20 MHz', htmodelist.VHT20
 				],
 				'ax': [
-					'HE20', '20 MHz', htmodelist.HE20,
-					'HE40', '40 MHz', htmodelist.HE40,
+					'HE160', '160 MHz', htmodelist.HE160,
 					'HE80', '80 MHz', htmodelist.HE80,
-					'HE160', '160 MHz', htmodelist.HE160
+					'HE40', '40 MHz', htmodelist.HE40,
+					'HE20', '20 MHz', htmodelist.HE20
 				]
 			};
 
@@ -480,7 +480,7 @@ var CBIWifiFrequencyValue = form.Value.extend({
 		this.toggleWifiBand(elem);
 
 		bwdt.value = htval;
-		chan.value = chval || chan.options[0].value;
+		chan.value = chval || (chan.options[0] ? chan.options[0].value : 'auto');
 
 		return elem;
 	},
@@ -680,6 +680,10 @@ return view.extend({
 			else
 				hint = name || ipv4 || ipv6 || '?';
 
+			var timestr = '-';
+			if (bss.connected_time > 0)
+				timestr = '%t'.format(bss.connected_time)
+
 			var row = [
 				E('span', {
 					'class': 'ifacebadge',
@@ -702,7 +706,8 @@ return view.extend({
 					E('span', format_wifirate(bss.rx)),
 					E('br'),
 					E('span', format_wifirate(bss.tx))
-				])
+				]),
+				timestr
 			];
 
 			if (bss.network.isClientDisconnectSupported()) {
@@ -982,7 +987,29 @@ return view.extend({
 					o.placeholder = 100;
 					o.rmempty = true;
 				}
+				else if (hwtype == 'mtwifi') {
+					o = ss.taboption('advanced', CBIWifiCountryValue, 'country', _('Country Code'));
+					o.wifiNetwork = radioNet;
 
+					o = ss.taboption('advanced', form.Flag, 'noscan', _('Force 40MHz mode'), _('Always use 40MHz channels even if the secondary channel overlaps. Using this option does not comply with IEEE 802.11n-2009!'));
+					o.depends({'_freq': '2g', '!contains': true});
+
+					o = ss.taboption('advanced', form.Flag, 'mu_beamformer', _('MU-MIMO'));
+
+					o = ss.taboption('advanced', form.Flag, 'twt', _('Target Wake Time'));
+
+					o = ss.taboption('advanced', form.Value, 'frag', _('Fragmentation Threshold'));
+					o.datatype = 'min(256)';
+					o.placeholder = 2346;
+
+					o = ss.taboption('advanced', form.Value, 'rts', _('RTS/CTS Threshold'));
+					o.datatype = 'uinteger';
+					o.placeholder = 2347;
+
+					o = ss.taboption('advanced', form.Value, 'txpower', _('Maximum transmit power'));
+					o.datatype = 'range(1,100)';
+					o.placeholder = 100;
+				}
 
 				o = s.option(form.SectionValue, '_device', form.NamedSection, radioNet.getName(), 'wifi-iface', _('Interface Configuration'));
 				o.modalonly = true;
@@ -994,9 +1021,17 @@ return view.extend({
 				ss.tab('advanced', _('Advanced Settings'));
 
 				o = ss.taboption('general', form.ListValue, 'mode', _('Mode'));
-				o.value('ap', _('Access Point'));
-				o.value('sta', _('Client'));
-				o.value('adhoc', _('Ad-Hoc'));
+				if (hwtype == 'mtwifi') {
+					var ifmode = radioNet.getMode();
+					if (ifmode == 'ap')
+						o.value('ap', _('Access Point'));
+					else if (ifmode == 'sta')
+						o.value('sta', _('Client'));
+				} else {
+					o.value('ap', _('Access Point'));
+					o.value('sta', _('Client'));
+					o.value('adhoc', _('Ad-Hoc'));
+				}
 
 				o = ss.taboption('general', form.Value, 'mesh_id', _('Mesh Id'));
 				o.depends('mode', 'mesh');
@@ -1197,7 +1232,79 @@ return view.extend({
 					o = ss.taboption('advanced', form.Flag, 'disassoc_low_ack', _('Disassociate On Low Acknowledgement'), _('Allow AP mode to disconnect STAs based on low ACK condition'));
 					o.default = o.enabled;
 				}
+				else if (hwtype == 'mtwifi') {
+					var bssid = ss.children[5];
+					bssid.depends('mode', 'sta');
 
+					o = ss.taboption('macfilter', form.ListValue, 'macfilter', _('MAC Address Filter'));
+					o.depends('mode', 'ap');
+					o.value('', _('disable'));
+					o.value('allow', _('Allow listed only'));
+					o.value('deny', _('Allow all except listed'));
+
+					o = ss.taboption('macfilter', form.DynamicList, 'maclist', _('MAC-List'));
+					o.datatype = 'macaddr';
+					o.retain = true;
+					o.depends('macfilter', 'allow');
+					o.depends('macfilter', 'deny');
+					o.load = function(section_id) {
+						return network.getHostHints().then(L.bind(function(hints) {
+							hints.getMACHints().map(L.bind(function(hint) {
+								this.value(hint[0], hint[1] ? '%s (%s)'.format(hint[0], hint[1]) : hint[0]);
+							}, this));
+
+							return form.DynamicList.prototype.load.apply(this, [section_id]);
+						}, this));
+					};
+
+					o = ss.taboption('general', form.Flag, 'hidden', _('Hide <abbr title="Extended Service Set Identifier">ESSID</abbr>'), _('Where the ESSID is hidden, clients may fail to roam and airtime efficiency may be significantly reduced.'));
+					o.depends('mode', 'ap');
+
+					o = ss.taboption('general', form.Flag, 'wmm', _('WMM Mode'));
+					o.depends('mode', 'ap');
+					o.default = o.enabled;
+
+					o = ss.taboption('advanced', form.Flag, 'isolate', _('Isolate Clients'), _('Prevents client-to-client communication'));
+					o.depends('mode', 'ap');
+
+					o = ss.taboption('advanced', form.Flag, 'ieee80211k', _('802.11k'), _('Enables The 802.11k standard provides information to discover the best available access point'));
+					o.default = o.enabled;
+					o.depends('mode', 'ap');
+
+					o = ss.taboption('advanced', form.Value, 'wpa_group_rekey', _('Time interval for rekeying GTK'), _('sec'));
+					o.optional    = true;
+					o.placeholder = 3600;
+					o.datatype    = 'uinteger';
+					o.depends('mode', 'ap');
+
+					o = ss.taboption('advanced', form.Flag, 'mumimo_dl', _('mumimo_dl'));
+					o.depends('mode', 'ap');
+					o.default = o.enabled;
+
+					o = ss.taboption('advanced', form.Flag, 'mumimo_ul', _('mumimo_ul'));
+					o.depends('mode', 'ap');
+					o.default = o.enabled;
+
+					o = ss.taboption('advanced', form.Flag, 'ofdma_dl', _('ofdma_dl'));
+					o.depends('mode', 'ap');
+					o.default = o.enabled;
+
+					o = ss.taboption('advanced', form.Flag, 'ofdma_ul', _('ofdma_ul'));
+					o.depends('mode', 'ap');
+					o.default = o.enabled;
+
+					o = ss.taboption('advanced', form.Flag, 'amsdu', _('amsdu'));
+					o.depends('mode', 'ap');
+					o.default = o.enabled;
+
+					o = ss.taboption('advanced', form.Flag, 'autoba', _('autoba'));
+					o.depends('mode', 'ap');
+					o.default = o.enabled;
+
+					o = ss.taboption('advanced', form.Flag, 'uapsd', _('uapsd'));
+					o.depends('mode', 'ap');
+					o.default = o.enabled;
+				}
 
 				encr = o = ss.taboption('encryption', form.ListValue, 'encryption', _('Encryption'));
 				o.depends('mode', 'ap');
@@ -1390,6 +1497,14 @@ return view.extend({
 					crypto_modes.push(['psk',      'WPA-PSK',                     12]);
 					crypto_modes.push(['wep-open',   _('WEP Open System'),        11]);
 					crypto_modes.push(['wep-shared', _('WEP Shared Key'),         10]);
+				}
+				else if (hwtype == 'mtwifi') {
+					crypto_modes.push(['psk2',      'WPA2-PSK',                    35]);
+					crypto_modes.push(['psk-mixed', 'WPA-PSK/WPA2-PSK Mixed Mode', 22]);
+					crypto_modes.push(['psk',       'WPA-PSK',                     12]);
+					crypto_modes.push(['sae',       'WPA3-SAE',                     31]);
+					crypto_modes.push(['sae-mixed', 'WPA2-PSK/WPA3-SAE Mixed Mode', 36]);
+					crypto_modes.push(['owe', 'OWE', 1]);
 				}
 
 				crypto_modes.push(['none',       _('No Encryption'),   0]);
@@ -1854,7 +1969,7 @@ return view.extend({
 
 			this.pollFn = L.bind(this.handleScanRefresh, this, radioDev, {}, table, stop);
 
-			poll.add(this.pollFn);
+			poll.add(this.pollFn, 20);
 			poll.start();
 		};
 
@@ -1971,6 +2086,7 @@ return view.extend({
 
 			return this.map.save(function() {
 				var wifi_sections = uci.sections('wireless', 'wifi-iface');
+				var hwtype = radioDev.get('type');
 
 				if (replopt.formvalue('_new_') == '1') {
 					for (var i = 0; i < wifi_sections.length; i++)
@@ -1986,11 +2102,22 @@ return view.extend({
 					uci.unset('wireless', radioDev.getName(), 'disabled');
 				}
 
-				section_id = next_free_sid(wifi_sections.length);
+				if (hwtype == 'mtwifi')
+				{
+					for (var i = 0; i < wifi_sections.length; i++) {
+						if (wifi_sections[i].device == radioDev.getName() && wifi_sections[i].mode == "sta") {
+							section_id = wifi_sections[i][".name"];
+							uci.unset('wireless', section_id, 'disabled');
+						}
+					}
+				}
 
-				uci.add('wireless', 'wifi-iface', section_id);
-				uci.set('wireless', section_id, 'device', radioDev.getName());
-				uci.set('wireless', section_id, 'mode', (bss.mode == 'Ad-Hoc') ? 'adhoc' : 'sta');
+				if (!section_id) {
+					section_id = next_free_sid(wifi_sections.length);
+					uci.add('wireless', 'wifi-iface', section_id);
+					uci.set('wireless', section_id, 'device', radioDev.getName());
+					uci.set('wireless', section_id, 'mode', (bss.mode == 'Ad-Hoc') ? 'adhoc' : 'sta');
+				}
 				uci.set('wireless', section_id, 'network', nameval);
 
 				if (bss.ssid != null) {
@@ -2046,6 +2173,8 @@ return view.extend({
 					});
 				});
 			}).then(L.bind(function() {
+				ui.showModal(null, E('p', { 'class': 'spinning' }, [ _('Loading data…') ]));
+
 				return this.renderMoreOptionsModal(section_id);
 			}, this));
 		};
@@ -2130,6 +2259,31 @@ return view.extend({
 		};
 
 		s.handleAdd = function(radioDev, ev) {
+			var hwtype = radioDev.get('type');
+
+			if (hwtype == 'mtwifi')
+			{
+				var wifi_sections = uci.sections('wireless', 'wifi-iface');
+				var mbssid_num = 0;
+				var max_mbssid_num = 16;
+	
+				for (var i = 0; i < wifi_sections.length; i++) {
+					if (wifi_sections[i].device == radioDev.getName() && wifi_sections[i].mode == "ap")
+						mbssid_num++;
+				}
+
+				if (mbssid_num >= max_mbssid_num)
+					return ui.showModal(_('Wireless configuration error'), [
+						E('p', _('The number of MBSSID has reached the maximum')),
+						E('p', _('Please delete the existing MBSSID and try again.')),
+						E('div', { 'class': 'right' },
+						E('button', {
+							'class': 'btn',
+							'click': ui.hideModal
+						}, _('Close')))
+					]);
+			}
+
 			var section_id = next_free_sid(uci.sections('wireless', 'wifi-iface').length);
 
 			uci.unset('wireless', radioDev.getName(), 'disabled');
@@ -2137,7 +2291,7 @@ return view.extend({
 			uci.add('wireless', 'wifi-iface', section_id);
 			uci.set('wireless', section_id, 'device', radioDev.getName());
 			uci.set('wireless', section_id, 'mode', 'ap');
-			uci.set('wireless', section_id, 'ssid', 'OpenWrt');
+			uci.set('wireless', section_id, 'ssid', 'ImmortalWrt');
 			uci.set('wireless', section_id, 'encryption', 'none');
 
 			this.addedSection = section_id;
@@ -2239,7 +2393,8 @@ return view.extend({
 					E('th', { 'class': 'th hide-xs' }, _('MAC address')),
 					E('th', { 'class': 'th' }, _('Host')),
 					E('th', { 'class': 'th' }, _('Signal / Noise')),
-					E('th', { 'class': 'th' }, _('RX Rate / TX Rate'))
+					E('th', { 'class': 'th' }, _('RX Rate / TX Rate')),
+					E('th', { 'class': 'th' }, _('Uptime'))
 				])
 			]);
 
@@ -2247,5 +2402,7 @@ return view.extend({
 
 			return E([ nodes, E('h3', _('Associated Stations')), table ]);
 		}, this, m));
-	}
+	},
+
+	handleReset: null
 });
