@@ -43,9 +43,10 @@ define Package/mtwifi-cfg/install
 endef
 
 define Package/mtwifi-cfg-luci/install
-	$(INSTALL_DIR) $(1)/etc/uci-defaults/ $(1)/www/luci-static/resources/view/network/
+	$(INSTALL_DIR) $(1)/etc/uci-defaults/ $(1)/usr/share/mtwifi-cfg-luci
 
-	$(INSTALL_DATA) ./files/luci/wireless-mtk.js $(1)/www/luci-static/resources/view/network/wireless-mtk.js
+	$(INSTALL_DATA) ./files/luci/wireless-mtk.js  $(1)/usr/share/mtwifi-cfg-luci
+	$(INSTALL_DATA) ./files/luci/luci-mod-status.json  $(1)/usr/share/mtwifi-cfg-luci
 	$(INSTALL_DATA) ./files/luci/mtwifi-cfg-luci.default $(1)/etc/uci-defaults/20-mtwifi-cfg-luci.default
 endef
 
