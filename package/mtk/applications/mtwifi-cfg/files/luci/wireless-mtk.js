@@ -94,7 +94,6 @@ function render_signal_badge(signalPercent, signalValue, noiseValue, wrap, mode)
 
 	return E('div', {
 		'class': wrap ? 'center' : 'ifacebadge',
-		'title': title,
 		'data-signal': signalValue,
 		'data-noise': noiseValue
 	}, [
@@ -107,9 +106,16 @@ function render_signal_badge(signalPercent, signalValue, noiseValue, wrap, mode)
 }
 
 function render_network_badge(radioNet) {
-	return render_signal_badge(
-		radioNet.isUp() ? radioNet.getSignalPercent() : -1,
-		radioNet.getSignal(), radioNet.getNoise(), false, radioNet.getMode());
+	var hwtype = uci.get('wireless', radioNet.getWifiDeviceName(), 'type');
+
+	if (hwtype == 'mtwifi')
+		return render_signal_badge(
+			radioNet.isUp() ? 100 : -1,
+			radioNet.getTXPower(), null, false, radioNet.getMode());
+	else
+		return render_signal_badge(
+			radioNet.isUp() ? radioNet.getSignalPercent() : -1,
+			radioNet.getSignal(), radioNet.getNoise(), false, radioNet.getMode());
 }
 
 function render_radio_status(radioDev, wifiNets) {
@@ -167,14 +173,22 @@ function render_modal_status(node, radioNet) {
 	    bssid = radioNet.getActiveBSSID(),
 	    channel = radioNet.getChannel(),
 	    disabled = (radioNet.get('disabled') == '1'),
-	    is_assoc = (bssid && bssid != '00:00:00:00:00:00' && channel && mode != 'Unknown' && !disabled);
+	    is_assoc = (bssid && bssid != '00:00:00:00:00:00' && channel && mode != 'Unknown' && !disabled),
+	    hwtype = uci.get('wireless', radioNet.getWifiDeviceName(), 'type');
 
 	if (node == null)
 		node = E('span', { 'class': 'ifacebadge large', 'data-network': radioNet.getName() }, [ E('small'), E('span') ]);
 
-	dom.content(node.firstElementChild, render_signal_badge(
-		disabled ? -1 : radioNet.getSignalPercent(),
-		radioNet.getSignal(), noise, true, radioNet.getMode()));
+	if (hwtype == 'mtwifi') {
+		noise = null;
+		dom.content(node.firstElementChild, render_signal_badge(
+			disabled ? -1 : 100,
+			radioNet.getTXPower(), noise, true, radioNet.getMode()));
+	} else {
+		dom.content(node.firstElementChild, render_signal_badge(
+			disabled ? -1 : radioNet.getSignalPercent(),
+			radioNet.getSignal(), noise, true, radioNet.getMode()));
+	}
 
 	L.itemlist(node.lastElementChild, [
 		_('Mode'),       mode,
@@ -183,7 +197,7 @@ function render_modal_status(node, radioNet) {
 		_('Encryption'), is_assoc ? radioNet.getActiveEncryption() || _('None') : null,
 		_('Channel'),    is_assoc ? '%d (%.3f %s)'.format(radioNet.getChannel(), radioNet.getFrequency() || 0, _('GHz')) : null,
 		_('Tx-Power'),   is_assoc ? '%d %s'.format(radioNet.getTXPower(), _('dBm')) : null,
-		_('Signal'),     is_assoc ? '%d %s'.format(radioNet.getSignal(), _('dBm')) : null,
+		_('Signal'),     (is_assoc && (hwtype != 'mtwifi')) ? '%d %s'.format(radioNet.getSignal(), _('dBm')) : null,
 		_('Noise'),      (is_assoc && noise != null) ? '%d %s'.format(noise, _('dBm')) : null,
 		_('Bitrate'),    is_assoc ? '%.1f %s'.format(radioNet.getBitRate() || 0, _('Mbit/s')) : null,
 		_('Country'),    is_assoc ? radioNet.getCountryCode() : null
@@ -671,14 +685,16 @@ return view.extend({
 			    ipv4 = hosts.getIPAddrByMACAddr(bss.mac),
 			    ipv6 = hosts.getIP6AddrByMACAddr(bss.mac);
 
-			var hint;
-
-			if (name && ipv4 && ipv6)
-				hint = '%s <span class="hide-xs">(%s, %s)</span>'.format(name, ipv4, ipv6);
-			else if (name && (ipv4 || ipv6))
-				hint = '%s <span class="hide-xs">(%s)</span>'.format(name, ipv4 || ipv6);
-			else
-				hint = name || ipv4 || ipv6 || '?';
+			var hint = '-';
+			if (bss.network.getMode() == 'ap')
+			{
+				if (name && ipv4 && ipv6)
+					hint = '%s <span class="hide-xs">(%s, %s)</span>'.format(name, ipv4, ipv6);
+				else if (name && (ipv4 || ipv6))
+					hint = '%s <span class="hide-xs">(%s)</span>'.format(name, ipv4 || ipv6);
+				else
+					hint = name || ipv4 || ipv6 || '?';
+			}
 
 			var timestr = '-';
 			if (bss.connected_time > 0)
@@ -1969,7 +1985,7 @@ return view.extend({
 
 			this.pollFn = L.bind(this.handleScanRefresh, this, radioDev, {}, table, stop);
 
-			poll.add(this.pollFn, 20);
+			poll.add(this.pollFn, 15);
 			poll.start();
 		};
 
