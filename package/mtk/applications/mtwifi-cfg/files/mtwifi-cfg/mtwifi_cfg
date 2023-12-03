@@ -234,7 +234,7 @@ function mtwifi_cfg_setup(argv)
     if vif_num == 0 then
         nixio.syslog("err", "mtwifi-cfg: not valid vif found!")
         return
-    elseif vif_num > defs.max_mbssid then
+    elseif bssid_num > defs.max_mbssid then
         nixio.syslog("err", "mtwifi-cfg: too many vifs!")
         return
     end
