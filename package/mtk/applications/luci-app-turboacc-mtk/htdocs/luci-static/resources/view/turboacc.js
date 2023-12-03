@@ -174,15 +174,6 @@ return view.extend({
 		o.rmempty = false;
 		o.depends('fastpath_mh_eth_hnat', '1');
 
-		o = s.option(form.Button, '_fastpath_mh_wireless_hnat', _('Enable wireless HNAT'),
-			_('Enable hardware offloading for wireless connections.'));
-		o.inputtitle = _('Redirect to wireless settings');
-		o.inputstyle = 'reload';
-		o.onclick = function() {
-			window.location.href = L.url('admin/network/wifi');
-		};
-		o.depends('fastpath', 'mediatek_hnat');
-
 		o = s.option(form.ListValue, 'fullcone', _('Full cone NAT'),
 			_('Full cone NAT (NAT1) can improve gaming performance effectively.'));
 		o.value('0', _('Disable'))
