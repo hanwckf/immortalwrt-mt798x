@@ -1296,31 +1296,31 @@ return view.extend({
 					o.datatype    = 'uinteger';
 					o.depends('mode', 'ap');
 
-					o = ss.taboption('advanced', form.Flag, 'mumimo_dl', _('mumimo_dl'));
+					o = ss.taboption('advanced', form.Flag, 'mumimo_dl', _('MU-MIMO DL'));
 					o.depends('mode', 'ap');
 					o.default = o.enabled;
 
-					o = ss.taboption('advanced', form.Flag, 'mumimo_ul', _('mumimo_ul'));
+					o = ss.taboption('advanced', form.Flag, 'mumimo_ul', _('MU-MIMO UL'));
 					o.depends('mode', 'ap');
 					o.default = o.enabled;
 
-					o = ss.taboption('advanced', form.Flag, 'ofdma_dl', _('ofdma_dl'));
+					o = ss.taboption('advanced', form.Flag, 'ofdma_dl', _('OFDMA DL'));
 					o.depends('mode', 'ap');
 					o.default = o.enabled;
 
-					o = ss.taboption('advanced', form.Flag, 'ofdma_ul', _('ofdma_ul'));
+					o = ss.taboption('advanced', form.Flag, 'ofdma_ul', _('OFDMA UL'));
 					o.depends('mode', 'ap');
 					o.default = o.enabled;
 
-					o = ss.taboption('advanced', form.Flag, 'amsdu', _('amsdu'));
+					o = ss.taboption('advanced', form.Flag, 'amsdu', _('A-MSDU'));
 					o.depends('mode', 'ap');
 					o.default = o.enabled;
 
-					o = ss.taboption('advanced', form.Flag, 'autoba', _('autoba'));
+					o = ss.taboption('advanced', form.Flag, 'autoba', _('Auto Block ACK'));
 					o.depends('mode', 'ap');
 					o.default = o.enabled;
 
-					o = ss.taboption('advanced', form.Flag, 'uapsd', _('uapsd'));
+					o = ss.taboption('advanced', form.Flag, 'uapsd', _('U-APSD'));
 					o.depends('mode', 'ap');
 					o.default = o.enabled;
 				}

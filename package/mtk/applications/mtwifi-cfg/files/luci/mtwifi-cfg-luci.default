@@ -1,9 +1,0 @@
-#!/bin/sh
-
-if [ -d /www/luci-static/resources/view/network ]; then
-	mv -f /usr/share/mtwifi-cfg-luci/wireless-mtk.js /www/luci-static/resources/view/network/wireless.js
-fi
-
-if [ -d /usr/share/luci/menu.d ]; then
-	mv -f /usr/share/mtwifi-cfg-luci/luci-mod-status.json /usr/share/luci/menu.d/luci-mod-status.json
-fi
