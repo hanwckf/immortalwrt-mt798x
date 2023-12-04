@@ -1,0 +1,11 @@
+--- a/scripts/netifd-wireless.sh	2023-11-23 22:48:11.837794697 +0800
++++ b/scripts/netifd-wireless.sh	2023-11-23 22:48:15.031043740 +0800
+@@ -297,7 +297,7 @@ _wireless_set_brsnoop_isolation() {
+ 	json_get_vars isolate proxy_arp
+ 
+ 	[ ${isolate:-0} -gt 0 -o -z "$network_bridge" ] && return
+-	[ ${multicast_to_unicast:-1} -gt 0 -o ${proxy_arp:-0} -gt 0 ] && json_add_boolean isolate 1
++	#[ ${multicast_to_unicast:-1} -gt 0 -o ${proxy_arp:-0} -gt 0 ] && json_add_boolean isolate 1
+ }
+ 
+ for_each_interface() {

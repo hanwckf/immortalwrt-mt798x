@@ -1,0 +1,32 @@
+Index: libiwinfo-2023-05-17-c9f5c3f7/api/wext.h
+===================================================================
+--- libiwinfo-2023-05-17-c9f5c3f7.orig/api/wext.h
++++ libiwinfo-2023-05-17-c9f5c3f7/api/wext.h
+@@ -677,7 +677,7 @@
+  */
+ struct	iw_param
+ {
+-  int32_t		value;		/* The value of the parameter itself */
++  uint64_t		value;		/* The value of the parameter itself */
+   uint8_t		fixed;		/* Hardware should not use auto select */
+   uint8_t		disabled;	/* Disable the feature */
+   uint16_t		flags;		/* Various specifc flags (if any) */
+@@ -988,6 +988,9 @@ struct	iw_range
+ 	uint16_t		old_num_channels;
+ 	uint8_t		old_num_frequency;
+ 
++	/* Scan capabilities */
++	uint8_t		scan_capa; 	/* IW_SCAN_CAPA_* bit field */
++
+ 	/* Wireless event capability bitmasks */
+ 	uint32_t		event_capa[6];
+ 
+@@ -1013,7 +1016,7 @@ struct	iw_range
+ 
+ 	/* Rates */
+ 	uint8_t		num_bitrates;	/* Number of entries in the list */
+-	int32_t		bitrate[IW_MAX_BITRATES];	/* list, in bps */
++	uint64_t		bitrate[IW_MAX_BITRATES];	/* list, in bps */
+ 
+ 	/* RTS threshold */
+ 	int32_t		min_rts;	/* Minimal RTS threshold */

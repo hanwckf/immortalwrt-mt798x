@@ -1,0 +1,56 @@
+#!/usr/bin/lua
+--[[
+ *
+ * Copyright (C) 2023 hanwckf <hanwckf@vip.qq.com>
+ *
+ * 	This program is free software; you can redistribute it and/or modify
+ * 	it under the terms of the GNU General Public License as published by
+ * 	The Free Software Foundation; either version 2 of the License, or
+ * 	(at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+]]
+
+local l1parser = require("l1dat_parser")
+local l1dat = l1parser.load_l1_profile(l1parser.L1_DAT_PATH)
+
+if not l1dat then
+    return
+end
+
+function show_devs()
+    local ret = ""
+    for k, _ in pairs(l1dat.devname_ridx) do
+        if #ret > 0 then
+            ret = ret .. " " .. k
+        else
+            ret = k
+        end
+    end
+    print(ret)
+end
+
+function get_dev_prop(dev, prop)
+    if l1dat.devname_ridx[dev] then
+        print(l1dat.devname_ridx[dev][prop])
+    end
+end
+
+local action = {
+    ["list"] = function()
+        show_devs()
+    end,
+
+    ["get"] = function(dev, prop)
+        get_dev_prop(dev, prop)
+    end
+}
+
+if #arg == 1 then
+    action[arg[1]]()
+elseif #arg == 3 then
+    action[arg[1]](arg[2], arg[3])
+end
