@@ -1012,7 +1012,10 @@ return view.extend({
 
 					o = ss.taboption('advanced', form.Flag, 'mu_beamformer', _('MU-MIMO'));
 
-					o = ss.taboption('advanced', form.Flag, 'twt', _('Target Wake Time'));
+					o = ss.taboption('advanced', form.ListValue, 'twt', _('Target Wake Time'));
+					o.value('', _('Disable'));
+					o.value('1', _('Enable'));
+					o.value('2', _('Force'));
 
 					o = ss.taboption('advanced', form.Value, 'frag', _('Fragmentation Threshold'));
 					o.datatype = 'min(256)';

@@ -15,8 +15,8 @@ MTWIFI_CFG_IFNAME_KEY="mtwifi_ifname"
 
 drv_mtwifi_init_device_config() {
 	config_add_int txpower frag rts
-	config_add_boolean mu_beamformer twt
-	config_add_string country
+	config_add_boolean mu_beamformer
+	config_add_string country twt
 }
 
 drv_mtwifi_init_iface_config() {
