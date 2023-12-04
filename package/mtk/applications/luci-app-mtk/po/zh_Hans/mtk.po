@@ -46,6 +46,9 @@ msgstr "始终关闭"
 msgid "Tempature"
 msgstr "温度"
 
+msgid "Tx Power"
+msgstr "发射功率"
+
 msgid "Driver version"
 msgstr "驱动版本"
 

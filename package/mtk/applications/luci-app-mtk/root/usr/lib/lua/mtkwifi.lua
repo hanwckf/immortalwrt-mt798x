@@ -344,6 +344,21 @@ function mtkwifi.__profile_applied_settings_path(profile)
     return bak
 end
 
+function mtkwifi.get_txpwr(devname)
+    local l1dat, l1 = mtkwifi.__get_l1dat()
+    local dridx = l1.DEV_RINDEX
+    local devs = mtkwifi.get_all_devs()
+
+    if devs and devs[devname] then
+        local ifname = l1dat and l1dat[dridx][devname].main_ifname
+        if ifname then
+            return c_getTxPower(ifname)['txpower']
+        end
+    end
+
+    return nil
+end
+
 function mtkwifi.get_temp(devname)
     local vif_name = nil
     local devs = mtkwifi.get_all_devs()

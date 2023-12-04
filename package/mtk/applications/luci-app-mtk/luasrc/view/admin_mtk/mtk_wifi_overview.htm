@@ -85,7 +85,11 @@ local chipname
                         <span> <%:Work mode%>: <% if dev.ApCliEnable == "1" then %> APCli <% else %> AP <% end %> <br/> </span>
                         <%local temp = mtkwifi.get_temp(dev.devname)%>
                         <%if temp then%>
-                            <span> <%:Tempature%>: <%=temp%>&#176;C</span>
+                            <span> <%:Tempature%>: <%=temp%>&#176;C <br/> </span>
+                        <%end%>
+                        <%local txpwr = mtkwifi.get_txpwr(dev.devname)%>
+                        <%if txpwr then%>
+                            <span> <%:Tx Power%>: <%=txpwr%> dbm <br/> </span>
                         <%end%>
                         <%end%>
                     </td>

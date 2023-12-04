@@ -208,6 +208,7 @@ int get_macaddr(lua_State *L);
 int convert_string_display(lua_State *L);
 int StaInfo(lua_State *L);
 int getWMOde(lua_State *L);
+int getTxPower(lua_State *L);
 int getTempature(lua_State *L);
 int scanResult(lua_State *L);
 void getRate(HTTRANSMIT_SETTING_FIX HTSetting, ULONG *fLastTxRxRate);
