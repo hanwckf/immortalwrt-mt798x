@@ -259,6 +259,8 @@ typedef enum _SEC_AKM_MODE {
 #define IS_AKM_WPA3_192BIT(_AKMMap)	(IS_AKM_SUITEB_SHA384(_AKMMap))
 #define IS_AKM_OWE(_AKMMap) ((_AKMMap & (1 << SEC_AKM_OWE)) > 0)
 
+#define MTK_L1_PROFILE_PATH		"/etc/wireless/l1profile.dat"
+
 void getRate(HTTRANSMIT_SETTING HTSetting, ULONG *fLastTxRxRate);
 void get_rate_he(UINT8 mcs, UINT8 bw, UINT8 nss, UINT8 dcm, ULONG *last_tx_rate);
 UINT32 cck_to_mcs(UINT32 mcs);

@@ -646,7 +646,7 @@ static int mtk_get_freqlist(const char *dev, char *buf, int *len)
 static int mtk_get_country(const char *dev, char *buf)
 {
 	const char *ifname;
-	unsigned char data[4] = {0};
+	char data[4] = {0};
 	struct iwreq wrq;
 
 	ifname = mtk_dev2phy(dev);
@@ -914,19 +914,73 @@ static int mtk_get_mbssid_support(const char *dev, int *buf)
 	return 0;
 }
 
+static int mtk_get_l1profile_attr(const char *attr, char *data, int len)
+{
+	FILE *fp;
+	char *key, *val, buf[512];
+
+	fp = fopen(MTK_L1_PROFILE_PATH, "r");
+	if (!fp)
+		return -1;
+
+	while (fgets(buf, sizeof(buf), fp))
+	{
+		key = strtok(buf, " =\n");
+		val = strtok(NULL, "\n");
+		
+		if (!key || !val || !*key || *key == '#')
+			continue;
+
+		if (!strcmp(key, attr))
+		{
+			//printf("l1profile key=%s, val=%s\n", key, val);
+			snprintf(data, len, "%s", val);
+			fclose(fp);
+			return 0;
+		}
+	}
+
+	fclose(fp);
+	return -1;
+}
+
+static int mtk_get_hardware_id_from_l1profile(struct iwinfo_hardware_id *id)
+{
+	const char *attr = "INDEX0";
+	char buf[16] = {0};
+
+	if (mtk_get_l1profile_attr(attr, buf, sizeof(buf)) < 0)
+		return -1;
+	
+	if (!strcmp(buf, "MT7981")) {
+		id->vendor_id = 0x14c3;
+		id->device_id = 0x7981;
+		id->subsystem_vendor_id = id->vendor_id;
+		id->subsystem_device_id = id->device_id;
+	} else if (!strcmp(buf, "MT7986")) {
+		id->vendor_id = 0x14c3;
+		id->device_id = 0x7986;
+		id->subsystem_vendor_id = id->vendor_id;
+		id->subsystem_device_id = id->device_id;
+	} else {
+		return -1;
+	}
+
+	return 0;
+}
+
 static int mtk_get_hardware_id(const char *dev, char *buf)
 {
 	struct iwinfo_hardware_id *id = (struct iwinfo_hardware_id *)buf;
+	int ret = 0;
 
 	memset(id, 0, sizeof(*id));
 
-	/* Failed to obtain hardware PCI/USB IDs... */
-	if (id->vendor_id == 0 && id->device_id == 0 &&
-		id->subsystem_vendor_id == 0 && id->subsystem_device_id == 0)
-		/* ... then board config */
-		return iwinfo_hardware_id_from_mtd(id);
+	ret = iwinfo_hardware_id_from_mtd(id);
+	if (ret != 0)
+		ret = mtk_get_hardware_id_from_l1profile(id);
 
-	return 0;
+	return ret;
 }
 
 static const struct iwinfo_hardware_entry *
@@ -945,7 +999,7 @@ static int mtk_get_hardware_name(const char *dev, char *buf)
 	const struct iwinfo_hardware_entry *hw;
 
 	if (!(hw = mtk_get_hardware_entry(dev)))
-		memcpy(buf, "MediaTek", 8);
+		sprintf(buf, "%s", "MediaTek");
 	else
 		sprintf(buf, "%s %s", hw->vendor_name, hw->device_name);
 
@@ -977,10 +1031,10 @@ const struct iwinfo_ops mtk_ops = {
 	.txpower          = mtk_get_txpower,
 	.txpower_offset   = mtk_get_txpower_offset,
 	.bitrate          = mtk_get_bitrate,
-	.signal           = mtk_get_signal, //fix
-	.noise            = mtk_get_noise, //fix
-	.quality          = mtk_get_quality, //fix
-	.quality_max      = mtk_get_quality_max, //fix
+	.signal           = mtk_get_signal,
+	.noise            = mtk_get_noise,
+	.quality          = mtk_get_quality,
+	.quality_max      = mtk_get_quality_max,
 	.mbssid_support   = mtk_get_mbssid_support,
 	.hwmodelist       = mtk_get_hwmodelist,
 	.htmodelist       = mtk_get_htmodelist,
@@ -992,7 +1046,7 @@ const struct iwinfo_ops mtk_ops = {
 	.countrylist      = mtk_get_countrylist,
 	.hardware_id      = mtk_get_hardware_id,
 	.hardware_name    = mtk_get_hardware_name,
-	.encryption       = mtk_get_encryption, //fix
+	.encryption       = mtk_get_encryption,
 	.phyname          = mtk_get_phyname,
 	.assoclist        = mtk_get_assoclist,
 	.txpwrlist        = mtk_get_txpwrlist,
