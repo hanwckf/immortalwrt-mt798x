@@ -210,6 +210,7 @@ int StaInfo(lua_State *L);
 int getWMOde(lua_State *L);
 int getTxPower(lua_State *L);
 int getTempature(lua_State *L);
+int getChannel(lua_State *L);
 int scanResult(lua_State *L);
 void getRate(HTTRANSMIT_SETTING_FIX HTSetting, ULONG *fLastTxRxRate);
 void get_rate_he(UINT8 mcs, UINT8 bw, UINT8 nss, UINT8 dcm, ULONG *last_tx_rate);

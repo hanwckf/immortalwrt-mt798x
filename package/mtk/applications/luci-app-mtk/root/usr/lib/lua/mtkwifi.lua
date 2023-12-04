@@ -1143,10 +1143,6 @@ function mtkwifi.__setup_vifs(cfgs, devname, mainidx, subidx)
         vifs[j].__bssid = rd_pipe_output and string.match(rd_pipe_output, "%x%x:%x%x:%x%x:%x%x:%x%x:%x%x") or "?"
 
         vifs[j].__temp_ssid = mtkwifi.__trim(mtkwifi.read_pipe("iwconfig "..vifs[j].vifname.." | grep ESSID | cut -d : -f 2"))
-        vifs[j].__temp_channel = mtkwifi.read_pipe("iwconfig "..vifs[j].vifname.." | grep Channel | cut -d = -f 2 | cut -d \" \" -f 1")
-        if string.gsub(vifs[j].__temp_channel, "^%s*(.-)%s*$", "%1") == "" then
-            vifs[j].__temp_channel = mtkwifi.read_pipe("iwconfig "..vifs[j].vifname.." | grep Channel | cut -d : -f 3 | cut -d \" \" -f 1")
-        end
         if vifs[j].state == "up" then
             vifs[j].__wirelessmode_table = c_getWMode(vifs[j].vifname)
         else
@@ -1160,10 +1156,8 @@ function mtkwifi.__setup_vifs(cfgs, devname, mainidx, subidx)
             vifs[j].__ssid = cfgs["SSID"..j]
         end
 
-        if (vifs[j].__temp_channel ~= "" ) then
-            vifs[j].__temp_channel = mtkwifi.__trim(vifs[j].__temp_channel)
-            vifs[j].__channel = vifs[j].__temp_channel
-        else
+        vifs[j].__channel = tonumber(c_getChannel(vifs[j].vifname)['channel'])
+        if (vifs[j].__channel < 0) then
             vifs[j].__channel = cfgs.Channel
         end
 

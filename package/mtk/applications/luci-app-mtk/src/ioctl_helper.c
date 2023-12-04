@@ -21,6 +21,7 @@ int luaopen_ioctl_helper(lua_State *L)
 	lua_register(L,"c_getTempature",getTempature);
 	lua_register(L,"c_scanResult",scanResult);
 	lua_register(L,"c_getTxPower",getTxPower);
+	lua_register(L,"c_getChannel",getChannel);
 	return 0;
 }
 
@@ -189,6 +190,44 @@ int get_macaddr(lua_State *L)
 	lua_newtable(L);
 	lua_pushstring(L, "macaddr");  /* push key */
 	lua_pushstring(L, if_hw);  /* push value */
+	lua_settable(L, -3);
+	/* Returning one table which is already on top of Lua stack. */
+	return 1;
+}
+
+static int get_channel(const char *interface)
+{
+	int socket_id;
+	struct iwreq wrq;
+	int channel = -1;
+	socket_id = socket(AF_INET, SOCK_DGRAM, 0);
+	if (socket_id < 0) {
+		perror("socket() failed");
+		return socket_id;
+	}
+
+	snprintf(wrq.ifr_name, sizeof(wrq.ifr_name), "%s", interface);
+
+	if(ioctl(socket_id, SIOCGIWFREQ, &wrq) >= 0) {
+		channel = wrq.u.freq.m;
+	} else {
+		fprintf(stderr, "%s: ioctl fail\n", __func__);
+	}
+
+	close(socket_id);
+
+	return channel;
+}
+
+int getChannel(lua_State *L)
+{
+	char tempstr[5] = {0};
+	const char *interface = luaL_checkstring(L, 1);
+
+	snprintf(tempstr, sizeof(tempstr), "%d", get_channel(interface));
+	lua_newtable(L);
+	lua_pushstring(L, "channel");  /* push key */
+	lua_pushstring(L, tempstr);  /* push value */
 	lua_settable(L, -3);
 	/* Returning one table which is already on top of Lua stack. */
 	return 1;
