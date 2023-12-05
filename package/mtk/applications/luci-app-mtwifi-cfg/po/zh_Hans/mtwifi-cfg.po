@@ -1,0 +1,26 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "Target Wake Time"
+msgstr "目标唤醒时间（TWT）"
+
+msgid "MU-MIMO DL"
+msgstr "下行 MU-MIMO"
+
+msgid "MU-MIMO UL"
+msgstr "上行 MU-MIMO"
+
+msgid "OFDMA DL"
+msgstr "下行 OFDMA"
+
+msgid "OFDMA UL"
+msgstr "上行 OFDMA"
+
+msgid "A-MSDU"
+msgstr "MSDU聚合（A-MSDU）"
+
+msgid "Auto Block ACK"
+msgstr "自动块确认"
+
+msgid "U-APSD"
+msgstr "U-APSD 省电模式"

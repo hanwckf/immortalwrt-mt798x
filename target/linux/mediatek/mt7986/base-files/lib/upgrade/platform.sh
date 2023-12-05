@@ -154,6 +154,7 @@ platform_do_upgrade() {
 		;;
 	bananapi,bpi-r3mini-emmc |\
 	glinet,gl-mt6000 |\
+	jdcloud,re-cp-03 |\
 	*emmc*)
  		CI_KERNPART="kernel"
  		CI_ROOTPART="rootfs"
@@ -179,6 +180,7 @@ platform_check_image() {
 	netcore,n60|\
 	*snand* |\
 	glinet,gl-mt6000|\
+	jdcloud,re-cp-03|\
 	tplink,tl-xdr608*|\
 	*emmc*)
 		# tar magic `ustar`

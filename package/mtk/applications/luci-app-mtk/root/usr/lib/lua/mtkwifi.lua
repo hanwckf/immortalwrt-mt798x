@@ -344,6 +344,21 @@ function mtkwifi.__profile_applied_settings_path(profile)
     return bak
 end
 
+function mtkwifi.get_txpwr(devname)
+    local l1dat, l1 = mtkwifi.__get_l1dat()
+    local dridx = l1.DEV_RINDEX
+    local devs = mtkwifi.get_all_devs()
+
+    if devs and devs[devname] then
+        local ifname = l1dat and l1dat[dridx][devname].main_ifname
+        if ifname then
+            return c_getTxPower(ifname)['txpower']
+        end
+    end
+
+    return nil
+end
+
 function mtkwifi.get_temp(devname)
     local vif_name = nil
     local devs = mtkwifi.get_all_devs()
@@ -1128,10 +1143,6 @@ function mtkwifi.__setup_vifs(cfgs, devname, mainidx, subidx)
         vifs[j].__bssid = rd_pipe_output and string.match(rd_pipe_output, "%x%x:%x%x:%x%x:%x%x:%x%x:%x%x") or "?"
 
         vifs[j].__temp_ssid = mtkwifi.__trim(mtkwifi.read_pipe("iwconfig "..vifs[j].vifname.." | grep ESSID | cut -d : -f 2"))
-        vifs[j].__temp_channel = mtkwifi.read_pipe("iwconfig "..vifs[j].vifname.." | grep Channel | cut -d = -f 2 | cut -d \" \" -f 1")
-        if string.gsub(vifs[j].__temp_channel, "^%s*(.-)%s*$", "%1") == "" then
-            vifs[j].__temp_channel = mtkwifi.read_pipe("iwconfig "..vifs[j].vifname.." | grep Channel | cut -d : -f 3 | cut -d \" \" -f 1")
-        end
         if vifs[j].state == "up" then
             vifs[j].__wirelessmode_table = c_getWMode(vifs[j].vifname)
         else
@@ -1145,10 +1156,8 @@ function mtkwifi.__setup_vifs(cfgs, devname, mainidx, subidx)
             vifs[j].__ssid = cfgs["SSID"..j]
         end
 
-        if (vifs[j].__temp_channel ~= "" ) then
-            vifs[j].__temp_channel = mtkwifi.__trim(vifs[j].__temp_channel)
-            vifs[j].__channel = vifs[j].__temp_channel
-        else
+        vifs[j].__channel = tonumber(c_getChannel(vifs[j].vifname)['channel'])
+        if (vifs[j].__channel < 0) then
             vifs[j].__channel = cfgs.Channel
         end
 

@@ -269,7 +269,7 @@ function mtwifi_cfg_setup(argv)
 
     -- setup dev cfgs
     if cfg.config.twt then
-        dats.TWTSupport = 1
+        dats.TWTSupport = cfg.config.twt
     else
         dats.TWTSupport = 0
     end
