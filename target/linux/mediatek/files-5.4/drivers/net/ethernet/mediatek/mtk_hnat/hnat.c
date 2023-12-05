@@ -151,7 +151,8 @@ void set_gmac_ppe_fwd(int id, int enable)
 
 	/*disabled */
 	val = readl(reg);
-	if ((val & GDM_ALL_FRC_MASK) == BITS_GDM_ALL_FRC_P_PPE)
+	if (((val & GDM_ALL_FRC_MASK) == BITS_GDM_ALL_FRC_P_PPE ||
+	     (val & GDM_ALL_FRC_MASK) == BITS_GDM_ALL_FRC_P_PPE1))
 		cr_set_field(reg, GDM_ALL_FRC_MASK,
 			     BITS_GDM_ALL_FRC_P_CPU_PDMA);
 }
