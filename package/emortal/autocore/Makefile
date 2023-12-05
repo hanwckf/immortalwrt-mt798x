@@ -48,7 +48,7 @@ define Package/autocore/install/Default
 	$(INSTALL_DIR) $(1)/usr/share/rpcd/acl.d
 	$(CP) ./files/generic/luci-mod-status-autocore.json $(1)/usr/share/rpcd/acl.d/
 
-ifeq ($(filter ipq% mediatek%, $(TARGETID)),)
+ifeq ($(filter ipq%, $(TARGETID)),)
 	$(INSTALL_BIN) ./files/generic/ethinfo $(1)/sbin/
 
 	$(INSTALL_DIR) $(1)/www/luci-static/resources/view/status/include

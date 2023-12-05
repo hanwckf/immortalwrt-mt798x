@@ -458,6 +458,19 @@ define Device/glinet_gl-mt6000
 endef
 TARGET_DEVICES += glinet_gl-mt6000
 
+define Device/mt7986a-ax6000-emmc-re-cp-03
+   DEVICE_VENDOR := JDCloud
+   DEVICE_MODEL := JDCloud MT7986a RE-CP-03
+   DEVICE_TITLE := JDCloud AX6000 Baili(RE-CP-03)
+   DEVICE_DTS := mt7986a-emmc-re-cp-03
+   DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
+   DEVICE_PACKAGES := $(MT7986_USB_PKGS) f2fsck losetup mkf2fs kmod-fs-f2fs kmod-mmc
+   IMAGES += factory.bin
+   IMAGE/factory.bin := append-kernel | pad-to 32M | append-rootfs
+   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+endef
+TARGET_DEVICES += mt7986a-ax6000-emmc-re-cp-03
+
 define Device/tplink_tl-common
     DEVICE_VENDOR := TP-Link
     DEVICE_DTS_DIR := $(DTS_DIR)/mediatek

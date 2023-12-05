@@ -33,6 +33,9 @@ mediatek_setup_interfaces()
  	glinet,gl-mt6000)
  		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 lan4 lan5" eth1
  		;;
+ 	*re-cp-03)
+ 		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 lan4" eth1
+ 		;;
  	tplink,tl-xdr6086)
  		ucidef_set_interfaces_lan_wan "lan1 lan2" eth1
  		;;
