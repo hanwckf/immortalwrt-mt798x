@@ -434,7 +434,7 @@ define Device/BPI-R3MINI-NAND-110M
   IMAGE/factory.bin := append-ubi | check-size $$$$(IMAGE_SIZE)
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
 endef
-TARGET_DEVICES += BPI-R3MINI-NAND
+TARGET_DEVICES += BPI-R3MINI-NAND-110M
 
 define Device/BPI-R3MINI-EMMC
   DEVICE_VENDOR := Banana Pi
