@@ -142,8 +142,10 @@ void set_gmac_ppe_fwd(int id, int enable)
 	reg = hnat_priv->fe_base + (id ? GDMA2_FWD_CFG : GDMA1_FWD_CFG);
 
 	if (enable) {
-		cr_set_bits(reg, BITS_GDM_ALL_FRC_P_PPE);
-
+		if (id == 0)
+			cr_set_bits(reg, BITS_GDM_ALL_FRC_P_PPE);
+		else
+			cr_set_bits(reg, BITS_GDM_ALL_FRC_P_PPE1);
 		return;
 	}
 
