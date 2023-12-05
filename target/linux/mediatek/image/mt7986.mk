@@ -430,6 +430,18 @@ define Device/BPI-R3MINI-EMMC
 endef
 TARGET_DEVICES += BPI-R3MINI-EMMC
 
+define Device/jdcloud_re-cp-03
+  DEVICE_VENDOR := JDCloud
+  DEVICE_MODEL := RE-CP-03
+  DEVICE_DTS := mt7986a-jdcloud-re-cp-03
+  DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
+  SUPPORTED_DEVICES := jdcloud,re-cp-03
+  DEVICE_PACKAGES := blkid blockdev fdisk f2fsck mkf2fs losetup \
+	kmod-mmc kmod-nls-cp437 kmod-nls-iso8859-1
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+endef
+TARGET_DEVICES += jdcloud_re-cp-03
+
 define Device/netcore_n60
   DEVICE_VENDOR := Netcore
   DEVICE_MODEL := N60
