@@ -203,6 +203,30 @@ function mtwifi_reinstall()
     --os.execute("modprobe mt_whnat")
 end
 
+function __exec_iwpriv_cmd(ifname, key, val)
+    local cmd = string.format("iwpriv %s set %s=%s", ifname, key, tostring(val))
+    nixio.syslog("info", "mtwifi-cfg: iwpriv cmd: "..cmd)
+    os.execute(cmd)
+end
+
+function mtwifi_cfg_iwpriv_hook(cfg)
+    local cmd
+    local iwpriv_cfgs = {}
+    if cfg == nil then return end
+    for _, v in pairs(cfg.interfaces) do
+        if not v.config.disabled and v.mtwifi_ifname then
+            local vif = v.mtwifi_ifname
+            local mode = v.config.mode
+            if mode == "ap" then
+                iwpriv_cfgs = defs.iwpriv_ap_cfgs
+            end
+            for k, j in pairs(iwpriv_cfgs) do
+                __exec_iwpriv_cmd(vif, j[1], v.config[k] or j[2])
+            end
+        end
+    end
+end
+
 function mtwifi_cfg_setup(argv)
     local cfg = cjson.decode(argv)
 
@@ -467,7 +491,7 @@ function mtwifi_cfg_setup(argv)
                 if k == devname then
                     mtwifi_up(k, cfg, nil, true)
                 else
-                    os.execute("/sbin/wifi up " .. k)
+                    os.execute("/sbin/wifi up " .. k) -- TODO: may cause deadlock
                 end
             end
         else
@@ -506,6 +530,9 @@ function mtwifi_cfg_setup(argv)
 
         mtwifi_up(devname, cfg)
     end
+
+    mtwifi_cfg_iwpriv_hook(cfg)
+
 end
 
 function mtwifi_cfg_down(devname)

@@ -20,7 +20,7 @@ drv_mtwifi_init_device_config() {
 }
 
 drv_mtwifi_init_iface_config() {
-	config_add_string 'ssid:string' macfilter bssid
+	config_add_string 'ssid:string' macfilter bssid kicklow assocthres
 	config_add_boolean wmm hidden isolate ieee80211k
 	config_add_int wpa_group_rekey
 	config_add_array 'maclist:list(macaddr)'
@@ -67,6 +67,7 @@ mtwifi_vif_sta_config() {
 		logger -t "netifd-mtwifi" "add $ifname to vifidx $name"
 
 		# setup apcli autoconnect
+		iwpriv "$ifname" set ApCliEnable=1
 		iwpriv "$ifname" set ApCliAutoConnect=3
 
 		wireless_add_vif "$name" "$ifname"
