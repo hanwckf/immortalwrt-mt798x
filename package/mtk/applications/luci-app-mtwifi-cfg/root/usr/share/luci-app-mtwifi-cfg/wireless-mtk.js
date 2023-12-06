@@ -1017,14 +1017,6 @@ return view.extend({
 					o.value('1', _('Enable'));
 					o.value('2', _('Force'));
 
-					o = ss.taboption('advanced', form.Value, 'frag', _('Fragmentation Threshold'));
-					o.datatype = 'min(256)';
-					o.placeholder = 2346;
-
-					o = ss.taboption('advanced', form.Value, 'rts', _('RTS/CTS Threshold'));
-					o.datatype = 'uinteger';
-					o.placeholder = 2347;
-
 					o = ss.taboption('advanced', form.Value, 'txpower', _('Maximum transmit power'));
 					o.datatype = 'range(1,100)';
 					o.placeholder = 100;
@@ -1307,6 +1299,14 @@ return view.extend({
 					o.placeholder = 0;
 					o.datatype    = 'range(-100,0)';
 					o.depends('mode', 'ap');
+
+					o = ss.taboption('advanced', form.Value, 'frag', _('Fragmentation Threshold'));
+					o.datatype = 'min(256)';
+					o.placeholder = 2346;
+
+					o = ss.taboption('advanced', form.Value, 'rts', _('RTS/CTS Threshold'));
+					o.datatype = 'uinteger';
+					o.placeholder = 2347;
 
 					o = ss.taboption('advanced', form.Flag, 'mumimo_dl', _('MU-MIMO DL'));
 					o.depends('mode', 'ap');
