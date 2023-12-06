@@ -1296,6 +1296,18 @@ return view.extend({
 					o.datatype    = 'uinteger';
 					o.depends('mode', 'ap');
 
+					o = ss.taboption('advanced', form.Value, 'kicklow', _('Kick low RSSI station threshold'), _('dBm'));
+					o.optional    = true;
+					o.placeholder = 0;
+					o.datatype = 'range(-100,0)';
+					o.depends('mode', 'ap');
+
+					o = ss.taboption('advanced', form.Value, 'assocthres', _('Station associate threshold'), _('dBm'));
+					o.optional    = true;
+					o.placeholder = 0;
+					o.datatype    = 'range(-100,0)';
+					o.depends('mode', 'ap');
+
 					o = ss.taboption('advanced', form.Flag, 'mumimo_dl', _('MU-MIMO DL'));
 					o.depends('mode', 'ap');
 					o.default = o.enabled;

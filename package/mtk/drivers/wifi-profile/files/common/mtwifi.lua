@@ -105,6 +105,25 @@ function d8021xd_chk(devname, prefix, vif, enable)
     end
 end
 
+function __exec_iwpriv_cmd(ifname, key, val)
+    local cmd = string.format("iwpriv %s set %s=%s", ifname, key, tostring(val))
+    nixio.syslog("info", "wifi-profile: iwpriv cmd: "..cmd)
+    os.execute(cmd)
+end
+
+function mtwifi_iwpriv_hook(devname)
+    local mtkwifi = require("mtkwifi")
+    local devs = mtkwifi.get_all_devs()
+    local dev = devs[devname]
+
+    if dev then
+        for _,vif in ipairs(dev.vifs) do
+            __exec_iwpriv_cmd(vif.vifname, "KickStaRssiLow", vif.__kickrssi or "0")
+            __exec_iwpriv_cmd(vif.vifname, "AssocReqRssiThres", vif.__assocthres or "0")
+        end
+    end
+end
+
 function mtwifi_up(devname)
     local nixio = require("nixio")
     local mtkwifi = require("mtkwifi")
@@ -199,6 +218,8 @@ function mtwifi_up(devname)
     else
         nixio.syslog("debug", "mtwifi_up: skip "..devname..", config(l1profile) not exist")
     end
+
+    mtwifi_iwpriv_hook(devname)
 
     os.execute(" rm -rf /tmp/mtk/wifi/mtwifi*.need_reload")
 end

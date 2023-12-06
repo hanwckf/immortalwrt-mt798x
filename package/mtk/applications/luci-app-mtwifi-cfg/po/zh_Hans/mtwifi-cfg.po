@@ -24,3 +24,9 @@ msgstr "自动块确认"
 
 msgid "U-APSD"
 msgstr "U-APSD 省电模式"
+
+msgid "Kick low RSSI station threshold"
+msgstr "弱信号剔除阈值"
+
+msgid "Station associate threshold"
+msgstr "弱信号接入阈值"

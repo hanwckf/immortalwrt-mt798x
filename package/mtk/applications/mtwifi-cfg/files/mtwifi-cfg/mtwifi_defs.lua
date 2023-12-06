@@ -67,6 +67,7 @@ mtwifi_defs.vif_cfgs = {
     ["DLSCapable"] = "0",
     ["WdsEnable"] = "0",
     ["WscConfMode"] = "0",
+    ["TxRate"] = "0",
 }
 
 mtwifi_defs.vif_cfgs_idx = {
@@ -83,6 +84,12 @@ mtwifi_defs.vif_acl = {
 mtwifi_defs.reinstall_cfgs = {
     "BssidNum", "WHNAT", "E2pAccessMode",
     "HT_RxStream", "HT_TxStream", "WdsEnable"
+}
+
+mtwifi_defs.iwpriv_ap_cfgs = {
+    -- uci config = iwpriv set cmd , default value
+    ["kicklow"] = {"KickStaRssiLow", "0"},
+    ["assocthres"] = {"AssocReqRssiThres" , "0"},
 }
 
 mtwifi_defs.enc2dat = {

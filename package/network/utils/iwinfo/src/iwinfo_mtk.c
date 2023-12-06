@@ -258,7 +258,7 @@ static int mtk_get_txpower(const char *dev, int *buf)
 
 static int mtk_get_signal(const char *dev, int *buf)
 {
-	return -1;
+	return mtk_get_txpower(dev, buf);
 }
 
 static int mtk_get_noise(const char *dev, int *buf)
@@ -268,12 +268,14 @@ static int mtk_get_noise(const char *dev, int *buf)
 
 static int mtk_get_quality(const char *dev, int *buf)
 {
-	return -1;
+	*buf = 100;
+	return 0;
 }
 
 static int mtk_get_quality_max(const char *dev, int *buf)
 {
-	return -1;
+	*buf = 100;
+	return 0;
 }
 
 static void fill_rate_info(HTTRANSMIT_SETTING HTSetting, struct iwinfo_rate_entry *re,
