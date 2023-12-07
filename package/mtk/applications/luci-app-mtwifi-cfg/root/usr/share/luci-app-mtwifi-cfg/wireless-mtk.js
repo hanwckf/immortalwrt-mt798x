@@ -1012,6 +1012,21 @@ return view.extend({
 
 					o = ss.taboption('advanced', form.Flag, 'mu_beamformer', _('MU-MIMO'));
 
+					var is_dbdc_main = uci.get('wireless', radioNet.getWifiDeviceName(), 'dbdc_main') == '1';
+
+					if (is_dbdc_main)
+					{
+						o = ss.taboption('advanced', form.Value, 'dtim_period', _('DTIM Interval'), _('Delivery Traffic Indication Message Interval'));
+						o.optional = true;
+						o.placeholder = 1;
+						o.datatype = 'range(1,255)';
+	
+						o = ss.taboption('advanced', form.Value, 'beacon_int', _('Beacon Interval'));
+						o.optional = true;
+						o.datatype = 'range(20,999)';
+						o.placeholder = 100;
+					}
+
 					o = ss.taboption('advanced', form.ListValue, 'twt', _('Target Wake Time'));
 					o.value('', _('Disable'));
 					o.value('1', _('Enable'));
