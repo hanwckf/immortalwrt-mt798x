@@ -143,16 +143,20 @@ void set_gmac_ppe_fwd(int id, int enable)
 
 	if (enable) {
 		if (id == 0)
-			cr_set_bits(reg, BITS_GDM_ALL_FRC_P_PPE);
-		else
-			cr_set_bits(reg, BITS_GDM_ALL_FRC_P_PPE1);
+ 			cr_set_bits(reg, BITS_GDM_ALL_FRC_P_PPE);
+ 		else {
+ 			if(CFG_PPE_NUM>1)
+ 				cr_set_bits(reg, BITS_GDM_ALL_FRC_P_PPE1);
+ 			else
+ 				cr_set_bits(reg, BITS_GDM_ALL_FRC_P_PPE);
+			} 
 		return;
 	}
 
 	/*disabled */
 	val = readl(reg);
 	if (((val & GDM_ALL_FRC_MASK) == BITS_GDM_ALL_FRC_P_PPE ||
-	     (val & GDM_ALL_FRC_MASK) == BITS_GDM_ALL_FRC_P_PPE1))
+ 	     (val & GDM_ALL_FRC_MASK) == BITS_GDM_ALL_FRC_P_PPE1))
 		cr_set_field(reg, GDM_ALL_FRC_MASK,
 			     BITS_GDM_ALL_FRC_P_CPU_PDMA);
 }

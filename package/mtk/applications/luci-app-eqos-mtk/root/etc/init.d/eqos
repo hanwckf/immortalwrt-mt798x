@@ -1,0 +1,49 @@
+#!/bin/sh /etc/rc.common
+# Copyright (C) 2006 OpenWrt.org
+
+START=50
+USE_PROCD=1
+
+parse_device() {
+	local cfg="$1"
+
+	local enabled
+	config_get_bool enabled "$cfg" "enabled" "1"
+	[ "$enabled" -eq "1" ] || return 1
+
+	local ip download upload
+	config_get ip "$cfg" ip
+	config_get download "$cfg" "download"
+	config_get upload "$cfg" "upload"
+
+	eqos add "$ip" "$download" "$upload"
+}
+
+start_service() {
+	config_load "eqos"
+
+	local enabled
+	config_get_bool enabled "config" "enabled" "0"
+	[ "$enabled" -eq "1" ] || return 1
+
+	local download upload
+	config_get download "config" "download"
+	config_get upload "config" "upload"
+
+	eqos start "$download" "$upload"
+
+	config_foreach parse_device "device"
+}
+
+stop_service() {
+	eqos stop
+}
+
+reload_service() {
+	stop
+	start
+}
+
+service_triggers() {
+	procd_add_reload_trigger "eqos"
+}
