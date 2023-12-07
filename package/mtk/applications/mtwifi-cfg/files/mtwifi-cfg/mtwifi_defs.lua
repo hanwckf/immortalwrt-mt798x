@@ -81,6 +81,12 @@ mtwifi_defs.vif_acl = {
     ["AccessControlList"] = "",
 }
 
+mtwifi_defs.chip_cfgs = {
+    -- uci config = dat config, default value
+    ["beacon_int"] = { "BeaconPeriod" , "100"},
+    ["dtim_period"] = { "DtimPeriod", "1"},
+}
+
 mtwifi_defs.reinstall_cfgs = {
     "BssidNum", "WHNAT", "E2pAccessMode",
     "HT_RxStream", "HT_TxStream", "WdsEnable"

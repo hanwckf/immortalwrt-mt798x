@@ -109,6 +109,12 @@ function cfg2dat(cfg)
     end
 end
 
+function set_dev_dat(dats, dat, cfg)
+    if cfg ~= nil then
+        dats[dat] = cfg2dat(cfg)
+    end
+end
+
 function set_dat(dats, apidx, dat, cfg)
     if cfg ~= nil then
         dats[dat] = utils.token_set(dats[dat], apidx, cfg2dat(cfg))
@@ -227,6 +233,39 @@ function mtwifi_cfg_iwpriv_hook(cfg)
     end
 end
 
+function set_chip_cfg(cfg, dats)
+    local dev_dats
+    local uci
+    local dat_key
+
+    if not cfg.config.dbdc_main then return end
+
+    for k,v in pairs(defs.chip_cfgs) do
+        uci = k
+        dat_key = v[1]
+        
+        -- reset chip cfgs to default
+        dats[dat_key] = v[2]
+
+        -- setup current dev cfg
+        set_dev_dat(dats, dat_key, cfg.config[uci])
+    end
+
+    -- setup other dev cfg
+    for k,v in pairs(l1dat.devname_ridx) do
+        if k ~= cfg.device then        
+            dev_dats = load_profile(v.profile_path)
+            if dev_dats then
+                for _,j in pairs(defs.chip_cfgs) do
+                    dat_key = j[1]
+                    set_dev_dat(dev_dats, dat_key, dats[dat_key])
+                end
+                save_profile(dev_dats, v.profile_path)
+            end
+        end
+    end
+end
+
 function mtwifi_cfg_setup(argv)
     local cfg = cjson.decode(argv)
 
@@ -290,6 +329,9 @@ function mtwifi_cfg_setup(argv)
             break
         end
     end
+
+    -- setup chip cfgs
+    set_chip_cfg(cfg, dats)
 
     -- setup dev cfgs
     if cfg.config.twt then
