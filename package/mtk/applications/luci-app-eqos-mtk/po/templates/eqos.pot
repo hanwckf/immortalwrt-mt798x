@@ -1,0 +1,50 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: applications/luci-app-eqos/htdocs/luci-static/resources/view/eqos.js:64
+msgid "Comment"
+msgstr ""
+
+#: applications/luci-app-eqos/htdocs/luci-static/resources/view/eqos.js:28
+#: applications/luci-app-eqos/htdocs/luci-static/resources/view/eqos.js:56
+msgid "Download speed (Mbit/s)"
+msgstr ""
+
+#: applications/luci-app-eqos/htdocs/luci-static/resources/view/eqos.js:18
+#: applications/luci-app-eqos/root/usr/share/luci/menu.d/luci-app-eqos.json:3
+msgid "EQoS"
+msgstr ""
+
+#: applications/luci-app-eqos/htdocs/luci-static/resources/view/eqos.js:24
+#: applications/luci-app-eqos/htdocs/luci-static/resources/view/eqos.js:43
+msgid "Enable"
+msgstr ""
+
+#: applications/luci-app-eqos/root/usr/share/rpcd/acl.d/luci-app-eqos.json:3
+msgid "Grant UCI access for luci-app-eqos"
+msgstr ""
+
+#: applications/luci-app-eqos/htdocs/luci-static/resources/view/eqos.js:46
+msgid "IP address"
+msgstr ""
+
+#: applications/luci-app-eqos/htdocs/luci-static/resources/view/eqos.js:19
+msgid "Network speed control service."
+msgstr ""
+
+#: applications/luci-app-eqos/htdocs/luci-static/resources/view/eqos.js:38
+msgid "Speed limit based on IP address"
+msgstr ""
+
+#: applications/luci-app-eqos/htdocs/luci-static/resources/view/eqos.js:29
+msgid "Total download bandwidth."
+msgstr ""
+
+#: applications/luci-app-eqos/htdocs/luci-static/resources/view/eqos.js:34
+msgid "Total upload bandwidth."
+msgstr ""
+
+#: applications/luci-app-eqos/htdocs/luci-static/resources/view/eqos.js:33
+#: applications/luci-app-eqos/htdocs/luci-static/resources/view/eqos.js:60
+msgid "Upload speed (Mbit/s)"
+msgstr ""

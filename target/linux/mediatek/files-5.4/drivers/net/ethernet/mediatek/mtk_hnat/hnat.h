@@ -611,6 +611,7 @@ struct foe_entry {
 #define MAX_PPE_NUM		1
 #endif
 #define CFG_PPE_NUM		(hnat_priv->ppe_num)
+#define HNAT_EXCEPTION_TAG	0x99
 
 struct mib_entry {
 	u32 byt_cnt_l;
@@ -770,8 +771,9 @@ enum FoeIpAct {
 #define BITS_GDM_MFRC_P_PPE1 (NR_PPE1_PORT << 4)
 #define BITS_GDM_OFRC_P_PPE1 (NR_PPE1_PORT << 0)
 #define BITS_GDM_ALL_FRC_P_PPE1					\
-	(BITS_GDM_UFRC_P_PPE1 | BITS_GDM_BFRC_P_PPE1 |		\
-	 BITS_GDM_MFRC_P_PPE1 | BITS_GDM_OFRC_P_PPE1)
+ 	(BITS_GDM_UFRC_P_PPE1 | BITS_GDM_BFRC_P_PPE1 |		\
+ 	 BITS_GDM_MFRC_P_PPE1 | BITS_GDM_OFRC_P_PPE1)
+
 
 #define BITS_GDM_UFRC_P_CPU_PDMA (NR_PDMA_PORT << 12)
 #define BITS_GDM_BFRC_P_CPU_PDMA (NR_PDMA_PORT << 8)

@@ -1742,7 +1742,7 @@ int mtk_sw_nat_hook_tx(struct sk_buff *skb, int gmac_no)
 
 	if (!skb_hnat_is_hashed(skb))
 		return NF_ACCEPT;
-
+	
 	if (skb_hnat_entry(skb) >= hnat_priv->foe_etry_num ||
 	    skb_hnat_ppe(skb) >= CFG_PPE_NUM)
 		return NF_ACCEPT;
@@ -2080,6 +2080,9 @@ static unsigned int mtk_hnat_nf_post_routing(
 		return 0;
 
 	if (unlikely(!skb_hnat_is_hashed(skb)))
+		return 0;
+		
+	if (unlikely(skb->mark == HNAT_EXCEPTION_TAG))
 		return 0;
 
 	if (out->netdev_ops->ndo_flow_offload_check) {
