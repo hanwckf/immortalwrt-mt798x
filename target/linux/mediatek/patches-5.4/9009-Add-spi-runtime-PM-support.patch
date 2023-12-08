@@ -74,7 +74,7 @@ index 7e54984..ff2d825 100644
  	},
  	{ .compatible = "mediatek,mt2701-spi",
  		.data = (void *)&mtk_common_compat,
-@@ -992,7 +1006,7 @@ static int mtk_spi_probe(struct platform_device *pdev)
+@@ -993,7 +1007,7 @@ static int mtk_spi_probe(struct platform_device *pdev)
  		return -ENOMEM;
  	}
  
@@ -83,7 +83,7 @@ index 7e54984..ff2d825 100644
  	master->dev.of_node = pdev->dev.of_node;
  	master->mode_bits = SPI_CPOL | SPI_CPHA | SPI_LSB_FIRST;
  
-@@ -1106,22 +1120,40 @@ static int mtk_spi_probe(struct platform_device *pdev)
+@@ -1107,22 +1121,40 @@ static int mtk_spi_probe(struct platform_device *pdev)
  		goto err_put_master;
  	}
  
@@ -127,7 +127,7 @@ index 7e54984..ff2d825 100644
  
  	ret = devm_spi_register_master(&pdev->dev, master);
  	if (ret) {
-@@ -1201,8 +1233,11 @@ static int mtk_spi_suspend(struct device *dev)
+@@ -1202,8 +1234,11 @@ static int mtk_spi_suspend(struct device *dev)
  	if (ret)
  		return ret;
  
@@ -140,7 +140,7 @@ index 7e54984..ff2d825 100644
  
  	return ret;
  }
-@@ -1214,6 +1249,14 @@ static int mtk_spi_resume(struct device *dev)
+@@ -1215,6 +1250,14 @@ static int mtk_spi_resume(struct device *dev)
  	struct mtk_spi *mdata = spi_master_get_devdata(master);
  
  	if (!pm_runtime_suspended(dev)) {
@@ -155,7 +155,7 @@ index 7e54984..ff2d825 100644
  		ret = clk_prepare_enable(mdata->spi_clk);
  		if (ret < 0) {
  			dev_err(dev, "failed to enable spi_clk (%d)\n", ret);
-@@ -1222,8 +1265,11 @@ static int mtk_spi_resume(struct device *dev)
+@@ -1223,8 +1266,11 @@ static int mtk_spi_resume(struct device *dev)
  	}
  
  	ret = spi_master_resume(master);
@@ -168,7 +168,7 @@ index 7e54984..ff2d825 100644
  
  	return ret;
  }
-@@ -1237,6 +1283,9 @@ static int mtk_spi_runtime_suspend(struct device *dev)
+@@ -1238,6 +1284,9 @@ static int mtk_spi_runtime_suspend(struct device *dev)
  
  	clk_disable_unprepare(mdata->spi_clk);
  
@@ -178,7 +178,7 @@ index 7e54984..ff2d825 100644
  	return 0;
  }
  
-@@ -1246,6 +1295,14 @@ static int mtk_spi_runtime_resume(struct device *dev)
+@@ -1247,6 +1296,14 @@ static int mtk_spi_runtime_resume(struct device *dev)
  	struct mtk_spi *mdata = spi_master_get_devdata(master);
  	int ret;
  

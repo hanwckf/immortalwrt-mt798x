@@ -12,7 +12,7 @@ diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
 index 50b0009..1ce3c38 100644
 --- a/include/net/sch_generic.h
 +++ b/include/net/sch_generic.h
-@@ -602,6 +602,11 @@ static inline struct net_device *qdisc_dev(const struct Qdisc *qdisc)
+@@ -588,6 +588,11 @@ static inline struct net_device *qdisc_dev(const struct Qdisc *qdisc)
  	return qdisc->dev_queue->dev;
  }
  

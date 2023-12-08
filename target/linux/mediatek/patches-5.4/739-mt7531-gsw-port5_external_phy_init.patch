@@ -30,7 +30,7 @@ diff --git a/drivers/net/phy/mtk/mt753x/mt7531.c b/drivers/net/phy/mtk/mt753x/mt
 index 04729835..4a2943b1 100644
 --- a/drivers/net/phy/mtk/mt753x/mt7531.c
 +++ b/drivers/net/phy/mtk/mt753x/mt7531.c
-@@ -265,6 +265,9 @@ static int mt7531_set_port_sgmii_force_mode(struct gsw_mt753x *gsw, u32 port,
+@@ -268,6 +268,9 @@ static int mt7531_set_port_sgmii_force_mode(struct gsw_mt753x *gsw, u32 port,
  		return -EINVAL;
  	}
  
@@ -44,7 +44,7 @@ diff --git a/drivers/net/phy/mtk/mt753x/mt753x.h b/drivers/net/phy/mtk/mt753x/mt
 index 5053a7d7..a3f343cd 100644
 --- a/drivers/net/phy/mtk/mt753x/mt753x.h
 +++ b/drivers/net/phy/mtk/mt753x/mt753x.h
-@@ -154,6 +154,7 @@ void mt753x_irq_worker(struct work_struct *work);
+@@ -147,6 +147,7 @@ void mt753x_irq_worker(struct work_struct *work);
  void mt753x_irq_enable(struct gsw_mt753x *gsw);
  
  int mt753x_phy_calibration(struct gsw_mt753x *gsw, u8 phyaddr);

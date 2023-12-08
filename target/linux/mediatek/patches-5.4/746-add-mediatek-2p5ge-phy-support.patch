@@ -1,6 +1,6 @@
 --- a/drivers/net/phy/Kconfig
 +++ b/drivers/net/phy/Kconfig
-@@ -522,6 +522,11 @@ config MEDIATEK_GE_PHY
+@@ -527,6 +527,11 @@ config MEDIATEK_GE_PHY
  	help
  	  Supports the MediaTek Gigabit Ethernet PHYs.
  
@@ -14,7 +14,7 @@
  	---help---
 --- a/drivers/net/phy/Makefile
 +++ b/drivers/net/phy/Makefile
-@@ -95,6 +95,7 @@ obj-$(CONFIG_LXT_PHY)		+= lxt.o
+@@ -96,6 +96,7 @@ obj-$(CONFIG_LXT_PHY)		+= lxt.o
  obj-$(CONFIG_MARVELL_PHY)	+= marvell.o
  obj-$(CONFIG_MARVELL_10G_PHY)	+= marvell10g.o
  obj-$(CONFIG_MEDIATEK_GE_PHY)	+= mediatek-ge.o

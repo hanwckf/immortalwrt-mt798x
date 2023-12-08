@@ -60,7 +60,7 @@ diff --git a/drivers/usb/host/xhci-mtk.c b/drivers/usb/host/xhci-mtk.c
 index 104296fdd03e..d4345657945d 100644
 --- a/drivers/usb/host/xhci-mtk.c
 +++ b/drivers/usb/host/xhci-mtk.c
-@@ -19,9 +19,10 @@
+@@ -18,9 +18,10 @@
  #include <linux/pm_runtime.h>
  #include <linux/regmap.h>
  #include <linux/regulator/consumer.h>
@@ -72,7 +72,7 @@ index 104296fdd03e..d4345657945d 100644
  
  /* ip_pw_ctrl0 register */
  #define CTRL0_IP_SW_RST	BIT(0)
-@@ -581,6 +582,7 @@ static int xhci_mtk_probe(struct platform_device *pdev)
+@@ -586,6 +587,7 @@ static int xhci_mtk_probe(struct platform_device *pdev)
  	ret = usb_add_hcd(xhci->shared_hcd, irq, IRQF_SHARED);
  	if (ret)
  		goto dealloc_usb2_hcd;
@@ -80,7 +80,7 @@ index 104296fdd03e..d4345657945d 100644
  
  	return 0;
  
-@@ -615,6 +617,7 @@ static int xhci_mtk_remove(struct platform_device *dev)
+@@ -620,6 +622,7 @@ static int xhci_mtk_remove(struct platform_device *dev)
  	struct usb_hcd	*hcd = mtk->hcd;
  	struct xhci_hcd	*xhci = hcd_to_xhci(hcd);
  	struct usb_hcd  *shared_hcd = xhci->shared_hcd;
@@ -92,7 +92,7 @@ diff --git a/drivers/usb/host/xhci-mtk.h b/drivers/usb/host/xhci-mtk.h
 index 985e7a19f6f6..1540c66799d7 100644
 --- a/drivers/usb/host/xhci-mtk.h
 +++ b/drivers/usb/host/xhci-mtk.h
-@@ -158,6 +158,13 @@ struct xhci_hcd_mtk {
+@@ -156,6 +156,13 @@ struct xhci_hcd_mtk {
  	struct regmap *uwk;
  	u32 uwk_reg_base;
  	u32 uwk_vers;
@@ -110,7 +110,7 @@ diff --git a/drivers/usb/host/xhci.c b/drivers/usb/host/xhci.c
 index 9fe35bb67731..4f62eddce6ab 100644
 --- a/drivers/usb/host/xhci.c
 +++ b/drivers/usb/host/xhci.c
-@@ -711,7 +711,7 @@ EXPORT_SYMBOL_GPL(xhci_run);
+@@ -718,7 +718,7 @@ EXPORT_SYMBOL_GPL(xhci_run);
   * Disable device contexts, disable IRQs, and quiesce the HC.
   * Reset the HC, finish any completed transactions, and cleanup memory.
   */
@@ -123,7 +123,7 @@ diff --git a/drivers/usb/host/xhci.h b/drivers/usb/host/xhci.h
 index a9031f494984..b54be4833ef7 100644
 --- a/drivers/usb/host/xhci.h
 +++ b/drivers/usb/host/xhci.h
-@@ -2070,6 +2070,7 @@ int xhci_halt(struct xhci_hcd *xhci);
+@@ -2073,6 +2073,7 @@ int xhci_halt(struct xhci_hcd *xhci);
  int xhci_start(struct xhci_hcd *xhci);
  int xhci_reset(struct xhci_hcd *xhci, u64 timeout_us);
  int xhci_run(struct usb_hcd *hcd);

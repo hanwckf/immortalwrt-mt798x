@@ -77,7 +77,7 @@ Index: linux-5.4.203/drivers/net/dsa/mt7530.c
  mt7531_ind_c22_phy_write(struct mt7530_priv *priv, int port, int regnum,
  			 u16 data)
  {
-@@ -2690,6 +2691,7 @@ mt7530_probe(struct mdio_device *mdiodev
+@@ -2691,6 +2692,7 @@ mt7530_probe(struct mdio_device *mdiodev
  {
  	struct mt7530_priv *priv;
  	struct device_node *dn;
@@ -85,7 +85,7 @@ Index: linux-5.4.203/drivers/net/dsa/mt7530.c
 
  	dn = mdiodev->dev.of_node;
 
-@@ -2765,7 +2767,13 @@ mt7530_probe(struct mdio_device *mdiodev
+@@ -2766,7 +2768,13 @@ mt7530_probe(struct mdio_device *mdiodev
  	mutex_init(&priv->reg_mutex);
  	dev_set_drvdata(&mdiodev->dev, priv);
 
@@ -100,7 +100,7 @@ Index: linux-5.4.203/drivers/net/dsa/mt7530.c
  }
 
  static void
-@@ -2786,6 +2794,8 @@ mt7530_remove(struct mdio_device *mdiode
+@@ -2787,6 +2795,8 @@ mt7530_remove(struct mdio_device *mdiode
 
  	dsa_unregister_switch(priv->ds);
  	mutex_destroy(&priv->reg_mutex);

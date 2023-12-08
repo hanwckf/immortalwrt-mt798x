@@ -135,7 +135,7 @@ Index: linux-5.4.203/drivers/net/dsa/mt7530.c
  static void
  mt7530_get_strings(struct dsa_switch *ds, int port, u32 stringset,
  		   uint8_t *data)
-@@ -2892,6 +3018,7 @@ mt7530_probe(struct mdio_device *mdiodev
+@@ -2893,6 +3019,7 @@ mt7530_probe(struct mdio_device *mdiodev
  		return ret;
  	}
  	mt7530_nl_init(&priv);
@@ -143,7 +143,7 @@ Index: linux-5.4.203/drivers/net/dsa/mt7530.c
 
  	return 0;
  }
-@@ -2919,6 +3046,7 @@ mt7530_remove(struct mdio_device *mdiode
+@@ -2920,6 +3047,7 @@ mt7530_remove(struct mdio_device *mdiode
  		iounmap(priv->base);
 
  	mt7530_nl_exit();

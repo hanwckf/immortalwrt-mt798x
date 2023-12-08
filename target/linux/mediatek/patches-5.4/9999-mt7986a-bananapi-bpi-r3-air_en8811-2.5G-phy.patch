@@ -867,7 +867,7 @@ diff -urN a/drivers/net/phy/air_en8811h.h b/drivers/net/phy/air_en8811h.h
 diff -urN a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
 --- a/drivers/net/phy/Kconfig	2022-03-26 16:28:40.211133235 +0800
 +++ b/drivers/net/phy/Kconfig	2022-03-26 16:30:52.637025198 +0800
-@@ -595,6 +595,11 @@
+@@ -616,6 +616,11 @@
  	  the Reduced Gigabit Media Independent Interface(RGMII) between
  	  Ethernet physical media devices and the Gigabit Ethernet controller.
  

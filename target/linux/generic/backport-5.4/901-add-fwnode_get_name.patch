@@ -25,7 +25,7 @@ diff --git a/drivers/acpi/property.c b/drivers/acpi/property.c
 index 3eacf474e1e39b..a501c1c584b5ce 100644
 --- a/drivers/acpi/property.c
 +++ b/drivers/acpi/property.c
-@@ -1317,6 +1317,31 @@ acpi_fwnode_get_reference_args(const struct fwnode_handle *fwnode,
+@@ -1345,6 +1345,31 @@ acpi_fwnode_get_reference_args(const struct fwnode_handle *fwnode,
  						  args_count, args);
  }
  
@@ -57,7 +57,7 @@ index 3eacf474e1e39b..a501c1c584b5ce 100644
  static struct fwnode_handle *
  acpi_fwnode_get_parent(struct fwnode_handle *fwnode)
  {
-@@ -1357,6 +1382,7 @@ acpi_fwnode_device_get_match_data(const struct fwnode_handle *fwnode,
+@@ -1385,6 +1410,7 @@ acpi_fwnode_device_get_match_data(const struct fwnode_handle *fwnode,
  		.get_parent = acpi_node_get_parent,			\
  		.get_next_child_node = acpi_get_next_subnode,		\
  		.get_named_child_node = acpi_fwnode_get_named_child_node, \
@@ -109,7 +109,7 @@ index 9cde143201f5f4..eacca6a6626b7a 100644
  static struct fwnode_handle *
  software_node_get_parent(const struct fwnode_handle *fwnode)
  {
-@@ -615,6 +626,7 @@ static const struct fwnode_operations software_node_ops = {
+@@ -619,6 +630,7 @@ static const struct fwnode_operations software_node_ops = {
  	.property_present = software_node_property_present,
  	.property_read_int_array = software_node_read_int_array,
  	.property_read_string_array = software_node_read_string_array,
@@ -133,7 +133,7 @@ index d7fa75e31f2241..5bed634551ea65 100644
  static struct fwnode_handle *
  of_fwnode_get_parent(const struct fwnode_handle *fwnode)
  {
-@@ -993,6 +998,7 @@ const struct fwnode_operations of_fwnode_ops = {
+@@ -995,6 +1000,7 @@ const struct fwnode_operations of_fwnode_ops = {
  	.property_present = of_fwnode_property_present,
  	.property_read_int_array = of_fwnode_property_read_int_array,
  	.property_read_string_array = of_fwnode_property_read_string_array,

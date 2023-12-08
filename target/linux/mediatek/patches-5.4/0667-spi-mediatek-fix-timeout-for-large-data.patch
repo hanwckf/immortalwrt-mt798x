@@ -1,6 +1,6 @@
 --- a/drivers/spi/spi-mt65xx.c
 +++ b/drivers/spi/spi-mt65xx.c
-@@ -720,6 +720,23 @@ static irqreturn_t mtk_spi_interrupt(int
+@@ -721,6 +721,23 @@ static irqreturn_t mtk_spi_interrupt(int
  	return IRQ_HANDLED;
  }
  
@@ -24,7 +24,7 @@
  static bool mtk_spi_mem_supports_op(struct spi_mem *mem,
  				     const struct spi_mem_op *op)
  {
-@@ -946,6 +963,7 @@ err_exit:
+@@ -947,6 +964,7 @@ err_exit:
  }
  
  static const struct spi_controller_mem_ops mtk_spi_mem_ops = {

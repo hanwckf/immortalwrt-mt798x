@@ -22,7 +22,7 @@ index 1a157ca..258fe4b 100644
  		/*
  		 * Update step address value with address passed
  		 * with step packet.
-@@ -249,9 +255,17 @@ NOKPROBE_SYMBOL(kgdb_compiled_brk_fn);
+@@ -251,9 +257,17 @@ NOKPROBE_SYMBOL(kgdb_compiled_brk_fn);
  
  static int kgdb_step_brk_fn(struct pt_regs *regs, unsigned int esr)
  {

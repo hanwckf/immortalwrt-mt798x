@@ -21,7 +21,7 @@ diff --git a/drivers/mtd/nand/spi/macronix.c b/drivers/mtd/nand/spi/macronix.c
 index 9ff8debd599418..9ae48ce1c46f91 100644
 --- a/drivers/mtd/nand/spi/macronix.c
 +++ b/drivers/mtd/nand/spi/macronix.c
-@@ -119,6 +119,16 @@ static const struct spinand_info macronix_spinand_table[] = {
+@@ -134,6 +134,16 @@ static const struct spinand_info macronix_spinand_table[] = {
  					      &update_cache_variants),
  		     SPINAND_HAS_QE_BIT,
  		     SPINAND_ECCINFO(&mx35lfxge4ab_ooblayout, NULL)),

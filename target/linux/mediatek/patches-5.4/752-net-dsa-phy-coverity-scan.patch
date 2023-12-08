@@ -1,7 +1,7 @@
 diff -Naur a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
 --- a/drivers/net/dsa/mt7530.c	2022-11-25 14:10:39.452491570 +0800
 +++ b/drivers/net/dsa/mt7530.c	2022-11-28 09:47:11.157096408 +0800
-@@ -2476,7 +2476,7 @@
+@@ -2492,7 +2492,7 @@
  mt7531_cpu_port_config(struct dsa_switch *ds, int port)
  {
  	struct mt7530_priv *priv = ds->priv;
@@ -10,7 +10,7 @@ diff -Naur a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
  	int speed;
  
  	switch (port) {
-@@ -2496,6 +2496,8 @@
+@@ -2512,6 +2512,8 @@
  		priv->p6_interface = interface;
  		break;
  	};
@@ -175,7 +175,7 @@ diff -Naur a/drivers/net/dsa/mt7531_phy.c b/drivers/net/dsa/mt7531_phy.c
 diff -Naur a/drivers/net/phy/mtk/mt753x/mt7531.c b/drivers/net/phy/mtk/mt753x/mt7531.c
 --- a/drivers/net/phy/mtk/mt753x/mt7531.c	2022-11-25 14:11:51.944272549 +0800
 +++ b/drivers/net/phy/mtk/mt753x/mt7531.c	2022-11-25 14:19:49.970820719 +0800
-@@ -1062,6 +1062,7 @@
+@@ -1071,6 +1071,7 @@
  	u32 pmcr;
  	u32 speed;
  
@@ -183,7 +183,7 @@ diff -Naur a/drivers/net/phy/mtk/mt753x/mt7531.c b/drivers/net/phy/mtk/mt753x/mt
  	switch_node = of_find_node_by_name(NULL, "switch0");
  	if (switch_node == NULL) {
  		dev_err(&pdev->dev, "switch node invaild\n");
-@@ -1074,7 +1075,6 @@
+@@ -1083,7 +1084,6 @@
  		return -EIO;
  	}
  
@@ -207,7 +207,7 @@ diff -Naur a/drivers/net/phy/mtk/mt753x/mt753x_common.c b/drivers/net/phy/mtk/mt
 diff -Naur a/drivers/net/phy/mtk/mt753x/mt753x_mdio.c b/drivers/net/phy/mtk/mt753x/mt753x_mdio.c
 --- a/drivers/net/phy/mtk/mt753x/mt753x_mdio.c	2022-11-25 14:12:29.064162894 +0800
 +++ b/drivers/net/phy/mtk/mt753x/mt753x_mdio.c	2022-11-25 17:04:01.973949052 +0800
-@@ -495,7 +495,7 @@
+@@ -497,7 +497,7 @@
  	struct device_node *np = gsw->dev->of_node;
  	struct reset_control *rstc;
  	int mcm;

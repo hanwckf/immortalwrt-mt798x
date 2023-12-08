@@ -29,7 +29,7 @@ diff --git a/net/core/dev.c b/net/core/dev.c
 index f24c3a9..f0a556a 100644
 --- a/net/core/dev.c
 +++ b/net/core/dev.c
-@@ -6386,18 +6386,25 @@ EXPORT_SYMBOL(netif_napi_add);
+@@ -6420,18 +6420,25 @@ EXPORT_SYMBOL(netif_napi_add);
  
  void napi_disable(struct napi_struct *n)
  {

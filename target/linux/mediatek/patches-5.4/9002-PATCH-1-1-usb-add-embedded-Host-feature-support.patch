@@ -23,7 +23,7 @@ diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
 index 4cf0dc7f330d..f2f330606d0c 100644
 --- a/drivers/usb/core/hub.c
 +++ b/drivers/usb/core/hub.c
-@@ -2422,6 +2422,8 @@ static int usb_enumerate_device(struct usb_device *udev)
+@@ -2432,6 +2432,8 @@ static int usb_enumerate_device(struct usb_device *udev)
  			if (err < 0)
  				dev_dbg(&udev->dev, "HNP fail, %d\n", err);
  		}
@@ -32,7 +32,7 @@ index 4cf0dc7f330d..f2f330606d0c 100644
  		return -ENOTSUPP;
  	}
  
-@@ -4779,9 +4781,10 @@ hub_port_init(struct usb_hub *hub, struct usb_device *udev, int port1,
+@@ -4801,9 +4803,10 @@ hub_port_init(struct usb_hub *hub, struct usb_device *udev, int port1,
  				goto fail;
  			}
  			if (r) {
@@ -110,7 +110,7 @@ diff --git a/drivers/usb/host/xhci-mtk.c b/drivers/usb/host/xhci-mtk.c
 index d4345657945d..2a4b73a658f9 100644
 --- a/drivers/usb/host/xhci-mtk.c
 +++ b/drivers/usb/host/xhci-mtk.c
-@@ -571,6 +571,8 @@ static int xhci_mtk_probe(struct platform_device *pdev)
+@@ -576,6 +576,8 @@ static int xhci_mtk_probe(struct platform_device *pdev)
  		goto disable_device_wakeup;
  	}
  

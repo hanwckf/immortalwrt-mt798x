@@ -1,6 +1,6 @@
 --- a/drivers/leds/Kconfig
 +++ b/drivers/leds/Kconfig
-@@ -826,6 +826,16 @@ config LEDS_LM36274
+@@ -837,6 +837,16 @@ config LEDS_LM36274
  
  source "drivers/leds/blink/Kconfig"
  
@@ -19,7 +19,7 @@
  
 --- a/drivers/leds/Makefile
 +++ b/drivers/leds/Makefile
-@@ -85,6 +85,7 @@ obj-$(CONFIG_LEDS_LM3601X)		+= leds-lm36
+@@ -86,6 +86,7 @@ obj-$(CONFIG_LEDS_LM3601X)		+= leds-lm36
  obj-$(CONFIG_LEDS_TI_LMU_COMMON)	+= leds-ti-lmu-common.o
  obj-$(CONFIG_LEDS_LM3697)		+= leds-lm3697.o
  obj-$(CONFIG_LEDS_LM36274)		+= leds-lm36274.o

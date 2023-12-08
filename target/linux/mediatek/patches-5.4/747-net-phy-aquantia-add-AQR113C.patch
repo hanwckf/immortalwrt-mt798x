@@ -10,7 +10,7 @@ index 75d8351..ac8dd8e 100644
  
  #define MDIO_PHYXS_VEND_IF_STATUS		0xe812
  #define MDIO_PHYXS_VEND_IF_STATUS_TYPE_MASK	GENMASK(7, 3)
-@@ -352,6 +352,13 @@ static int aqr107_read_status(struct phy_device *phydev)
+@@ -389,6 +389,13 @@ static int aqr107_read_status(struct phy_device *phydev)
  		break;
  	}
  

@@ -1,6 +1,6 @@
 --- a/drivers/gpio/gpiolib-of.c
 +++ b/drivers/gpio/gpiolib-of.c
-@@ -23,6 +23,8 @@
+@@ -19,6 +19,8 @@
  #include <linux/pinctrl/pinctrl.h>
  #include <linux/slab.h>
  #include <linux/gpio/machine.h>
@@ -9,7 +9,7 @@
  
  #include "gpiolib.h"
  
-@@ -450,3 +452,68 @@ void of_gpiochip_remove(struct gpio_chip
+@@ -917,3 +919,68 @@ void of_gpiochip_remove(struct gpio_chip
  	gpiochip_remove_pin_ranges(chip);
  	of_node_put(chip->of_node);
  }
@@ -80,7 +80,7 @@
 +module_platform_driver(gpio_export_driver);
 --- a/drivers/gpio/gpiolib-sysfs.c
 +++ b/drivers/gpio/gpiolib-sysfs.c
-@@ -2,6 +2,7 @@
+@@ -3,6 +3,7 @@
  #include <linux/mutex.h>
  #include <linux/device.h>
  #include <linux/sysfs.h>
@@ -88,7 +88,7 @@
  #include <linux/gpio/consumer.h>
  #include <linux/gpio/driver.h>
  #include <linux/interrupt.h>
-@@ -544,7 +545,7 @@ static struct class gpio_class = {
+@@ -571,7 +572,7 @@ static struct class gpio_class = {
   *
   * Returns zero on success, else an error.
   */
@@ -97,7 +97,7 @@
  {
  	struct gpio_chip	*chip;
  	struct gpiod_data	*data;
-@@ -604,6 +605,8 @@ int gpiod_export(struct gpio_desc *desc,
+@@ -633,6 +634,8 @@ int gpiod_export(struct gpio_desc *desc,
  	offset = gpio_chip_hwgpio(desc);
  	if (chip->names && chip->names[offset])
  		ioname = chip->names[offset];
@@ -106,7 +106,7 @@
  
  	dev = device_create_with_groups(&gpio_class, chip->dev,
  					MKDEV(0, 0), data, gpio_groups,
-@@ -625,6 +628,12 @@ err_unlock:
+@@ -654,6 +657,12 @@ err_unlock:
  	gpiod_dbg(desc, "%s: status %d\n", __func__, status);
  	return status;
  }
@@ -121,7 +121,7 @@
  static int match_export(struct device *dev, const void *desc)
 --- a/include/asm-generic/gpio.h
 +++ b/include/asm-generic/gpio.h
-@@ -122,6 +122,12 @@ static inline int gpio_export(unsigned g
+@@ -127,6 +127,12 @@ static inline int gpio_export(unsigned g
  	return gpiod_export(gpio_to_desc(gpio), direction_may_change);
  }
  

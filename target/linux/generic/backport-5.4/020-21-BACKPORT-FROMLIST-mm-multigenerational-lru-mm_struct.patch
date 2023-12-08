@@ -228,7 +228,7 @@ Commit-Queue: Yu Zhao <yuzhao@chromium.org>
  }
  
  #define allocate_mm()	(kmem_cache_alloc(mm_cachep, GFP_KERNEL))
-@@ -1045,6 +1046,7 @@ static struct mm_struct *mm_init(struct
+@@ -1053,6 +1054,7 @@ static struct mm_struct *mm_init(struct
  		goto fail_nocontext;
  
  	mm->user_ns = get_user_ns(user_ns);
@@ -236,7 +236,7 @@ Commit-Queue: Yu Zhao <yuzhao@chromium.org>
  	return mm;
  
  fail_nocontext:
-@@ -1087,6 +1089,7 @@ static inline void __mmput(struct mm_str
+@@ -1095,6 +1097,7 @@ static inline void __mmput(struct mm_str
  	}
  	if (mm->binfmt)
  		module_put(mm->binfmt->module);
@@ -244,7 +244,7 @@ Commit-Queue: Yu Zhao <yuzhao@chromium.org>
  	mmdrop(mm);
  }
  
-@@ -2394,6 +2397,13 @@ long _do_fork(struct kernel_clone_args *
+@@ -2402,6 +2405,13 @@ long _do_fork(struct kernel_clone_args *
  		get_task_struct(p);
  	}
  

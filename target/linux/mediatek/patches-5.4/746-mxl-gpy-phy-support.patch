@@ -2,7 +2,7 @@ diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
 index e0f724a..1f74ff2 100644
 --- a/drivers/net/phy/Kconfig
 +++ b/drivers/net/phy/Kconfig
-@@ -511,6 +511,12 @@ config MARVELL_10G_PHY
+@@ -516,6 +516,12 @@ config MARVELL_10G_PHY
  	---help---
  	  Support for the Marvell Alaska MV88X3310 and compatible PHYs.
  
@@ -19,7 +19,7 @@ diff --git a/drivers/net/phy/Makefile b/drivers/net/phy/Makefile
 index e3c411f..7b44a98 100644
 --- a/drivers/net/phy/Makefile
 +++ b/drivers/net/phy/Makefile
-@@ -94,6 +94,7 @@ obj-$(CONFIG_LSI_ET1011C_PHY)	+= et1011c.o
+@@ -95,6 +95,7 @@ obj-$(CONFIG_LSI_ET1011C_PHY)	+= et1011c.o
  obj-$(CONFIG_LXT_PHY)		+= lxt.o
  obj-$(CONFIG_MARVELL_PHY)	+= marvell.o
  obj-$(CONFIG_MARVELL_10G_PHY)	+= marvell10g.o

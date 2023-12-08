@@ -13,7 +13,7 @@ Index: drivers/net/phy/mtk/mt753x/mt7531.c
 ===================================================================
 --- a/drivers/net/phy/mtk/mt753x/mt7531.c
 +++ b/drivers/net/phy/mtk/mt753x/mt7531.c
-@@ -658,6 +658,27 @@ static void mt7531_core_pll_setup(struct
+@@ -666,6 +666,27 @@ static void mt7531_core_pll_setup(struct
  
  static int mt7531_internal_phy_calibration(struct gsw_mt753x *gsw)
  {
@@ -45,7 +45,7 @@ Index: drivers/net/phy/mtk/mt753x/mt753x.h
 ===================================================================
 --- a/drivers/net/phy/mtk/mt753x/mt753x.h
 +++ b/drivers/net/phy/mtk/mt753x/mt753x.h
-@@ -140,6 +140,8 @@ void mt753x_irq_enable(struct gsw_mt753x
+@@ -146,6 +146,8 @@ void mt753x_irq_enable(struct gsw_mt753x
  int mt753x_phy_calibration(struct gsw_mt753x *gsw, u8 phyaddr);
  int extphy_init(struct gsw_mt753x *gsw, int addr);
  

@@ -2,7 +2,7 @@ Index: linux-5.4.124/drivers/net/dsa/mt7530.c
 ===================================================================
 --- linux-5.4.124.orig/drivers/net/dsa/mt7530.c
 +++ linux-5.4.124/drivers/net/dsa/mt7530.c
-@@ -1830,6 +1830,8 @@ mt7531_setup(struct dsa_switch *ds)
+@@ -1829,6 +1829,8 @@ mt7531_setup(struct dsa_switch *ds)
  			   PVC_EG_TAG(MT7530_VLAN_EG_CONSISTENT));
  	}
  

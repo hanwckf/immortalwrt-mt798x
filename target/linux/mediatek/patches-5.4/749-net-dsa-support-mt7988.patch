@@ -108,7 +108,7 @@ Index: linux-5.4.203/drivers/net/dsa/mt7530.c
  }
 
  void
-@@ -1906,9 +1927,9 @@ mt7531_phy_supported(struct dsa_switch *
+@@ -1907,9 +1928,9 @@ mt7531_phy_supported(struct dsa_switch *
  		if (mt7531_is_rgmii_port(priv, port))
  			return phy_interface_mode_is_rgmii(state->interface);
  		fallthrough;
@@ -121,7 +121,7 @@ Index: linux-5.4.203/drivers/net/dsa/mt7530.c
  			goto unsupported;
  		break;
  	default:
-@@ -2017,6 +2038,13 @@ static void mt7531_sgmii_validate(struct
+@@ -2018,6 +2039,13 @@ static void mt7531_sgmii_validate(struct
  		phylink_set(supported, 1000baseX_Full);
  		phylink_set(supported, 2500baseX_Full);
  		phylink_set(supported, 2500baseT_Full);
@@ -135,7 +135,7 @@ Index: linux-5.4.203/drivers/net/dsa/mt7530.c
  	}
  }
 
-@@ -2165,6 +2193,8 @@ mt7531_mac_config(struct dsa_switch *ds,
+@@ -2166,6 +2194,8 @@ mt7531_mac_config(struct dsa_switch *ds,
  	case PHY_INTERFACE_MODE_NA:
  	case PHY_INTERFACE_MODE_1000BASEX:
  	case PHY_INTERFACE_MODE_2500BASEX:
@@ -144,7 +144,7 @@ Index: linux-5.4.203/drivers/net/dsa/mt7530.c
  		if (phylink_autoneg_inband(mode))
  			return -EINVAL;
 
-@@ -2302,8 +2332,8 @@ static void mt753x_phylink_mac_link_up(s
+@@ -2303,8 +2333,8 @@ static void mt753x_phylink_mac_link_up(s
  	/* MT753x MAC works in 1G full duplex mode for all up-clocked
  	 * variants.
  	 */
@@ -155,7 +155,7 @@ Index: linux-5.4.203/drivers/net/dsa/mt7530.c
  		speed = SPEED_1000;
  		duplex = DUPLEX_FULL;
  	}
-@@ -2402,8 +2432,8 @@ mt753x_phylink_validate(struct dsa_switc
+@@ -2403,8 +2433,8 @@ mt753x_phylink_validate(struct dsa_switc
 
  	phylink_set_port_modes(mask);
 
@@ -166,7 +166,7 @@ Index: linux-5.4.203/drivers/net/dsa/mt7530.c
  		phylink_set(mask, 10baseT_Half);
  		phylink_set(mask, 10baseT_Full);
  		phylink_set(mask, 100baseT_Half);
-@@ -2607,6 +2637,66 @@ mt753x_phy_write(struct dsa_switch *ds,
+@@ -2608,6 +2638,66 @@ mt753x_phy_write(struct dsa_switch *ds,
  	return priv->info->phy_write(ds, port, regnum, val);
  }
 
@@ -233,7 +233,7 @@ Index: linux-5.4.203/drivers/net/dsa/mt7530.c
  static const struct dsa_switch_ops mt7530_switch_ops = {
  	.get_tag_protocol	= mtk_get_tag_protocol,
  	.setup			= mt753x_setup,
-@@ -2676,12 +2766,28 @@ static const struct mt753x_info mt753x_t
+@@ -2677,12 +2767,28 @@ static const struct mt753x_info mt753x_t
  		.mac_pcs_an_restart = mt7531_sgmii_restart_an,
  		.mac_pcs_link_up = mt7531_sgmii_link_up_force,
  	},
@@ -262,7 +262,7 @@ Index: linux-5.4.203/drivers/net/dsa/mt7530.c
  	{ /* sentinel */ },
  };
  MODULE_DEVICE_TABLE(of, mt7530_of_match);
-@@ -2691,6 +2797,7 @@ mt7530_probe(struct mdio_device *mdiodev
+@@ -2692,6 +2798,7 @@ mt7530_probe(struct mdio_device *mdiodev
  {
  	struct mt7530_priv *priv;
  	struct device_node *dn;
@@ -270,7 +270,7 @@ Index: linux-5.4.203/drivers/net/dsa/mt7530.c
  	int ret;
 
  	dn = mdiodev->dev.of_node;
-@@ -2760,6 +2867,16 @@ mt7530_probe(struct mdio_device *mdiodev
+@@ -2761,6 +2868,16 @@ mt7530_probe(struct mdio_device *mdiodev
  		}
  	}
 
@@ -287,7 +287,7 @@ Index: linux-5.4.203/drivers/net/dsa/mt7530.c
  	priv->bus = mdiodev->bus;
  	priv->dev = &mdiodev->dev;
  	priv->ds->priv = priv;
-@@ -2768,9 +2885,12 @@ mt7530_probe(struct mdio_device *mdiodev
+@@ -2769,9 +2886,12 @@ mt7530_probe(struct mdio_device *mdiodev
  	dev_set_drvdata(&mdiodev->dev, priv);
 
  	ret = dsa_register_switch(priv->ds);
@@ -303,7 +303,7 @@ Index: linux-5.4.203/drivers/net/dsa/mt7530.c
  	mt7530_nl_init(&priv);
 
  	return 0;
-@@ -2795,6 +2915,9 @@ mt7530_remove(struct mdio_device *mdiode
+@@ -2796,6 +2916,9 @@ mt7530_remove(struct mdio_device *mdiode
  	dsa_unregister_switch(priv->ds);
  	mutex_destroy(&priv->reg_mutex);
 
