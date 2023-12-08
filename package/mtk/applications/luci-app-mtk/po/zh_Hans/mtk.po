@@ -507,3 +507,9 @@ msgstr "启用此无线设备"
 
 msgid "Wireless device is disabled"
 msgstr "无线设备已禁用"
+
+msgid "Kick STA Threshold"
+msgstr "弱信号剔除阈值"
+
+msgid "STA Assoc Threshold"
+msgstr "弱信号接入阈值"

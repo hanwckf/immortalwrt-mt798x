@@ -500,6 +500,18 @@ function hi(to, devname, vifname)
                     </td>
                 </tr>
                 <tr>
+                    <td><%:Kick STA Threshold%> (-100-0)</td>
+                    <td>
+                        <input name="__kickrssi" id="KickStaRssiLow" value="<%=vif.__kickrssi or 0%>" />
+                    </td>
+                </tr>
+                <tr>
+                    <td><%:STA Assoc Threshold%> (-100-0)</td>
+                    <td>
+                        <input name="__assocthres" id="AssocReqRssiThres" value="<%=vif.__assocthres or 0%>" />
+                    </td>
+                </tr>
+                <tr>
                     <td><%:VHT Short GI%></td>
                     <td>
                         <select style="width:auto" name="__vht_sgi">
@@ -1221,6 +1233,20 @@ function hi(to, devname, vifname)
             alert("RTS Threshold is incorrect!\nPlease enter an integer number between 1 to 2347 inclusive.");
             document.getElementById("RTSThreshold").focus();
             document.getElementById("RTSThreshold").select();
+            return false;
+        }
+        tmpVal = document.getElementById("KickStaRssiLow").value;
+        if(isNaN(tmpVal) || parseInt(tmpVal) < -100 || parseInt(tmpVal) > 0){
+            alert("Kick STA Threshold is incorrect!\nPlease enter an integer number between -100 to 0 inclusive.");
+            document.getElementById("KickStaRssiLow").focus();
+            document.getElementById("KickStaRssiLow").select();
+            return false;
+        }
+        tmpVal = document.getElementById("AssocReqRssiThres").value;
+        if(isNaN(tmpVal) || parseInt(tmpVal) < -100 || parseInt(tmpVal) > 0){
+            alert("STA Assoc Threshold is incorrect!\nPlease enter an integer number between -100 to 0 inclusive.");
+            document.getElementById("AssocReqRssiThres").focus();
+            document.getElementById("AssocReqRssiThres").select();
             return false;
         }
 

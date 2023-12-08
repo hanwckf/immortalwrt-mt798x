@@ -1012,18 +1012,25 @@ return view.extend({
 
 					o = ss.taboption('advanced', form.Flag, 'mu_beamformer', _('MU-MIMO'));
 
+					var is_dbdc_main = uci.get('wireless', radioNet.getWifiDeviceName(), 'dbdc_main') == '1';
+
+					if (is_dbdc_main)
+					{
+						o = ss.taboption('advanced', form.Value, 'dtim_period', _('DTIM Interval'), _('Delivery Traffic Indication Message Interval'));
+						o.optional = true;
+						o.placeholder = 1;
+						o.datatype = 'range(1,255)';
+	
+						o = ss.taboption('advanced', form.Value, 'beacon_int', _('Beacon Interval'));
+						o.optional = true;
+						o.datatype = 'range(20,999)';
+						o.placeholder = 100;
+					}
+
 					o = ss.taboption('advanced', form.ListValue, 'twt', _('Target Wake Time'));
 					o.value('', _('Disable'));
 					o.value('1', _('Enable'));
 					o.value('2', _('Force'));
-
-					o = ss.taboption('advanced', form.Value, 'frag', _('Fragmentation Threshold'));
-					o.datatype = 'min(256)';
-					o.placeholder = 2346;
-
-					o = ss.taboption('advanced', form.Value, 'rts', _('RTS/CTS Threshold'));
-					o.datatype = 'uinteger';
-					o.placeholder = 2347;
 
 					o = ss.taboption('advanced', form.Value, 'txpower', _('Maximum transmit power'));
 					o.datatype = 'range(1,100)';
@@ -1295,6 +1302,26 @@ return view.extend({
 					o.placeholder = 3600;
 					o.datatype    = 'uinteger';
 					o.depends('mode', 'ap');
+
+					o = ss.taboption('advanced', form.Value, 'kicklow', _('Kick low RSSI station threshold'), _('dBm'));
+					o.optional    = true;
+					o.placeholder = 0;
+					o.datatype = 'range(-100,0)';
+					o.depends('mode', 'ap');
+
+					o = ss.taboption('advanced', form.Value, 'assocthres', _('Station associate threshold'), _('dBm'));
+					o.optional    = true;
+					o.placeholder = 0;
+					o.datatype    = 'range(-100,0)';
+					o.depends('mode', 'ap');
+
+					o = ss.taboption('advanced', form.Value, 'frag', _('Fragmentation Threshold'));
+					o.datatype = 'min(256)';
+					o.placeholder = 2346;
+
+					o = ss.taboption('advanced', form.Value, 'rts', _('RTS/CTS Threshold'));
+					o.datatype = 'uinteger';
+					o.placeholder = 2347;
 
 					o = ss.taboption('advanced', form.Flag, 'mumimo_dl', _('MU-MIMO DL'));
 					o.depends('mode', 'ap');

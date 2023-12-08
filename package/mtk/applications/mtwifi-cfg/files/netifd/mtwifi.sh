@@ -14,15 +14,15 @@ MTWIFI_MAX_APCLI_IDX=0
 MTWIFI_CFG_IFNAME_KEY="mtwifi_ifname"
 
 drv_mtwifi_init_device_config() {
-	config_add_int txpower frag rts
-	config_add_boolean mu_beamformer
+	config_add_int txpower beacon_int dtim_period
+	config_add_boolean mu_beamformer dbdc_main
 	config_add_string country twt
 }
 
 drv_mtwifi_init_iface_config() {
-	config_add_string 'ssid:string' macfilter bssid
+	config_add_string 'ssid:string' macfilter bssid kicklow assocthres
 	config_add_boolean wmm hidden isolate ieee80211k
-	config_add_int wpa_group_rekey
+	config_add_int wpa_group_rekey frag rts
 	config_add_array 'maclist:list(macaddr)'
 	config_add_boolean mumimo_dl mumimo_ul ofdma_dl ofdma_ul amsdu autoba uapsd
 }
@@ -67,6 +67,7 @@ mtwifi_vif_sta_config() {
 		logger -t "netifd-mtwifi" "add $ifname to vifidx $name"
 
 		# setup apcli autoconnect
+		iwpriv "$ifname" set ApCliEnable=1
 		iwpriv "$ifname" set ApCliAutoConnect=3
 
 		wireless_add_vif "$name" "$ifname"

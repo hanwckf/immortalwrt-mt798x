@@ -7,7 +7,7 @@ append DRIVERS "mtwifi"
 
 detect_mtwifi() {
 	local idx ifname
-	local band hwmode htmode htbsscoex ssid
+	local band hwmode htmode htbsscoex ssid dbdc_main
 	if [ -d "/sys/module/mt_wifi" ]; then
 		dev_list="$(l1util list)"
 		for dev in $dev_list; do
@@ -21,12 +21,14 @@ detect_mtwifi() {
 					htmode="HE40"
 					htbsscoex="1"
 					ssid="ImmortalWrt-2.4G"
+					dbdc_main="1"
 				else
 					band="5g"
 					hwmode="11a"
 					htmode="HE160"
 					htbsscoex="0"
 					ssid="ImmortalWrt-5G"
+					dbdc_main="0"
 				fi
 				uci -q batch <<-EOF
 					set wireless.${dev}=wifi-device
@@ -34,6 +36,7 @@ detect_mtwifi() {
 					set wireless.${dev}.phy=${ifname}
 					set wireless.${dev}.hwmode=${hwmode}
 					set wireless.${dev}.band=${band}
+					set wireless.${dev}.dbdc_main=${dbdc_main}
 					set wireless.${dev}.channel=auto
 					set wireless.${dev}.txpower=100
 					set wireless.${dev}.htmode=${htmode}
