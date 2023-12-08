@@ -34,7 +34,7 @@ return view.extend({
 		o.datatype = 'and(uinteger,min(1))';
 		o.rmempty = false;
 
-		s = m.section(form.TableSection, 'device', _('Speed limit based on IP address'));
+		s = m.section(form.TableSection, 'device', _('Speed limit based on IP address(using unique comment which is less than 32 and no equal to 8 will enable hardware QOS)'));
 		s.addremove = true;
 		s.anonymous = true;
 		s.sortable = true;
@@ -52,15 +52,17 @@ return view.extend({
 				}
 		o.rmempty = false;
 
-		o = s.option(form.Value, 'download', _('Download speed (Mbit/s)'));
+		o = s.option(form.Value, 'download', _('Download speed (kbit/s)'));
 		o.datatype = 'and(uinteger,min(0))';
 		o.rmempty = false;
 
-		o = s.option(form.Value, 'upload', _('Upload speed (Mbit/s)'));
+		o = s.option(form.Value, 'upload', _('Upload speed (kbit/s)'));
 		o.datatype = 'and(uinteger,min(0))';
 		o.rmempty = false;
 
 		o = s.option(form.Value, 'comment', _('Comment'));
+		o.datatype = 'and(uinteger,min(1))';
+		o.rmempty = false;
 
 		return m.render();
 	}

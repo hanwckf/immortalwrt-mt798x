@@ -11,12 +11,13 @@ parse_device() {
 	config_get_bool enabled "$cfg" "enabled" "1"
 	[ "$enabled" -eq "1" ] || return 1
 
-	local ip download upload
+	local ip download upload comment
 	config_get ip "$cfg" ip
 	config_get download "$cfg" "download"
 	config_get upload "$cfg" "upload"
+	config_get comment "$cfg" "comment"
 
-	eqos add "$ip" "$download" "$upload"
+	eqos add "$ip" "$download" "$upload" "$comment"
 }
 
 start_service() {
@@ -26,11 +27,12 @@ start_service() {
 	config_get_bool enabled "config" "enabled" "0"
 	[ "$enabled" -eq "1" ] || return 1
 
-	local download upload
+	local download upload comment
 	config_get download "config" "download"
 	config_get upload "config" "upload"
-
-	eqos start "$download" "$upload"
+	config_get comment "comment" "comment"
+	
+	eqos start "$download" "$upload" "$comment"
 
 	config_foreach parse_device "device"
 }

@@ -11,10 +11,9 @@ msgstr ""
 
 #: applications/luci-app-eqos/htdocs/luci-static/resources/view/eqos.js:64
 msgid "Comment"
-msgstr "注释"
+msgstr "编号"
 
 #: applications/luci-app-eqos/htdocs/luci-static/resources/view/eqos.js:28
-#: applications/luci-app-eqos/htdocs/luci-static/resources/view/eqos.js:56
 msgid "Download speed (Mbit/s)"
 msgstr "下载速度 (Mbit/s)"
 
@@ -41,8 +40,8 @@ msgid "Network speed control service.(Compatiable with Mediatek HNAT)"
 msgstr "网速控制服务(未设置限速主机可正常使用硬件加速)。"
 
 #: applications/luci-app-eqos/htdocs/luci-static/resources/view/eqos.js:38
-msgid "Speed limit based on IP address"
-msgstr "基于 IP 限速(设置为0则上行或下载取消限速并启用硬件加速)"
+msgid "Speed limit based on IP address(using unique comment which is less than 32 and no equal to 8 will enable hardware QOS)"
+msgstr "基于 IP 限速(设置小于32且不为8的唯一编号将启用硬件QOS.速度设置为0则取消限速)"
 
 #: applications/luci-app-eqos/htdocs/luci-static/resources/view/eqos.js:29
 msgid "Total download bandwidth."
@@ -53,6 +52,13 @@ msgid "Total upload bandwidth."
 msgstr "总上传带宽。"
 
 #: applications/luci-app-eqos/htdocs/luci-static/resources/view/eqos.js:33
-#: applications/luci-app-eqos/htdocs/luci-static/resources/view/eqos.js:60
 msgid "Upload speed (Mbit/s)"
 msgstr "上传速度 (Mbit/s)"
+
+#: applications/luci-app-eqos/htdocs/luci-static/resources/view/eqos.js:56
+msgid "Download speed (kbit/s)"
+msgstr "下载速度 (kbit/s)"
+
+#: applications/luci-app-eqos/htdocs/luci-static/resources/view/eqos.js:60
+msgid "Upload speed (kbit/s)"
+msgstr "上传速度 (kbit/s)"
