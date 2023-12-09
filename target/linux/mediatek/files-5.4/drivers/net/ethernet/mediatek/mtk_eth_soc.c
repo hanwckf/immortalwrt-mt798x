@@ -3088,7 +3088,7 @@ static void mtk_pending_work(struct work_struct *work)
 	pr_info("[%s] mtk_stop starts !\n", __func__);
 	/* stop all devices to make sure that dma is properly shut down */
 	for (i = 0; i < MTK_MAC_COUNT; i++) {
-		if (!eth->netdev[i])
+		if (!eth->netdev[i] || !netif_running(eth->netdev[i]))
 			continue;
 		mtk_stop(eth->netdev[i]);
 		__set_bit(i, &restart);
