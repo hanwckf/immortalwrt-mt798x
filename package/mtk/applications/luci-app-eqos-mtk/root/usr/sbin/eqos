@@ -34,6 +34,8 @@ case "$1" in
 		sed -i '/\/etc\/init.d\/eqos start/d' /etc/firewall.user
 		iptables -t mangle -D FORWARD -i br-lan -j DSCP --set-dscp 0
 		iptables -t mangle -D FORWARD -o br-lan -j DSCP --set-dscp 0
+		ip6tables -t mangle -D FORWARD -i br-lan -j DSCP --set-dscp 0
+		ip6tables -t mangle -D FORWARD -o br-lan -j DSCP --set-dscp 0
 		echo "10 0" > /sys/kernel/debug/hnat/hnat_setting
 		for i in $(seq 0 7); do
 		echo 0 0 0 0 0 0 0 > $hqos_path/qdma_txq$i
@@ -44,6 +46,10 @@ case "$1" in
 	;;
 	"start")
 		stop_qos
+		ip6tables -t mangle -D FORWARD -i br-lan -j DSCP --set-dscp 0
+		ip6tables -t mangle -D FORWARD -o br-lan -j DSCP --set-dscp 0
+		ip6tables -t mangle -A FORWARD -i br-lan -j DSCP --set-dscp 0
+		ip6tables -t mangle -A FORWARD -o br-lan -j DSCP --set-dscp 0
 		iptables -t mangle -D FORWARD -i br-lan -j DSCP --set-dscp 0
 		iptables -t mangle -D FORWARD -o br-lan -j DSCP --set-dscp 0
 		iptables -t mangle -A FORWARD -i br-lan -j DSCP --set-dscp 0
