@@ -755,10 +755,10 @@ static int hnat_probe(struct platform_device *pdev)
 #else
 	hnat_priv->ppe_base[0] = hnat_priv->fe_base + 0xe00;
 #endif
-	hnat_priv->nf_stat_en = true; /* enable ppe update nf stat by default */
+	hnat_priv->nf_stat_en = true; /* enable nf_stat_en by default */
 	hnat_priv->ipv6_en = true; /* enable ipv6 by default */
 	hnat_priv->guest_en = true; /* enable guest wifi by default */
-
+	hnat_priv->dscp_en = false;
 	err = hnat_init_debugfs(hnat_priv);
 	if (err)
 		return err;

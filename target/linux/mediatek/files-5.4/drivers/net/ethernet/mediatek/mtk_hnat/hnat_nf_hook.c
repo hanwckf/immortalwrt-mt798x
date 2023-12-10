@@ -1207,6 +1207,7 @@ static unsigned int skb_to_hnat_info(struct sk_buff *skb,
 	u32 qid = 0;
 	u32 port_id = 0;
 	int mape = 0;
+	u8  dscp = 0;
 
 	ct = nf_ct_get(skb, &ctinfo);
 
@@ -1293,6 +1294,7 @@ static unsigned int skb_to_hnat_info(struct sk_buff *skb,
 
 			} else {
 				entry.ipv4_hnapt.iblk2.dscp = iph->tos;
+				dscp = iph->tos;
 				if (hnat_priv->data->per_flow_accounting)
 					entry.ipv4_hnapt.iblk2.mibf = 1;
 
@@ -1472,6 +1474,7 @@ static unsigned int skb_to_hnat_info(struct sk_buff *skb,
 				mape = 1;
 				entry.ipv4_hnapt.iblk2.dscp =
 					foe->ipv4_hnapt.iblk2.dscp;
+				dscp = foe->ipv4_hnapt.iblk2.dscp;
 				if (hnat_priv->data->per_flow_accounting)
 					entry.ipv4_hnapt.iblk2.mibf = 1;
 
@@ -1484,6 +1487,7 @@ static unsigned int skb_to_hnat_info(struct sk_buff *skb,
 				entry.ipv4_hnapt.dip = foe->ipv4_hnapt.dip;
 				entry.ipv4_hnapt.sport = foe->ipv4_hnapt.sport;
 				entry.ipv4_hnapt.dport = foe->ipv4_hnapt.dport;
+
 
 				entry.ipv4_hnapt.new_sip =
 					foe->ipv4_hnapt.new_sip;
@@ -1624,7 +1628,9 @@ static unsigned int skb_to_hnat_info(struct sk_buff *skb,
 		qid = port_id & MTK_QDMA_TX_MASK;
 	else
 		qid = 0;
-
+	if ((IS_HQOS_MODE) && (dscp!=0) &&(hnat_priv->dscp_en))
+		qid = (dscp>>2)& (MTK_QDMA_TX_MASK);
+		
 	if (IS_IPV4_GRP(foe)) {
 		entry.ipv4_hnapt.iblk2.dp = gmac;
 		entry.ipv4_hnapt.iblk2.port_mg =
