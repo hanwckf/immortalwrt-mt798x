@@ -31,9 +31,23 @@ case "$1" in
 		stop_qos
 		iptables -t mangle -D FORWARD  -j eqos
 		echo 0 > /sys/kernel/debug/hnat/qos_toggle
+		sed -i '/\/etc\/init.d\/eqos start/d' /etc/firewall.user
+		iptables -t mangle -D FORWARD -i br-lan -j DSCP --set-dscp 0
+		iptables -t mangle -D FORWARD -o br-lan -j DSCP --set-dscp 0
+		echo "10 0" > /sys/kernel/debug/hnat/hnat_setting
+		for i in $(seq 0 7); do
+		echo 0 0 0 0 0 0 0 > $hqos_path/qdma_txq$i
+		done
+		for i in $(seq 8 15); do
+		echo 1 0 0 0 0 0 0 > $hqos_path/qdma_txq$i
+		done	
 	;;
 	"start")
 		stop_qos
+		iptables -t mangle -D FORWARD -i br-lan -j DSCP --set-dscp 0
+		iptables -t mangle -D FORWARD -o br-lan -j DSCP --set-dscp 0
+		iptables -t mangle -A FORWARD -i br-lan -j DSCP --set-dscp 0
+		iptables -t mangle -A FORWARD -o br-lan -j DSCP --set-dscp 0
 		start_qos $2 $3
 		iptables -t mangle -N eqos
 		iptables -t mangle -F eqos
@@ -46,6 +60,9 @@ case "$1" in
 		echo 0 wrr 10000000 > /sys/kernel/debug/hnat/qdma_sch3
 		echo 0 0 0 0 0 4 4 > /sys/kernel/debug/hnat/qdma_txq0
 		echo 1 0 0 0 0 4 4 > /sys/kernel/debug/hnat/qdma_txq8
+		sed -i '/\/etc\/init.d\/eqos start/d' /etc/firewall.user
+		echo "/etc/init.d/eqos start" >> /etc/firewall.user
+		echo "10 1" > /sys/kernel/debug/hnat/hnat_setting
 	;;
 	"add")
 		ip="$2"
@@ -55,15 +72,15 @@ case "$1" in
 		cnt=$(tc class show dev $dev | wc -l)
 		if [ $id -lt 32 ]; then
 		
-		iptables -t mangle -D eqos -s $ip -j MARK --set-mark ${id}
-		iptables -t mangle -D eqos -d $ip -j MARK --set-mark ${idpair}
+		iptables -t mangle -D eqos -s $ip -j DSCP --set-dscp ${id}
+		iptables -t mangle -D eqos -d $ip -j DSCP --set-dscp ${idpair}
 		if [ $up -ne 0 ]; then
 		echo 2 0 0 1 ${up} 4 4 > /sys/kernel/debug/hnat/qdma_txq${id}
-		iptables -t mangle -A eqos -s $ip -j MARK --set-mark ${id}
+		iptables -t mangle -A eqos -s $ip -j DSCP --set-dscp ${id}
 		fi
 		if [ $dl -ne 0 ]; then
 		echo 2 0 0 1 ${dl} 4 4 > /sys/kernel/debug/hnat/qdma_txq${idpair}
-		iptables -t mangle -A eqos -d $ip -j MARK --set-mark ${idpair}
+		iptables -t mangle -A eqos -d $ip -j DSCP --set-dscp ${idpair}
 		fi
 		else
 		iptables -t mangle -D eqos -s $ip -j MARK --set-mark 0x99

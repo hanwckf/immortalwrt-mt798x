@@ -684,6 +684,7 @@ struct mtk_hnat {
 	bool nf_stat_en;
 	bool ipv6_en;
 	bool guest_en;
+	bool dscp_en;
 };
 
 struct extdev_entry {
