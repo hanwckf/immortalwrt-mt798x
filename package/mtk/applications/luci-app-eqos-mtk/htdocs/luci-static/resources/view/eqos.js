@@ -34,7 +34,7 @@ return view.extend({
 		o.datatype = 'and(uinteger,min(1))';
 		o.rmempty = false;
 
-		s = m.section(form.TableSection, 'device', _('Speed limit based on IP address(using unique comment which is less than 32 and no equal to 8 will enable hardware QOS)'));
+		s = m.section(form.TableSection, 'device', _('Speed limit based on IP address(using unique comment less than 32 will enable hardware QOS'));
 		s.addremove = true;
 		s.anonymous = true;
 		s.sortable = true;
