@@ -479,7 +479,7 @@
 #define QID_HIGH_BITS(x)        ((((x) >> 4) & 0x3) << 20)
 #define QID_BITS_V2(x)		(((x) & 0x3f) << 16)
 
-#define MTK_QDMA_GMAC2_QID	8
+#define MTK_QDMA_GMAC2_QID	32
 
 /* QDMA V2 descriptor txd6 */
 #define TX_DMA_INS_VLAN_V2         BIT(16)

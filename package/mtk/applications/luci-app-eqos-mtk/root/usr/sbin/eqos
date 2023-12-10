@@ -37,11 +37,11 @@ case "$1" in
 		ip6tables -t mangle -D FORWARD -i br-lan -j DSCP --set-dscp 0
 		ip6tables -t mangle -D FORWARD -o br-lan -j DSCP --set-dscp 0
 		echo "10 0" > /sys/kernel/debug/hnat/hnat_setting
-		for i in $(seq 0 7); do
-		echo 0 0 0 0 0 0 0 > $hqos_path/qdma_txq$i
+		for i in $(seq 0 31); do
+		echo 0 0 0 0 0 4 4 > $hqos_path/qdma_txq$i
 		done
-		for i in $(seq 8 15); do
-		echo 1 0 0 0 0 0 0 > $hqos_path/qdma_txq$i
+		for i in $(seq 32 63); do
+		echo 1 0 0 0 0 4 4 > $hqos_path/qdma_txq$i
 		done	
 	;;
 	"start")

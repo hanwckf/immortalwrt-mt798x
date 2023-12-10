@@ -40,8 +40,8 @@ msgid "Network speed control service.(Compatiable with Mediatek HNAT)"
 msgstr "网速控制服务(未设置限速主机可正常使用硬件加速)。"
 
 #: applications/luci-app-eqos/htdocs/luci-static/resources/view/eqos.js:38
-msgid "Speed limit based on IP address(using unique comment which is less than 32 and no equal to 8 will enable hardware QOS)"
-msgstr "基于 IP 限速(设置小于32且不为8的唯一编号将启用硬件QOS.速度设置为0则取消限速)"
+msgid "Speed limit based on IP address(using unique comment less than 32 will enable hardware QOS)"
+msgstr "基于 IP 限速(设置小于32唯一编号将启用硬件QOS.速度设置为0则取消限速)"
 
 #: applications/luci-app-eqos/htdocs/luci-static/resources/view/eqos.js:29
 msgid "Total download bandwidth."

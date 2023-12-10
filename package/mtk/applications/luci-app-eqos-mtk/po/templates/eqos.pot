@@ -32,7 +32,7 @@ msgid "Network speed control service."
 msgstr ""
 
 #: applications/luci-app-eqos/htdocs/luci-static/resources/view/eqos.js:38
-msgid "Speed limit based on IP address(using unique comment which is less than 32 and no equal to 8 will enable hardware QOS)"
+msgid "Speed limit based on IP address(using unique comment less than 32 will enable hardware QOS"
 msgstr ""
 
 #: applications/luci-app-eqos/htdocs/luci-static/resources/view/eqos.js:29
