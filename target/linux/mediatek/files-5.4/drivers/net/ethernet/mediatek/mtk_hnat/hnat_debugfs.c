@@ -575,6 +575,7 @@ int cr_set_usage(int level)
 	pr_info("              9     0~1        Set hnat disable/enable guest (rax1/ra1)\n");
 	pr_info("             10     0~1        Set hnat disable/enable dscp setting\n");
 	pr_info("             11     1~30       Set hnat band rate\n");
+	pr_info("             12     0~1        Set hnat macvlan support mode\n");
 
 	return 0;
 }
@@ -738,6 +739,22 @@ int bind_rate_setting(int bind_rate)
 	return 0;
 }
 
+int set_macvlan_support(int toggle)
+{
+	struct mtk_hnat *h = hnat_priv;
+
+	if (toggle == 1)
+		pr_info("Enable macvlan support\n");
+	else if (toggle == 0)
+		pr_info("Disable macvlan support\n");
+	else {
+		pr_info("input error, current macvlan support setting=%d\n", h->macvlan_support);
+		return 0;
+	}
+	h->macvlan_support = toggle;
+
+	return 0;
+}
 
 void mtk_ppe_dev_hook(const char *name, int toggle)
 {
@@ -793,6 +810,7 @@ static const debugfs_write_func cr_set_func[] = {
 	[6] = udp_keep_alive,    [7] = set_nf_update_toggle,
 	[8] = set_ipv6_toggle,   [9] = set_guest_toggle,
 	[10] = set_dscp_toggle,  [11] = bind_rate_setting,
+	[12] = set_macvlan_support,
 };
 
 int read_mib(struct mtk_hnat *h, u32 ppe_id,
@@ -1572,6 +1590,7 @@ ssize_t hnat_setting_write(struct file *file, const char __user *buffer,
 	case 9:
 	case 10:
 	case 11:
+	case 12:
 		p_token = strsep(&p_buf, p_delimiter);
 		if (!p_token)
 			arg1 = 0;
