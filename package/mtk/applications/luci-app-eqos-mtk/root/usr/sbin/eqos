@@ -37,12 +37,17 @@ case "$1" in
 		ip6tables -t mangle -D FORWARD -i br-lan -j DSCP --set-dscp 0
 		ip6tables -t mangle -D FORWARD -o br-lan -j DSCP --set-dscp 0
 		echo "10 0" > /sys/kernel/debug/hnat/hnat_setting
+		echo "11 30" >/sys/kernel/debug/hnat/hnat_setting
 		for i in $(seq 0 31); do
 		echo 0 0 0 0 0 4 4 > $hqos_path/qdma_txq$i
 		done
 		for i in $(seq 32 63); do
 		echo 1 0 0 0 0 4 4 > $hqos_path/qdma_txq$i
 		done	
+		echo 0 wrr 10000000 > /sys/kernel/debug/hnat/qdma_sch0
+		echo 0 wrr 10000000 > /sys/kernel/debug/hnat/qdma_sch1
+		echo 0 wrr 10000000 > /sys/kernel/debug/hnat/qdma_sch2
+		echo 0 wrr 10000000 > /sys/kernel/debug/hnat/qdma_sch3
 	;;
 	"start")
 		stop_qos
@@ -62,10 +67,11 @@ case "$1" in
 		echo 1 > /sys/kernel/debug/hnat/qos_toggle
 		echo 0 wrr 10000000 > /sys/kernel/debug/hnat/qdma_sch0
 		echo 0 wrr 10000000 > /sys/kernel/debug/hnat/qdma_sch1
-		echo 0 wrr 10000000 > /sys/kernel/debug/hnat/qdma_sch2
-		echo 0 wrr 10000000 > /sys/kernel/debug/hnat/qdma_sch3
-		echo 0 0 0 0 0 4 4 > /sys/kernel/debug/hnat/qdma_txq0
-		echo 1 0 0 0 0 4 4 > /sys/kernel/debug/hnat/qdma_txq8
+		echo 1 wrr $(($3*1000)) > /sys/kernel/debug/hnat/qdma_sch2
+		echo 1 wrr $(($2*1000)) > /sys/kernel/debug/hnat/qdma_sch3
+		echo 0 0 0 0 0 0 0 > /sys/kernel/debug/hnat/qdma_txq0
+		echo 1 0 0 0 0 0 0 > /sys/kernel/debug/hnat/qdma_txq8
+		echo "11 5" >/sys/kernel/debug/hnat/hnat_setting
 		sed -i '/\/etc\/init.d\/eqos start/d' /etc/firewall.user
 		echo "/etc/init.d/eqos start" >> /etc/firewall.user
 		echo "10 1" > /sys/kernel/debug/hnat/hnat_setting
@@ -81,11 +87,11 @@ case "$1" in
 		iptables -t mangle -D eqos -s $ip -j DSCP --set-dscp ${id}
 		iptables -t mangle -D eqos -d $ip -j DSCP --set-dscp ${idpair}
 		if [ $up -ne 0 ]; then
-		echo 2 0 0 1 ${up} 4 4 > /sys/kernel/debug/hnat/qdma_txq${id}
+		echo 2 0 0 1 ${up} 4 1 > /sys/kernel/debug/hnat/qdma_txq${id}
 		iptables -t mangle -A eqos -s $ip -j DSCP --set-dscp ${id}
 		fi
 		if [ $dl -ne 0 ]; then
-		echo 2 0 0 1 ${dl} 4 4 > /sys/kernel/debug/hnat/qdma_txq${idpair}
+		echo 3 0 0 1 ${dl} 4 1 > /sys/kernel/debug/hnat/qdma_txq${idpair}
 		iptables -t mangle -A eqos -d $ip -j DSCP --set-dscp ${idpair}
 		fi
 		else
