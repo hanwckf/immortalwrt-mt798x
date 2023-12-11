@@ -685,6 +685,7 @@ struct mtk_hnat {
 	bool ipv6_en;
 	bool guest_en;
 	bool dscp_en;
+	bool macvlan_support;
 };
 
 struct extdev_entry {
@@ -853,8 +854,9 @@ enum FoeIpAct {
 #define NR_WDMA1_PORT 9
 #define LAN_DEV_NAME hnat_priv->lan
 #define IS_WAN(dev)                                                            \
-	(!strncmp((dev)->name, hnat_priv->wan, strlen(hnat_priv->wan)))
-#define IS_LAN(dev) (!strncmp(dev->name, LAN_DEV_NAME, strlen(LAN_DEV_NAME)))
+	((!strncmp((dev)->name, hnat_priv->wan, strlen(hnat_priv->wan))) || ((!strncmp((dev)->name, "macvlan", 7)) && \
+		(hnat_priv->macvlan_support)))
+#define IS_LAN(dev) (!strncmp(dev->name, LAN_DEV_NAME, strlen(LAN_DEV_NAME))) 
 #define IS_BR(dev) (!strncmp(dev->name, "br", 2))
 #define IS_WHNAT(dev)								\
 	((hnat_priv->data->whnat &&						\

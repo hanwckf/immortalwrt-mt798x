@@ -759,6 +759,7 @@ static int hnat_probe(struct platform_device *pdev)
 	hnat_priv->ipv6_en = true; /* enable ipv6 by default */
 	hnat_priv->guest_en = true; /* enable guest wifi by default */
 	hnat_priv->dscp_en = false;
+	hnat_priv->macvlan_support = false;
 	err = hnat_init_debugfs(hnat_priv);
 	if (err)
 		return err;
