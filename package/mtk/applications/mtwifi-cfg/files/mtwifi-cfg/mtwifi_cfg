@@ -229,6 +229,11 @@ function mtwifi_cfg_iwpriv_hook(cfg)
             for k, j in pairs(iwpriv_cfgs) do
                 __exec_iwpriv_cmd(vif, j[1], v.config[k] or j[2])
             end
+            if mode == "sta" then
+                -- setup apcli auto connect
+                __exec_iwpriv_cmd(vif, "ApCliEnable", "1")
+                __exec_iwpriv_cmd(vif, "ApCliAutoConnect", "3")
+            end
         end
     end
 end
