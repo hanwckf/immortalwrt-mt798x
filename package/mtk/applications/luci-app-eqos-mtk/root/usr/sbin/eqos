@@ -72,6 +72,8 @@ case "$1" in
 		echo 0 0 0 0 0 0 0 > /sys/kernel/debug/hnat/qdma_txq0
 		echo 1 0 0 0 0 0 0 > /sys/kernel/debug/hnat/qdma_txq8
 		echo "11 5" >/sys/kernel/debug/hnat/hnat_setting
+		uci -q set "turboacc.config.fastpath_mh_eth_hnat_bind_rate"="5"
+		uci -q commit "turboacc"
 		sed -i '/\/etc\/init.d\/eqos start/d' /etc/firewall.user
 		echo "/etc/init.d/eqos start" >> /etc/firewall.user
 		echo "10 1" > /sys/kernel/debug/hnat/hnat_setting

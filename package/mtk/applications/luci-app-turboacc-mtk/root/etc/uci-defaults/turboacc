@@ -18,6 +18,8 @@ if [ -e "/lib/modules/$kernel_ver/mtkhnat.ko" ]; then
 	uci -q set "turboacc.config.fastpath"="mediatek_hnat"
 	uci -q set "turboacc.config.fastpath_mh_eth_hnat"="1"
 	uci -q set "turboacc.config.fastpath_mh_eth_hnat_v6"="1"
+	uci -q set "turboacc.config.fastpath_mh_eth_hnat_macvlan"="0"
+	uci -q set "turboacc.config.fastpath_mh_eth_hnat_bind_rate"="30"
 elif [ -e "/lib/modules/$kernel_ver/fast-classifier.ko" ]; then
 	uci -q set "turboacc.config.fastpath"="fast_classifier"
 	uci -q set "turboacc.config.fastpath_fc_br"="1"
