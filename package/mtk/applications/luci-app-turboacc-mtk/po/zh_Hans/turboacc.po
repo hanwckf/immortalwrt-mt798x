@@ -57,6 +57,24 @@ msgstr "启用以太网 IPv6 HNAT"
 msgid "Enable hardware offloading for wired IPv6 connections."
 msgstr "为有线 IPv6 连接启用硬件加速。"
 
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:177
+msgid "Enable ethernet HNAT for MACVLAN"
+msgstr "启用MACVLAN HNAT"
+
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:178
+msgid "Enable hardware offloading for macvlan (sing wan only)."
+msgstr "为MACVLAN 连接启用硬件加速(仅支持单WAN)。"
+
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:183
+msgid "HNAT bind rate threshold (pps/s)"
+msgstr "HNAT加速速率阈值(pps/s)"
+
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:184
+msgid "The smaller the threshold, the easier it is for the connection to be accelerated."
+msgstr "阈值越小，连接越容易被加速。"
+
+
+
 #: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:166
 msgid "Enable hardware offloading for wired connections."
 msgstr "为有线连接启用硬件加速。"

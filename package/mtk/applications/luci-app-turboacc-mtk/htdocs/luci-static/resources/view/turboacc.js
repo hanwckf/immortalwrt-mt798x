@@ -173,6 +173,18 @@ return view.extend({
 		o.default = o.enabled;
 		o.rmempty = false;
 		o.depends('fastpath_mh_eth_hnat', '1');
+		
+		o = s.option(form.Flag, 'fastpath_mh_eth_hnat_macvlan', _('Enable ethernet HNAT for MACVLAN'),
+			_('Enable hardware offloading for macvlan (sing wan only).'));
+		o.default = o.enabled;
+		o.rmempty = false;
+		o.depends('fastpath_mh_eth_hnat', '1');
+		
+		o = s.option(form.Value, 'fastpath_mh_eth_hnat_bind_rate', _('HNAT bind rate threshold (pps/s)'),
+			_('The smaller the threshold, the easier it is for the connection to be accelerated.'));
+		o.datatype = 'and(uinteger,min(1))';
+		o.rmempty = false;
+		o.depends('fastpath_mh_eth_hnat', '1');
 
 		o = s.option(form.ListValue, 'fullcone', _('Full cone NAT'),
 			_('Full cone NAT (NAT1) can improve gaming performance effectively.'));
