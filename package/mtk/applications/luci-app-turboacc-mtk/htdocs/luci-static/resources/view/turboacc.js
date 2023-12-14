@@ -174,13 +174,13 @@ return view.extend({
 		o.rmempty = false;
 		o.depends('fastpath_mh_eth_hnat', '1');
 		
-		o = s.option(form.Flag, 'fastpath_mh_eth_hnat_macvlan', _('Enable ethernet HNAT for MACVLAN'),
+		o = s.option(form.Flag, 'fastpath_mh_eth_hnat_macvlan', _('Enable ethernet HNAT for MACVLAN WAN device'),
 			_('Enable hardware offloading for macvlan (sing wan only).'));
 		o.default = o.enabled;
 		o.rmempty = false;
 		o.depends('fastpath_mh_eth_hnat', '1');
 		
-		o = s.option(form.Value, 'fastpath_mh_eth_hnat_bind_rate', _('HNAT bind rate threshold (pps/s)'),
+		o = s.option(form.Value, 'fastpath_mh_eth_hnat_bind_rate', _('HNAT bind rate threshold (pps)'),
 			_('The smaller the threshold, the easier it is for the connection to be accelerated.'));
 		o.datatype = 'and(uinteger,min(1))';
 		o.rmempty = false;
@@ -190,8 +190,8 @@ return view.extend({
 			_('Full cone NAT (NAT1) can improve gaming performance effectively.'));
 		o.value('0', _('Disable'))
 		if (features.hasXTFULLCONENAT)
-			o.value('1', _('xt_FULLCONENAT'));
-		o.value('2', _('Boardcom fullcone'));
+			o.value('1', _('XT_FULLCONE_NAT'));
+		o.value('2', _('Boardcom_FULLCONE_NAT'));
 		o.default = '0';
 		o.rmempty = false;
 

@@ -6,7 +6,7 @@ msgid "Acceleration Status"
 msgstr ""
 
 #: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:191
-msgid "Boardcom fullcone"
+msgid "Boardcom_FULLCONE_NAT"
 msgstr ""
 
 #: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:151
@@ -30,6 +30,22 @@ msgstr ""
 
 #: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:159
 msgid "Enable IPv6 Acceleration."
+msgstr ""
+
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:177
+msgid "Enable ethernet HNAT for MACVLAN WAN device"
+msgstr ""
+
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:178
+msgid "Enable hardware offloading for macvlan (sing wan only)."
+msgstr ""
+
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:183
+msgid "HNAT bind rate threshold (pps)"
+msgstr ""
+
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:184
+msgid "The smaller the threshold, the easier it is for the connection to be accelerated."
 msgstr ""
 
 #: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:152
@@ -161,5 +177,9 @@ msgid "TurboACC settings"
 msgstr ""
 
 #: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:190
-msgid "xt_FULLCONENAT"
+msgid "XT_FULLCONE_NAT"
+msgstr ""
+
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:191
+msgid "Boardcom_FULLCONE_NAT"
 msgstr ""

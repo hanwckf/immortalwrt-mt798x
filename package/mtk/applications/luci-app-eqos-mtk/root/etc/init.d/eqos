@@ -10,14 +10,16 @@ parse_device() {
 	local enabled
 	config_get_bool enabled "$cfg" "enabled" "1"
 	[ "$enabled" -eq "1" ] || return 1
+	
 
-	local ip download upload comment
+	local ip download upload comment mac
 	config_get ip "$cfg" ip
 	config_get download "$cfg" "download"
 	config_get upload "$cfg" "upload"
 	config_get comment "$cfg" "comment"
+	config_get mac "$cfg" "mac"
 
-	eqos add "$ip" "$download" "$upload" "$comment"
+	eqos add "$ip" "$download" "$upload" "$comment" "$mac"
 }
 
 start_service() {
@@ -26,15 +28,27 @@ start_service() {
 	local enabled
 	config_get_bool enabled "config" "enabled" "0"
 	[ "$enabled" -eq "1" ] || return 1
-
+	
 	local download upload comment
 	config_get download "config" "download"
 	config_get upload "config" "upload"
-	config_get comment "comment" "comment"
+	config_get comment "config" "comment"
 	
 	eqos start "$download" "$upload" "$comment"
-
-	config_foreach parse_device "device"
+	
+	local ipv6enabled                              
+        config_get_bool ipv6enabled "config" "ipv6enabled" "0"    
+        ip6tables -t mangle -N eqos
+        ip6tables -t mangle -F eqos
+        ebtables -t nat  -N eqos
+        ebtables -t nat  -F eqos
+        if [ "$ipv6enabled" -eq "1" ]; then                                
+        ebtables -t nat -D POSTROUTING  -j eqos -p ipv6              
+        ebtables -t nat -A POSTROUTING  -j eqos -p ipv6
+        ip6tables -t mangle -D FORWARD  -j eqos
+        ip6tables -t mangle -A FORWARD  -j eqos             
+        fi  
+        config_foreach parse_device "device"
 }
 
 stop_service() {

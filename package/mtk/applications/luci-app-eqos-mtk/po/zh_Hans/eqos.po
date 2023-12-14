@@ -27,13 +27,20 @@ msgstr "网速控制"
 msgid "Enable"
 msgstr "启用"
 
+msgid "IPV6Enable"
+msgstr "同时作用IPV6"
+
+
 #: applications/luci-app-eqos/root/usr/share/rpcd/acl.d/luci-app-eqos.json:3
 msgid "Grant UCI access for luci-app-eqos"
 msgstr "授予 luci-app-eqos 访问 UCI 配置的权限"
 
 #: applications/luci-app-eqos/htdocs/luci-static/resources/view/eqos.js:46
-msgid "IP address"
-msgstr "IP 地址"
+msgid "IPV4 address"
+msgstr "IPV4 地址"
+
+msgid "IPV6 host"
+msgstr "IPV6 主机"
 
 #: applications/luci-app-eqos/htdocs/luci-static/resources/view/eqos.js:19
 msgid "Network speed control service.(Compatiable with Mediatek HNAT)"
