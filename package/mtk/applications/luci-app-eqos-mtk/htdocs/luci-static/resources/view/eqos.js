@@ -23,6 +23,10 @@ return view.extend({
 		o = s.option(form.Flag, 'enabled', _('Enable'));
 		o.default = o.disabled;
 		o.rmempty = false;
+		
+		o = s.option(form.Flag, 'ipv6enabled', _('IPV6Enable'));
+		o.default = o.disabled;
+		o.rmempty = false;
 
 		o = s.option(form.Value, 'download', _('Download speed (Mbit/s)'),
 			_('Total download bandwidth.'));
@@ -41,8 +45,8 @@ return view.extend({
 
 		o = s.option(form.Flag, 'enabled', _('Enable'));
 		o.default = o.enabled;
-
-		o = s.option(form.Value, 'ip', _('IP address'));
+		
+		o = s.option(form.Value, 'ip', _('IPV4 address'));
 		o.datatype = 'ip4addr';
 		for (var i of Object.entries(data[1]?.hosts))
 			for (var v in i[1].ipaddrs)
@@ -51,6 +55,15 @@ return view.extend({
 					o.value(ip_addr, ip_host ? String.format('%s (%s)', ip_host, ip_addr) : ip_addr)
 				}
 		o.rmempty = false;
+		
+		var hosts = data[1]?.hosts;
+		o = s.option(form.Value, 'mac', _('IPV6 host'));
+		o.datatype = 'macaddr';
+		Object.keys(hosts).forEach(function(mac) {
+			var hint = hosts[mac].name || L.toArray(hosts[mac].ipaddrs || hosts[mac].ipv4)[0];
+			o.value(mac, hint ? '%s (%s)'.format(mac, hint) : mac);
+		});
+		o.rmempty = true;
 
 		o = s.option(form.Value, 'download', _('Download speed (kbit/s)'));
 		o.datatype = 'and(uinteger,min(0))';

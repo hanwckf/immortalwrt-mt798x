@@ -56,7 +56,7 @@ start() {
 			echo "12 $fastpath_mh_eth_hnat_macvlan" > "$hnat_path/hnat_setting"
 		fi
 		if [ "$fastpath_mh_eth_hnat" -eq "1" ]; then
-			config_get_bool fastpath_mh_eth_hnat_macvlan "config" "fastpath_mh_eth_hnat_bind_rate" "1"
+			config_get   fastpath_mh_eth_hnat_bind_rate  "config" "fastpath_mh_eth_hnat_bind_rate" 
 			echo "11 $fastpath_mh_eth_hnat_bind_rate" > "$hnat_path/hnat_setting"
 		fi
 		;;

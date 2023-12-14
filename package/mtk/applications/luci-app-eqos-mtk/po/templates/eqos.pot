@@ -19,12 +19,15 @@ msgstr ""
 msgid "Enable"
 msgstr ""
 
+msgid "IPV6Enable"
+msgstr ""
+
 #: applications/luci-app-eqos/root/usr/share/rpcd/acl.d/luci-app-eqos.json:3
 msgid "Grant UCI access for luci-app-eqos"
 msgstr ""
 
 #: applications/luci-app-eqos/htdocs/luci-static/resources/view/eqos.js:46
-msgid "IP address"
+msgid "IPV4 address"
 msgstr ""
 
 #: applications/luci-app-eqos/htdocs/luci-static/resources/view/eqos.js:19
@@ -53,4 +56,7 @@ msgstr ""
 
 #: applications/luci-app-eqos/htdocs/luci-static/resources/view/eqos.js:60
 msgid "Upload speed (kbit/s)"
+msgstr ""
+
+msgid "IPV6 host"
 msgstr ""
