@@ -65,11 +65,6 @@ mtwifi_vif_sta_config() {
 
 	if [ -n "$ifname" ]; then
 		logger -t "netifd-mtwifi" "add $ifname to vifidx $name"
-
-		# setup apcli autoconnect
-		iwpriv "$ifname" set ApCliEnable=1
-		iwpriv "$ifname" set ApCliAutoConnect=3
-
 		wireless_add_vif "$name" "$ifname"
 	fi
 }

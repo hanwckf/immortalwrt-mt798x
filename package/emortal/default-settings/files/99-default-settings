@@ -10,6 +10,9 @@ if ! uci -q get system.@imm_init[0].lang > "/dev/null"; then
 	uci -q commit system
 fi
 
+uci -q set luci.main.socket="/var/run/ubus.sock"
+uci -q commit luci
+
 #if ! uci -q get system.@imm_init[0].anon_mount > "/dev/null"; then
 #	uci -q set fstab.@global[0].anon_mount="1"
 #	uci -q commit fstab
