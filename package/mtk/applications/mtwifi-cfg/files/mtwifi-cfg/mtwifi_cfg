@@ -320,6 +320,9 @@ function mtwifi_cfg_setup(argv)
     dats.ApCliAuthMode = ""
     dats.ApCliEncrypType = ""
     dats.ApCliWPAPSK = ""
+    dats.ApCliPMFMFPC = 0
+    dats.ApCliPMFMFPR = 0
+    dats.ApCliPMFSHA256 = 0
 
     for _,v in pairs(cfg.interfaces) do
         if v.config.mode == "sta" then
@@ -331,6 +334,12 @@ function mtwifi_cfg_setup(argv)
             dats.ApCliAuthMode = defs.enc2dat[v.config.encryption][1]
             dats.ApCliEncrypType = defs.enc2dat[v.config.encryption][2]
             dats.ApCliWPAPSK = v.config.key or ""
+
+            if dats.ApCliAuthMode == "OWE" or dats.ApCliAuthMode == "WPA3PSK" then
+                dats.ApCliPMFMFPC = 1
+                dats.ApCliPMFMFPR = 1
+                dats.ApCliPMFSHA256 = 0
+            end
             break
         end
     end
