@@ -935,6 +935,7 @@ return view.extend({
 		s.addModalOptions = function(s) {
 			return network.getWifiNetwork(s.section).then(function(radioNet) {
 				var hwtype = uci.get('wireless', radioNet.getWifiDeviceName(), 'type');
+				var ifmode = radioNet.getMode();
 				var o, ss;
 
 				o = s.option(form.SectionValue, '_device', form.NamedSection, radioNet.getWifiDeviceName(), 'wifi-device', _('Device Configuration'));
@@ -1048,7 +1049,6 @@ return view.extend({
 
 				o = ss.taboption('general', form.ListValue, 'mode', _('Mode'));
 				if (hwtype == 'mtwifi') {
-					var ifmode = radioNet.getMode();
 					if (ifmode == 'ap')
 						o.value('ap', _('Access Point'));
 					else if (ifmode == 'sta')
@@ -1317,10 +1317,12 @@ return view.extend({
 
 					o = ss.taboption('advanced', form.Value, 'frag', _('Fragmentation Threshold'));
 					o.datatype = 'min(256)';
+					o.depends('mode', 'ap');
 					o.placeholder = 2346;
 
 					o = ss.taboption('advanced', form.Value, 'rts', _('RTS/CTS Threshold'));
 					o.datatype = 'uinteger';
+					o.depends('mode', 'ap');
 					o.placeholder = 2347;
 
 					o = ss.taboption('advanced', form.Flag, 'mumimo_dl', _('MU-MIMO DL'));
@@ -1546,11 +1548,13 @@ return view.extend({
 				}
 				else if (hwtype == 'mtwifi') {
 					crypto_modes.push(['psk2',      'WPA2-PSK',                    35]);
-					crypto_modes.push(['psk-mixed', 'WPA-PSK/WPA2-PSK Mixed Mode', 22]);
 					crypto_modes.push(['psk',       'WPA-PSK',                     12]);
 					crypto_modes.push(['sae',       'WPA3-SAE',                     31]);
-					crypto_modes.push(['sae-mixed', 'WPA2-PSK/WPA3-SAE Mixed Mode', 36]);
 					crypto_modes.push(['owe', 'OWE', 1]);
+					if (ifmode == 'ap') {
+						crypto_modes.push(['psk-mixed', 'WPA-PSK/WPA2-PSK Mixed Mode', 22]);
+						crypto_modes.push(['sae-mixed', 'WPA2-PSK/WPA3-SAE Mixed Mode', 36]);
+					}
 				}
 
 				crypto_modes.push(['none',       _('No Encryption'),   0]);
