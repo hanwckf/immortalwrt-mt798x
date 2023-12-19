@@ -42,8 +42,10 @@ endef
 define Package/switch/install
 	$(INSTALL_DIR) $(1)/usr/sbin
 	$(INSTALL_DIR) $(1)/lib/network
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/switch $(1)/usr/sbin
+	$(INSTALL_DIR) $(1)/etc/init.d
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/switch $(1)/usr/sbin/
 	$(INSTALL_BIN) ./files/switch_ctl.sh $(1)/usr/sbin/
+	$(INSTALL_BIN) ./files/switch_ctl.init $(1)/etc/init.d/switch_ctl
 endef
 
 $(eval $(call BuildPackage,switch))
