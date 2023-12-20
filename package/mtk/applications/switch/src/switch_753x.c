@@ -119,7 +119,7 @@ static void usage(char *cmd)
 	printf("			Full Example: %s vlan set 0 3 10000100 0 0 20000200\n", cmd);
 	printf(" 8.3) %s vlan vid [vlan idx] [active:0|1] [vid] [portMap] 	- set switch vlan vid elements  \n", cmd);
 	printf("			[egtagPortMap] [ivl_en] [fid] [stag]							 \n");
-	printf(" 8.4) %s vlan pvid [port] [pvid]				- set switch vlan pvid  \n", cmd);
+	printf(" 8.4) %s vlan pvid (dump | [port] [pvid] )				- set switch vlan pvid  \n", cmd);
 	printf(" 8.5) %s vlan acc-frm [port] [acceptable_frame_type:0~3]	- set switch vlan acceptable_frame type : admit all frames: 0, \n", cmd);
 	printf("									admit only vlan-taged frames: 1,admit only untagged or priority-tagged frames: 2, reserved:3 \n");
 	printf(" 8.6) %s vlan port-attr [port] [attr:0~3]			- set switch vlan port attribute: user port: 0, statck port: 1, \n", cmd);

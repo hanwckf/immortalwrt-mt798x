@@ -2742,7 +2742,7 @@ static int macMT753xVlanSetPvid(unsigned char port, unsigned short pvid)
 	printf("SetPVID: port:%d pvid:%d\r\n", port, pvid);
 	return 0;
 }
-/*
+
 static int macMT753xVlanGetPvid(unsigned char port)
 {
 	unsigned int value;
@@ -2753,7 +2753,8 @@ static int macMT753xVlanGetPvid(unsigned char port)
 	reg = 0x2014 + (port * 0x100);
 	reg_read(reg, &value);
 	return (value & 0xfff);
-} */
+}
+
 /*
 static int macMT753xVlanDisp(void)
 {
@@ -2779,6 +2780,14 @@ void doVlanSetPvid(int argc, char *argv[])
 {
 	unsigned char port = 0;
 	unsigned short pvid = 0;
+
+	if (argc == 4 && !strncmp("dump", argv[3], 4))
+	{
+		printf("PVID e0:%02d e1:%02d e2:%02d e3:%02d e4:%02d e5:%02d e6:%02d\n",
+		macMT753xVlanGetPvid(0), macMT753xVlanGetPvid(1), macMT753xVlanGetPvid(2),
+		macMT753xVlanGetPvid(3), macMT753xVlanGetPvid(4), macMT753xVlanGetPvid(5), macMT753xVlanGetPvid(6));
+		return;
+	}
 
 	port = atoi(argv[3]);
 	pvid = atoi(argv[4]);
