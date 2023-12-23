@@ -42,6 +42,9 @@ EXPORT_SYMBOL(ppe_dev_register_hook);
 void (*ppe_dev_unregister_hook)(struct net_device *dev) = NULL;
 EXPORT_SYMBOL(ppe_dev_unregister_hook);
 
+static int ppe_cnt = 1;
+module_param(ppe_cnt, int, 0);
+
 static void hnat_sma_build_entry(struct timer_list *t)
 {
 	int i;
@@ -732,7 +735,7 @@ static int hnat_probe(struct platform_device *pdev)
 	err = of_property_read_u32_index(np, "mtketh-ppe-num", 0, &val);
 
 	if (err < 0)
-		hnat_priv->ppe_num = 1;
+		hnat_priv->ppe_num = ppe_cnt;
 	else
 		hnat_priv->ppe_num = val;
 

@@ -43,6 +43,8 @@ define KernelPackage/mediatek_hnat
   SUBMENU:=Network Devices
   TITLE:=Mediatek HNAT module
   DEPENDS:=@TARGET_mediatek +kmod-nf-conntrack
+  AUTOLOAD:=$(call AutoLoad,20,mtkhnat)
+  MODPARAMS.mtkhnat:=ppe_cnt=1
   KCONFIG:= \
 	CONFIG_BRIDGE_NETFILTER=y \
 	CONFIG_NETFILTER_FAMILY_BRIDGE=y \

@@ -37,7 +37,7 @@ define KernelPackage/warp
   TITLE:=MTK warp driver
   DEPENDS:= +kmod-mediatek_hnat
   FILES:=$(PKG_BUILD_DIR)/mtk_warp.ko
-  AUTOLOAD:=$(call AutoLoad,60,mtk_warp,1)
+  AUTOLOAD:=$(call AutoLoad,60,mtk_warp)
   SUBMENU:=Drivers
   MENU:=1
 endef
