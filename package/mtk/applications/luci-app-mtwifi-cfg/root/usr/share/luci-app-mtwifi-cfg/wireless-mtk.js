@@ -1017,6 +1017,9 @@ return view.extend({
 
 					if (is_dbdc_main)
 					{
+						o = ss.taboption('advanced', form.Flag, 'whnat', _('Wireless HWNAT'));
+						o.default = o.enabled;
+
 						o = ss.taboption('advanced', form.Value, 'dtim_period', _('DTIM Interval'), _('Delivery Traffic Indication Message Interval'));
 						o.optional = true;
 						o.placeholder = 1;

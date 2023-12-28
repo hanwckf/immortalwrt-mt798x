@@ -85,6 +85,7 @@ mtwifi_defs.chip_cfgs = {
     -- uci config = dat config, default value
     ["beacon_int"] = { "BeaconPeriod" , "100"},
     ["dtim_period"] = { "DtimPeriod", "1"},
+    ["whnat"] = { "WHNAT", "1"},
 }
 
 mtwifi_defs.reinstall_cfgs = {

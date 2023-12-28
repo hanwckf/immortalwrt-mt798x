@@ -30,3 +30,6 @@ msgstr "弱信号剔除阈值"
 
 msgid "Station associate threshold"
 msgstr "弱信号接入阈值"
+
+msgid "Wireless HWNAT"
+msgstr "无线硬件加速"
