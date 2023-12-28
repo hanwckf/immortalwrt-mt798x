@@ -38,7 +38,7 @@ define Package/bpir3_mini-properties/install
 	$(INSTALL_BIN) ./files/etc/init.d/fanspeed $(1)/etc/init.d/
 	$(INSTALL_BIN) ./files/etc/rc.d/S99xfanspeed $(1)/etc/rc.d/
 	$(INSTALL_BIN) ./files/etc/init.d/ltecalling $(1)/etc/init.d/
-	$(INSTALL_BIN) ./files/etc/rc.d/S99xltecalling $(1)/etc/rc.d/
+	$(INSTALL_BIN) ./files/etc/rc.d/S25xltecalling $(1)/etc/rc.d/
 	$(INSTALL_BIN) ./files/lib/firmware/EthMD32.dm.bin $(1)/lib/firmware/
 	$(INSTALL_BIN) ./files/lib/firmware/EthMD32.DSP.bin $(1)/lib/firmware/
 endef
