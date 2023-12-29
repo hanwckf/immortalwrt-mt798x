@@ -644,7 +644,7 @@ $(eval $(call KernelPackage,ipt-socket))
 
 define KernelPackage/ipt-tproxy
   TITLE:=Transparent proxying support
-  DEPENDS+=+kmod-nf-tproxy +kmod-nf-conntrack +IPV6:kmod-nf-conntrack6
+  DEPENDS+=+kmod-ipt-conntrack +IPV6:kmod-nf-conntrack6 +IPV6:kmod-ip6tables
   KCONFIG:=$(KCONFIG_IPT_TPROXY)
   FILES:=$(foreach mod,$(IPT_TPROXY-m),$(LINUX_DIR)/net/$(mod).ko)
   AUTOLOAD:=$(call AutoProbe,$(notdir $(IPT_TPROXY-m)))
