@@ -401,9 +401,6 @@ endef
 define Package/iptables-mod-tproxy/description
 Transparent proxy iptables extensions.
 
- Matches:
-  - socket
-
  Targets:
   - TPROXY
 
