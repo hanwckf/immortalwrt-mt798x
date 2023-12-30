@@ -86,6 +86,8 @@ mtwifi_defs.chip_cfgs = {
     -- uci config = dat config, default value
     ["beacon_int"] = { "BeaconPeriod" , "100"},
     ["dtim_period"] = { "DtimPeriod", "1"},
+    ["whnat"] = { "WHNAT", "1"},
+    ["bandsteering"] = { "BandSteering", "0"},
 }
 
 mtwifi_defs.reinstall_cfgs = {
@@ -97,8 +99,6 @@ mtwifi_defs.iwpriv_ap_cfgs = {
     -- uci config = iwpriv set cmd , default value
     ["kicklow"] = {"KickStaRssiLow", "0"},
     ["assocthres"] = {"AssocReqRssiThres" , "0"},
-    ["whnat"] = { "WHNAT", "1"},
-    ["bandsteering"] = { "BandSteering", "0"},
 }
 
 mtwifi_defs.enc2dat = {
