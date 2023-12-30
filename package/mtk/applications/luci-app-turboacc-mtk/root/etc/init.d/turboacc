@@ -43,21 +43,23 @@ start() {
 		lsmod |grep -q "shortcut_fe_cm" || modprobe "shortcut_fe_cm" 2>"/dev/null"
 		;;
 	"mediatek_hnat")
-		local fastpath_mh_eth_hnat fastpath_mh_eth_hnat_v6 fastpath_mh_eth_hnat_macvlan
-		config_get_bool fastpath_mh_eth_hnat "config" "fastpath_mh_eth_hnat" "1"
+		local fastpath_mh_eth_hnat
 		local hnat_path="/sys/kernel/debug/hnat"
+
+		config_get_bool "fastpath_mh_eth_hnat" "config" "fastpath_mh_eth_hnat" "1"
 		echo "$fastpath_mh_eth_hnat" > "$hnat_path/hook_toggle"
+
 		if [ "$fastpath_mh_eth_hnat" -eq "1" ]; then
-			config_get_bool fastpath_mh_eth_hnat_v6 "config" "fastpath_mh_eth_hnat_v6" "1"
+			local fastpath_mh_eth_hnat_v6 fastpath_mh_eth_hnat_macvlan fastpath_mh_eth_hnat_bind_rate
+
+			config_get_bool "fastpath_mh_eth_hnat_v6" "config" "fastpath_mh_eth_hnat_v6" "1"
 			echo "8 $fastpath_mh_eth_hnat_v6" > "$hnat_path/hnat_setting"
-		fi
-		if [ "$fastpath_mh_eth_hnat" -eq "1" ]; then
-			config_get_bool fastpath_mh_eth_hnat_macvlan "config" "fastpath_mh_eth_hnat_macvlan" "1"
-			echo "12 $fastpath_mh_eth_hnat_macvlan" > "$hnat_path/hnat_setting"
-		fi
-		if [ "$fastpath_mh_eth_hnat" -eq "1" ]; then
-			config_get   fastpath_mh_eth_hnat_bind_rate  "config" "fastpath_mh_eth_hnat_bind_rate" 
+
+			config_get "fastpath_mh_eth_hnat_bind_rate" "config" "fastpath_mh_eth_hnat_bind_rate" "30"
 			echo "11 $fastpath_mh_eth_hnat_bind_rate" > "$hnat_path/hnat_setting"
+
+			config_get_bool "fastpath_mh_eth_hnat_macvlan" "config" "fastpath_mh_eth_hnat_macvlan" "0"
+			echo "12 $fastpath_mh_eth_hnat_macvlan" > "$hnat_path/hnat_setting"
 		fi
 		;;
 	esac
