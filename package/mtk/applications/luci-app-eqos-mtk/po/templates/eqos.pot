@@ -19,8 +19,16 @@ msgstr ""
 msgid "Enable"
 msgstr ""
 
-msgid "IPV6Enable"
+msgid "Load balance"
 msgstr ""
+
+msgid "Please set a different gateway hop for each network interface before filling in the network interface name. Fill in PPPOE-WAN for dialing and eth1 for DHCP. Leaving it blank to disable it.Please use commas as interface name separators. Example: pppoe-wan,eth1"
+msgstr ""
+
+
+msgid "Enabling fair queue will automatically perform hardware offloading and forwarding for small packets, P2P downloads, and web browsing. After enabling, the maximum number available for IP speed limit will be limited to 25."
+msgstr ""
+
 
 #: applications/luci-app-eqos/root/usr/share/rpcd/acl.d/luci-app-eqos.json:3
 msgid "Grant UCI access for luci-app-eqos"
@@ -35,7 +43,7 @@ msgid "Network speed control service."
 msgstr ""
 
 #: applications/luci-app-eqos/htdocs/luci-static/resources/view/eqos.js:38
-msgid "Speed limit based on IP address(using unique comment less than 32 will enable hardware QOS"
+msgid "Speed limit and route choose based on IP address(using unique comment less than 32 will enable hardware QOS)"
 msgstr ""
 
 #: applications/luci-app-eqos/htdocs/luci-static/resources/view/eqos.js:29
