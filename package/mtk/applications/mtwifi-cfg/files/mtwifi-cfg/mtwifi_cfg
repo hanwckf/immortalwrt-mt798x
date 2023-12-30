@@ -127,6 +127,23 @@ function set_idx_dat(dats, apidx, dat, cfg)
     end
 end
 
+function vif_in_dev(vif, dev)
+    if (vif == dev.main_ifname
+        or string.match(vif, utils.esc(dev.ext_ifname).."[0-9]+")
+        or string.match(vif, utils.esc(dev.apcli_ifname).."[0-9]+")
+        or string.match(vif, utils.esc(dev.wds_ifname).."[0-9]+")
+        or string.match(vif, utils.esc(dev.mesh_ifname).."[0-9]+")) then
+        return true
+    else
+        return false
+    end
+end
+
+function __apcli_auto_connect(ifname)
+    __exec_iwpriv_cmd(ifname, "ApCliEnable", "1")
+    __exec_iwpriv_cmd(ifname, "ApCliAutoConnect", "3")
+end
+
 function mtwifi_up(devname, cfg, restore_vifs, is_dbdc)
     nixio.syslog("info", "mtwifi-cfg: start "..devname)
     local dev = l1dat.devname_ridx[devname]
@@ -144,8 +161,15 @@ function mtwifi_up(devname, cfg, restore_vifs, is_dbdc)
 
         if restore_vifs and devname ~= cfg.device then
             for _,vif in ipairs(restore_vifs) do
-                nixio.syslog("info", "mtwifi-cfg: restore vif: "..vif)
-                ifup(vif)
+                if vif_in_dev(vif, dev) then
+                    nixio.syslog("info", "mtwifi-cfg: restore vif: "..vif)
+                    ifup(vif)
+                end
+            end
+            for _,vif in ipairs(restore_vifs) do
+                if string.match(vif, utils.esc(dev.apcli_ifname).."[0-9]+") then
+                    __apcli_auto_connect(vif)
+                end
             end
             return
         end
@@ -171,12 +195,7 @@ function mtwifi_down(devname, cfg)
     if not dev then return end
 
     for _,vif in ipairs(string.split(utils.read_pipe("ls /sys/class/net"), "\n")) do
-        if (vif_status(vif) == "up" and (vif == dev.main_ifname
-        or string.match(vif, utils.esc(dev.ext_ifname).."[0-9]+")
-        or string.match(vif, utils.esc(dev.apcli_ifname).."[0-9]+")
-        or string.match(vif, utils.esc(dev.wds_ifname).."[0-9]+")
-        or string.match(vif, utils.esc(dev.mesh_ifname).."[0-9]+")))
-        then
+        if (vif_status(vif) == "up" and vif_in_dev(vif, dev)) then
             nixio.syslog("info", "mtwifi-cfg: down vif: "..vif)
             ifdown(vif)
             if cfg and devname ~= cfg.device then
@@ -231,8 +250,7 @@ function mtwifi_cfg_iwpriv_hook(cfg)
             end
             if mode == "sta" then
                 -- setup apcli auto connect
-                __exec_iwpriv_cmd(vif, "ApCliEnable", "1")
-                __exec_iwpriv_cmd(vif, "ApCliAutoConnect", "3")
+                __apcli_auto_connect(vif)
             end
         end
     end
