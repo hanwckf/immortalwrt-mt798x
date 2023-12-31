@@ -70,6 +70,25 @@ local methods = {
 			ccatype = ccatype and ccatype:upper() or nil
 			print(json.stringify({ type = ccatype }))
 		end
+	},
+	getMTKPPEStat = {
+		call = function()
+			local ppe_stat = {}
+			local ppe_path = "/sys/kernel/debug/hnat/hnat_stats"
+			local fd = io.open(ppe_path, 'r')
+		
+			if fd then
+				for line in fd:lines() do
+					local i = string.find(line, "=")
+					if i then
+						ppe_stat[string.sub(line,1,i-1)] = string.sub(line,i+1)
+					end
+				end
+				fd:close()
+			end
+
+			print(json.stringify(ppe_stat))
+		end
 	}
 }
 
