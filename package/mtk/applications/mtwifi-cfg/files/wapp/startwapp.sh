@@ -21,19 +21,18 @@ sed -i "s/map_agent_alid=.*/map_agent_alid=${agent_al_mac}/g" /etc/map/1905d.cfg
     if [ "$ra0_7981" -eq "1" ] || [ "$ra0_7986" -eq "1" ]; then
     ra0=1
     fi
+        
+    ra0_7981="$(uci get wireless.default_MT7981_1_1.disabled)"
+    ra0_7986="$(uci get wireless.default_MT7986_1_1.disabled)"
+    if [ "$ra0_7981" -eq "1" ] || [ "$ra0_7986" -eq "1" ]; then
+    ra0=0
+    rax0=0
+    fi
     
     rax0_7981="$(uci get wireless.MT7981_1_2.ieee80211r)"
     rax0_7986="$(uci get wireless.MT7986_1_2.ieee80211r)"
     if [ "$rax0_7981" -eq "1" ] || [ "$rax0_7986" -eq "1" ]; then
     rax0=1
-    else
-    rax0=0
-    fi 
-    
-    ra0_7981="$(uci get wireless.default_MT7981_1_1.disabled)"
-    ra0_7986="$(uci get wireless.default_MT7986_1_1.disabled)"
-    if [ "$ra0_7981" -eq "1" ] || [ "$ra0_7986" -eq "1" ]; then
-    ra0=0
     fi
     
     rax0_7981="$(uci get wireless.default_MT7981_1_2.disabled)"
@@ -42,12 +41,13 @@ sed -i "s/map_agent_alid=.*/map_agent_alid=${agent_al_mac}/g" /etc/map/1905d.cfg
     rax0=0
     fi
      
-    if [ "$ra0" -eq "1" ] ; then
-    wapp -d1 -v2 -cra0 > /dev/null&
-    elif [ "$rax0" -eq "1" ] ; then
-    wapp -d1 -v2 -crax0 > /dev/null
-    elif [ "$rax0" -eq "1" ] && [ "$ra0" -eq "1" ]  ; then
+
+    if [ "$rax0" -eq "1" ] && [ "$ra0" -eq "1" ]  ; then
     wapp -d1 -v2 -cra0 -crax0 > /dev/null&
+    elif [ "$ra0" -eq "1" ] && [ "$rax0" -eq "0" ] ; then
+    wapp -d1 -v2 -cra0 > /dev/null&
+    elif [ "$rax0" -eq "1" ] && [ "$ra0" -eq "0" ] ; then
+    wapp -d1 -v2 -crax0 > /dev/null
     fi
 
 if [ "$rax0" -eq "1" ] || [ "$ra0" -eq "1" ]  ; then
