@@ -32,12 +32,37 @@ var getTCPCCAStat = rpc.declare({
 	expect: { '': {} }
 });
 
+var getMTKPPEStat = rpc.declare({
+	object: 'luci.turboacc',
+	method: 'getMTKPPEStat',
+	expect: { '': {} }
+});
+
 function getServiceStatus() {
 	return Promise.all([
 		L.resolveDefault(getFastPathStat(), {}),
 		L.resolveDefault(getFullConeStat(), {}),
 		L.resolveDefault(getTCPCCAStat(), {})
 	]);
+}
+
+function getMTKPPEStatus() {
+	return Promise.all([
+		L.resolveDefault(getMTKPPEStat(), {})
+	]);
+}
+
+function progressbar(value, max, byte) {
+	var vn = parseInt(value) || 0,
+		mn = parseInt(max) || 100,
+		fv = byte ? String.format('%1024.2mB', value) : value,
+		fm = byte ? String.format('%1024.2mB', max) : max,
+		pc = Math.floor((100 / mn) * vn);
+
+	return E('div', {
+		'class': 'cbi-progressbar',
+		'title': '%s / %s (%d%%)'.format(fv, fm, pc)
+	}, E('div', { 'style': 'width:%.2f%%'.format(pc) }));
 }
 
 function renderStatus(stats) {
@@ -62,13 +87,15 @@ return view.extend({
 	load: function() {
 		return Promise.all([
 			uci.load('turboacc'),
-			L.resolveDefault(getSystemFeatures(), {})
+			L.resolveDefault(getSystemFeatures(), {}),
+			L.resolveDefault(getMTKPPEStat(), {})
 		]);
 	},
 
 	render: function(data) {
 		var m, s, o;
 		var features = data[1];
+		var ppe_stats = data[2];
 
 		m = new form.Map('turboacc', _('TurboACC settings'),
 			_('Open source flow offloading engine (fast path or hardware NAT).'));
@@ -87,22 +114,47 @@ return view.extend({
 				});
 			});
 
+			var acc_status = E('table', { 'class': 'table', 'width': '100%', 'cellspacing': '10' }, [
+				E('tr', {}, [
+					E('td', { 'width': '33%' }, _('FastPath Engine')),
+					E('td', { 'id': 'fastpath_state' }, E('em', {}, _('Collecting data...')))
+				]),
+				E('tr', {}, [
+					E('td', { 'width': '33%' }, _('Full Cone NAT')),
+					E('td', { 'id': 'fullcone_state' }, E('em', {}, _('Collecting data...')))
+				]),
+				E('tr', {}, [
+					E('td', { 'width': '33%' }, _('TCP CCA')),
+					E('td', { 'id': 'tcpcca_state' }, E('em', {}, _('Collecting data...')))
+				])
+			]);
+
+			if (ppe_stats.hasOwnProperty('PPE_NUM')) {
+				poll.add(function () {
+					return L.resolveDefault(getMTKPPEStatus()).then(function (res) {
+						var ppe_num = parseInt(res[0].PPE_NUM);
+						for (var i=0; i<ppe_num; i++) {
+							var ppe_bar = document.getElementById(`ppe${i}_entry`);
+							ppe_bar.innerHTML = E('td', {},
+							progressbar(res[0][`BIND_PPE${i}`], res[0][`ALL_PPE${i}`])).innerHTML;
+						}
+					});
+				}, 3);
+
+				var ppe_num = parseInt(ppe_stats.PPE_NUM);
+
+				for (var i=0; i<ppe_num; i++) {
+					acc_status.appendChild(E('tr', {}, [
+						E('td', { 'width': '33%' }, `PPE${i} ` + _('Bind Entrys')),
+						E('td', {'id': `ppe${i}_entry` },
+						progressbar(ppe_stats[`BIND_PPE${i}`], ppe_stats[`ALL_PPE${i}`]))
+					]));
+				}
+			}
+
 			return E('fieldset', { 'class': 'cbi-section' }, [
 				E('legend', {}, _('Acceleration Status')),
-				E('table', { 'class': 'table', 'width': '100%', 'cellspacing': '10' }, [
-					E('tr', {}, [
-						E('td', { 'width': '33%' }, _('FastPath Engine')),
-						E('td', { 'id': 'fastpath_state' }, E('em', {}, _('Collecting data...')))
-					]),
-					E('tr', {}, [
-						E('td', { 'width': '33%' }, _('Full Cone NAT')),
-						E('td', { 'id': 'fullcone_state' }, E('em', {}, _('Collecting data...')))
-					]),
-					E('tr', {}, [
-						E('td', { 'width': '33%' }, _('TCP CCA')),
-						E('td', { 'id': 'tcpcca_state' }, E('em', {}, _('Collecting data...')))
-					])
-				])
+				acc_status
 			]);
 		}
 
