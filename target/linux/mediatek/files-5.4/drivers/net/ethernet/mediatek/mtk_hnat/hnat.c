@@ -732,12 +732,7 @@ static int hnat_probe(struct platform_device *pdev)
 		dev_info(&pdev->dev, "wan dsa port = %d\n", hnat_priv->wan_dsa_port);
 	}
 
-	err = of_property_read_u32_index(np, "mtketh-ppe-num", 0, &val);
-
-	if (err < 0)
-		hnat_priv->ppe_num = ppe_cnt;
-	else
-		hnat_priv->ppe_num = val;
+	hnat_priv->ppe_num = ppe_cnt;
 
 	dev_info(&pdev->dev, "ppe num = %d\n", hnat_priv->ppe_num);
 
