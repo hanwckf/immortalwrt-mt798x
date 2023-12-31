@@ -273,7 +273,6 @@
 	mtketh-wan = "eth1";
 	mtketh-lan = "lan";
 	mtketh-max-gmac = <2>;
-	mtketh-ppe-num = <2>;
 	status = "okay";
 };
 
