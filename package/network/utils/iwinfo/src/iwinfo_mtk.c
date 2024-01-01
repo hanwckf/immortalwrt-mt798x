@@ -620,6 +620,9 @@ static int mtk_get_freqlist(const char *dev, char *buf, int *len)
 	if (!ifname)
 		return -1;
 
+	if (!mtk_is_ifup(ifname))
+		return -1;
+
 	wrq.u.data.pointer = (caddr_t) &range;
 	wrq.u.data.length  = sizeof(struct iw_range);
 	wrq.u.data.flags   = 0;
