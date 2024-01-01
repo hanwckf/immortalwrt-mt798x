@@ -959,8 +959,10 @@ return view.extend({
 				o.inputtitle = isDisabled ? _('Enable') : _('Disable');
 				o.onclick = ui.createHandlerFn(s, network_updown, s.section, s.map);
 
-				o = ss.taboption('general', CBIWifiFrequencyValue, '_freq', '<br />' + _('Operating frequency'));
-				o.ucisection = s.section;
+				if (!isDisabled) {
+					o = ss.taboption('general', CBIWifiFrequencyValue, '_freq', '<br />' + _('Operating frequency'));
+					o.ucisection = s.section;
+				}
 
 				if (hwtype == 'mac80211') {
 					o = ss.taboption('general', form.Flag, 'legacy_rates', _('Allow legacy 802.11b rates'), _('Legacy or badly behaving devices may require legacy 802.11b rates to interoperate. Airtime efficiency may be significantly reduced where these are used. It is recommended to not allow 802.11b rates where possible.'));
