@@ -145,7 +145,7 @@ return view.extend({
 
 				for (var i=0; i<ppe_num; i++) {
 					acc_status.appendChild(E('tr', {}, [
-						E('td', { 'width': '33%' }, `PPE${i} ` + _('Bind Entrys')),
+						E('td', { 'width': '33%' }, `PPE${i} ` + _('Bind Entries')),
 						E('td', {'id': `ppe${i}_entry` },
 						progressbar(ppe_stats[`BIND_PPE${i}`], ppe_stats[`ALL_PPE${i}`]))
 					]));
