@@ -21,6 +21,12 @@ sed -i "s/map_agent_alid=.*/map_agent_alid=${agent_al_mac}/g" /etc/map/1905d.cfg
     if [ "$ra0_7981" -eq "1" ] || [ "$ra0_7986" -eq "1" ]; then
     ra0=1
     fi
+    
+    ra0_7981="$(uci get  wireless.default_MT7981_1_2.steeringthresold)"
+    ra0_7986="$(uci get  wireless.default_MT7981_1_2.steeringthresold)"
+    if [ "$ra0_7981" -lt "0" ] || [ "$ra0_7986" -lt "0" ]; then
+    ra0=1
+    fi
         
     ra0_7981="$(uci get wireless.default_MT7981_1_1.disabled)"
     ra0_7986="$(uci get wireless.default_MT7986_1_1.disabled)"
@@ -32,6 +38,12 @@ sed -i "s/map_agent_alid=.*/map_agent_alid=${agent_al_mac}/g" /etc/map/1905d.cfg
     rax0_7981="$(uci get wireless.MT7981_1_2.ieee80211r)"
     rax0_7986="$(uci get wireless.MT7986_1_2.ieee80211r)"
     if [ "$rax0_7981" -eq "1" ] || [ "$rax0_7986" -eq "1" ]; then
+    rax0=1
+    fi
+   
+    rax0_7981="$(uci get  wireless.default_MT7981_1_2.steeringthresold)"
+    rax0_7986="$(uci get  wireless.default_MT7986_1_2.steeringthresold)"
+    if [ "$rax0_7981" -lt "0" ] || [ "$rax0_7986" -lt "0" ]; then
     rax0=1
     fi
     
@@ -49,7 +61,7 @@ sed -i "s/map_agent_alid=.*/map_agent_alid=${agent_al_mac}/g" /etc/map/1905d.cfg
     elif [ "$rax0" -eq "1" ] && [ "$ra0" -eq "0" ] ; then
     wapp -d1 -v2 -crax0 > /dev/null
     fi
-
+sleep 1
 if [ "$rax0" -eq "1" ] || [ "$ra0" -eq "1" ]  ; then
 iwpriv ra0 set mapR2Enable=0
 iwpriv ra0 set mapTSEnable=0
@@ -61,6 +73,33 @@ iwpriv rax0 set mapR3Enable=0
 iwpriv rax0 set DppEnable=0
 iwpriv ra0 set mapEnable=2
 iwpriv rax0 set mapEnable=2
-sleep 2
 bs20 &
+wappctrl rax0 mbo reset_default
+wappctrl ra0  mbo reset_default
+rax0_7981="$(uci get wireless.default_MT7981_1_2.steeringbssid)"
+rax0_7986="$(uci get wireless.default_MT7986_1_2.steeringbssid)"
+if [ $rax0_7981 ]; then
+	bash setbssid rax0 "$rax0_7981"
 fi
+
+if [ $rax0_7986 ]; then
+	bash setbssid rax0 "$rax0_7986"
+fi
+
+ra0_7981="$(uci get wireless.default_MT7981_1_1.steeringbssid)"
+bash setbssid ra0 "$ra0_7981"
+ra0_7986="$(uci get wireless.default_MT7986_1_1.steeringbssid)"
+if [ $ra0_7981 ]; then
+	bash setbssid ra0 "$ra0_7981"
+fi
+
+if [ $ra0_7986 ]; then
+	bash setbssid ra0 "$ra0_7986"
+fi
+
+fi
+
+
+
+
+

@@ -45,6 +45,9 @@ define Package/mtwifi-cfg/install
 	$(INSTALL_BIN) ./files/wapp/startwapp.sh $(1)/sbin/
 	$(INSTALL_BIN) ./files/wapp/bs20 $(1)/sbin/
 	$(INSTALL_BIN) ./files/wapp/wapp $(1)/sbin/
+	$(INSTALL_BIN) ./files/wapp/wappctrl $(1)/sbin/
+	$(INSTALL_BIN) ./files/wapp/setbssid $(1)/sbin/
+	$(INSTALL_BIN) ./files/wapp/steeringsta $(1)/sbin/
 	$(INSTALL_DATA) ./files/wapp/mapd_cfg $(1)/etc/map/
 	$(INSTALL_DATA) ./files/wapp/wapp_ap.conf $(1)/etc/
 	$(INSTALL_DATA) ./files/wapp/wapp_ap_ra0.conf $(1)/etc/

@@ -99,6 +99,7 @@ mtwifi_defs.iwpriv_ap_cfgs = {
     -- uci config = iwpriv set cmd , default value
     ["kicklow"] = {"KickStaRssiLow", "0"},
     ["assocthres"] = {"AssocReqRssiThres" , "0"},
+    ["steeringthresold"] = {"Steeringthresold" , "0"},
 }
 
 mtwifi_defs.enc2dat = {

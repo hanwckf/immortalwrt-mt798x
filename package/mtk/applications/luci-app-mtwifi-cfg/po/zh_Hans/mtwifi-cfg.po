@@ -32,6 +32,14 @@ msgstr "弱信号剔除阈值"
 msgid "Station associate threshold"
 msgstr "弱信号接入阈值"
 
+msgid "802.11V roam steering threshold"
+msgstr "802.11V漫游引导阈值"
+
+
+msgid "802.11V roam target bssid"
+msgstr "802.11V漫游引导目标BSSID"
+
+
 msgid "only supports mt_wifi driver"
 msgstr "仅支持MTK闭源驱动，漫游域相关参数自动生成无需设置.确认路由器自身lan ip均在同一网段"
 
