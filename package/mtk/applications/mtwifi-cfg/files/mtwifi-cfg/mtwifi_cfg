@@ -347,7 +347,7 @@ function mtwifi_cfg_setup(argv)
             if not v.config.disabled then
                 dats.ApCliEnable = 1
             end
-            dats.ApCliSsid = v.config.ssid
+            dats.ApCliSsid = v.config.ssid or ""
             dats.ApCliBssid = v.config.bssid or ""
             dats.ApCliAuthMode = defs.enc2dat[v.config.encryption][1]
             dats.ApCliEncrypType = defs.enc2dat[v.config.encryption][2]
@@ -504,9 +504,12 @@ function mtwifi_cfg_setup(argv)
 
             if v.config.maclist then
                 local maclist = ""
-                for _, v in ipairs(v.config.maclist) do
+                for i, v in ipairs(v.config.maclist) do
+                    if i > defs.max_acl_entry then 
+                        break
+                    end
                     if #maclist > 0 then
-                        maclist = v .. ";" .. maclist
+                        maclist = maclist .. ";" .. v
                     else
                         maclist = v
                     end
@@ -582,7 +585,6 @@ function mtwifi_cfg_setup(argv)
                         table.insert(restore_vifs, v)
                     end
                 end
-        
                 if #restore_vifs > 0 then
                     nixio.syslog("info", "mtwifi-cfg: dbdc restore_vifs: "..inspect.inspect(restore_vifs))
                 end
@@ -606,7 +608,6 @@ function mtwifi_cfg_setup(argv)
     end
 
     mtwifi_cfg_iwpriv_hook(cfg)
-
 end
 
 function mtwifi_cfg_down(devname)
