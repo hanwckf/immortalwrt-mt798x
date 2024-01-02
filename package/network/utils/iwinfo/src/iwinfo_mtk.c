@@ -620,6 +620,9 @@ static int mtk_get_freqlist(const char *dev, char *buf, int *len)
 	if (!ifname)
 		return -1;
 
+	if (!mtk_is_ifup(ifname))
+		return -1;
+
 	wrq.u.data.pointer = (caddr_t) &range;
 	wrq.u.data.length  = sizeof(struct iw_range);
 	wrq.u.data.flags   = 0;
@@ -687,15 +690,36 @@ static int mtk_get_hwmodelist(const char *dev, int *buf)
 	const char *ifname;
 	char chans[IWINFO_BUFSIZE] = { 0 };
 	struct iwinfo_freqlist_entry *e = NULL;
+	struct uci_section *s;
+	const char* band = NULL;
 	int len = 0;
 
+	*buf = 0;
+
+	/* get hwmode base on uci band config */
+	s = iwinfo_uci_get_radio(dev, "mtwifi");
+	if (!s)
+		goto uciout;
+	
+	band = uci_lookup_option_string(uci_ctx, s, "band");
+
+uciout:
+	iwinfo_uci_free();
+
+	if (band) {
+		if (!strcmp(band,"2g"))
+			*buf = (IWINFO_80211_N | IWINFO_80211_AX);
+		else if (!strcmp(band,"5g"))
+			*buf = (IWINFO_80211_AC | IWINFO_80211_AX);
+		return 0;
+	}
+
+	/* get hwmode base on iwrange */
 	ifname = mtk_dev2phy(dev);
 	if (!ifname)
 		return -1;
 
-	*buf = 0;
-
-	if (!mtk_get_freqlist(ifname, chans, &len) )
+	if (!mtk_get_freqlist(ifname, chans, &len))
 	{
 		for (e = (struct iwinfo_freqlist_entry *)chans; e->channel; e++ )
 		{
@@ -720,15 +744,37 @@ static int mtk_get_htmodelist(const char *dev, int *buf)
 	const char *ifname;
 	char chans[IWINFO_BUFSIZE] = { 0 };
 	struct iwinfo_freqlist_entry *e = NULL;
+	struct uci_section *s;
+	const char* band = NULL;
 	int len = 0;
 
+	*buf = 0;
+
+	/* get htmode base on uci band config */
+	s = iwinfo_uci_get_radio(dev, "mtwifi");
+	if (!s)
+		goto uciout;
+	
+	band = uci_lookup_option_string(uci_ctx, s, "band");
+
+uciout:
+	iwinfo_uci_free();
+
+	if (band) {
+		if (!strcmp(band,"2g"))
+			*buf = (IWINFO_HTMODE_HT20 | IWINFO_HTMODE_HT40 | IWINFO_HTMODE_HE20 | IWINFO_HTMODE_HE40);
+		else if (!strcmp(band,"5g"))
+			*buf = (IWINFO_HTMODE_VHT20 | IWINFO_HTMODE_VHT40 | IWINFO_HTMODE_VHT80 | IWINFO_HTMODE_VHT160
+			| IWINFO_HTMODE_HE20 | IWINFO_HTMODE_HE40 | IWINFO_HTMODE_HE80 | IWINFO_HTMODE_HE160);
+		return 0;
+	}
+
+	/* get htmode base on iwrange */
 	ifname = mtk_dev2phy(dev);
 	if (!ifname)
 		return -1;
 
-	*buf = 0;
-
-	if (!mtk_get_freqlist(ifname, chans, &len) )
+	if (!mtk_get_freqlist(ifname, chans, &len))
 	{
 		for (e = (struct iwinfo_freqlist_entry *)chans; e->channel; e++ )
 		{

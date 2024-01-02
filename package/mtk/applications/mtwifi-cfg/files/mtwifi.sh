@@ -43,6 +43,7 @@ detect_mtwifi() {
 					set wireless.${dev}.country=CN
 					set wireless.${dev}.mu_beamformer=1
 					set wireless.${dev}.noscan=${htbsscoex}
+					set wireless.${dev}.serialize=1
 
 					set wireless.default_${dev}=wifi-iface
 					set wireless.default_${dev}.device=${dev}

@@ -195,5 +195,5 @@ msgstr "重启后应用此项设置。"
 msgid "Number of HNAT PPE"
 msgstr "HNAT PPE数量"
 
-msgid "Bind Entrys"
+msgid "Bind Entries"
 msgstr "已绑定连接数"
