@@ -428,9 +428,9 @@ function mtwifi_cfg_setup(argv)
         if dats.ApCliEnable == 1 then
             dats.MUTxRxEnable = 3
         else
-            dats.MUTxRxEnable = 3
+            dats.MUTxRxEnable = 1
         end
-        dats.ITxBfEn = 1
+        dats.ITxBfEn = 0
     else
         dats.ETxBfEnCond = 0
         dats.MUTxRxEnable = 0
