@@ -1398,10 +1398,12 @@ return view.extend({
 				o.depends('encryption', 'wpa2');
 				o.depends('encryption', 'wpa3');
 				o.depends('encryption', 'wpa3-mixed');
-				o.depends('encryption', 'psk');
 				o.depends('encryption', 'psk2');
 				o.depends('encryption', 'wpa-mixed');
 				o.depends('encryption', 'psk-mixed');
+				if (hwtype != 'mtwifi') {
+					o.depends('encryption', 'psk');
+				}
 				o.value('auto', _('auto'));
 				o.value('ccmp', _('Force CCMP (AES)'));
 				o.value('tkip', _('Force TKIP'));
