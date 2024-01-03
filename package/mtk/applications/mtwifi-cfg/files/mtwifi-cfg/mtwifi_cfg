@@ -139,6 +139,14 @@ function vif_in_dev(vif, dev)
     end
 end
 
+function vif_is_apcli(vif, dev)
+    if (string.match(vif, utils.esc(dev.apcli_ifname).."[0-9]+")) then
+        return true
+    else
+        return false
+    end
+end
+
 function vif_count(cfg)
     local vif_num = 0
     local ap_num = 0
@@ -154,6 +162,18 @@ function vif_count(cfg)
     end
 
     return vif_num, ap_num, apcli_num
+end
+
+function mtwifi_cfg_foreach_vif(cfg, mode, func)
+    if cfg == nil or func == nil then return end
+
+    local vif_num,_,_ = vif_count(cfg)
+    for idx=0,vif_num-1 do
+        local v = cfg.interfaces[tostring(idx)]
+        if v.config.mode and v.config.mode == mode then
+            func(v)
+        end
+    end
 end
 
 function __apcli_auto_connect(ifname)
@@ -177,14 +197,18 @@ function mtwifi_up(devname, cfg, restore_vifs, is_dbdc)
         end
 
         if restore_vifs and devname ~= cfg.device then
+            -- restart ap vif
             for _,vif in ipairs(restore_vifs) do
-                if vif_in_dev(vif, dev) then
-                    nixio.syslog("info", "mtwifi-cfg: restore vif: "..vif)
+                if vif_in_dev(vif, dev) and (not vif_is_apcli(vif, dev)) then
+                    nixio.syslog("info", "mtwifi-cfg: restore ap vif: "..vif)
                     ifup(vif)
                 end
             end
+            -- restart apcli vif
             for _,vif in ipairs(restore_vifs) do
-                if string.match(vif, utils.esc(dev.apcli_ifname).."[0-9]+") then
+                if vif_is_apcli(vif, dev) then
+                    nixio.syslog("info", "mtwifi-cfg: restore apcli vif: "..vif)
+                    ifup(vif)
                     __apcli_auto_connect(vif)
                 end
             end
@@ -192,18 +216,16 @@ function mtwifi_up(devname, cfg, restore_vifs, is_dbdc)
         end
     end
 
-    -- start vifs
-    local vif_num,_,_ = vif_count(cfg)
-    for idx=0,vif_num-1 do
-        local v = cfg.interfaces[tostring(idx)]
-        local mode = v.config.mode
-        if mode and (mode == "ap" or mode == "sta")
-           and (not v.config.disabled) and v.mtwifi_ifname then
+    local start_vif = function(v)
+        if (not v.config.disabled) and v.mtwifi_ifname then
             local vif = v.mtwifi_ifname
             nixio.syslog("info", "mtwifi-cfg: up vif: "..vif)
             ifup(vif)
         end
     end
+
+    mtwifi_cfg_foreach_vif(cfg, "ap", start_vif)
+    mtwifi_cfg_foreach_vif(cfg, "sta", start_vif)
 end
 
 function mtwifi_down(devname, cfg)
@@ -254,28 +276,24 @@ function __exec_iwpriv_cmd(ifname, key, val)
 end
 
 function mtwifi_cfg_iwpriv_hook(cfg)
-    local cmd
-    local iwpriv_cfgs = {}
-    if cfg == nil then return end
-
-    local vif_num,_,_ = vif_count(cfg)
-    for idx=0,vif_num-1 do
-        local v = cfg.interfaces[tostring(idx)]
-        if not v.config.disabled and v.mtwifi_ifname then
+    local ap_hook = function(v)
+        if (not v.config.disabled) and v.mtwifi_ifname then
             local vif = v.mtwifi_ifname
-            local mode = v.config.mode
-            if mode == "ap" then
-                iwpriv_cfgs = defs.iwpriv_ap_cfgs
-            end
-            for k, j in pairs(iwpriv_cfgs) do
+            for k, j in pairs(defs.iwpriv_ap_cfgs) do
                 __exec_iwpriv_cmd(vif, j[1], v.config[k] or j[2])
-            end
-            if mode == "sta" then
-                -- setup apcli auto connect
-                __apcli_auto_connect(vif)
             end
         end
     end
+
+    local apcli_hook = function(v)
+        if (not v.config.disabled) and v.mtwifi_ifname then
+            local vif = v.mtwifi_ifname
+            __apcli_auto_connect(vif)
+        end
+    end
+
+    mtwifi_cfg_foreach_vif(cfg, "ap", ap_hook)
+    mtwifi_cfg_foreach_vif(cfg, "sta", apcli_hook)
 end
 
 function set_chip_cfg(cfg, dats)
