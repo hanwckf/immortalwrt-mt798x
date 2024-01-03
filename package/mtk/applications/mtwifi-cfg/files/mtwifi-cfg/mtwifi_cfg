@@ -139,6 +139,23 @@ function vif_in_dev(vif, dev)
     end
 end
 
+function vif_count(cfg)
+    local vif_num = 0
+    local ap_num = 0
+    local apcli_num = 0
+
+    for k,v in pairs(cfg.interfaces) do
+        vif_num = vif_num + 1
+        if v.config.mode == "ap" then
+            ap_num = ap_num + 1
+        elseif v.config.mode == "sta" then
+            apcli_num = apcli_num +1
+        end
+    end
+
+    return vif_num, ap_num, apcli_num
+end
+
 function __apcli_auto_connect(ifname)
     __exec_iwpriv_cmd(ifname, "ApCliEnable", "1")
     __exec_iwpriv_cmd(ifname, "ApCliAutoConnect", "3")
@@ -176,9 +193,11 @@ function mtwifi_up(devname, cfg, restore_vifs, is_dbdc)
     end
 
     -- start vifs
-    for _, v in pairs(cfg.interfaces) do
+    local vif_num,_,_ = vif_count(cfg)
+    for idx=0,vif_num-1 do
+        local v = cfg.interfaces[tostring(idx)]
         local mode = v.config.mode
-        if mode and (mode == "ap" or mode == "sta") 
+        if mode and (mode == "ap" or mode == "sta")
            and (not v.config.disabled) and v.mtwifi_ifname then
             local vif = v.mtwifi_ifname
             nixio.syslog("info", "mtwifi-cfg: up vif: "..vif)
@@ -238,7 +257,10 @@ function mtwifi_cfg_iwpriv_hook(cfg)
     local cmd
     local iwpriv_cfgs = {}
     if cfg == nil then return end
-    for _, v in pairs(cfg.interfaces) do
+
+    local vif_num,_,_ = vif_count(cfg)
+    for idx=0,vif_num-1 do
+        local v = cfg.interfaces[tostring(idx)]
         if not v.config.disabled and v.mtwifi_ifname then
             local vif = v.mtwifi_ifname
             local mode = v.config.mode
@@ -308,21 +330,18 @@ function mtwifi_cfg_setup(argv)
     end
     local dats_orig = load_profile(profile)
 
-    local bssid_num = 0
-    local vif_num = 0
-    for k,v in pairs(cfg.interfaces) do
-        vif_num = vif_num + 1
-        if v.config.mode == "ap" then
-            bssid_num = bssid_num + 1
-        end
-    end
+    local vif_num, bssid_num, apcli_num = vif_count(cfg)
 
     if vif_num == 0 then
         nixio.syslog("err", "mtwifi-cfg: not valid vif found!")
         return
-    elseif bssid_num > defs.max_mbssid then
+    end
+    if bssid_num > defs.max_mbssid then
         nixio.syslog("err", "mtwifi-cfg: too many vifs!")
         return
+    end
+    if apcli_num > 1 then
+        nixio.syslog("err", "mtwifi-cfg: only support one apcli vif!")
     end
 
     if bssid_num > 0 then
@@ -550,9 +569,8 @@ function mtwifi_cfg_setup(argv)
             if utils.exists("/sys/module/mt_wifi") == false then
                 nixio.syslog("err", "mtwifi-cfg: mtwifi module is build-in, please reboot the device!")
                 return
-            else
-                reinstall_wifidrv = true
             end
+            reinstall_wifidrv = true
         end
     end
 
