@@ -24,6 +24,7 @@
 	Who         When          What
 	--------    ----------    ----------------------------------------------
 */
+
 /* This file is used by wifi driver and wapp.
    Keep data structure sync */
 
@@ -83,10 +84,16 @@
 #define MAX_PROFILE_CNT 4
 #define PER_EVENT_LIST_MAX_NUM 		5
 #define	DAEMON_NEIGHBOR_REPORT_MAX_NUM 128
-#define VERSION_WAPP_CMM "v3.0.1.2"
+#define VERSION_WAPP_CMM "v3.0.2.0"
 #ifdef MAP_R3_WF6
 #define MAX_TID 4
 #endif
+
+/* If this value is passed during map set channel
+ * then no need to parse that argument
+ */
+#define SET_CH_ARG_NOT_REQ 255
+
 typedef enum {
 	WAPP_STA_INVALID,
 	WAPP_STA_DISCONNECTED,
@@ -726,10 +733,15 @@ struct GNU_PACKED cce_vendor_ie
 };
 
 #define MAX_CCE_CHANNEL 128
+#define MAX_RNR_CHANNEL 30
 
 struct GNU_PACKED cce_vendor_ie_result {
 	u8 num;
 	u8 cce_ch[MAX_CCE_CHANNEL];//channel list, on which beacon includes cce ie
+#ifdef MAP_R3_6E_SUPPORT
+	u8 rnr_6e_num;
+	u8 rnr_6e_ch[MAX_RNR_CHANNEL];
+#endif
 };
 #endif
 
@@ -791,7 +803,7 @@ struct GNU_PACKED band_status_change {
 typedef struct GNU_PACKED _NDIS_802_11_SSID {
 	u32 SsidLength;	/* length of SSID field below, in bytes; */
 	/* this can be zero. */
-	char Ssid[MAX_LEN_OF_SSID];	/* SSID information field */
+	char Ssid[MAX_LEN_OF_SSID + 1];	/* SSID information field */
 } NDIS_802_11_SSID, *PNDIS_802_11_SSID;
 struct GNU_PACKED nop_channel_list_s
 {
@@ -895,6 +907,27 @@ struct GNU_PACKED pmk_req {
 	size_t ssidlen;
 };
 #endif /*DPP_SUPPORT*/
+
+struct GNU_PACKED mnt_sta {
+	u32 ifindex;
+	u8 sta_mac[MAC_ADDR_LEN];
+	u8 sta_id;
+};
+
+struct GNU_PACKED mnt_max_pkt {
+	u32 ifindex;
+	u32 pkt_number;
+};
+
+struct GNU_PACKED map_ch {
+	u32 ifindex;
+	u8 ch_num;
+#ifdef MAP_R2
+	u8 cac_req;
+	u8 map_dev_role;
+#endif /* MAP_R2 */
+};
+
 #ifdef MAP_R3
 struct GNU_PACKED wapp_sta_info {
         u8 src[MAC_ADDR_LEN];

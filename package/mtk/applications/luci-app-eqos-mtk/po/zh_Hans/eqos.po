@@ -27,9 +27,20 @@ msgstr "网速控制"
 msgid "Enable"
 msgstr "启用"
 
+msgid "SMART_HWQOS"
+msgstr "智能硬件QOS"
+
+msgid "Enabling fair queue will automatically perform hardware offloading and forwarding for small packets, P2P downloads, and web browsing. After enabling, the maximum number available for IP speed limit will be limited to 25."
+msgstr "启用公平队列，将自动对小包、P2P下载、网页浏览进行硬件分流转发.启用后IP限速可用的最大编号将限制为25"
+
 msgid "IPV6Enable"
 msgstr "同时作用IPV6"
 
+msgid "Load balance"
+msgstr "负载均衡"
+
+msgid "Please set a different gateway hop for each network interface before filling in the network interface name. Fill in PPPOE-WAN for dialing and eth1 for DHCP. Leaving it blank to disable it.Please use commas as interface name separators. Example: pppoe-wan,eth1"
+msgstr "请先为每个网络接口设置不同的网关跃点后，再填写网络接口名。拨号填写PPPOE-WAN，DHCP则填写eth1。留空则不启用.请使用逗号作为接口名分隔符.例子：pppoe-wan, eth1"
 
 #: applications/luci-app-eqos/root/usr/share/rpcd/acl.d/luci-app-eqos.json:3
 msgid "Grant UCI access for luci-app-eqos"
@@ -42,13 +53,21 @@ msgstr "IPV4 地址"
 msgid "IPV6 host"
 msgstr "IPV6 主机"
 
+
+msgid "Total download bandwidth."
+msgstr "总下载带宽。"
+
+msgid "InterfaceName(start from 0)"
+msgstr "分流接口序号(从0开始,留空则负载均衡)"
+
+
 #: applications/luci-app-eqos/htdocs/luci-static/resources/view/eqos.js:19
 msgid "Network speed control service.(Compatiable with Mediatek HNAT)"
 msgstr "网速控制服务(未设置限速主机可正常使用硬件加速)。"
 
 #: applications/luci-app-eqos/htdocs/luci-static/resources/view/eqos.js:38
-msgid "Speed limit based on IP address(using unique comment less than 32 will enable hardware QOS)"
-msgstr "基于 IP 限速(设置小于32唯一编号将启用硬件QOS.速度设置为0则取消限速)"
+msgid "Speed limit and route choose based on IP address(using unique comment less than 32 will enable hardware QOS)"
+msgstr "基于 IP 分流限速(设置小于32唯一编号将启用硬件QOS.速度设置为0则取消限速)"
 
 #: applications/luci-app-eqos/htdocs/luci-static/resources/view/eqos.js:29
 msgid "Total download bandwidth."
@@ -69,3 +88,4 @@ msgstr "下载速度 (kbit/s)"
 #: applications/luci-app-eqos/htdocs/luci-static/resources/view/eqos.js:60
 msgid "Upload speed (kbit/s)"
 msgstr "上传速度 (kbit/s)"
+
