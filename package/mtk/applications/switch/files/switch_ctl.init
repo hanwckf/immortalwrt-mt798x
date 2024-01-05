@@ -13,6 +13,4 @@ start_service() {
     sw_poweroff_ports "0 1 2 3 4"
     sleep 3
     sw_poweron_ports "0 1 2 3 4"
-    sleep 1
-    sw_restart_port "0 1 2 3 4"
 }
