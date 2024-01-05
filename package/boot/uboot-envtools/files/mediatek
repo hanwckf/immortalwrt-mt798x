@@ -10,33 +10,13 @@ touch /etc/config/ubootenv
 . /lib/uboot-envtools.sh
 . /lib/functions.sh
 
-block_dev_path() {
-	local dev_path
-
-	case "$1" in
-	/dev/mmcblk*)
-		dev_path="$1"
-		;;
-	PARTLABEL=* | PARTUUID=*)
-		dev_path=$(blkid -t "$1" -o device)
-		[ -z "${dev_path}" -o $? -ne 0 ] && return 1
-		;;
-	*)
-		return 1;
-		;;
-	esac
-
-	echo "${dev_path}"
-	return 0
-}
-
 board=$(board_name)
 
 case "$board" in
 cmcc,rax3000m-emmc |\
 glinet,gl-mt6000 |\
 jdcloud,re-cp-03)
-	env_dev=$(block_dev_path "PARTLABEL=u-boot-env")
+	env_dev=$(find_mmc_part "u-boot-env")
 	[ -n "$env_dev" ] && ubootenv_add_uci_config "$env_dev" "0" "0x80000"
 	;;
 *360,t7* |\
