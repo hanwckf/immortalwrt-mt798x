@@ -1,14 +1,10 @@
-#
-# Copyright (C) Hua Shao <nossiac@163.com>
-#
-# This is free software, licensed under the Apache License, Version 2.0 .
-#
-
 include $(TOPDIR)/rules.mk
 
-LUCI_TITLE:=MediaTek Proprietary Configuration.
-LUCI_DEPENDS:=+datconf-lua
-LUCI_PKGARCH:=all
+LUCI_TITLE:=LuCI support for Easy QoS
+LUCI_DEPENDS:=+tc +kmod-sched-core +kmod-ifb  @!PACKAGE_luci-app-eqos
+
+PKG_MAINTAINER:=Jianhui Zhao <jianhuizhao329@gmail.com>
+PKG_NAME:=luci-app-eqos-mtk
 
 include $(TOPDIR)/feeds/luci/luci.mk
 
