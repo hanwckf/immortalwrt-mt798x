@@ -135,13 +135,13 @@ function vif_in_dev(vif, dev)
         or string.match(vif, utils.esc(dev.mesh_ifname).."[0-9]+")) then
         return true
     else
-       return false
-   end
+        return false
+    end
 end
 
 function __apcli_auto_connect(ifname)
-   __exec_iwpriv_cmd(ifname, "ApCliEnable", "1")
-   __exec_iwpriv_cmd(ifname, "ApCliAutoConnect", "3")
+    __exec_iwpriv_cmd(ifname, "ApCliEnable", "1")
+    __exec_iwpriv_cmd(ifname, "ApCliAutoConnect", "3")
 end
 
 function mtwifi_up(devname, cfg, restore_vifs, is_dbdc)
@@ -162,14 +162,14 @@ function mtwifi_up(devname, cfg, restore_vifs, is_dbdc)
         if restore_vifs and devname ~= cfg.device then
             for _,vif in ipairs(restore_vifs) do
                 if vif_in_dev(vif, dev) then
-                     nixio.syslog("info", "mtwifi-cfg: restore vif: "..vif)
-                     ifup(vif)
-                 end
-             end
-             for _,vif in ipairs(restore_vifs) do
-                 if string.match(vif, utils.esc(dev.apcli_ifname).."[0-9]+") then
-                     __apcli_auto_connect(vif)
-                 end
+                    nixio.syslog("info", "mtwifi-cfg: restore vif: "..vif)
+                    ifup(vif)
+                end
+            end
+            for _,vif in ipairs(restore_vifs) do
+                if string.match(vif, utils.esc(dev.apcli_ifname).."[0-9]+") then
+                    __apcli_auto_connect(vif)
+                end
             end
             return
         end
@@ -185,8 +185,6 @@ function mtwifi_up(devname, cfg, restore_vifs, is_dbdc)
             ifup(vif)
         end
     end
-    
-    __exec_startwapp_cmd()
 end
 
 function mtwifi_down(devname, cfg)
@@ -197,7 +195,7 @@ function mtwifi_down(devname, cfg)
     if not dev then return end
 
     for _,vif in ipairs(string.split(utils.read_pipe("ls /sys/class/net"), "\n")) do
-       if (vif_status(vif) == "up" and vif_in_dev(vif, dev)) then
+        if (vif_status(vif) == "up" and vif_in_dev(vif, dev)) then
             nixio.syslog("info", "mtwifi-cfg: down vif: "..vif)
             ifdown(vif)
             if cfg and devname ~= cfg.device then
@@ -205,7 +203,6 @@ function mtwifi_down(devname, cfg)
             end
         end
     end
-    __exec_startwapp_cmd()
     return reset_vifs
 end
 
@@ -235,10 +232,6 @@ function __exec_iwpriv_cmd(ifname, key, val)
     local cmd = string.format("iwpriv %s set %s=%s", ifname, key, tostring(val))
     nixio.syslog("info", "mtwifi-cfg: iwpriv cmd: "..cmd)
     os.execute(cmd)
-end
-
-function __exec_startwapp_cmd()
-    os.execute("startwapp.sh")
 end
 
 function mtwifi_cfg_iwpriv_hook(cfg)
@@ -489,7 +482,6 @@ function mtwifi_cfg_setup(argv)
             set_dat(dats, apidx, "HideSSID", v.config.hidden)
             set_dat(dats, apidx, "WmmCapable", v.config.wmm)
             set_dat(dats, apidx, "RRMEnable", v.config.ieee80211k)
-            set_dat(dats, apidx, "FtSupport", v.config.ieee80211r)
             set_dat(dats, apidx, "RekeyInterval", v.config.wpa_group_rekey)
             set_dat(dats, apidx, "MuMimoDlEnable",v.config.mumimo_dl)
             set_dat(dats, apidx, "MuMimoUlEnable",v.config.mumimo_ul)
@@ -522,7 +514,7 @@ function mtwifi_cfg_setup(argv)
                 set_idx_dat(dats, apidx-1, "AccessControlList", maclist)
             end
 
-    	    local authmode = defs.enc2dat[v.config.encryption][1]
+            local authmode = defs.enc2dat[v.config.encryption][1]
             set_dat(dats, apidx, "AuthMode", authmode)
             set_dat(dats, apidx, "EncrypType", defs.enc2dat[v.config.encryption][2])
 
