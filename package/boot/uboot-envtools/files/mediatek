@@ -13,12 +13,15 @@ touch /etc/config/ubootenv
 board=$(board_name)
 
 case "$board" in
+cmcc,rax3000m-emmc |\
+glinet,gl-mt6000 |\
+jdcloud,re-cp-03)
+	env_dev=$(find_mmc_part "u-boot-env")
+	[ -n "$env_dev" ] && ubootenv_add_uci_config "$env_dev" "0" "0x80000"
+	;;
 *360,t7* |\
 livinet,zr-3020*)
 	ubootenv_add_uci_config "/dev/mtd2" "0x0" "0x20000" "0x20000" "1"
-	;;
-cmcc,rax3000m-emmc)
-	ubootenv_add_uci_config "/dev/mmcblk0p1" "0x0" "0x80000" "0x80000"
 	;;
 h3c,nx30pro |\
 *clt,r30b1* |\

@@ -18,6 +18,7 @@ local mtwifi_defs = {}
 
 mtwifi_defs.dbdc_init_ifname = "ra0"
 mtwifi_defs.max_mbssid = 16
+mtwifi_defs.max_acl_entry = 129
 
 mtwifi_defs.vif_cfgs = {
     -- dat cfg = default val
@@ -115,7 +116,7 @@ mtwifi_defs.enc2dat = {
     ["psk2"] = {"WPA2PSK", "AES"},
     ["psk+tkip+ccmp"] = {"WPAPSK", "AES"},
     ["psk+tkip+aes"] = {"WPAPSK", "AES"},
-    ["psk+tkip"] = {"WPAPSK", "TKIP"},
+    ["psk+tkip"] = {"WPAPSK", "AES"},
     ["psk+ccmp"] = {"WPAPSK", "AES"},
     ["psk+aes"] = {"WPAPSK", "AES"},
     ["psk"] = {"WPAPSK", "AES"},
