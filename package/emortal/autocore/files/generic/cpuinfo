@@ -22,7 +22,7 @@ case "$DISTRIB_TARGET" in
 "bcm53xx"/*)
 	cpu_freq="$(nvram get clkfreq | awk -F ',' '{print $1}')MHz" ;;
 "mediatek"/*|"mvebu"/*)
-	cpu_freq="$(mhz | awk -F 'cpu_MHz=' '{printf("%.fMHz",$2)}')" ;;
+	cpu_freq="" ;;
 "mvebu/cortexa72")
 	cpu_freq="$(awk '{printf("%.fMHz", $0 / 1000)}' "$CPUFREQ_PATH/policy0/cpuinfo_cur_freq")"
 	big_cpu_freq="$(awk '{printf("%.fMHz ", $0 / 1000)}' "$CPUFREQ_PATH/policy2/cpuinfo_cur_freq")"
