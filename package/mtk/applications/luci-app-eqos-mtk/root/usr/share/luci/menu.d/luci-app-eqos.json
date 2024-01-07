@@ -1,5 +1,5 @@
 {
-	"admin/services/eqos": {
+	"admin/network/eqos": {
 		"title": "EQoS",
 		"action": {
 			"type": "view",
