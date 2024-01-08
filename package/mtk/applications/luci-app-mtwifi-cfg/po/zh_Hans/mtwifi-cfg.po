@@ -48,3 +48,10 @@ msgstr "无线硬件加速"
 
 msgid "Band Steering"
 msgstr "引导已连接的强信号双频2.4G设备至5G频段"
+
+
+msgid "Wireless configuration error"
+msgstr "无线网络设置错误"
+
+msgid "At least one MBSSID needs to be reserved"
+msgstr "至少需要保留1个MBSSID"
