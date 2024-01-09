@@ -157,7 +157,7 @@ function vif_count(cfg)
         if v.config.mode == "ap" then
             ap_num = ap_num + 1
         elseif v.config.mode == "sta" then
-            apcli_num = apcli_num +1
+            apcli_num = apcli_num + 1
         end
     end
 
@@ -306,7 +306,7 @@ function set_chip_cfg(cfg, dats)
     for k,v in pairs(defs.chip_cfgs) do
         uci = k
         dat_key = v[1]
-        
+
         -- reset chip cfgs to default
         dats[dat_key] = v[2]
 
@@ -368,6 +368,63 @@ function mtwifi_cfg_setup(argv)
         dats.BssidNum = 1
     end
 
+    -- setup wireless mode
+    if type(cfg.config.htmode) ~= type("") then
+        nixio.syslog("err", "mtwifi-cfg: invalid htmode!")
+        return
+    end
+
+    local WirelessMode
+    local ax_feature = false
+
+    if cfg.config.band == "2g" then
+        if string.sub(cfg.config.htmode,1,2) == "HE" then
+            WirelessMode = 16 -- PHY_11AX_24G
+            ax_feature = true
+        else
+            WirelessMode = 9 -- PHY_11BGN_MIXED
+        end
+    elseif cfg.config.band == "5g" then
+        if string.sub(cfg.config.htmode,1,2) == "HE" then
+            WirelessMode = 17 -- PHY_11AX_5G
+            ax_feature = true
+        else
+            WirelessMode = 15 -- PHY_11VHT_N_MIXED
+        end
+    end
+
+    if not WirelessMode then
+        nixio.syslog("err", "mtwifi-cfg: invalid wireless mode!")
+        return
+    end
+
+    -- setup bandwidth
+    local bw = string.match(cfg.config.htmode, "%d+")
+    if not bw then
+        nixio.syslog("err", "mtwifi-cfg: invalid bandwidth!")
+        return
+    end
+
+    -- default bw is 20MHz
+    dats.HT_BW = 0
+    dats.VHT_BW = 0
+
+    if bw == "40" then
+        dats.HT_BW = 1
+        dats.VHT_BW = 0
+        if cfg.config.noscan ~= nil and cfg.config.noscan == "1" then
+            dats.HT_BSSCoexistence = 0
+        else
+            dats.HT_BSSCoexistence = 1
+        end
+    elseif bw == "80" then
+        dats.HT_BW = 1
+        dats.VHT_BW = 1
+    elseif bw == "160" then
+        dats.HT_BW = 1
+        dats.VHT_BW = 2
+    end
+
     -- setup apcli
     dats.ApCliEnable = 0
     dats.ApCliSsid = ""
@@ -402,13 +459,7 @@ function mtwifi_cfg_setup(argv)
     -- setup chip cfgs
     set_chip_cfg(cfg, dats)
 
-    -- setup dev cfgs
-    if cfg.config.twt then
-        dats.TWTSupport = cfg.config.twt
-    else
-        dats.TWTSupport = 0
-    end
-
+    -- setup other dev cfgs
     if type(cfg.config.country) == type("") and #cfg.config.country == 2 then
         dats.CountryCode = cfg.config.country
         if cfg.config.band == "2g" then
@@ -424,25 +475,6 @@ function mtwifi_cfg_setup(argv)
     else
         dats.AutoChannelSelect = 0
         dats.Channel = cfg.config.channel
-    end
-
-    if cfg.config.htmode == "HT20" or cfg.config.htmode == "VHT20" or cfg.config.htmode == "HE20" then
-        dats.HT_BW = 0
-        dats.VHT_BW = 0
-    elseif cfg.config.htmode == "HT40" or cfg.config.htmode == "VHT40" or cfg.config.htmode == "HE40" then
-        dats.HT_BW = 1
-        dats.VHT_BW = 0
-        if cfg.config.noscan ~= nil and cfg.config.noscan == "1" then
-            dats.HT_BSSCoexistence = 0
-        else
-            dats.HT_BSSCoexistence = 1
-        end
-    elseif cfg.config.htmode == "VHT80" or cfg.config.htmode == "HE80" then
-        dats.HT_BW = 1
-        dats.VHT_BW = 1
-    elseif cfg.config.htmode == "VHT160" or cfg.config.htmode == "HE160" then
-        dats.HT_BW = 1
-        dats.VHT_BW = 2
     end
 
     if cfg.config.txpower and cfg.config.txpower < 100 then
@@ -467,19 +499,10 @@ function mtwifi_cfg_setup(argv)
         dats.ITxBfEn = 0
     end
 
-    local WirelessMode
-    if cfg.config.band == "2g" then
-        if string.sub(cfg.config.htmode,1,2) == "HE" then
-            WirelessMode = 16 -- PHY_11AX_24G
-        else
-            WirelessMode = 9 -- PHY_11BGN_MIXED
-        end
-    elseif cfg.config.band == "5g" then
-        if string.sub(cfg.config.htmode,1,2) == "HE" then
-            WirelessMode = 17 -- PHY_11AX_5G
-        else
-            WirelessMode = 15 -- PHY_11VHT_N_MIXED
-        end
+    if ax_feature and cfg.config.twt then
+        dats.TWTSupport = cfg.config.twt
+    else
+        dats.TWTSupport = 0
     end
 
     -- reset vif cfgs to default
@@ -520,13 +543,13 @@ function mtwifi_cfg_setup(argv)
             set_dat(dats, apidx, "WmmCapable", v.config.wmm)
             set_dat(dats, apidx, "RRMEnable", v.config.ieee80211k)
             set_dat(dats, apidx, "RekeyInterval", v.config.wpa_group_rekey)
-            set_dat(dats, apidx, "MuMimoDlEnable",v.config.mumimo_dl)
-            set_dat(dats, apidx, "MuMimoUlEnable",v.config.mumimo_ul)
-            set_dat(dats, apidx, "MuOfdmaDlEnable",v.config.ofdma_dl)
-            set_dat(dats, apidx, "MuOfdmaUlEnable",v.config.ofdma_ul)
-            set_dat(dats, apidx, "HT_AMSDU",v.config.amsdu)
-            set_dat(dats, apidx, "HT_AutoBA",v.config.autoba)
-            set_dat(dats, apidx, "APSDCapable",v.config.uapsd)
+            set_dat(dats, apidx, "MuMimoDlEnable", v.config.mumimo_dl)
+            set_dat(dats, apidx, "MuMimoUlEnable", v.config.mumimo_ul)
+            set_dat(dats, apidx, "MuOfdmaDlEnable", v.config.ofdma_dl)
+            set_dat(dats, apidx, "MuOfdmaUlEnable", v.config.ofdma_ul)
+            set_dat(dats, apidx, "HT_AMSDU", v.config.amsdu)
+            set_dat(dats, apidx, "HT_AutoBA", v.config.autoba)
+            set_dat(dats, apidx, "APSDCapable", v.config.uapsd)
             set_dat(dats, apidx, "RTSThreshold", v.config.rts)
             set_dat(dats, apidx, "FragThreshold",v.config.frag)
             set_dat(dats, apidx, "WirelessMode", WirelessMode)
