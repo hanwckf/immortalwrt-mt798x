@@ -33,3 +33,15 @@ msgstr "弱信号接入阈值"
 
 msgid "Wireless HWNAT"
 msgstr "无线硬件加速"
+
+msgid "802.11V roam steering threshold"
+msgstr "802.11V漫游引导阈值"
+
+msgid "802.11V roam target bssid"
+msgstr "802.11V漫游引导目标BSSID"
+
+msgid "only supports mt_wifi driver"
+msgstr "仅支持MTK闭源驱动。确认路由器lan ip同一网段"
+
+msgid "Band Steering"
+msgstr "引导已连接双频2.4G设备至5G频段"
