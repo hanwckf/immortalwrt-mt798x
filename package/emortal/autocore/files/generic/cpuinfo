@@ -50,6 +50,8 @@ case "$DISTRIB_TARGET" in
 		cpu_temp="$(sensors "k*temp-*" 2>"/dev/null" | awk '/Tdie/ {print $2}' | head -n1 | tr -d "+")"
 	fi
 	;;
+"mediatek"/*)
+	cpu_temp="" ;;
 *)
 	[ ! -e "$THERMAL_PATH/thermal_zone0/temp" ] || \
 		cpu_temp="$(awk '{printf("%.1f°C", $0 / 1000)}' "$THERMAL_PATH/thermal_zone0/temp")"
@@ -59,7 +61,7 @@ esac
 if [ -z "$big_cpu_freq$cpu_freq" ] && [ -n "$cpu_temp" ]; then
 	echo -n "$cpu_arch x $cpu_cores ($cpu_temp)"
 elif [ -z "$cpu_temp" ] && [ -n "$big_cpu_freq$cpu_freq" ] || \
-		grep -Eq "ipq|mediatek" "/etc/openwrt_release"; then
+		grep -Eq "ipq" "/etc/openwrt_release"; then
 	echo -n "$cpu_arch x $cpu_cores ($big_cpu_freq$cpu_freq)"
 elif [ -n "$cpu_temp" ] && [ -n "$big_cpu_freq$cpu_freq" ]; then
 	echo -n "$cpu_arch x $cpu_cores ($big_cpu_freq$cpu_freq, ${cpu_temp})"
