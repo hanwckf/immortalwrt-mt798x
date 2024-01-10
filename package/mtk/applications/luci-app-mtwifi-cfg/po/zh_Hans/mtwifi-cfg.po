@@ -33,3 +33,9 @@ msgstr "弱信号接入阈值"
 
 msgid "Wireless HWNAT"
 msgstr "无线硬件加速"
+
+msgid "Wireless configuration error"
+msgstr "无线网络设置错误"
+
+msgid "At least one MBSSID needs to be reserved"
+msgstr "至少需要保留1个MBSSID"

@@ -312,6 +312,20 @@ function add_dependency_permutations(o, deps) {
 		o.depends(res[i]);
 }
 
+function add_dep_vht_feature(o) {
+	o.depends({'_freq': 'VHT20', '!contains': true});
+	o.depends({'_freq': 'VHT40', '!contains': true});
+	o.depends({'_freq': 'VHT80', '!contains': true});
+	o.depends({'_freq': 'VHT160', '!contains': true});
+}
+
+function add_dep_he_feature(o) {
+	o.depends({'_freq': 'HE20', '!contains': true});
+	o.depends({'_freq': 'HE40', '!contains': true});
+	o.depends({'_freq': 'HE80', '!contains': true});
+	o.depends({'_freq': 'HE160', '!contains': true});
+}
+
 var CBIWifiFrequencyValue = form.Value.extend({
 	callFrequencyList: rpc.declare({
 		object: 'iwinfo',
@@ -924,7 +938,7 @@ return view.extend({
 					E('button', {
 						'class': 'cbi-button cbi-button-negative remove',
 						'title': _('Delete this network'),
-						'click': ui.createHandlerFn(this, 'handleRemove', section_id)
+						'click': ui.createHandlerFn(this, 'handleRemove', section_id, inst)
 					}, _('Remove'))
 				];
 			}
@@ -1011,12 +1025,27 @@ return view.extend({
 					o = ss.taboption('advanced', CBIWifiCountryValue, 'country', _('Country Code'));
 					o.wifiNetwork = radioNet;
 
-					if (band == '2g') {
-						o = ss.taboption('advanced', form.Flag, 'noscan', _('Force 40MHz mode'), _('Always use 40MHz channels even if the secondary channel overlaps. Using this option does not comply with IEEE 802.11n-2009!'));
-						o.rmempty = false;
-					}
+					if (!isDisabled) {
+						if (band == '2g') {
+							o = ss.taboption('advanced', form.Flag, 'noscan', _('Force 40MHz mode'), _('Always use 40MHz channels even if the secondary channel overlaps. Using this option does not comply with IEEE 802.11n-2009!'));
+							o.depends({'_freq': 'HE40', '!contains': true});
+							o.depends({'_freq': 'HT40', '!contains': true});
+							o.default = o.disabled;
+							o.rmempty = false;
+						}
 
-					o = ss.taboption('advanced', form.Flag, 'mu_beamformer', _('MU-MIMO'));
+						o = ss.taboption('advanced', form.Flag, 'mu_beamformer', _('MU-MIMO'));
+						add_dep_he_feature(o);
+						add_dep_vht_feature(o);
+						o.default = o.disabled;
+						o.rmempty = false;
+
+						o = ss.taboption('advanced', form.ListValue, 'twt', _('Target Wake Time'));
+						add_dep_he_feature(o);
+						o.value('', _('Disable'));
+						o.value('1', _('Enable'));
+						o.value('2', _('Force'));
+					}
 
 					var is_dbdc_main = uci.get('wireless', radioNet.getWifiDeviceName(), 'dbdc_main') == '1';
 
@@ -1038,11 +1067,6 @@ return view.extend({
 						o.datatype = 'range(20,999)';
 						o.placeholder = 100;
 					}
-
-					o = ss.taboption('advanced', form.ListValue, 'twt', _('Target Wake Time'));
-					o.value('', _('Disable'));
-					o.value('1', _('Enable'));
-					o.value('2', _('Force'));
 
 					o = ss.taboption('advanced', form.Value, 'txpower', _('Maximum transmit power'));
 					o.datatype = 'range(1,100)';
@@ -2006,7 +2030,31 @@ return view.extend({
 			});
 		};
 
-		s.handleRemove = function(section_id, ev) {
+		s.handleRemove = function(section_id, radioNet, ev) {
+			var radioName = radioNet.getWifiDeviceName();
+			var hwtype = uci.get('wireless', radioName, 'type');
+
+			if (hwtype == 'mtwifi')
+			{
+				var wifi_sections = uci.sections('wireless', 'wifi-iface');
+				var mbssid_num = 0;
+
+				for (var i = 0; i < wifi_sections.length; i++) {
+					if (wifi_sections[i].device == radioName && wifi_sections[i].mode == "ap")
+						mbssid_num++;
+				}
+
+				if (mbssid_num <= 1)
+					return ui.showModal(_('Wireless configuration error'), [
+						E('p', _('At least one MBSSID needs to be reserved')),
+						E('div', { 'class': 'right' },
+						E('button', {
+							'class': 'btn',
+							'click': ui.hideModal
+						}, _('Close')))
+					]);
+			}
+
 			document.querySelector('.cbi-section-table-row[data-sid="%s"]'.format(section_id)).style.opacity = 0.5;
 			return form.TypedSection.prototype.handleRemove.apply(this, [section_id, ev]);
 		};
