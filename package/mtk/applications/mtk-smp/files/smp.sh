@@ -830,7 +830,7 @@ set_smp_affinity()
 			cpu_bit=$((2 ** $num))
 			virq=$(get_virtual_irq $i)
 			dbg2 "irq p2v $i --> $virq"
-			if [ ! -z $virq ]; then
+			if [ ! -z $virq ] && [ -d /proc/irq/$virq ]; then
 				dbg "echo $cpu_bit > /proc/irq/$virq/smp_affinity"
 				echo $cpu_bit > /proc/irq/$virq/smp_affinity
 			fi
