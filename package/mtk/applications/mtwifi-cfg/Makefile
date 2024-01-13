@@ -35,6 +35,7 @@ define Package/mtwifi-cfg/install
 	$(INSTALL_BIN) ./files/mtwifi-cfg/mtwifi_defs.lua $(1)/usr/lib/lua/
 	$(INSTALL_BIN) ./files/mtwifi-cfg/mtwifi_utils.lua $(1)/usr/lib/lua/
 	$(INSTALL_BIN) ./files/l1util/l1util $(1)/sbin/
+	$(LN) l1util $(1)/sbin/l1dat
 	$(INSTALL_BIN) ./files/l1util/l1dat_parser.lua $(1)/usr/lib/lua/
 	$(INSTALL_DATA) ./files/hotplug/10-mtwifi-detect $(1)/etc/hotplug.d/net/
 endef
