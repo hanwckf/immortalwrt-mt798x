@@ -6,6 +6,4 @@ if [ "$ACTION" = add ]; then
 		sed -ne "/^[[:space:]]*net\..*\.$DEVICENAME\./p" "$CONF" | \
 			sysctl -e -p - | logger -t sysctl
 	done
-
-	[ -f /sbin/smp.sh ] && /sbin/smp.sh
 fi

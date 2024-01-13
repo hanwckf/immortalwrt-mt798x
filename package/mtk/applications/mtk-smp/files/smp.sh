@@ -34,6 +34,7 @@ MT7986_whnat()
 	PCIe0=
 	eth_tx=229
 	eth_rx0=230
+	usb=205
 	if [ -d "/proc/warp_ctrl/warp0" ]; then
 	wifi1_irq=237
 	wifi2_irq=237
@@ -51,7 +52,7 @@ MT7986_whnat()
 	if [ "$num_of_wifi" = "0" ]; then
 		CPU0_AFFINITY="$eth_rx0"
 		CPU1_AFFINITY="$eth_tx"
-		CPU2_AFFINITY=""
+		CPU2_AFFINITY="$usb"
 		CPU3_AFFINITY=""
 
 		CPU0_RPS=""
@@ -61,7 +62,7 @@ MT7986_whnat()
 	elif [ "$num_of_wifi" = "1" ]; then
 		CPU0_AFFINITY="$eth_rx0"
 		CPU1_AFFINITY="$eth_tx"
-		CPU2_AFFINITY=""
+		CPU2_AFFINITY="$usb"
 		CPU3_AFFINITY="$wifi1_irq"
 
 		CPU0_RPS="                $wifi1 $wifi1_apcli0"
@@ -71,7 +72,7 @@ MT7986_whnat()
 	elif [ "$num_of_wifi" = "2" ]; then
 		CPU0_AFFINITY="$eth_rx0"
 		CPU1_AFFINITY="$eth_tx"
-		CPU2_AFFINITY=""
+		CPU2_AFFINITY="$usb"
 		CPU3_AFFINITY="$wifi1_irq $wifi2_irq"
 
 		CPU0_RPS="                $wifi1 $wifi2 $wifi1_apcli0 $wifi2_apcli0"
@@ -81,7 +82,7 @@ MT7986_whnat()
 	elif [ "$num_of_wifi" = "3" ]; then
 		CPU0_AFFINITY="$eth_tx $eth_rx0"
 		CPU1_AFFINITY="$wifi1_irq $wifi2_irq"
-		CPU2_AFFINITY="$PCIe0 $wifi3_irq"
+		CPU2_AFFINITY="$PCIe0 $wifi3_irq $usb"
 		CPU3_AFFINITY=""
 
 		CPU0_RPS=""
@@ -210,6 +211,7 @@ MT7981_whnat()
 	PCIe0=
 	eth_tx=229
 	eth_rx0=230
+	usb=205
 	if [ -d "/proc/warp_ctrl/warp0" ]; then
 		wifi1_irq=237
 		wifi2_irq=237
@@ -226,25 +228,25 @@ MT7981_whnat()
 	dbg "[MT7981_whnat]"
 	if [ "$num_of_wifi" = "0" ]; then
 		CPU0_AFFINITY="$eth_rx0"
-		CPU1_AFFINITY="$eth_tx"
+		CPU1_AFFINITY="$eth_tx $usb"
 
 		CPU0_RPS=""
 		CPU1_RPS="$ethif1 $ethif2"
 	elif [ "$num_of_wifi" = "1" ]; then
 		CPU0_AFFINITY="$eth_tx $eth_rx0"
-		CPU1_AFFINITY="$wifi1_irq"
+		CPU1_AFFINITY="$wifi1_irq $usb"
 
 		CPU0_RPS="$ethif1 $ethif2 $wifi1 $wifi1_apcli0"
 		CPU1_RPS="                $wifi1 $wifi1_apcli0"
 	elif [ "$num_of_wifi" = "2" ]; then
 		CPU0_AFFINITY="$eth_tx $eth_rx0"
-		CPU1_AFFINITY="$wifi1_irq $wifi2_irq"
+		CPU1_AFFINITY="$wifi1_irq $wifi2_irq $usb"
 
 		CPU0_RPS="$ethif1 $ethif2 $wifi1 $wifi2 $wifi1_apcli0 $wifi2_apcli0"
 		CPU1_RPS="                $wifi1 $wifi2 $wifi1_apcli0 $wifi2_apcli0"
 	elif [ "$num_of_wifi" = "3" ]; then
 		CPU0_AFFINITY="$eth_tx $eth_rx0"
-		CPU1_AFFINITY="$PCIe0 $wifi1_irq $wifi2_irq $wifi3_irq"
+		CPU1_AFFINITY="$PCIe0 $wifi1_irq $wifi2_irq $wifi3_irq $usb"
 
 		CPU0_RPS="$ethif1 $ethif2 $wifi1 $wifi2 $wifi3 $wifi1_apcli0 $wifi2_apcli0 $wifi3_apcli0"
 		CPU1_RPS="                $wifi1 $wifi2 $wifi3 $wifi1_apcli0 $wifi2_apcli0 $wifi3_apcli0"
@@ -707,6 +709,8 @@ setup_model()
 	board=$(board_name)
 	num_of_wifi=$(get_wifi_num)
 	mt_whnat_en=$(module_exist "mt_whnat")
+
+	logger -t "mtk_smp" "board=${board}, wifi_num=${num_of_wifi}, cpu_num=${NUM_OF_CPU}"
 
 	case $board in
 	xiaomi,redmi-router-ax6000* |\
