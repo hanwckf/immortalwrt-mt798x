@@ -400,9 +400,7 @@ unsigned int do_hnat_ext_to_ge(struct sk_buff *skb, const struct net_device *in,
 		}
 
 		/*set where we come from*/
-		skb->vlan_proto = htons(ETH_P_8021Q);
-		skb->vlan_tci =
-			(VLAN_CFI_MASK | (in->ifindex & VLAN_VID_MASK));
+		__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q), in->ifindex & VLAN_VID_MASK);
 		trace_printk(
 			"%s: vlan_prot=0x%x, vlan_tci=%x, in->name=%s, skb->dev->name=%s\n",
 			__func__, ntohs(skb->vlan_proto), skb->vlan_tci,
@@ -433,7 +431,7 @@ unsigned int do_hnat_ext_to_ge2(struct sk_buff *skb, const char *func)
 		skb->dev = dev;
 		skb->vlan_proto = 0;
 		skb->vlan_tci = 0;
-
+		__vlan_hwaccel_clear_tag(skb);
 		if (ntohs(eth->h_proto) == ETH_P_8021Q) {
 			skb = skb_vlan_untag(skb);
 			if (unlikely(!skb))
@@ -808,6 +806,11 @@ mtk_hnat_ipv6_nf_pre_routing(void *priv, struct sk_buff *skb,
 	if (!skb)
 		goto drop;
 
+	if (!IS_WHNAT(state->in) && IS_EXT(state->in) && IS_SPACE_AVAILABLE_HEAD(skb)) {
+		skb_hnat_alg(skb) = 0;
+		skb_hnat_magic_tag(skb) = HNAT_MAGIC_TAG;
+	}
+
 	if (!is_magic_tag_valid(skb))
 		return NF_ACCEPT;
 
@@ -876,6 +879,11 @@ mtk_hnat_ipv4_nf_pre_routing(void *priv, struct sk_buff *skb,
 	if (!skb)
 		goto drop;
 
+	if (!IS_WHNAT(state->in) && IS_EXT(state->in) && IS_SPACE_AVAILABLE_HEAD(skb)) {
+		skb_hnat_alg(skb) = 0;
+		skb_hnat_magic_tag(skb) = HNAT_MAGIC_TAG;
+	}
+
 	if (!is_magic_tag_valid(skb))
 		return NF_ACCEPT;
 
@@ -933,6 +941,11 @@ mtk_hnat_br_nf_local_in(void *priv, struct sk_buff *skb,
 
 	if (!skb)
 		goto drop;
+
+	if (!IS_WHNAT(state->in) && IS_EXT(state->in) && IS_SPACE_AVAILABLE_HEAD(skb)) {
+		skb_hnat_alg(skb) = 0;
+		skb_hnat_magic_tag(skb) = HNAT_MAGIC_TAG;
+	}
 
 	if (!is_magic_tag_valid(skb))
 		return NF_ACCEPT;
@@ -1605,7 +1618,7 @@ static unsigned int skb_to_hnat_info(struct sk_buff *skb,
 				gmac = (IS_GMAC1_MODE) ? NR_GMAC1_PORT : NR_GMAC2_PORT;
 		}
 	} else if (IS_EXT(dev) && (FROM_GE_PPD(skb) || FROM_GE_LAN(skb) ||
-		   FROM_GE_WAN(skb) || FROM_GE_VIRTUAL(skb) || FROM_WED(skb))) {
+		   FROM_GE_WAN(skb) || FROM_GE_VIRTUAL(skb) || FROM_WED(skb) || FROM_EXT(skb))) {
 		if (!hnat_priv->data->whnat && IS_GMAC1_MODE) {
 			entry.bfib1.vpm = 1;
 			entry.bfib1.vlan_layer = 1;
@@ -2110,6 +2123,9 @@ static unsigned int mtk_hnat_nf_post_routing(
 	}
 
 	if (!IS_LAN(out) && !IS_WAN(out) && !IS_EXT(out))
+		return 0;
+
+	if (!IS_WHNAT(out) && IS_EXT(out) && FROM_WED(skb))
 		return 0;
 
 	trace_printk("[%s] case hit, %x-->%s, reason=%x\n", __func__,
