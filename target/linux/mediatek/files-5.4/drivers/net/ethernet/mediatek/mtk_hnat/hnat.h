@@ -690,6 +690,7 @@ struct mtk_hnat {
 
 struct extdev_entry {
 	char name[IFNAMSIZ];
+	char name_prefix[IFNAMSIZ];
 	struct net_device *dev;
 };
 

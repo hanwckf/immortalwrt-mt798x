@@ -1732,8 +1732,8 @@ static int hnat_ext_show(struct seq_file *m, void *private)
 	for (i = 0; i < MAX_EXT_DEVS && hnat_priv->ext_if[i]; i++) {
 		ext_entry = hnat_priv->ext_if[i];
 		if (ext_entry->dev)
-			seq_printf(m, "ext devices [%d] = %s  (dev=%p, ifindex=%d)\n",
-				   i, ext_entry->name, ext_entry->dev,
+			seq_printf(m, "ext devices [%d] = %s,  (dev=%p, ifindex=%d)\n",
+				   i, ext_entry->dev->name, ext_entry->dev,
 				   ext_entry->dev->ifindex);
 	}
 

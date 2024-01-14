@@ -76,7 +76,10 @@ static inline int find_extif_from_devname(const char *name)
 
 	for (i = 0; i < MAX_EXT_DEVS && hnat_priv->ext_if[i]; i++) {
 		ext_entry = hnat_priv->ext_if[i];
-		if (!strcmp(name, ext_entry->name))
+		if (strlen(ext_entry->name) && !strcmp(name, ext_entry->name))
+			return 1;
+
+		if (strlen(ext_entry->name_prefix) && !strncmp(name, ext_entry->name_prefix, strlen(ext_entry->name_prefix)))
 			return 1;
 	}
 	return 0;
@@ -128,7 +131,10 @@ static inline int extif_set_dev(struct net_device *dev)
 
 	for (i = 0; i < MAX_EXT_DEVS && hnat_priv->ext_if[i]; i++) {
 		ext_entry = hnat_priv->ext_if[i];
-		if (!strcmp(dev->name, ext_entry->name) && !ext_entry->dev) {
+		if (((strlen(ext_entry->name) && !strcmp(dev->name, ext_entry->name))
+			|| (strlen(ext_entry->name_prefix) && !strncmp(dev->name, ext_entry->name_prefix, strlen(ext_entry->name_prefix))))
+			&& !ext_entry->dev)
+		{
 			dev_hold(dev);
 			ext_entry->dev = dev;
 			pr_info("%s(%s)\n", __func__, dev->name);
