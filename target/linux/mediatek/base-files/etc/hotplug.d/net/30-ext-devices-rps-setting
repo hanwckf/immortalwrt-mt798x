@@ -1,0 +1,13 @@
+#!/bin/sh
+
+[ "$ACTION" = add ] || exit
+
+NPROCS="$(grep -c "^processor.*:" /proc/cpuinfo)"
+[ "$NPROCS" -gt 1 ] || exit
+
+IFNAME_PREFIX="${INTERFACE%%[0-9]*}"
+
+if [ "${IFNAME_PREFIX}" = "usb" ] || [ "${IFNAME_PREFIX}" = "wwan" ]; then
+    # set usb/wwan rps to cpu0
+    echo 1 > /sys/class/net/${INTERFACE}/queues/rx-0/rps_cpus
+fi
