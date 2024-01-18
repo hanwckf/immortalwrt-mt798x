@@ -775,22 +775,23 @@ static int hnat_probe(struct platform_device *pdev)
 		ext_if_add(ext_entry);
 	}
 
+	for (i = 0; i < MAX_EXT_DEVS && hnat_priv->ext_if[i]; i++) {
+		ext_entry = hnat_priv->ext_if[i];
+		dev_info(&pdev->dev, "ext devices = %s\n", ext_entry->name);
+	}
+
 	index = 0;
 	prop = of_find_property(np, "ext-devices-prefix", NULL);
 	for (name = of_prop_next_string(prop, NULL); name;
 	     name = of_prop_next_string(prop, name), index++) {
-		ext_entry = kzalloc(sizeof(*ext_entry), GFP_KERNEL);
-		if (!ext_entry) {
-			err = -ENOMEM;
-			goto err_out1;
-		}
-		strncpy(ext_entry->name_prefix, (char *)name, IFNAMSIZ - 1);
-		ext_if_add(ext_entry);
+		if (index < MAX_EXT_PREFIX_NUM)
+			hnat_priv->ext_if_prefix[index] = name;
+		else
+			break;
 	}
 
-	for (i = 0; i < MAX_EXT_DEVS && hnat_priv->ext_if[i]; i++) {
-		ext_entry = hnat_priv->ext_if[i];
-		dev_info(&pdev->dev, "ext devices = %s, prefix = %s\n", ext_entry->name, ext_entry->name_prefix);
+	for (i = 0; i < MAX_EXT_PREFIX_NUM && hnat_priv->ext_if_prefix[i]; i++) {
+		dev_info(&pdev->dev, "ext device prefix = %s\n", hnat_priv->ext_if_prefix[i]);
 	}
 
 	hnat_priv->lvid = 1;

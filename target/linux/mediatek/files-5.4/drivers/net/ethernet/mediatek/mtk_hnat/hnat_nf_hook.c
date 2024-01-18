@@ -76,10 +76,7 @@ static inline int find_extif_from_devname(const char *name)
 
 	for (i = 0; i < MAX_EXT_DEVS && hnat_priv->ext_if[i]; i++) {
 		ext_entry = hnat_priv->ext_if[i];
-		if (strlen(ext_entry->name) && !strcmp(name, ext_entry->name))
-			return 1;
-
-		if (strlen(ext_entry->name_prefix) && !strncmp(name, ext_entry->name_prefix, strlen(ext_entry->name_prefix)))
+		if (!strcmp(name, ext_entry->name))
 			return 1;
 	}
 	return 0;
@@ -124,23 +121,70 @@ static inline struct net_device *get_wandev_from_index(int index)
 	return NULL;
 }
 
-static inline int extif_set_dev(struct net_device *dev)
+static inline int extif_match(const char *name)
 {
 	int i;
 	struct extdev_entry *ext_entry;
 
 	for (i = 0; i < MAX_EXT_DEVS && hnat_priv->ext_if[i]; i++) {
 		ext_entry = hnat_priv->ext_if[i];
-		if (((strlen(ext_entry->name) && !strcmp(dev->name, ext_entry->name))
-			|| (strlen(ext_entry->name_prefix) && !strncmp(dev->name, ext_entry->name_prefix, strlen(ext_entry->name_prefix))))
-			&& !ext_entry->dev)
-		{
+		if (!strcmp(name, ext_entry->name) && !ext_entry->dev) {
+			return i;
+		}
+	}
+
+	return -1;
+}
+
+static inline bool extif_prefix_match(const char *name)
+{
+	int i;
+
+	for (i = 0; i < MAX_EXT_PREFIX_NUM && hnat_priv->ext_if_prefix[i]; i++)
+	{
+		if (strlen(hnat_priv->ext_if_prefix[i]) && 
+			!strncmp(name, hnat_priv->ext_if_prefix[i],
+				strlen(hnat_priv->ext_if_prefix[i])))
+			return true;
+	}
+
+	return false;
+}
+
+static inline int extif_set_dev(struct net_device *dev, int try_prefix)
+{
+	struct extdev_entry *ext_entry;
+	int extif_index, number;
+
+	extif_index = extif_match(dev->name);
+
+	if (extif_index < 0) {
+		/* try extif prefix match */
+		if (try_prefix && extif_prefix_match(dev->name)) {
+			number = get_ext_device_number();
+			if (number >= MAX_EXT_DEVS) {
+				pr_info("%s : extdev array is full. %s is not registered\n",
+					__func__, dev->name);
+				return -1;
+			}
+
+			ext_entry = kzalloc(sizeof(*ext_entry), GFP_KERNEL);
+			if (!ext_entry)
+				return -1;
+
+			strncpy(ext_entry->name, dev->name, IFNAMSIZ - 1);
 			dev_hold(dev);
 			ext_entry->dev = dev;
-			pr_info("%s(%s)\n", __func__, dev->name);
+			ext_if_add(ext_entry);
 
-			return ext_entry->dev->ifindex;
+			pr_info("%s prefix match (%s)\n", __func__, dev->name);
+			return dev->ifindex;
 		}
+	} else {
+		dev_hold(dev);
+		hnat_priv->ext_if[extif_index]->dev = dev;
+		pr_info("%s(%s)\n", __func__, dev->name);
+		return dev->ifindex;
 	}
 
 	return -1;
@@ -245,7 +289,7 @@ int nf_hnat_netdevice_event(struct notifier_block *unused, unsigned long event,
 
 		gmac_ppe_fwd_enable(dev);
 
-		extif_set_dev(dev);
+		extif_set_dev(dev, 1);
 
 		break;
 	case NETDEV_GOING_DOWN:
@@ -1970,7 +2014,7 @@ void mtk_ppe_dev_register_hook(struct net_device *dev)
 	for (i = 1; i < MAX_IF_NUM; i++) {
 		if (!hnat_priv->wifi_hook_if[i]) {
 			if (find_extif_from_devname(dev->name)) {
-				extif_set_dev(dev);
+				extif_set_dev(dev, 0);
 				goto add_wifi_hook_if;
 			}
 
