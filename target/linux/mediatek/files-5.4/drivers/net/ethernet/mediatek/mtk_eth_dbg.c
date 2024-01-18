@@ -749,7 +749,7 @@ int rx_ring_read(struct seq_file *seq, void *v)
 		seq_printf(seq, "%d: %08x %08x %08x %08x", i,
 			   *(int *)&rx_ring[i].rxd1, *(int *)&rx_ring[i].rxd2,
 			   *(int *)&rx_ring[i].rxd3, *(int *)&rx_ring[i].rxd4);
-#if defined(CONFIG_MEDIATEK_NETSYS_V2)
+#if defined(CONFIG_MEDIATEK_NETSYS_RX_V2)
 		seq_printf(seq, " %08x %08x %08x %08x",
 			   *(int *)&rx_ring[i].rxd5, *(int *)&rx_ring[i].rxd6,
 			   *(int *)&rx_ring[i].rxd7, *(int *)&rx_ring[i].rxd8);
@@ -906,7 +906,7 @@ void hw_lro_stats_update(u32 ring_no, struct mtk_rx_dma *rxd)
 {
 	u32 idx, agg_cnt, agg_size;
 
-#if defined(CONFIG_MEDIATEK_NETSYS_V2)
+#if defined(CONFIG_MEDIATEK_NETSYS_RX_V2)
 	idx = ring_no - 4;
 	agg_cnt = RX_DMA_GET_AGG_CNT_V2(rxd->rxd6);
 #else
@@ -926,7 +926,7 @@ void hw_lro_flush_stats_update(u32 ring_no, struct mtk_rx_dma *rxd)
 {
 	u32 idx, flush_reason;
 
-#if defined(CONFIG_MEDIATEK_NETSYS_V2)
+#if defined(CONFIG_MEDIATEK_NETSYS_RX_V2)
 	idx = ring_no - 4;
 	flush_reason = RX_DMA_GET_FLUSH_RSN_V2(rxd->rxd6);
 #else
@@ -1173,7 +1173,7 @@ int hw_lro_stats_read_wrapper(struct seq_file *seq, void *v)
 {
 	struct mtk_eth *eth = g_eth;
 
-	if (MTK_HAS_CAPS(eth->soc->caps, MTK_NETSYS_V2))
+	if (MTK_HAS_CAPS(eth->soc->caps, MTK_NETSYS_RX_V2))
 		hw_lro_stats_read_v2(seq, v);
 	else
 		hw_lro_stats_read_v1(seq, v);
@@ -1444,7 +1444,7 @@ int hw_lro_auto_tlb_read(struct seq_file *seq, void *v)
 	seq_puts(seq, "[4] = hwlro_ring_enable_ctrl\n");
 	seq_puts(seq, "[5] = hwlro_stats_enable_ctrl\n\n");
 
-	if (MTK_HAS_CAPS(g_eth->soc->caps, MTK_NETSYS_V2)) {
+	if (MTK_HAS_CAPS(g_eth->soc->caps, MTK_NETSYS_RX_V2)) {
 		for (i = 1; i <= 8; i++)
 			hw_lro_auto_tlb_dump_v2(seq, i);
 	} else {
@@ -1480,7 +1480,8 @@ int hw_lro_auto_tlb_read(struct seq_file *seq, void *v)
 		    ((reg_op1 >> MTK_LRO_RING_AGE_TIME_L_OFFSET) & 0x3ff);
 		seq_printf(seq,
 			   "Ring[%d]: MAX_AGG_CNT=%d, AGG_TIME=%d, AGE_TIME=%d, Threshold=%d\n",
-			   (MTK_HAS_CAPS(g_eth->soc->caps, MTK_NETSYS_V2))? i+3 : i,
+			   (MTK_HAS_CAPS(g_eth->soc->caps, MTK_NETSYS_RX_V2)) ?
+			   i : i+3,
 			   agg_cnt, agg_time, age_time, reg_op4);
 	}
 

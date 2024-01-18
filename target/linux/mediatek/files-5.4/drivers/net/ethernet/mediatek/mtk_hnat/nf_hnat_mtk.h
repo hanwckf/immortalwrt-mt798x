@@ -23,7 +23,7 @@ struct hnat_skb_cb2 {
 	__u32 magic;
 };
 
-#if defined(CONFIG_MEDIATEK_NETSYS_V2)
+#if defined(CONFIG_MEDIATEK_NETSYS_RX_V2)
 struct hnat_desc {
 	u32 entry : 15;
 	u32 filled : 3;
@@ -46,13 +46,13 @@ struct hnat_desc {
 	u32 crsn : 5;
 	u32 sport : 4;
 	u32 alg : 1;
-	u32 iface : 4;
+	u32 iface : 8;
+	u32 ppe : 1;
 	u32 filled : 3;
-	u32 resv : 1;
 	u32 magic_tag_protect : 16;
 	u32 wdmaid : 8;
 	u32 rxid : 2;
-	u32 wcid : 8;
+	u32 wcid : 10;
 	u32 bssid : 6;
 } __packed;
 #endif

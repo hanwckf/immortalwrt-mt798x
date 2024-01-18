@@ -130,7 +130,7 @@ struct dmad_rx_descinfo4 {
 	uint16_t rsv2:7;
 	u16 MAGIC_TAG_PROTECT;
 } __packed;
-#else
+#elif defined(CONFIG_MEDIATEK_NETSYS_RX_V2)
 struct dmad_rx_descinfo4 {
 	uint32_t foe_entry_num:15;
 	uint32_t rsv0:3;
@@ -150,6 +150,25 @@ struct dmad_rx_descinfo4 {
 	uint16_t chid:8;
 	uint16_t rsv4:4;
 	u16 MAGIC_TAG_PROTECT;
+} __packed;
+#else
+struct dmad_rx_descinfo4 {
+	uint32_t foe_entry_num:14;
+	uint32_t CRSN:5;
+	uint32_t SPORT:4;
+	uint32_t ALG:1;
+	uint32_t IF:8;
+	uint32_t ppe:1;
+	uint32_t rsv2:3;
+	uint32_t MAGIC_TAG_PROTECT: 16;
+	uint32_t WDMAID:8;
+	uint32_t RXID:2;
+	uint32_t WCID:10;
+	uint32_t BSSID:6;
+#if defined(CONFIG_RA_HW_NAT_PPTP_L2TP)
+	u16 SOURCE;
+	u16 DEST;
+#endif
 } __packed;
 #endif
 
@@ -178,7 +197,7 @@ struct pdma_rx_desc_info4 {
 #endif
 } __packed;
 
-#if defined(CONFIG_MEDIATEK_NETSYS_V2)
+#if defined(CONFIG_MEDIATEK_NETSYS_RX_V2)
 struct head_rx_descinfo4 {
 	uint32_t foe_entry_num:14;
 	uint32_t CRSN:5;
