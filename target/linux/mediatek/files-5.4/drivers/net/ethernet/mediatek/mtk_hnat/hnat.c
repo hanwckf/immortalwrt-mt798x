@@ -42,7 +42,7 @@ EXPORT_SYMBOL(ppe_dev_register_hook);
 void (*ppe_dev_unregister_hook)(struct net_device *dev) = NULL;
 EXPORT_SYMBOL(ppe_dev_unregister_hook);
 
-static int ppe_cnt = 1;
+static int ppe_cnt = 2;
 module_param(ppe_cnt, int, 0);
 
 static void hnat_sma_build_entry(struct timer_list *t)
