@@ -734,6 +734,9 @@ static int hnat_probe(struct platform_device *pdev)
 
 	hnat_priv->ppe_num = ppe_cnt;
 
+	if (IS_GMAC1_MODE)
+		hnat_priv->ppe_num = 1;
+
 	dev_info(&pdev->dev, "ppe num = %d\n", hnat_priv->ppe_num);
 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
