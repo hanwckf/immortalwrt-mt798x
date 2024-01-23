@@ -302,8 +302,8 @@ define Device/xiaomi_mi-router-wr30u-112m
   PAGESIZE := 2048
   IMAGE_SIZE := 114688k
   KERNEL_IN_UBI := 1
-  IMAGES += factory.ubi
-  IMAGE/factory.ubi := append-ubi | check-size $$$$(IMAGE_SIZE)
+  IMAGES += factory.bin
+  IMAGE/factory.bin := append-ubi | check-size $$$$(IMAGE_SIZE)
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
 endef
 TARGET_DEVICES += xiaomi_mi-router-wr30u-112m
@@ -332,7 +332,7 @@ define Device/xiaomi_mi-router-ax3000t
   IMAGE_SIZE := 114688k
   KERNEL_IN_UBI := 1
   IMAGES += factory.bin
-  IMAGE/factory.ubi := append-ubi | check-size $$$$(IMAGE_SIZE)
+  IMAGE/factory.bin := append-ubi | check-size $$$$(IMAGE_SIZE)
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
 endef
 TARGET_DEVICES += xiaomi_mi-router-ax3000t
