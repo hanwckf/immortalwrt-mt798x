@@ -267,6 +267,8 @@ function mtwifi_reinstall()
     os.execute("modprobe mtk_warp_proxy")
     --os.execute("modprobe mtfwd")
     --os.execute("modprobe mt_whnat")
+
+    utils.sleep(1)
 end
 
 function __exec_iwpriv_cmd(ifname, key, val)
