@@ -737,16 +737,17 @@ enum FoeIpAct {
 /* If user wants to change default FOE entry number, both DEF_ETRY_NUM and
  * DEF_ETRY_NUM_CFG need to be modified.
  */
-#define DEF_ETRY_NUM		16384
+
+#if defined(CONFIG_MEDIATEK_NETSYS_RX_V2)
+#define DEF_ETRY_NUM		32768
 /* feasible values : 32768, 16384, 8192, 4096, 2048, 1024 */
-#define DEF_ETRY_NUM_CFG	TABLE_16K
+#define DEF_ETRY_NUM_CFG	TABLE_32K
 /* corresponding values : TABLE_32K, TABLE_16K, TABLE_8K, TABLE_4K, TABLE_2K,
  * TABLE_1K
  */
-#if !defined(CONFIG_MEDIATEK_NETSYS_RX_V2)
-#if (DEF_ETRY_NUM > 16384) || (DEF_ETRY_NUM_CFG == TABLE_32K)
-#error "ppe entry num cfg error"
-#endif
+#else
+#define DEF_ETRY_NUM		16384
+#define DEF_ETRY_NUM_CFG	TABLE_16K
 #endif
 
 /*PPE_FLOW_CFG*/

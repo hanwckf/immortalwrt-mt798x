@@ -1161,7 +1161,7 @@ enum mkt_eth_capabilities {
 
 #define MT7986_CAPS   (MTK_GMAC1_SGMII | MTK_GMAC2_SGMII | \
                        MTK_MUX_GMAC12_TO_GEPHY_SGMII | MTK_QDMA | \
-                       MTK_NETSYS_V2)
+                       MTK_NETSYS_V2 | MTK_NETSYS_RX_V2)
 
 #define MT7981_CAPS   (MTK_GMAC1_SGMII | MTK_GMAC2_SGMII | MTK_GMAC2_GEPHY | \
 			MTK_MUX_GMAC12_TO_GEPHY_SGMII | MTK_QDMA | \
