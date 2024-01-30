@@ -1359,11 +1359,11 @@ return view.extend({
 
 					o = ss.taboption('advanced', form.Flag, 'mumimo_dl', _('MU-MIMO DL'));
 					o.depends('mode', 'ap');
-					o.default = o.enabled;
+					o.default = o.disabled;
 
 					o = ss.taboption('advanced', form.Flag, 'mumimo_ul', _('MU-MIMO UL'));
 					o.depends('mode', 'ap');
-					o.default = o.enabled;
+					o.default = o.disabled;
 
 					o = ss.taboption('advanced', form.Flag, 'ofdma_dl', _('OFDMA DL'));
 					o.depends('mode', 'ap');
