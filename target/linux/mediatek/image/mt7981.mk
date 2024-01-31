@@ -343,7 +343,7 @@ define Device/glinet_gl-mt3000
   DEVICE_DTS := mt7981-gl-mt3000
   DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
   SUPPORTED_DEVICES := glinet,mt3000-snand
-  DEVICE_PACKAGES := $(MT7981_USB_PKGS) kmod-hwmon-pwmfan
+  DEVICE_PACKAGES := $(MT7981_USB_PKGS) kmod-hwmon-pwmfan luci-app-samba4
   UBINIZE_OPTS := -E 5
   BLOCKSIZE := 128k
   PAGESIZE := 2048
@@ -382,7 +382,8 @@ define Device/glinet_gl-mt2500
   DEVICE_DTS := mt7981-gl-mt2500
   SUPPORTED_DEVICES := glinet,mt2500-emmc
   DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
-  DEVICE_PACKAGES := $(MT7981_USB_PKGS) f2fsck losetup mkf2fs kmod-mmc kmod-fs-f2fs gdisk
+  DEVICE_PACKAGES := $(MT7981_USB_PKGS) f2fsck losetup mkf2fs kmod-mmc kmod-fs-f2fs gdisk \
+	luci-app-samba4
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
 endef
 TARGET_DEVICES += glinet_gl-mt2500
@@ -443,7 +444,7 @@ define Device/cmcc_rax3000m
   DEVICE_MODEL := RAX3000M NAND
   DEVICE_DTS := mt7981-cmcc-rax3000m
   DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
-  DEVICE_PACKAGES := $(MT7981_USB_PKGS)
+  DEVICE_PACKAGES := $(MT7981_USB_PKGS) luci-app-samba4
   SUPPORTED_DEVICES := cmcc,rax3000m
   UBINIZE_OPTS := -E 5
   BLOCKSIZE := 128k
@@ -462,7 +463,8 @@ define Device/cmcc_rax3000m-emmc
   DEVICE_DTS := mt7981-cmcc-rax3000m-emmc
   DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
   SUPPORTED_DEVICES := cmcc,rax3000m-emmc
-  DEVICE_PACKAGES := $(MT7981_USB_PKGS) f2fsck losetup mkf2fs kmod-fs-f2fs kmod-mmc
+  DEVICE_PACKAGES := $(MT7981_USB_PKGS) f2fsck losetup mkf2fs kmod-fs-f2fs kmod-mmc \
+	luci-app-samba4
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
 endef
 TARGET_DEVICES += cmcc_rax3000m-emmc
