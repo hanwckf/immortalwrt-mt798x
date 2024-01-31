@@ -71,10 +71,16 @@ mediatek_setup_macs()
  		label_mac=$(mtd_get_mac_ascii product_info ethaddr)
  		wan_mac=$label_mac
  		lan_mac=$(macaddr_add "$label_mac" 1)
-		local wifi_n_ax_mac="$(macaddr_add $label_mac 2)"
-		echo "MacAddress=$wifi_n_ax_mac" >> /etc/wireless/mediatek/mt7986-ax6000.dbdc.b0.dat
-		local wifi_ac_ax_mac="$(macaddr_add $label_mac 3)"
-		echo "MacAddress=$wifi_ac_ax_mac" >> /etc/wireless/mediatek/mt7986-ax6000.dbdc.b1.dat
+		local b0dat="$(l1dat if2dat ra0)"
+		local b1dat="$(l1dat if2dat rax0)"
+		if [ -f ${b0dat} ] && ! grep -q "MacAddress=" ${b0dat}; then
+			local b0mac="$(macaddr_add $label_mac 2)"
+			echo "MacAddress=$b0mac" >> ${b0dat}
+		fi
+		if [ -f ${b1dat} ] && ! grep -q "MacAddress=" ${b1dat}; then
+			local b1mac="$(macaddr_add $label_mac 3)"
+			echo "MacAddress=$b1mac" >> ${b1dat}
+		fi
  		;;
 	jdcloud,re-cp-03)
 		wan_mac=$(mmc_get_mac_binary factory 0x2a)
