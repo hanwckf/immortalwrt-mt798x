@@ -4,7 +4,7 @@
 #include "mt7981.dtsi"
 
 / {
-	model = "GL.iNet GL-MT3000";
+	model = "GL.iNet GL-MT3000 (wan/lan reversed)";
 	compatible = "glinet,mt3000-snand", "mediatek,mt7981";
 
 	aliases {
@@ -206,9 +206,8 @@
 };
 
 &hnat {
-	mtketh-wan = "eth0";
-	mtketh-lan = "eth1";
-	mtketh-ppd = "eth1";
+	mtketh-wan = "eth1";
+	mtketh-lan = "eth0";
 	mtketh-max-gmac = <2>;
 	status = "okay";
 };

@@ -1,7 +1,7 @@
 /dts-v1/;
 #include "mt7981.dtsi"
 / {
-	model = "GL.iNet GL-MT2500";
+	model = "GL.iNet GL-MT2500 (wan/lan reversed)";
 	compatible = "glinet,mt2500-emmc", "mediatek,mt7981";
 
 	chosen {
@@ -18,22 +18,6 @@
 		regulator-max-microvolt = <3300000>;
 		regulator-boot-on;
 		regulator-always-on;
-	};
-
-	gl-hw {
-		compatible = "gl-hw-info";
-		model = "mt2500";
-		wan = "eth0";
-		lan = "eth1";
-		usb-port = "1-1";
-		flash_size = <8192>;
-		temperature = "/sys/devices/virtual/thermal/thermal_zone0/temp";
-		factory_data {
-			device_mac = "/dev/mmcblk0boot1", "0x0a";
-			device_ddns = "/dev/mmcblk0boot1", "0x10";
-			device_sn_bak = "/dev/mmcblk0boot1", "0x20";
-			device_sn = "/dev/mmcblk0boot1", "0x30";
-		};
 	};
 
 	gpio-keys {
@@ -141,9 +125,8 @@
 };
 
 &hnat {
-	mtketh-wan = "eth0";
-	mtketh-lan = "eth1";
-	mtketh-ppd = "eth1";
+	mtketh-wan = "eth1";
+	mtketh-lan = "eth0";
 	mtketh-max-gmac = <2>;
 	status = "okay";
 };
