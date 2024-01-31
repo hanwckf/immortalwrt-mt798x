@@ -261,8 +261,8 @@
 
 	uart1_pins: uart1-pins-g1 {
 		mux {
-                        function = "uart";
-                        groups = "uart1_1_no_cts_rts";
+			function = "uart";
+			groups = "uart1_1_no_cts_rts";
 		};
 	};
 };

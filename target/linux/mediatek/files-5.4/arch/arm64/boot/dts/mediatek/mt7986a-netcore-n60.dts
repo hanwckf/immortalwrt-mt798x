@@ -21,12 +21,12 @@
  		led-running = &led_status_blue;
  		led-upgrade = &led_status_blue;
 	};
+
 	memory {
 		reg = <0 0x40000000 0 0x10000000>;
 	};
 
-  
-       gpio-keys {
+    gpio-keys {
  		compatible = "gpio-keys";
 
  		button-reset {
@@ -42,7 +42,6 @@
  		};
  	};
 
-	
 	leds {
 		compatible = "gpio-leds";
 
@@ -196,11 +195,9 @@
 	};
 };
 
-
 &xhci {
  	status = "okay";
- };
-
+};
 
 &hnat {
 	mtketh-wan = "eth1";

@@ -244,18 +244,18 @@
 
 &pio {
 	i2c_pins: i2c-pins-g0 {
-                mux {
-                        function = "i2c";
-                        groups = "i2c0_0";
-                };
-        };
+		mux {
+			function = "i2c";
+			groups = "i2c0_0";
+		};
+	};
 
-        pcm_pins: pcm-pins-g0 {
-                mux {
-                        function = "pcm";
-                        groups = "pcm";
-                };
-        };
+	pcm_pins: pcm-pins-g0 {
+		mux {
+			function = "pcm";
+			groups = "pcm";
+		};
+	};
 
 	pwm0_pin: pwm0-pin-g0 {
 		mux {
