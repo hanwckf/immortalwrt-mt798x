@@ -343,7 +343,7 @@ define Device/glinet_gl-mt3000
   DEVICE_DTS := mt7981-gl-mt3000
   DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
   SUPPORTED_DEVICES := glinet,mt3000-snand
-  DEVICE_PACKAGES := kmod-hwmon-pwmfan
+  DEVICE_PACKAGES := $(MT7981_USB_PKGS) kmod-hwmon-pwmfan
   UBINIZE_OPTS := -E 5
   BLOCKSIZE := 128k
   PAGESIZE := 2048
@@ -382,7 +382,7 @@ define Device/glinet_gl-mt2500
   DEVICE_DTS := mt7981-gl-mt2500
   SUPPORTED_DEVICES := glinet,mt2500-emmc
   DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
-  DEVICE_PACKAGES := mkf2fs kmod-mmc kmod-fs-f2fs gdisk
+  DEVICE_PACKAGES := $(MT7981_USB_PKGS) f2fsck losetup mkf2fs kmod-mmc kmod-fs-f2fs gdisk
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
 endef
 TARGET_DEVICES += glinet_gl-mt2500
