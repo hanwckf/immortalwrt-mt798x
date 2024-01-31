@@ -27,7 +27,8 @@ mediatek_setup_interfaces()
 	bananapi,bpi-r3mini*)
 		ucidef_set_interfaces_lan_wan "eth0" "eth1"
 		;;
-	netcore,n60)
+	netcore,n60 |\
+	ruijie,rg-x60-pro*)
 		ucidef_set_interfaces_lan_wan "lan0 lan1 lan2 lan3" eth1
 		;;
  	glinet,gl-mt6000)
@@ -57,14 +58,23 @@ mediatek_setup_macs()
 	
 	case $board in
 	*netcore,n60*)
-	wifi_mac=$(mtd_get_mac_binary $part_name 4)
-	lan_mac="$(macaddr_add $wifi_mac -1)"
-	wan_mac="$(macaddr_add $wifi_mac -2)"
+		wifi_mac=$(mtd_get_mac_binary $part_name 4)
+		lan_mac="$(macaddr_add $wifi_mac -1)"
+		wan_mac="$(macaddr_add $wifi_mac -2)"
 		;;
 	glinet,gl-mt6000)
  		label_mac=$(mmc_get_mac_binary factory 0x0a)
  		wan_mac=$label_mac
  		lan_mac=$(macaddr_add "$label_mac" 2)
+ 		;;
+	ruijie,rg-x60-pro*)
+ 		label_mac=$(mtd_get_mac_ascii product_info ethaddr)
+ 		wan_mac=$label_mac
+ 		lan_mac=$(macaddr_add "$label_mac" 1)
+		local wifi_n_ax_mac="$(macaddr_add $label_mac 2)"
+		echo "MacAddress=$wifi_n_ax_mac" >> /etc/wireless/mediatek/mt7986-ax6000.dbdc.b0.dat
+		local wifi_ac_ax_mac="$(macaddr_add $label_mac 3)"
+		echo "MacAddress=$wifi_ac_ax_mac" >> /etc/wireless/mediatek/mt7986-ax6000.dbdc.b1.dat
  		;;
 	jdcloud,re-cp-03)
 		wan_mac=$(mmc_get_mac_binary factory 0x2a)

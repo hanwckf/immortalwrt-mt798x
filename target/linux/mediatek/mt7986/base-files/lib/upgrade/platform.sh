@@ -147,8 +147,9 @@ platform_do_upgrade() {
 		;;
 	xiaomi,redmi-router-ax6000 |\
 	bananapi,bpi-r3mini |\
-	netcore,n60|\
-	tplink,tl-xdr608*|\
+	netcore,n60 |\
+	ruijie,rg-x60-pro* |\
+	tplink,tl-xdr608* |\
 	*snand*)
 		nand_do_upgrade "$1"
 		;;
@@ -177,11 +178,12 @@ platform_check_image() {
 	case "$board" in
 	xiaomi,redmi-router-ax6000* |\
 	bananapi,bpi-r3mini* |\
-	netcore,n60|\
+	netcore,n60 |\
+	ruijie,rg-x60-pro* |\
 	*snand* |\
-	glinet,gl-mt6000|\
-	jdcloud,re-cp-03|\
-	tplink,tl-xdr608*|\
+	glinet,gl-mt6000 |\
+	jdcloud,re-cp-03 |\
+	tplink,tl-xdr608* |\
 	*emmc*)
 		# tar magic `ustar`
 		magic="$(dd if="$1" bs=1 skip=257 count=5 2>/dev/null)"
