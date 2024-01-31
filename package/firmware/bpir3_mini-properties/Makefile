@@ -14,10 +14,9 @@ PKG_LICENSE:=GPL-2.0
 include $(INCLUDE_DIR)/package.mk
 
 define Package/bpir3_mini-properties
-  SECTION:=BPI-R3-MINI Properties
-  CATEGORY:=BPI-R3-MINI Properties
+  SECTION:=firmware
+  CATEGORY:=Firmware
   TITLE:=PHYs firmware & fan control for BPI-R3-MINI 
-  MENU:=1
 endef
 
 define Package/bpir3_mini-properties/description
@@ -31,16 +30,14 @@ define Build/Compile
 endef
 
 define Package/bpir3_mini-properties/install
-	$(INSTALL_DIR) $(1)/etc/
+	$(INSTALL_DIR) $(1)/sbin/
 	$(INSTALL_DIR) $(1)/etc/init.d/
-	$(INSTALL_DIR) $(1)/etc/rc.d/
 	$(INSTALL_DIR) $(1)/lib/firmware/
-	$(INSTALL_BIN) ./files/etc/init.d/fanspeed $(1)/etc/init.d/
-	$(INSTALL_BIN) ./files/etc/rc.d/S99xfanspeed $(1)/etc/rc.d/
-	$(INSTALL_BIN) ./files/etc/init.d/ltecalling $(1)/etc/init.d/
-	$(INSTALL_BIN) ./files/etc/rc.d/S25xltecalling $(1)/etc/rc.d/
-	$(INSTALL_BIN) ./files/lib/firmware/EthMD32.dm.bin $(1)/lib/firmware/
-	$(INSTALL_BIN) ./files/lib/firmware/EthMD32.DSP.bin $(1)/lib/firmware/
+	$(INSTALL_BIN) ./files/bpir3_fanspeed $(1)/sbin/
+	$(INSTALL_BIN) ./files/fanspeed.init $(1)/etc/init.d/fanspeed
+	$(INSTALL_BIN) ./files/ltecalling.init $(1)/etc/init.d/ltecalling
+	$(INSTALL_DATA) ./files/EthMD32.dm.bin $(1)/lib/firmware/
+	$(INSTALL_DATA) ./files/EthMD32.DSP.bin $(1)/lib/firmware/
 endef
 
 $(eval $(call BuildPackage,bpir3_mini-properties))
