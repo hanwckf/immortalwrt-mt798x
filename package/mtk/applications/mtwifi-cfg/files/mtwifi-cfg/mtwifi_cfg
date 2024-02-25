@@ -226,6 +226,7 @@ function mtwifi_up(devname, cfg, restore_vifs, is_dbdc)
 
     mtwifi_cfg_foreach_vif(cfg, "ap", start_vif)
     mtwifi_cfg_foreach_vif(cfg, "sta", start_vif)
+    os.execute("startwapp.sh")
 end
 
 function mtwifi_down(devname, cfg)
@@ -244,6 +245,7 @@ function mtwifi_down(devname, cfg)
             end
         end
     end
+    os.execute("startwapp.sh")
     return reset_vifs
 end
 
@@ -544,6 +546,7 @@ function mtwifi_cfg_setup(argv)
             set_dat(dats, apidx, "HideSSID", v.config.hidden)
             set_dat(dats, apidx, "WmmCapable", v.config.wmm)
             set_dat(dats, apidx, "RRMEnable", v.config.ieee80211k)
+            set_dat(dats, apidx, "FtSupport", v.config.ieee80211r)
             set_dat(dats, apidx, "RekeyInterval", v.config.wpa_group_rekey)
             set_dat(dats, apidx, "MuMimoDlEnable", v.config.mumimo_dl)
             set_dat(dats, apidx, "MuMimoUlEnable", v.config.mumimo_ul)

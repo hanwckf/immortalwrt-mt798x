@@ -15,15 +15,15 @@ MTWIFI_CFG_IFNAME_KEY="mtwifi_ifname"
 
 drv_mtwifi_init_device_config() {
 	config_add_int txpower beacon_int dtim_period
-	config_add_boolean mu_beamformer dbdc_main whnat
+	config_add_boolean mu_beamformer dbdc_main whnat bandsteering
 	config_add_string country twt
 }
 
 drv_mtwifi_init_iface_config() {
-	config_add_string 'ssid:string' macfilter bssid kicklow assocthres
-	config_add_boolean wmm hidden isolate ieee80211k
+	config_add_string 'ssid:string' macfilter bssid kicklow assocthres steeringthresold 
+	config_add_boolean wmm hidden isolate ieee80211k ieee80211r
 	config_add_int wpa_group_rekey frag rts
-	config_add_array 'maclist:list(macaddr)'
+	config_add_array 'maclist:list(macaddr)' 'steeringbssid:list(macaddr)'
 	config_add_boolean mumimo_dl mumimo_ul ofdma_dl ofdma_ul amsdu autoba uapsd
 }
 

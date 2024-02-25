@@ -72,6 +72,7 @@ AutoChannelSelect=3
 AutoChannelSkipList=
 AutoProvisionEn=0
 BandSteering=0
+QoSR1Enable=1
 BasicRate=15
 BcnProt=0
 BeaconPeriod=100
