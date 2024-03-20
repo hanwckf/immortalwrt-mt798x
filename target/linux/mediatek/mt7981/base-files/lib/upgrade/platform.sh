@@ -205,6 +205,7 @@ platform_do_upgrade() {
 	cmcc,rax3000m |\
 	h3c,nx30pro |\
 	*konka,komi-a31* |\
+	newland,nl-wr9103 |\
 	*snand*)
 		nand_do_upgrade "$1"
 		;;
@@ -252,6 +253,7 @@ platform_check_image() {
 	h3c,nx30pro |\
 	*konka,komi-a31* |\
 	nradio,wt9103 |\
+	newland,nl-wr9103 |\
 	*snand* |\
 	*emmc*)
 		# tar magic `ustar`
