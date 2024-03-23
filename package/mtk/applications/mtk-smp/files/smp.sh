@@ -757,6 +757,7 @@ setup_model()
 	*rax3000m* |\
 	h3c,nx30pro |\
 	konka,komi-a31 |\
+	*nokia,ea0326gmp* |\
 	nradio,wt9103 |\
 	*7981*)
 		MT7981_whnat $num_of_wifi $usbnet

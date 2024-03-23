@@ -3,6 +3,7 @@
 . /lib/functions.sh
 . /lib/functions/uci-defaults.sh
 . /lib/functions/system.sh
+. /lib/functions/caldata.sh
 
 mediatek_setup_interfaces()
 {
@@ -62,6 +63,11 @@ mediatek_setup_interfaces()
 		ucidef_add_switch "switch0" \
 			"0:lan:3" "1:lan:2" "2:lan:1" "6u@eth0"
 		;;
+	*nokia,ea0326gmp*)
+		ucidef_set_interfaces_lan_wan "eth0" "eth1"
+		ucidef_add_switch "switch0" \
+			"1:lan" "2:lan" "3:lan" "6u@eth0"
+		;;
 	*mt3000* |\
 	glinet,x3000-emmc |\
 	*xe3000* |\
@@ -89,18 +95,12 @@ mtk_facrory_write_mac()
 	local macaddr=$3 #aa:bb:cc:dd:ee:ff
 	local data=""
 
-	part=$(find_mtd_part $part_name)
+	part="$(find_mtd_part $part_name)"
 	if [ -n "$part" ] && [ -n "$macaddr" ]; then
-		local i=1
-		for x in ${macaddr//:/ }; do
-			[ $i -gt 6 ] && break
-			data=${data}"\x${x}"
-			i=$((i+1))
-		done
-		dd if=$part of=/tmp/Factory.backup
-		printf "${data}" | dd conv=notrunc of=/tmp/Factory.backup bs=1 seek=$((${offset}))
-		mtd write /tmp/Factory.backup $part_name
-		rm -rf /tmp/Factory.backup
+		dd if="$part" of="/tmp/Factory.backup"
+		caldata_patch_mac "$macaddr" "0x4" "" "/tmp/Factory.backup"
+		mtd write "/tmp/Factory.backup" "$part_name"
+		rm -rf "/tmp/Factory.backup"
 	fi
 }
 
@@ -200,6 +200,16 @@ mediatek_setup_macs()
 			local wifi_mac=$(mtd_get_mac_binary Factory 0x4)
 			lan_mac=$(macaddr_add $wifi_mac -1)
 			wan_mac=$(macaddr_add $wifi_mac 1)
+		fi
+		;;
+	nokia,ea0326gmp)
+		lan_mac=$(mtd_get_mac_binary Factory 0x28)
+		wan_mac=$(macaddr_add $lan_mac 3)
+		label_mac=$wan_mac
+
+		if [ "$(mtk_factory_get_byte Factory 4 2)" = "00-0c" ]; then
+			local wifi_mac="$(macaddr_add $lan_mac 1)"
+			mtk_facrory_write_mac Factory 4 "$wifi_mac"
 		fi
 		;;
 	nradio,wt9103)
