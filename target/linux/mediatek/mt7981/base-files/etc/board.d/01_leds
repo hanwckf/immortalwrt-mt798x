@@ -42,6 +42,11 @@ h3c,nx30pro)
 	ucidef_set_led_default "green" "GREEN" "nx30pro:green" "1"
 	ucidef_set_led_default "red" "RED" "nx30pro:red" "0"
 	;;
+ikuai,q3000)
+	ucidef_set_led_default "green" "GREEN" "q3000:green" "1"
+	ucidef_set_led_default "blue" "BLUE" "q3000:blue" "0"
+	ucidef_set_led_default "red" "RED" "q3000:red" "0"
+	;;
 konka,komi-a31)
         ucidef_set_led_netdev "blue" "BLUE" "blue:status" "eth1" "link"
 	;;

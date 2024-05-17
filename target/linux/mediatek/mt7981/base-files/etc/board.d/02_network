@@ -76,6 +76,9 @@ mediatek_setup_interfaces()
 	nradio,wt9103)
 		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 lan4" eth1
 		;;
+	ikuai,q3000)
+		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3" wan
+		;;
 	*)
 		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 lan4" eth1
 		;;
@@ -227,6 +230,10 @@ mediatek_setup_macs()
 		wan_mac=$(mtd_get_mac_binary $part_name 0x24)
 		label_mac=$wan_mac
 		local wifi_mac="$(mtd_get_mac_binary $part_name 0x04)"
+		;;
+	ikuai,q3000)
+		wan_mac=$(mtd_get_mac_binary $part_name 0x10048)
+		lan_mac=$(macaddr_add $wan_mac 1)
 		;;
 	*)
 		wan_mac=$(mtd_get_mac_binary $part_name $wan_mac_offset)
