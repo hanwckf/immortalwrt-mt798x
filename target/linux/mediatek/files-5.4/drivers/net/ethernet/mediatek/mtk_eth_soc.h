@@ -225,8 +225,8 @@
 #define MTK_MAX_IRQ_NUM			(4)
 #else
 #define MTK_PDMA_RSS_GLO_CFG		0x2800
-#define MTK_RX_NAPI_NUM			(2)
-#define MTK_MAX_IRQ_NUM			(4)
+#define MTK_RX_NAPI_NUM			(1)
+#define MTK_MAX_IRQ_NUM			(3)
 #endif
 #define MTK_RSS_RING1			(1)
 #define MTK_RSS_EN			BIT(0)
