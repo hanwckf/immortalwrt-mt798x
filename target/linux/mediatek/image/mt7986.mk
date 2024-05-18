@@ -489,7 +489,9 @@ define Device/BPI-R3-SD
   DEVICE_DTS := mt7986a-bananapi-bpi-r3-sdmmc
   DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
   SUPPORTED_DEVICES := bananapi,bpi-r3
-  DEVICE_PACKAGES := luci-app-mtk l1profile wireless-tools kmod-conninfra kmod-warp kmod-mt_wifi kmod-nvme kmod-sfp ipv6helper kmod-mediatek_hnat bash autocore-arm mtkhnat_util kmod-usb3 wifi-profile automount swconfig luci-app-turboacc-mtk mkf2fs
+  DEVICE_PACKAGES := $(MT7986_USB_PKGS) $(MT7986_WWAN_PKGS) \
+        kmod-nvme kmod-sfp kmod-scsi-generic kmod-ata-ahci \
+        f2fsck losetup mkf2fs f2fs-tools kmod-fs-f2fs kmod-mmc automount
   IMAGES += single.img.gz 
   IMAGE/single.img.gz := mt798x-gpt | make_bpi-r3_img_sd | gzip | append-metadata
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
@@ -504,7 +506,9 @@ define Device/BPI-R3-EMMC
   DEVICE_DTS := mt7986a-bananapi-bpi-r3-emmc
   DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
   SUPPORTED_DEVICES := bananapi,bpi-r3
-  DEVICE_PACKAGES := luci-app-mtk l1profile wireless-tools kmod-conninfra kmod-warp kmod-mt_wifi kmod-nvme kmod-sfp ipv6helper kmod-mediatek_hnat bash autocore-arm mtkhnat_util kmod-usb3 wifi-profile automount swconfig luci-app-turboacc-mtk mkf2fs
+  DEVICE_PACKAGES := $(MT7986_USB_PKGS) $(MT7986_WWAN_PKGS) \
+        kmod-nvme kmod-sfp kmod-scsi-generic kmod-ata-ahci \
+        f2fsck losetup mkf2fs f2fs-tools kmod-fs-f2fs kmod-mmc automount
   IMAGES += single.img.gz 
   IMAGE/single.img.gz := mt798x-gpt | make_bpi-r3_img_emmc | gzip | append-metadata
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
@@ -517,7 +521,8 @@ define Device/BPI-R3-NAND
   DEVICE_TITLE := Banana Pi R3 NAND
   DEVICE_DTS := mt7986a-bananapi-bpi-r3-nand
   DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
-  DEVICE_PACKAGES := luci-app-mtk l1profile wireless-tools kmod-conninfra kmod-warp kmod-mt_wifi kmod-nvme kmod-sfp  ipv6helper kmod-mediatek_hnat bash autocore-arm mtkhnat_util kmod-usb3 wifi-profile automount swconfig luci-app-turboacc-mtk
+  DEVICE_PACKAGES := $(MT7986_USB_PKGS) $(MT7986_WWAN_PKGS) \
+        kmod-nvme kmod-sfp kmod-scsi-generic kmod-ata-ahci
   SUPPORTED_DEVICES := bananapi,bpi-r3-nand
   UBINIZE_OPTS := -E 5
   BLOCKSIZE := 128k
@@ -536,7 +541,8 @@ define Device/BPI-R3-NOR
   DEVICE_TITLE := Banana Pi R3 NOR
   DEVICE_DTS := mt7986a-bananapi-bpi-r3-nor
   DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
-  DEVICE_PACKAGES := luci-app-mtk l1profile wireless-tools kmod-conninfra kmod-warp kmod-mt_wifi kmod-nvme kmod-sfp ipv6helper kmod-mediatek_hnat bash autocore-arm mtkhnat_util kmod-usb3 wifi-profile automount swconfig luci-app-turboacc-mtk
+  DEVICE_PACKAGES := $(MT7986_USB_PKGS) $(MT7986_WWAN_PKGS) \
+        kmod-nvme kmod-sfp kmod-scsi-generic kmod-ata-ahci
   SUPPORTED_DEVICES := bananapi,bpi-r3-nand
 endef
 TARGET_DEVICES += BPI-R3-NOR
