@@ -147,7 +147,7 @@ platform_do_upgrade() {
 		;;
 	xiaomi,redmi-router-ax6000 |\
 	bananapi,bpi-r3mini |\
-	bananapi,bpi-r3-nand |\
+	bananapi,bpi-r3-nand* |\
 	netcore,n60 |\
 	ruijie,rg-x60-pro* |\
 	tplink,tl-xdr608* |\
