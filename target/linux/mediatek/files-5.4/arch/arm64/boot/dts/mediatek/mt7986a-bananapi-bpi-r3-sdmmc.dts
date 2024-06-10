@@ -278,11 +278,12 @@
 	pinctrl-0 = <&mmc0_pins_default>;
 	pinctrl-1 = <&mmc0_pins_uhs>;
 	bus-width = <4>;
-	max-frequency = <208000000>;
-	sdhci-caps-mask = <0x7 0x0>; 
+	max-frequency = <52000000>;
 	cap-sd-highspeed;
 	vmmc-supply = <&reg_3p3v>;
-	vqmmc-supply = <&reg_1p8v>;
+	vqmmc-supply = <&reg_3p3v>;
+	no-mmc;
+	no-sdio;
 	status = "okay";
 };
 
