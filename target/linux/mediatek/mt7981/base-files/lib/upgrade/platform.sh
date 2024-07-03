@@ -205,7 +205,8 @@ platform_do_upgrade() {
 	cmcc,rax3000m |\
 	h3c,nx30pro |\
 	*konka,komi-a31* |\
-	*snand*)
+	*snand* |\
+	routerich,ax3000)
 		nand_do_upgrade "$1"
 		;;
 	cmcc,rax3000m-emmc |\
@@ -253,7 +254,8 @@ platform_check_image() {
 	*konka,komi-a31* |\
 	nradio,wt9103 |\
 	*snand* |\
-	*emmc*)
+	*emmc* |\
+	routerich,ax3000)
 		# tar magic `ustar`
 		magic="$(dd if="$1" bs=1 skip=257 count=5 2>/dev/null)"
 

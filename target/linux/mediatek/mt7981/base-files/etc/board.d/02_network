@@ -76,6 +76,11 @@ mediatek_setup_interfaces()
 	nradio,wt9103)
 		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 lan4" eth1
 		;;
+	routerich,ax3000)
+		ucidef_set_interfaces_lan_wan "eth0" "eth1"
+		ucidef_add_switch "switch0" \
+			"0:lan:1" "2:lan:2" "3:lan:3" "4:wan" "6u@eth0" "5u@eth1"
+		;;
 	*)
 		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 lan4" eth1
 		;;
@@ -227,6 +232,17 @@ mediatek_setup_macs()
 		wan_mac=$(mtd_get_mac_binary $part_name 0x24)
 		label_mac=$wan_mac
 		local wifi_mac="$(mtd_get_mac_binary $part_name 0x04)"
+		;;
+	routerich,ax3000)
+		local wifi_mac="$(mtd_get_mac_binary $part_name 0x4)"
+		label_mac=$(macaddr_add $wifi_mac -2)
+		lan_mac=$(macaddr_add $wifi_mac -1)
+		wan_mac=$label_mac
+		local b1dat="$(l1dat if2dat rax0)"
+		if [ -f ${b1dat} ] && ! grep -q "MacAddress=" ${b1dat}; then
+			local b1mac="$(macaddr_add $wifi_mac 1)"
+			echo "MacAddress=$b1mac" >> ${b1dat}
+		fi
 		;;
 	*)
 		wan_mac=$(mtd_get_mac_binary $part_name $wan_mac_offset)

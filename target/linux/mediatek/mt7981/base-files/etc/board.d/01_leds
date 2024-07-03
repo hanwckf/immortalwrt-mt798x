@@ -51,6 +51,15 @@ nradio,wt9103)
 	ucidef_set_led_netdev "5g" "5G" "hc:blue:cmode5" "eth1" "tx rx"
 	ucidef_set_led_netdev "lan" "LAN" "hc:blue:cmode4" "br-lan" "tx rx"
 	;;
+routerich,ax3000)
+	ucidef_set_led_switch "lan1" "LAN1" "blue:lan1" "switch0" "0x01"
+	ucidef_set_led_switch "lan2" "LAN2" "blue:lan2" "switch0" "0x04"
+	ucidef_set_led_switch "lan3" "LAN3" "blue:lan3" "switch0" "0x08"
+	ucidef_set_led_switch "wan" "WAN" "blue:wan" "switch0" "0x10"
+	ucidef_set_led_switch "wan off" "WAN Off" "red:wan" "switch0" "0x10" "" "link"
+	ucidef_set_led_netdev "wlan2g" "WLAN 2G" "blue:wlan2g" "ra0"
+	ucidef_set_led_netdev "wlan5g" "WLAN 5G" "red:wlan5g" "rax0"
+	;;
 esac
 
 board_config_flush
