@@ -1,0 +1,20 @@
+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+
+/dts-v1/;
+#include "mt7981-ruijie-rg-x30e-pro.dtsi"
+
+/ { 
+	model = "Ruijie RG-X30E Pro";
+	compatible = "ruijie,rg-x30e-pro", "mediatek,mt7981";
+
+	chosen {
+		bootargs = "console=ttyS0,115200n1 loglevel=8 earlycon=uart8250,mmio32,0x11002000";
+	};
+};
+
+&partitions {
+	partition@880000 {
+		label = "ubi";
+		reg = <0x880000 0x6F80000>;
+	};
+};
