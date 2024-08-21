@@ -166,7 +166,7 @@
 				};
 
 				port@3 {
-					reg = <2>;
+					reg = <3>;
 					label = "lan2";
 				};
 

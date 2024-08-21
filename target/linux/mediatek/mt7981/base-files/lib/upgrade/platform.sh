@@ -195,6 +195,7 @@ platform_do_upgrade() {
 	*mt2500* |\
 	*zr-3020* |\
 	*360,t7* |\
+	ruijie,rg-x30e* |\
 	*abt,asr3000* |\
 	*cetron,ct3003* |\
 	*clt,r30b1* |\
@@ -205,6 +206,7 @@ platform_do_upgrade() {
 	cmcc,rax3000m |\
 	h3c,nx30pro |\
 	*konka,komi-a31* |\
+	*nokia,ea0326gmp* |\
 	*snand*)
 		nand_do_upgrade "$1"
 		;;
@@ -239,6 +241,7 @@ platform_check_image() {
 	*mt2500* |\
 	*zr-3020* |\
 	*360,t7* |\
+	ruijie,rg-x30e* |\
 	xiaomi,mi-router-wr30u-stock|\
 	xiaomi,mi-router-wr30u-112m|\
 	xiaomi,mi-router-ax3000t* |\
@@ -251,6 +254,7 @@ platform_check_image() {
 	cmcc,rax3000m* |\
 	h3c,nx30pro |\
 	*konka,komi-a31* |\
+	*nokia,ea0326gmp* |\
 	nradio,wt9103 |\
 	*snand* |\
 	*emmc*)

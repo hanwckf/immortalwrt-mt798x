@@ -169,7 +169,7 @@ function mtwifi_cfg_foreach_vif(cfg, mode, func)
 
     local vif_num,_,_ = vif_count(cfg)
     for idx=0,vif_num-1 do
-        local v = cfg.interfaces[tostring(idx)]
+        local v = cfg.interfaces[string.format("%02d", idx)]
         if v.config.mode and v.config.mode == mode then
             func(v)
         end
@@ -536,7 +536,7 @@ function mtwifi_cfg_setup(argv)
     -- setup vif cfgs
     local apidx = 1
     for idx = 0,vif_num-1 do
-        v = cfg.interfaces[tostring(idx)]
+        v = cfg.interfaces[string.format("%02d", idx)]
         if v.config.mode == "ap" then
             set_idx_dat(dats, apidx, "SSID", v.config.ssid)
             set_idx_dat(dats, apidx, "WPAPSK", v.config.key or "")

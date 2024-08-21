@@ -1,0 +1,26 @@
+From 89dd694e33b2b1c23ca8e0a5178075f9198abb83 Mon Sep 17 00:00:00 2001
+From: "Allen.Ye" <allen.ye@mediatek.com>
+Date: Thu, 23 Feb 2023 14:15:07 +0800
+Subject: [PATCH] netifd: mtk: Fix the AP sequence is out of order when set
+ over 10 Aps
+
+---
+ wireless.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/wireless.c b/wireless.c
+index 705d6dd..43c6e3c 100644
+--- a/wireless.c
++++ b/wireless.c
+@@ -1192,7 +1192,7 @@ struct wireless_interface* wireless_interface_create(struct wireless_device *wde
+ 	if (cur && blobmsg_get_bool(cur))
+ 		return NULL;
+ 
+-	sprintf(name, "%d", wdev->vif_idx++);
++	sprintf(name, "%02d", wdev->vif_idx++);
+ 
+ 	vif = calloc_a(sizeof(*vif),
+ 		       &name_buf, strlen(name) + 1);
+-- 
+2.18.0
+
