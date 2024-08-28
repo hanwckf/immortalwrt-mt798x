@@ -205,6 +205,7 @@ platform_do_upgrade() {
 	cmcc,a10 |\
 	cmcc,rax3000m |\
 	h3c,nx30pro |\
+	*honor,fur-602* |\
 	*konka,komi-a31* |\
 	routerich,ax3000 |\
 	*nokia,ea0326gmp* |\
@@ -254,6 +255,7 @@ platform_check_image() {
 	cmcc,a10 |\
 	cmcc,rax3000m* |\
 	h3c,nx30pro |\
+	*honor,fur-602* |\
 	*konka,komi-a31* |\
 	*nokia,ea0326gmp* |\
 	nradio,wt9103 |\
