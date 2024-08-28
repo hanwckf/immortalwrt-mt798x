@@ -760,6 +760,7 @@ setup_model()
 	konka,komi-a31 |\
 	*nokia,ea0326gmp* |\
 	newland,nl-wr8103 |\
+	newland,nl-wr9103 |\
 	nradio,wt9103 |\
 	ruijie,rg-x30e* |\
 	*7981*)

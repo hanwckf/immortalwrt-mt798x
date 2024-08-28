@@ -69,6 +69,7 @@ mediatek_setup_interfaces()
 		ucidef_add_switch "switch0" \
 			"0:lan:3" "1:lan:2" "2:lan:1" "6u@eth0"
 		;;
+	*newland,nl-wr9103* |\
 	*nokia,ea0326gmp*)
 		ucidef_set_interfaces_lan_wan "eth0" "eth1"
 		ucidef_add_switch "switch0" \
