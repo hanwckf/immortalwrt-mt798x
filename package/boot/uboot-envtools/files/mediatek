@@ -30,6 +30,7 @@ ruijie,rg-x60-pro* |\
 cmcc,rax3000m)
 	ubootenv_add_uci_config "/dev/mtd2" "0x0" "0x80000" "0x20000" "4"
 	;;
+*honor,fur-602* |\
 *imou,lc-hx3001*)
 	ubootenv_add_uci_config "/dev/mtd2" "0x0" "0x80000" "0x80000" "1"
 	;;

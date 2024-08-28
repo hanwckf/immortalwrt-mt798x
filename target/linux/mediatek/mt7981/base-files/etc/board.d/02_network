@@ -39,6 +39,11 @@ mediatek_setup_interfaces()
 		ucidef_add_switch "switch0" \
 			"0:lan" "1:lan" "2:lan" "3:wan" "6t@eth0"
 		;;
+	*honor,fur-602*)
+		ucidef_set_interfaces_lan_wan "eth0.1" "eth0.2"
+		ucidef_add_switch "switch0" \
+			"1:lan:3" "2:lan:2" "3:lan:1" "0:wan" "6t@eth0"
+		;;
 	*clt,r30b1* |\
 	h3c,nx30pro |\
 	*imou,lc-hx3001* |\
