@@ -66,6 +66,11 @@ routerich,ax3000)
 	ucidef_set_led_netdev "wlan2g" "WLAN 2G" "blue:wlan2g" "ra0"
 	ucidef_set_led_netdev "wlan5g" "WLAN 5G" "red:wlan5g" "rax0"
 	;;
+*newland,nl-wr8103*)
+	ucidef_set_led_default "red" "RED" "red:status" "0"
+	ucidef_set_led_default "green" "GREEN" "green:status" "0"
+	ucidef_set_led_default "blue" "BLUE" "blue:status" "1"
+	;;
 esac
 
 board_config_flush

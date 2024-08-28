@@ -10,7 +10,7 @@
 #include "mt7981.dtsi"
 
 / {
-	model = "JCG Q30";
+	model = "JCG Q30 / MR3000D-CIq(512MB RAM version)";
 	compatible = "jcg,q30", "mediatek,mt7981";
 
 	aliases {
