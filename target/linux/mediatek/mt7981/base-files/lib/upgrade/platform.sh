@@ -209,6 +209,7 @@ platform_do_upgrade() {
 	*konka,komi-a31* |\
 	routerich,ax3000 |\
 	*nokia,ea0326gmp* |\
+	*newland,nl-wr8103* |\
 	*snand*)
 		nand_do_upgrade "$1"
 		;;
@@ -258,6 +259,7 @@ platform_check_image() {
 	*honor,fur-602* |\
 	*konka,komi-a31* |\
 	*nokia,ea0326gmp* |\
+	*newland,nl-wr8103* |\
 	nradio,wt9103 |\
 	*snand* |\
 	*emmc* |\

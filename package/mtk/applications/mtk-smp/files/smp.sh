@@ -759,6 +759,7 @@ setup_model()
 	*honor,fur-602* |\
 	konka,komi-a31 |\
 	*nokia,ea0326gmp* |\
+	newland,nl-wr8103 |\
 	nradio,wt9103 |\
 	ruijie,rg-x30e* |\
 	*7981*)
