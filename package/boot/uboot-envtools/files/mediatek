@@ -22,6 +22,7 @@ jdcloud,re-cp-03)
 *360,t7* |\
 ruijie,rg-x30e* |\
 *newland,nl-wr8103* |\
+newland,nl-wr9103 |\
 livinet,zr-3020*)
 	ubootenv_add_uci_config "/dev/mtd2" "0x0" "0x20000" "0x20000" "1"
 	;;
