@@ -17,7 +17,6 @@ caldata_validate() {
 do_extract_caldata() {
 	case $(board_name) in
 	glinet,gl-mt6000 |\
-	ruijie,rg-x60-pro* |\
 	jdcloud,re-cp-03)
 		FIRMWARE=MT7986_ePAeLNA_EEPROM_AX6000.bin
 		caldata_validate && exit 0
