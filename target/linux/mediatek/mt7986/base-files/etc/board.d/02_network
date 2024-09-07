@@ -83,10 +83,20 @@ mediatek_setup_macs()
 		fi
  		;;
 	jdcloud,re-cp-03)
-		wan_mac=$(mmc_get_mac_binary factory 0x2a)
-		lan_mac=$(mmc_get_mac_binary factory 0x24)
+		lan_mac=$(mmc_get_mac_binary factory 0x2a)
+		wan_mac=$(mmc_get_mac_binary factory 0x24)
 		label_mac=$lan_mac
-		;;
+		local b0dat="$(l1dat if2dat ra0)"
+		local b1dat="$(l1dat if2dat rax0)"
+		if [ -f ${b0dat} ] && ! grep -q "MacAddress=" ${b0dat}; then
+			local b0mac="$(mmc_get_mac_binary factory 0x04)"
+			echo "MacAddress=$b0mac" >> ${b0dat}
+		fi
+		if [ -f ${b1dat} ] && ! grep -q "MacAddress=" ${b1dat}; then
+			local b1mac="$(macaddr_setbit_la $b0mac)"
+			echo "MacAddress=$b1mac" >> ${b1dat}
+		fi
+ 		;;
  	tplink,tl-xdr6086|\
  	tplink,tl-xdr6088)
 		lan_mac=$(mtd_get_mac_binary config 0x1c)
