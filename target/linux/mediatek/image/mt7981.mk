@@ -279,6 +279,102 @@ define Device/mt7981-clt-r30b1-112M
 endef
 TARGET_DEVICES += mt7981-clt-r30b1-112M
 
+define Device/ruijie_rg-x30e-stock
+  DEVICE_VENDOR := Ruijie
+  DEVICE_MODEL := Ruijie RG-X30E (stock layout)
+  DEVICE_DTS := mt7981-ruijie-rg-x30e-stock
+  DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
+  UBINIZE_OPTS := -E 5
+  BLOCKSIZE := 128k
+  PAGESIZE := 2048
+  IMAGE_SIZE := 114688k
+  KERNEL_IN_UBI := 1
+  IMAGES += factory.bin
+  IMAGE/factory.bin := append-ubi | check-size $$$$(IMAGE_SIZE)
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+endef
+TARGET_DEVICES += ruijie_rg-x30e-stock
+
+define Device/ruijie_rg-x30e-firmware2
+  DEVICE_VENDOR := Ruijie
+  DEVICE_MODEL := Ruijie RG-X30E (firmware2 layout)
+  DEVICE_DTS := mt7981-ruijie-rg-x30e-firmware2
+  DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
+  UBINIZE_OPTS := -E 5
+  BLOCKSIZE := 128k
+  PAGESIZE := 2048
+  IMAGE_SIZE := 114688k
+  KERNEL_IN_UBI := 1
+  IMAGES += factory.bin
+  IMAGE/factory.bin := append-ubi | check-size $$$$(IMAGE_SIZE)
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+endef
+TARGET_DEVICES += ruijie_rg-x30e-firmware2
+
+define Device/ruijie_rg-x30e
+  DEVICE_VENDOR := Ruijie
+  DEVICE_MODEL := Ruijie RG-X30E
+  DEVICE_DTS := mt7981-ruijie-rg-x30e
+  DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
+  UBINIZE_OPTS := -E 5
+  BLOCKSIZE := 128k
+  PAGESIZE := 2048
+  IMAGE_SIZE := 114688k
+  KERNEL_IN_UBI := 1
+  IMAGES += factory.bin
+  IMAGE/factory.bin := append-ubi | check-size $$$$(IMAGE_SIZE)
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+endef
+TARGET_DEVICES += ruijie_rg-x30e
+
+define Device/ruijie_rg-x30e-pro-stock
+  DEVICE_VENDOR := Ruijie
+  DEVICE_MODEL := Ruijie RG-X30E Pro (stock layout)
+  DEVICE_DTS := mt7981-ruijie-rg-x30e-pro-stock
+  DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
+  UBINIZE_OPTS := -E 5
+  BLOCKSIZE := 128k
+  PAGESIZE := 2048
+  IMAGE_SIZE := 114688k
+  KERNEL_IN_UBI := 1
+  IMAGES += factory.bin
+  IMAGE/factory.bin := append-ubi | check-size $$$$(IMAGE_SIZE)
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+endef
+TARGET_DEVICES += ruijie_rg-x30e-pro-stock
+
+define Device/ruijie_rg-x30e-pro-firmware2
+  DEVICE_VENDOR := Ruijie
+  DEVICE_MODEL := Ruijie RG-X30E Pro (firmware2 layout)
+  DEVICE_DTS := mt7981-ruijie-rg-x30e-pro-firmware2
+  DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
+  UBINIZE_OPTS := -E 5
+  BLOCKSIZE := 128k
+  PAGESIZE := 2048
+  IMAGE_SIZE := 114688k
+  KERNEL_IN_UBI := 1
+  IMAGES += factory.bin
+  IMAGE/factory.bin := append-ubi | check-size $$$$(IMAGE_SIZE)
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+endef
+TARGET_DEVICES += ruijie_rg-x30e-pro-firmware2
+
+define Device/ruijie_rg-x30e-pro
+  DEVICE_VENDOR := Ruijie
+  DEVICE_MODEL := Ruijie RG-X30E Pro
+  DEVICE_DTS := mt7981-ruijie-rg-x30e-pro
+  DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
+  UBINIZE_OPTS := -E 5
+  BLOCKSIZE := 128k
+  PAGESIZE := 2048
+  IMAGE_SIZE := 114688k
+  KERNEL_IN_UBI := 1
+  IMAGES += factory.bin
+  IMAGE/factory.bin := append-ubi | check-size $$$$(IMAGE_SIZE)
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+endef
+TARGET_DEVICES += ruijie_rg-x30e-pro
+
 define Device/xiaomi_mi-router-wr30u-stock
   DEVICE_VENDOR := Xiaomi
   DEVICE_MODEL := Mi Router WR30U (stock layout)
@@ -405,6 +501,23 @@ define Device/jcg_q30
 endef
 TARGET_DEVICES += jcg_q30
 
+define Device/ikuai_q3000
+  DEVICE_VENDOR := iKuai
+  DEVICE_MODEL := Q3000
+  DEVICE_DTS := mt7981-ikuai-q3000
+  DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
+  SUPPORTED_DEVICES := ikuai,q3000
+  UBINIZE_OPTS := -E 5
+  BLOCKSIZE := 128k
+  PAGESIZE := 2048
+  IMAGE_SIZE := 114816k
+  KERNEL_IN_UBI := 1
+  IMAGES += factory.bin
+  IMAGE/factory.bin := append-ubi | check-size $$$$(IMAGE_SIZE)
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+endef
+TARGET_DEVICES += ikuai_q3000
+
 define Device/livinet_zr-3020
   DEVICE_VENDOR := Livinet
   DEVICE_MODEL := ZR-3020
@@ -469,6 +582,36 @@ define Device/cmcc_rax3000m-emmc
 endef
 TARGET_DEVICES += cmcc_rax3000m-emmc
 
+define Device/cmcc_xr30
+  DEVICE_VENDOR := CMCC
+  DEVICE_MODEL := XR30 NAND
+  DEVICE_DTS := mt7981-cmcc-xr30
+  DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
+  DEVICE_PACKAGES := $(MT7981_USB_PKGS) luci-app-samba4
+  SUPPORTED_DEVICES := cmcc,xr30
+  UBINIZE_OPTS := -E 5
+  BLOCKSIZE := 128k
+  PAGESIZE := 2048
+  IMAGE_SIZE := 116736k
+  KERNEL_IN_UBI := 1
+  IMAGES += factory.bin
+  IMAGE/factory.bin := append-ubi | check-size $$$$(IMAGE_SIZE)
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+endef
+TARGET_DEVICES += cmcc_xr30
+
+define Device/cmcc_xr30-emmc
+  DEVICE_VENDOR := CMCC
+  DEVICE_MODEL := XR30 eMMC
+  DEVICE_DTS := mt7981-cmcc-xr30-emmc
+  DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
+  SUPPORTED_DEVICES := cmcc,xr30m-emmc
+  DEVICE_PACKAGES := $(MT7981_USB_PKGS) f2fsck losetup mkf2fs kmod-fs-f2fs kmod-mmc \
+	luci-app-samba4
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+endef
+TARGET_DEVICES += cmcc_xr30-emmc
+
 define Device/h3c_nx30pro
   DEVICE_VENDOR := H3C
   DEVICE_MODEL := NX30PRO
@@ -485,6 +628,23 @@ define Device/h3c_nx30pro
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
 endef
 TARGET_DEVICES += h3c_nx30pro
+
+define Device/honor_fur-602
+  DEVICE_VENDOR := HONOR
+  DEVICE_MODEL := FUR-602
+  DEVICE_DTS := mt7981-honor-fur-602
+  DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
+  SUPPORTED_DEVICES := honor,fur-602
+  UBINIZE_OPTS := -E 5
+  BLOCKSIZE := 128k
+  PAGESIZE := 2048
+  IMAGE_SIZE := 116736k
+  KERNEL_IN_UBI := 1
+  IMAGES += factory.bin
+  IMAGE/factory.bin := append-ubi | check-size $$$$(IMAGE_SIZE)
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+endef
+TARGET_DEVICES += honor_fur-602
 
 define Device/konka_komi-a31
   DEVICE_VENDOR := KONKA
@@ -520,6 +680,57 @@ define Device/imou_lc-hx3001
 endef
 TARGET_DEVICES += imou_lc-hx3001
 
+define Device/nokia_ea0326gmp
+  DEVICE_VENDOR := Nokia
+  DEVICE_MODEL := EA0326GMP
+  DEVICE_DTS := mt7981-nokia-ea0326gmp
+  DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
+  SUPPORTED_DEVICES := nokia,ea0326gmp
+  UBINIZE_OPTS := -E 5
+  BLOCKSIZE := 128k
+  PAGESIZE := 2048
+  IMAGE_SIZE := 112640k
+  KERNEL_IN_UBI := 1
+  IMAGES += factory.bin
+  IMAGE/factory.bin := append-ubi | check-size $$$$(IMAGE_SIZE)
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+endef
+TARGET_DEVICES += nokia_ea0326gmp
+
+define Device/newland_nl-wr8103
+  DEVICE_VENDOR := Newland
+  DEVICE_MODEL := NL-WR8103
+  DEVICE_DTS := mt7981-newland-nl-wr8103
+  DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
+  SUPPORTED_DEVICES := newland,nl-wr8103
+  UBINIZE_OPTS := -E 5
+  BLOCKSIZE := 128k
+  PAGESIZE := 2048
+  IMAGE_SIZE := 116736k
+  KERNEL_IN_UBI := 1
+  IMAGES += factory.bin
+  IMAGE/factory.bin := append-ubi | check-size $$$$(IMAGE_SIZE)
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+endef
+TARGET_DEVICES += newland_nl-wr8103
+
+define Device/newland_nl-wr9103
+  DEVICE_VENDOR := Newland
+  DEVICE_MODEL := NL-WR9103
+  DEVICE_DTS := mt7981-newland-nl-wr9103
+  DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
+  SUPPORTED_DEVICES := newland,nl-wr9103
+  UBINIZE_OPTS := -E 5
+  BLOCKSIZE := 128k
+  PAGESIZE := 2048
+  IMAGE_SIZE := 116736k
+  KERNEL_IN_UBI := 1
+  IMAGES += factory.bin
+  IMAGE/factory.bin := append-ubi | check-size $$$$(IMAGE_SIZE)
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+endef
+TARGET_DEVICES += newland_nl-wr9103
+
 define Device/nradio_wt9103
   DEVICE_VENDOR := NRADIO
   DEVICE_MODEL := WT9103
@@ -553,6 +764,22 @@ define Device/nradio_wt9103_512m
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
 endef
 TARGET_DEVICES += nradio_wt9103_512m
+
+define Device/routerich_ax3000
+  DEVICE_VENDOR := Routerich
+  DEVICE_MODEL := AX3000
+  DEVICE_DTS := mt7981-routerich-ax3000
+  DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
+  SUPPORTED_DEVICES := routerich,ax3000 mediatek,mt7981-spim-snand-rfb
+  UBINIZE_OPTS := -E 5
+  BLOCKSIZE := 128k
+  PAGESIZE := 2048
+  IMAGE_SIZE := 65536k
+  KERNEL_IN_UBI := 1
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+  DEVICE_PACKAGES := $(MT7981_USB_PKGS)
+endef
+TARGET_DEVICES += routerich_ax3000
 
 define Device/zhao_7981-r128
   DEVICE_VENDOR := ZHAO

@@ -21,7 +21,8 @@ clt,r30b1)
 	ucidef_set_led_default "internet" "INTERNET" "led_internet" "1"
 	ucidef_set_led_default "power_red" "POWER_RED" "led_power" "0"
 	;;
-imou,lc-hx3001)
+imou,lc-hx3001|\
+nokia,ea0326gmp)
 	ucidef_set_led_netdev "wan" "WAN" "green:wan" "eth1" "link"
 	ucidef_set_led_netdev "lan" "LAN" "green:lan" "eth0" "link"
 	ucidef_set_led_netdev "wlan" "WLAN" "green:wlan" "rax0" "link"
@@ -42,6 +43,11 @@ h3c,nx30pro)
 	ucidef_set_led_default "green" "GREEN" "nx30pro:green" "1"
 	ucidef_set_led_default "red" "RED" "nx30pro:red" "0"
 	;;
+ikuai,q3000)
+	ucidef_set_led_default "green" "GREEN" "q3000:green" "1"
+	ucidef_set_led_default "blue" "BLUE" "q3000:blue" "0"
+	ucidef_set_led_default "red" "RED" "q3000:red" "0"
+	;;
 konka,komi-a31)
         ucidef_set_led_netdev "blue" "BLUE" "blue:status" "eth1" "link"
 	;;
@@ -51,12 +57,26 @@ nradio,wt9103)
 	ucidef_set_led_netdev "5g" "5G" "hc:blue:cmode5" "eth1" "tx rx"
 	ucidef_set_led_netdev "lan" "LAN" "hc:blue:cmode4" "br-lan" "tx rx"
 	;;
+routerich,ax3000)
+	ucidef_set_led_switch "lan1" "LAN1" "blue:lan1" "switch0" "0x01"
+	ucidef_set_led_switch "lan2" "LAN2" "blue:lan2" "switch0" "0x04"
+	ucidef_set_led_switch "lan3" "LAN3" "blue:lan3" "switch0" "0x08"
+	ucidef_set_led_switch "wan" "WAN" "blue:wan" "switch0" "0x10"
+	ucidef_set_led_switch "wan off" "WAN Off" "red:wan" "switch0" "0x10" "" "link"
+	ucidef_set_led_netdev "wlan2g" "WLAN 2G" "blue:wlan2g" "ra0"
+	ucidef_set_led_netdev "wlan5g" "WLAN 5G" "red:wlan5g" "rax0"
+	;;
+*newland,nl-wr8103*)
+	ucidef_set_led_default "red" "RED" "red:status" "0"
+	ucidef_set_led_default "green" "GREEN" "green:status" "0"
+	ucidef_set_led_default "blue" "BLUE" "blue:status" "1"
+	;;
 mediatek,mt7981-spim-snand-7981r128)
 	ucidef_set_led_netdev "lan" "LAN" "LAN" "lan2"
 	ucidef_set_led_netdev "sfp" "SFP" "SFP" "eth1"
 	ucidef_set_led_netdev "wifi5g" "WIFI5G" "WIFI5G" "rax0"
 	ucidef_set_led_netdev "wifi2g" "WIFI2G" "WIFI2G" "ra0"
-     ;;	
+     ;;
 esac
 
 board_config_flush

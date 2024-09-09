@@ -1,7 +1,4 @@
 // SPDX-License-Identifier: GPL-2.0-or-later OR MIT
-/*
- * Copyright (C) 2023 Tianling Shen <cnsztl@immortalwrt.org>
- */
 
 /dts-v1/;
 #include <dt-bindings/gpio/gpio.h>
@@ -10,21 +7,21 @@
 #include "mt7981.dtsi"
 
 / {
-	model = "JCG Q30 / MR3000D-CIq(512MB RAM version)";
-	compatible = "jcg,q30", "mediatek,mt7981";
+	model = "Nokia EA0326GMP";
+	compatible = "nokia,ea0326gmp", "mediatek,mt7981";
 
 	aliases {
-		led-boot = &status_red_led;
-		led-failsafe = &status_red_led;
-		led-running = &status_blue_led;
-		led-upgrade = &status_blue_led;
+		led-boot = &power_led;
+		led-running = &power_led;
+		led-failsafe = &power_led;
+		led-upgrade = &power_led;
 	};
 
 	chosen {
 		bootargs = "console=ttyS0,115200n1 loglevel=8 earlycon=uart8250,mmio32,0x11002000";
 	};
 
-	memory {
+	memory@40000000 {
 		reg = <0 0x40000000 0 0x10000000>;
 	};
 
@@ -40,21 +37,41 @@
 		button-wps {
 			label = "wps";
 			linux,code = <KEY_WPS_BUTTON>;
-			gpios = <&pio 0 GPIO_ACTIVE_HIGH>;
+			gpios = <&pio 0 GPIO_ACTIVE_LOW>;
 		};
 	};
 
 	gpio-leds {
 		compatible = "gpio-leds";
 
-		status_red_led: led-0 {
-			label = "red:status";
-			gpios = <&pio 8 GPIO_ACTIVE_HIGH>;
+		power_led: led-0 {
+			label = "green:power";
+			gpios = <&pio 4 GPIO_ACTIVE_LOW>;
 		};
 
-		status_blue_led: led-1 {
-			label = "blue:status";
-			gpios = <&pio 13 GPIO_ACTIVE_LOW>;
+		led-1 {
+			label = "green:wan";
+			gpios = <&pio 5 GPIO_ACTIVE_LOW>;
+		};
+
+		led-2 {
+			label = "red:wan";
+			gpios = <&pio 6 GPIO_ACTIVE_LOW>;
+		};
+
+		led-3 {
+			label = "green:lan";
+			gpios = <&pio 7 GPIO_ACTIVE_LOW>;
+		};
+
+		led-4 {
+			label = "green:wlan";
+			gpios = <&pio 8 GPIO_ACTIVE_LOW>;
+		};
+
+		led-5 {
+			label = "green:wps";
+			gpios = <&pio 9 GPIO_ACTIVE_LOW>;
 		};
 	};
 
@@ -81,7 +98,7 @@
 
 			partition@0 {
 				label = "BL2";
-				reg = <0x00000 0x100000>;
+				reg = <0x0 0x100000>;
 			};
 
 			partition@100000 {
@@ -89,7 +106,7 @@
 				reg = <0x100000 0x80000>;
 			};
 
-			factory: partition@180000 {
+			partition@180000 {
 				label = "Factory";
 				reg = <0x180000 0x200000>;
 			};
@@ -100,9 +117,21 @@
 			};
 
 			partition@580000 {
-				label = "ubi";
-				reg = <0x580000 0x6e80000>;
+				label = "Config";
+				reg = <0x580000 0x200000>;
 			};
+
+			partition@780000 {
+				label = "Config2";
+				reg = <0x780000 0x200000>;
+			};
+
+			partition@980000 {
+				label = "ubi";
+				reg = <0x980000 0x6e00000>;
+			};
+
+			/* Leave last 8.5 MiB for NMBM bad block table */
 		};
 	};
 };
@@ -122,31 +151,34 @@
 		};
 	};
 
+	gmac1: mac@1 {
+		compatible = "mediatek,eth-mac";
+		reg = <1>;
+		phy-mode = "gmii";
+		phy-handle = <&phy0>;
+	};
+
 	mdio: mdio-bus {
 		#address-cells = <1>;
 		#size-cells = <0>;
+
+		phy0: ethernet-phy@0 {
+			compatible = "ethernet-phy-id03a2.9461";
+			reg = <0>;
+			phy-mode = "gmii";
+			nvmem-cells = <&phy_calibration>;
+			nvmem-cell-names = "phy-cal-data";
+		};
 	};
 };
 
 &gsw {
 	mediatek,mdio = <&mdio>;
-	mediatek,portmap = "wllll";
 	mediatek,mdio_master_pinmux = <0>;
 	reset-gpios = <&pio 39 0>;
 	interrupt-parent = <&pio>;
 	interrupts = <38 IRQ_TYPE_LEVEL_HIGH>;
 	status = "okay";
-
-	port5: port@5 {
-		compatible = "mediatek,mt753x-port";
-		reg = <5>;
-		phy-mode = "sgmii";
-
-		fixed-link {
-			speed = <2500>;
-			full-duplex;
-		};
-	};
 
 	port6: port@6 {
 		compatible = "mediatek,mt753x-port";
@@ -162,11 +194,10 @@
 };
 
 &hnat {
-		mtketh-wan = "eth0.2";
-		mtketh-ppd = "eth0.1";
-		mtketh-lan = "eth0";
-		mtketh-max-gmac = <1>;
-		status = "okay";
+        mtketh-wan = "eth1";
+        mtketh-lan = "eth0";
+        mtketh-max-gmac = <2>;
+        status = "okay";
 };
 
 &spi0 {

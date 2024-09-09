@@ -166,7 +166,7 @@
 				};
 
 				port@3 {
-					reg = <2>;
+					reg = <3>;
 					label = "lan2";
 				};
 
@@ -292,7 +292,7 @@
 
 &spi1 {
  	pinctrl-names = "default";
- 	pinctrl-0 = <&spic_pins_g2>;
+ 	pinctrl-0 = <&spic_pins_g1>;
  	status = "okay";
  };
 

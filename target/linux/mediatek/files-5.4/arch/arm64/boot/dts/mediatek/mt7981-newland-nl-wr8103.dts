@@ -4,13 +4,13 @@
 #include "mt7981.dtsi"
 
 / {
-        model = "KONKA KOMI A31 / E-Life ETR631-T / E-Life ETR635-U";
-        compatible = "konka,komi-a31", "mediatek,mt7981";
+        model = "Newland NL-WR8103 / MR3000D-CIq(256MB RAM version)";
+        compatible = "newland,nl-wr8103", "mediatek,mt7981";
 
 	aliases {
 		led-boot = &status_red_led;
 		led-failsafe = &status_red_led;
-		led-running = &status_green_led;
+		led-running = &status_blue_led;
 		led-upgrade = &status_green_led;
 	};
 
@@ -22,24 +22,25 @@
         memory {
                 reg = <0 0x40000000 0 0x10000000>;
         };
-	
+
         leds {
                 compatible = "gpio-leds";
 
-                status_green_led: led-0 {
-                        label = "green:status";
-                        gpios = <&pio 8 GPIO_ACTIVE_LOW>;
-                };
-
-                status_blue_led: led-1 {
-                        label = "blue:status";
-                        gpios = <&pio 13 GPIO_ACTIVE_LOW>;
-                };
-
-                status_red_led: led-2 {
+                status_red_led: led-0 {
                         label = "red:status";
-                        gpios = <&pio 34 GPIO_ACTIVE_LOW>;
+                        gpios = <&pio 10 GPIO_ACTIVE_LOW>;
                 };
+
+                status_green_led: led-1 {
+                        label = "green:status";
+                        gpios = <&pio 11 GPIO_ACTIVE_LOW>;
+                };
+
+                status_blue_led: led-2 {
+                        label = "blue:status";
+                        gpios = <&pio 12 GPIO_ACTIVE_LOW>;
+                };
+
         };
 
         gpio-keys {
@@ -47,12 +48,12 @@
                         button-reset {
                                 label = "reset";
                                 linux,code = <KEY_RESTART>;
-                                gpios = <&pio 1 GPIO_ACTIVE_LOW>;
+                                gpios = <&pio 0 GPIO_ACTIVE_LOW>;
                         };
 
                         button-mesh {
                                 label = "mesh";
-                                gpios = <&pio 0 GPIO_ACTIVE_LOW>;
+                                gpios = <&pio 1 GPIO_ACTIVE_LOW>;
 				linux,code = <BTN_9>;
 				linux,input-type = <EV_SW>;
                         };
@@ -98,10 +99,10 @@
                                 reg = <0x380000 0x200000>;
                         };
 
-                        partition@580000 {
-                                label = "ubi";
-                                reg = <0x580000 0x7000000>;
-                        };
+			partition@580000 {
+				label = "ubi";
+				reg = <0x580000 0x7200000>;
+			};
                 };
         };
 };

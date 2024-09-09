@@ -195,6 +195,7 @@ platform_do_upgrade() {
 	*mt2500* |\
 	*zr-3020* |\
 	*360,t7* |\
+	ruijie,rg-x30e* |\
 	*abt,asr3000* |\
 	*cetron,ct3003* |\
 	*clt,r30b1* |\
@@ -203,12 +204,19 @@ platform_do_upgrade() {
 	nradio,wt9103 |\
 	cmcc,a10 |\
 	cmcc,rax3000m |\
+	cmcc,xr30 |\
 	h3c,nx30pro |\
+	*honor,fur-602* |\
 	*konka,komi-a31* |\
+	routerich,ax3000 |\
+	*nokia,ea0326gmp* |\
+	*newland,nl-wr8103* |\
+	newland,nl-wr9103 |\
 	*snand*)
 		nand_do_upgrade "$1"
 		;;
 	cmcc,rax3000m-emmc |\
+	cmcc,xr30-emmc |\
 	*emmc*)
 		CI_KERNPART="kernel"
 		CI_ROOTPART="rootfs"
@@ -239,6 +247,7 @@ platform_check_image() {
 	*mt2500* |\
 	*zr-3020* |\
 	*360,t7* |\
+	ruijie,rg-x30e* |\
 	xiaomi,mi-router-wr30u-stock|\
 	xiaomi,mi-router-wr30u-112m|\
 	xiaomi,mi-router-ax3000t* |\
@@ -249,11 +258,17 @@ platform_check_image() {
 	*jcg,q30* |\
 	cmcc,a10 |\
 	cmcc,rax3000m* |\
+	cmcc,xr30* |\
 	h3c,nx30pro |\
+	*honor,fur-602* |\
 	*konka,komi-a31* |\
+	*nokia,ea0326gmp* |\
+	*newland,nl-wr8103* |\
+	newland,nl-wr9103 |\
 	nradio,wt9103 |\
 	*snand* |\
-	*emmc*)
+	*emmc* |\
+	routerich,ax3000)
 		# tar magic `ustar`
 		magic="$(dd if="$1" bs=1 skip=257 count=5 2>/dev/null)"
 

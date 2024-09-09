@@ -4,8 +4,8 @@
 #include "mt7981.dtsi"
 
 / {
-        model = "KONKA KOMI A31 / E-Life ETR631-T / E-Life ETR635-U";
-        compatible = "konka,komi-a31", "mediatek,mt7981";
+        model = "Newland NL-WR9103";
+        compatible = "newland,nl-wr9103", "mediatek,mt7981";
 
 	aliases {
 		led-boot = &status_red_led;
@@ -22,23 +22,18 @@
         memory {
                 reg = <0 0x40000000 0 0x10000000>;
         };
-	
+
         leds {
                 compatible = "gpio-leds";
 
                 status_green_led: led-0 {
                         label = "green:status";
-                        gpios = <&pio 8 GPIO_ACTIVE_LOW>;
+                        gpios = <&pio 9 GPIO_ACTIVE_LOW>;
                 };
 
-                status_blue_led: led-1 {
-                        label = "blue:status";
-                        gpios = <&pio 13 GPIO_ACTIVE_LOW>;
-                };
-
-                status_red_led: led-2 {
+                status_red_led: led-1 {
                         label = "red:status";
-                        gpios = <&pio 34 GPIO_ACTIVE_LOW>;
+                        gpios = <&pio 10 GPIO_ACTIVE_LOW>;
                 };
         };
 
@@ -100,7 +95,7 @@
 
                         partition@580000 {
                                 label = "ubi";
-                                reg = <0x580000 0x7000000>;
+				reg = <0x580000 0x7200000>;
                         };
                 };
         };
@@ -113,7 +108,7 @@
 &watchdog {
         status = "okay";
 };
-  
+
 &eth {
     status = "okay";
 

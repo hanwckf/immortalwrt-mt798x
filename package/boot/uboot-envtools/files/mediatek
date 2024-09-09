@@ -14,22 +14,28 @@ board=$(board_name)
 
 case "$board" in
 cmcc,rax3000m-emmc |\
+cmcc,xr30-emmc |\
 glinet,gl-mt6000 |\
 jdcloud,re-cp-03)
 	env_dev=$(find_mmc_part "u-boot-env")
 	[ -n "$env_dev" ] && ubootenv_add_uci_config "$env_dev" "0" "0x80000"
 	;;
 *360,t7* |\
+ruijie,rg-x30e* |\
+*newland,nl-wr8103* |\
+newland,nl-wr9103 |\
 livinet,zr-3020*)
 	ubootenv_add_uci_config "/dev/mtd2" "0x0" "0x20000" "0x20000" "1"
 	;;
 h3c,nx30pro |\
 *clt,r30b1* |\
 ruijie,rg-x60-pro* |\
+cmcc,xr30 |\
 *snand-7981r128* |\
 cmcc,rax3000m)
 	ubootenv_add_uci_config "/dev/mtd2" "0x0" "0x80000" "0x20000" "4"
 	;;
+*honor,fur-602* |\
 *imou,lc-hx3001*)
 	ubootenv_add_uci_config "/dev/mtd2" "0x0" "0x80000" "0x80000" "1"
 	;;
