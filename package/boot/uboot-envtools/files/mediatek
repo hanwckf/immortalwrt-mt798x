@@ -26,6 +26,7 @@ livinet,zr-3020*)
 h3c,nx30pro |\
 *clt,r30b1* |\
 ruijie,rg-x60-pro* |\
+*snand-7981r128* |\
 cmcc,rax3000m)
 	ubootenv_add_uci_config "/dev/mtd2" "0x0" "0x80000" "0x20000" "4"
 	;;
@@ -41,6 +42,7 @@ nradio,wt9103 |\
 *konka,komi-a31*)
 	ubootenv_add_uci_config "/dev/mtd2" "0x0" "0x20000" "0x80000" "1"
 	;;
+	
 esac
 
 config_load ubootenv
