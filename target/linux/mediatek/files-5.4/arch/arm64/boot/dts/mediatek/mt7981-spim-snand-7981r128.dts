@@ -82,6 +82,24 @@
 		maximum-power-milliwatt = <3000>;
 	};
 	
+	reg_3p3v: regulator-3p3v {
+		compatible = "regulator-fixed";
+		regulator-name = "fixed-3.3V";
+		regulator-min-microvolt = <3300000>;
+		regulator-max-microvolt = <3300000>;
+		regulator-boot-on;
+		regulator-always-on;
+	};
+	
+	usb_vbus: regulator-usb-vbus {
+		compatible = "regulator-fixed";
+		regulator-name = "usb_vbus";
+		regulator-min-microvolt = <5000000>;
+		regulator-max-microvolt = <5000000>;
+		enable-active-high;
+		regulator-boot-on;
+	};
+		
 	nmbm_spim_nand {
 		compatible = "generic,nmbm";
 
@@ -333,5 +351,7 @@
 };
 
 &xhci {
-	status = "okay";
+	vusb33-supply = <&reg_3p3v>;
+ 	vbus-supply = <&usb_vbus>;
+ 	status = "okay";
 };
