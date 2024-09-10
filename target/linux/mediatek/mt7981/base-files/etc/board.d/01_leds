@@ -71,7 +71,7 @@ routerich,ax3000)
 	ucidef_set_led_default "green" "GREEN" "green:status" "0"
 	ucidef_set_led_default "blue" "BLUE" "blue:status" "1"
 	;;
-mediatek,mt7981-spim-snand-7981r128)
+mediatek,zhao-7981r128*)
 	ucidef_set_led_netdev "lan" "LAN" "LAN" "lan2"
 	ucidef_set_led_netdev "sfp" "SFP" "SFP" "eth1"
 	ucidef_set_led_netdev "wifi5g" "WIFI5G" "WIFI5G" "rax0"

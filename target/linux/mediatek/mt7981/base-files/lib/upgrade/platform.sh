@@ -212,6 +212,7 @@ platform_do_upgrade() {
 	*nokia,ea0326gmp* |\
 	*newland,nl-wr8103* |\
 	newland,nl-wr9103 |\
+	mediatek,zhao-7981r128* |\
 	*snand*)
 		nand_do_upgrade "$1"
 		;;
@@ -266,6 +267,7 @@ platform_check_image() {
 	*newland,nl-wr8103* |\
 	newland,nl-wr9103 |\
 	nradio,wt9103 |\
+	mediatek,zhao-7981r128* |\
 	*snand* |\
 	*emmc* |\
 	routerich,ax3000)

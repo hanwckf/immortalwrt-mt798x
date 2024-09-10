@@ -2,7 +2,7 @@
 #include "mt7981.dtsi"
 / {
 	model = "7981R128";
-	compatible = "mediatek,mt7981-spim-snand-7981r128";
+	compatible = "mediatek,zhao-7981r128-d";
 	
 	aliases {
 		led-boot = &POWER;
