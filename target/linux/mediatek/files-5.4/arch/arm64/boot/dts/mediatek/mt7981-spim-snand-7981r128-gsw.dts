@@ -165,43 +165,38 @@
 		compatible = "mediatek,eth-mac";
 		reg = <0>;
 		phy-mode = "2500base-x";
-
+		ext-phy-reg = <5>;
+		ext-phy-reset-gpios = <&pio 7 0>;
 		fixed-link {
 			speed = <2500>;
 			full-duplex;
 			pause;
-			link-gpio = <&pio 7 0>;
-			phy-handle = <&phy5>;
-			label = "lan2";
 		};
 	};
 
-	gmac1: mac@1 {
+        gmac1: mac@1 {
 		compatible = "mediatek,eth-mac";
 		reg = <1>;
 		phy-mode = "2500base-x";
-		phy-handle = <&phy6>;
+		managed = "in-band-status";
+		sfp = <&sfp1>;
 	};
 
 	mdio: mdio-bus {
 		#address-cells = <1>;
 		#size-cells = <0>;
-
+	
 		phy5: phy@5 {
 			compatible = "ethernet-phy-id67c9.de0a";
 			reg = <5>;
 		};
 
-		phy6: phy@6 {
-			compatible = "ethernet-phy-id67c9.de0a";
-			reg = <6>;
-		};
 	};
 };
 
 &gsw {
 	mediatek,mdio = <&mdio>;
-	mediatek,portmap = "lllll";
+	mediatek,portmap = "ll";
 	mediatek,mdio_master_pinmux = <1>;
 	reset-gpios = <&pio 39 0>;
 	interrupt-parent = <&pio>;
@@ -212,7 +207,6 @@
 		compatible = "mediatek,mt753x-port";
 		reg = <5>;
 		phy-mode = "sgmii";
-
 		fixed-link {
 			speed = <2500>;
 			full-duplex;
@@ -221,7 +215,7 @@
 
 	port6: port@6 {
 		compatible = "mediatek,mt753x-port";
-		/* mediatek,ssc-on; */
+		mediatek,ssc-on;
 		reg = <6>;
 		phy-mode = "sgmii";
 		fixed-link {
