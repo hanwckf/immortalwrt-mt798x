@@ -1,6 +1,8 @@
 #ifndef __MTWIFI_H
 #define __MTWIFI_H
 
+#include "iwinfo.h"
+
 #define USHORT  unsigned short
 #define UCHAR   unsigned char
 #define ULONG	unsigned long
@@ -260,9 +262,13 @@ typedef enum _SEC_AKM_MODE {
 #define IS_AKM_OWE(_AKMMap) ((_AKMMap & (1 << SEC_AKM_OWE)) > 0)
 
 #define MTK_L1_PROFILE_PATH		"/etc/wireless/l1profile.dat"
+#define MTK_L1UTIL_PATH			"/usr/lib/lua/l1dat_parser.lua"
 
 void getRate(HTTRANSMIT_SETTING HTSetting, ULONG *fLastTxRxRate);
 void get_rate_he(UINT8 mcs, UINT8 bw, UINT8 nss, UINT8 dcm, ULONG *last_tx_rate);
 UINT32 cck_to_mcs(UINT32 mcs);
+
+int mtk_get_id_by_l1util(const char *dev, struct iwinfo_hardware_id *id);
+int mtk_get_id_from_l1profile(struct iwinfo_hardware_id *id);
 
 #endif

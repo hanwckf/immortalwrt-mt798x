@@ -1,0 +1,11 @@
+--- a/Makefile
++++ b/Makefile
+@@ -5,7 +5,7 @@ IWINFO_CFLAGS      = $(CFLAGS) -std=gnu9
+ IWINFO_LDFLAGS     = -luci -lubox -lubus
+ 
+ IWINFO_LIB         = libiwinfo.so
+-IWINFO_LIB_LDFLAGS = $(LDFLAGS) -shared -Wl,-soname -Wl,$(IWINFO_LIB).$(IWINFO_SOVERSION)
++IWINFO_LIB_LDFLAGS = $(LDFLAGS) -shared -llua -Wl,-soname -Wl,$(IWINFO_LIB).$(IWINFO_SOVERSION)
+ IWINFO_LIB_OBJ     = iwinfo_utils.o iwinfo_lib.o
+ 
+ IWINFO_LUA         = iwinfo.so

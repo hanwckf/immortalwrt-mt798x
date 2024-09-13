@@ -962,61 +962,6 @@ static int mtk_get_mbssid_support(const char *dev, int *buf)
 	return 0;
 }
 
-static int mtk_get_l1profile_attr(const char *attr, char *data, int len)
-{
-	FILE *fp;
-	char *key, *val, buf[512];
-
-	fp = fopen(MTK_L1_PROFILE_PATH, "r");
-	if (!fp)
-		return -1;
-
-	while (fgets(buf, sizeof(buf), fp))
-	{
-		key = strtok(buf, " =\n");
-		val = strtok(NULL, "\n");
-		
-		if (!key || !val || !*key || *key == '#')
-			continue;
-
-		if (!strcmp(key, attr))
-		{
-			//printf("l1profile key=%s, val=%s\n", key, val);
-			snprintf(data, len, "%s", val);
-			fclose(fp);
-			return 0;
-		}
-	}
-
-	fclose(fp);
-	return -1;
-}
-
-static int mtk_get_hardware_id_from_l1profile(struct iwinfo_hardware_id *id)
-{
-	const char *attr = "INDEX0";
-	char buf[16] = {0};
-
-	if (mtk_get_l1profile_attr(attr, buf, sizeof(buf)) < 0)
-		return -1;
-	
-	if (!strcmp(buf, "MT7981")) {
-		id->vendor_id = 0x14c3;
-		id->device_id = 0x7981;
-		id->subsystem_vendor_id = id->vendor_id;
-		id->subsystem_device_id = id->device_id;
-	} else if (!strcmp(buf, "MT7986")) {
-		id->vendor_id = 0x14c3;
-		id->device_id = 0x7986;
-		id->subsystem_vendor_id = id->vendor_id;
-		id->subsystem_device_id = id->device_id;
-	} else {
-		return -1;
-	}
-
-	return 0;
-}
-
 static int mtk_get_hardware_id(const char *dev, char *buf)
 {
 	struct iwinfo_hardware_id *id = (struct iwinfo_hardware_id *)buf;
@@ -1025,8 +970,12 @@ static int mtk_get_hardware_id(const char *dev, char *buf)
 	memset(id, 0, sizeof(*id));
 
 	ret = iwinfo_hardware_id_from_mtd(id);
+
 	if (ret != 0)
-		ret = mtk_get_hardware_id_from_l1profile(id);
+		ret = mtk_get_id_by_l1util(dev, id);
+
+	if (ret != 0)
+		ret = mtk_get_id_from_l1profile(id);
 
 	return ret;
 }
