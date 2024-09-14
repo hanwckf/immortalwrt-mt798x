@@ -92,12 +92,14 @@ end
 function ifup(ifname)
     if ifname and #ifname > 0 then
         os.execute("ifconfig "..ifname.." up")
+        nixio.syslog("info", "mtwifi-cfg: ifconfig up "..ifname)
     end
 end
 
 function ifdown(ifname)
     if ifname and #ifname > 0 then
         os.execute("ifconfig "..ifname.." down")
+        nixio.syslog("info", "mtwifi-cfg: ifconfig down "..ifname)
     end
 end
 
@@ -184,11 +186,12 @@ end
 function mtwifi_up(devname, cfg, restore_vifs, is_dbdc)
     nixio.syslog("info", "mtwifi-cfg: start "..devname)
     local dev = l1dat.devname_ridx[devname]
-    local dbdc_main_ifname = defs.dbdc_init_ifname
-
     if not dev then return end
 
     if is_dbdc then
+        local dbdc_main_dev = dev.INDEX .. "_1_1"
+        local dbdc_main_ifname = l1dat.devname_ridx[dbdc_main_dev].main_ifname
+
         if not is_dbdc_inited(dbdc_main_ifname) then
             nixio.syslog("info", "mtwifi-cfg: dbdc card init...")
             ifup(dbdc_main_ifname)
@@ -318,7 +321,9 @@ function set_chip_cfg(cfg, dats)
 
     -- setup other dev cfg
     for k,v in pairs(l1dat.devname_ridx) do
-        if k ~= cfg.device then        
+        if k ~= cfg.device and 
+        v.INDEX == l1dat.devname_ridx[cfg.device].INDEX and 
+        v.mainidx == l1dat.devname_ridx[cfg.device].mainidx then        
             dev_dats = load_profile(v.profile_path)
             if dev_dats then
                 for _,j in pairs(defs.chip_cfgs) do
@@ -641,18 +646,22 @@ function mtwifi_cfg_setup(argv)
             end
 
             if restart_other_dbdc_dev then
-                for k, _ in pairs(l1dat.devname_ridx) do
-                    local ret = mtwifi_down(k, cfg)
-                    for _, v in ipairs(ret) do
-                        table.insert(restore_vifs, v)
+                for k, j in pairs(l1dat.devname_ridx) do
+                    if j.INDEX == dev.INDEX and j.mainidx == dev.mainidx then
+                        local ret = mtwifi_down(k, cfg)
+                        for _, v in ipairs(ret) do
+                            table.insert(restore_vifs, v)
+                        end
                     end
                 end
                 if #restore_vifs > 0 then
                     nixio.syslog("info", "mtwifi-cfg: dbdc restore_vifs: "..inspect.inspect(restore_vifs))
                 end
 
-                for k, _ in pairs(l1dat.devname_ridx) do
-                    mtwifi_up(k, cfg, restore_vifs, true)
+                for k, j in pairs(l1dat.devname_ridx) do
+                    if j.INDEX == dev.INDEX and j.mainidx == dev.mainidx then
+                        mtwifi_up(k, cfg, restore_vifs, true)
+                    end
                 end
             else
                 mtwifi_down(devname)

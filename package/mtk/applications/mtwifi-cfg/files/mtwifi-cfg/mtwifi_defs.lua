@@ -16,7 +16,6 @@
 
 local mtwifi_defs = {}
 
-mtwifi_defs.dbdc_init_ifname = "ra0"
 mtwifi_defs.max_mbssid = 16
 mtwifi_defs.max_acl_entry = 129
 
