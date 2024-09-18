@@ -605,7 +605,7 @@ define Device/cmcc_xr30-emmc
   DEVICE_MODEL := XR30 eMMC
   DEVICE_DTS := mt7981-cmcc-xr30-emmc
   DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
-  SUPPORTED_DEVICES := cmcc,xr30m-emmc
+  SUPPORTED_DEVICES := cmcc,xr30-emmc
   DEVICE_PACKAGES := $(MT7981_USB_PKGS) f2fsck losetup mkf2fs kmod-fs-f2fs kmod-mmc \
 	luci-app-samba4
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
