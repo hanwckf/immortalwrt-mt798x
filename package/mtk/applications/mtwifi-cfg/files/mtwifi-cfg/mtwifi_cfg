@@ -554,6 +554,7 @@ function mtwifi_cfg_setup(argv)
             set_dat(dats, apidx, "APSDCapable", v.config.uapsd)
             set_dat(dats, apidx, "RTSThreshold", v.config.rts)
             set_dat(dats, apidx, "FragThreshold",v.config.frag)
+            set_dat(dats, apidx, "DtimPeriod",v.config.dtim_period)
             set_dat(dats, apidx, "WirelessMode", WirelessMode)
 
             if v.config.macfilter then

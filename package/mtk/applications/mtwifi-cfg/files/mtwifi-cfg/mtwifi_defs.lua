@@ -69,6 +69,7 @@ mtwifi_defs.vif_cfgs = {
     ["WdsEnable"] = "0",
     ["WscConfMode"] = "0",
     ["TxRate"] = "0",
+    ["DtimPeriod"] = "1",
 }
 
 mtwifi_defs.vif_cfgs_idx = {
@@ -85,7 +86,6 @@ mtwifi_defs.vif_acl = {
 mtwifi_defs.chip_cfgs = {
     -- uci config = dat config, default value
     ["beacon_int"] = { "BeaconPeriod" , "100"},
-    ["dtim_period"] = { "DtimPeriod", "1"},
     ["whnat"] = { "WHNAT", "1"},
 }
 
