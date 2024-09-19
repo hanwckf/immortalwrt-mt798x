@@ -101,7 +101,7 @@ case "$1" in
 		macaddr="$6"
 		cnt=$(tc class show dev $dev | wc -l)
 		
-		
+		interface="$7"
 		if [ $id -lt 32 ]; then
 		iptables -t mangle -D eqos -s $ip -j DSCP --set-dscp ${id}
 		iptables -t mangle -D eqos -d $ip -j DSCP --set-dscp ${idpair}
@@ -133,6 +133,12 @@ case "$1" in
 		
 		tc class add dev ${dev}-ifb parent 1:1 classid 1:1$cnt htb rate ${up}kbit ceil ${up}kbit
 		tc filter add dev ${dev}-ifb parent 1:0 protocol ip u32 match ip src $ip flowid 1:1$cnt
+		fi
+		if [ $interface ]; then
+		iptables -t mangle -D PREROUTING -s $ip -m conntrack --ctstate NEW -j MARK --set-mark 2"$interface"
+		iptables -t mangle -A PREROUTING -s $ip -m conntrack --ctstate NEW -j MARK --set-mark 2"$interface"
+		iptables -t mangle -D PREROUTING -i br-lan -m conntrack --ctstate ESTABLISHED,RELATED -j CONNMARK --restore-mark
+        	iptables -t mangle -A PREROUTING -i br-lan -m conntrack --ctstate ESTABLISHED,RELATED -j CONNMARK --restore-mark
 		fi
 	;;
 	*)

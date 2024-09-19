@@ -975,10 +975,10 @@ return view.extend({
 				o.onclick = ui.createHandlerFn(s, network_updown, s.section, s.map);
 
 				if (!isDisabled) {
-					o = ss.taboption('general', CBIWifiFrequencyValue, '_freq', '<br />' + _('Operating frequency'));
-					o.ucisection = s.section;
-				}
-
+ 					o = ss.taboption('general', CBIWifiFrequencyValue, '_freq', '<br />' + _('Operating frequency'));
+ 					o.ucisection = s.section;
+ 				}
+ 				
 				if (hwtype == 'mac80211') {
 					o = ss.taboption('general', form.Flag, 'legacy_rates', _('Allow legacy 802.11b rates'), _('Legacy or badly behaving devices may require legacy 802.11b rates to interoperate. Airtime efficiency may be significantly reduced where these are used. It is recommended to not allow 802.11b rates where possible.'));
 					o.depends({'_freq': '2g', '!contains': true});
@@ -1052,8 +1052,11 @@ return view.extend({
 					if (is_dbdc_main)
 					{
 						o = ss.taboption('advanced', form.Flag, 'whnat', _('Wireless HWNAT'));
-						o.default = o.enabled;
-
+ 						o.default = o.enabled;
+ 						
+ 						o = ss.taboption('advanced', form.Flag, 'bandsteering', _('Band Steering'));
+ 						o.default = o.disabled;
+ 						
 						o = ss.taboption('advanced', form.Value, 'dtim_period', _('DTIM Interval'), _('Delivery Traffic Indication Message Interval'));
 						o.optional = true;
 						o.placeholder = 1;
@@ -1328,6 +1331,11 @@ return view.extend({
 					o = ss.taboption('advanced', form.Flag, 'ieee80211k', _('802.11k'), _('Enables The 802.11k standard provides information to discover the best available access point'));
 					o.default = o.enabled;
 					o.depends('mode', 'ap');
+					
+					o = ss.taboption('advanced', form.Flag, 'ieee80211r', _('802.11r'), _('only supports mt_wifi driver'));
+					o.default = o.disabled;
+					o.depends('mode', 'ap');
+
 
 					o = ss.taboption('advanced', form.Value, 'wpa_group_rekey', _('Time interval for rekeying GTK'), _('sec'));
 					o.optional    = true;
@@ -1340,6 +1348,19 @@ return view.extend({
 					o.placeholder = 0;
 					o.datatype = 'range(-100,0)';
 					o.depends('mode', 'ap');
+					
+					o = ss.taboption('advanced', form.Value, 'steeringthresold', _('802.11V roam steering threshold'), _('dBm'));
+					o.optional    = true;
+					o.placeholder = 0;
+					o.datatype = 'range(-100,0)';
+					o.depends('mode', 'ap');
+					
+					o = ss.taboption('advanced', form.DynamicList, 'steeringbssid',_('802.11V roam target bssid'), _('MAC-List'));
+					o.datatype = 'macaddr';
+					o.optional    = true;
+					o.placeholder = 0;
+					o.depends('mode', 'ap');
+					
 
 					o = ss.taboption('advanced', form.Value, 'assocthres', _('Station associate threshold'), _('dBm'));
 					o.optional    = true;

@@ -57,6 +57,7 @@ mtwifi_defs.vif_cfgs = {
     ["HT_STBC"] = "1",
     ["IgmpSnEnable"] = "0",
     ["RRMEnable"] = "1",
+    ["FtSupport"] = "0",
     ["VHT_BW_SIGNAL"] = "0",
     ["VHT_LDPC"] = "1",
     ["VHT_SGI"] = "1",
@@ -87,6 +88,7 @@ mtwifi_defs.chip_cfgs = {
     ["beacon_int"] = { "BeaconPeriod" , "100"},
     ["dtim_period"] = { "DtimPeriod", "1"},
     ["whnat"] = { "WHNAT", "1"},
+    ["bandsteering"] = { "BandSteering", "0"},
 }
 
 mtwifi_defs.reinstall_cfgs = {
@@ -98,6 +100,7 @@ mtwifi_defs.iwpriv_ap_cfgs = {
     -- uci config = iwpriv set cmd , default value
     ["kicklow"] = {"KickStaRssiLow", "0"},
     ["assocthres"] = {"AssocReqRssiThres" , "0"},
+    ["steeringthresold"] = {"Steeringthresold" , "0"},
 }
 
 mtwifi_defs.enc2dat = {
