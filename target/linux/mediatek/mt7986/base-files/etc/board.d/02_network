@@ -24,6 +24,11 @@ mediatek_setup_interfaces()
 		ucidef_add_switch "switch0" \
 			"1:lan:4" "2:lan:3" "3:lan:2"  "4:wan" "6u@eth0" "5u@eth1"
 		;;
+	zyxel,ex5700)
+		ucidef_set_interfaces_lan_wan "eth0" "eth1"
+		ucidef_add_switch "switch0" \
+			"0:lan:3" "1:lan:4" "2:lan:5" "5:lan:2" "6u@eth0"
+		;;
 	bananapi,bpi-r3mini*)
 		ucidef_set_interfaces_lan_wan "eth0" "eth1"
 		;;
