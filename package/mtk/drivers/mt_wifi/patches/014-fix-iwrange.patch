@@ -27,7 +27,7 @@
 +
 +				range.we_version_compiled = WIRELESS_EXT;
 +
-+				BandIdx = wlan_operate_get_ch_band(wdev);
++				BandIdx = HcGetBandByWdev(wdev);
 +				pChCtrl = hc_get_channel_ctrl(pAdin->hdev_ctrl, BandIdx);
 +
 +				for (i = 0; i < pChCtrl->ChListNum && i < IW_MAX_FREQUENCIES; i++) {

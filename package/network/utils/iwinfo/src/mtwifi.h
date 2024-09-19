@@ -46,11 +46,22 @@ typedef struct _RT_802_11_MAC_ENTRY_FIX {
 } RT_802_11_MAC_ENTRY;
 
 #define MAX_NUMBER_OF_MAC               544
+#define MAX_NUM_OF_CHANNELS				59
 
 typedef struct _RT_802_11_MAC_TABLE_FIX {
 	unsigned long            Num;
 	RT_802_11_MAC_ENTRY      Entry[MAX_NUMBER_OF_MAC];
 } RT_802_11_MAC_TABLE;
+
+typedef struct _channel_info_basic {
+	UINT8 channel;
+	UINT8 channel_idx;
+} CHANNEL_INFO_BASIC, *PCHANNEL_INFO_BASIC;
+
+struct channel_list_basic {
+	CHANNEL_INFO_BASIC ChList[MAX_NUM_OF_CHANNELS];
+	UINT8 ChListNum;
+};
 
 #define RT_PRIV_IOCTL				(SIOCIWFIRSTPRIV + 0x01)
 #define RTPRIV_IOCTL_SET			(SIOCIWFIRSTPRIV + 0x02)
@@ -64,6 +75,7 @@ typedef struct _RT_802_11_MAC_TABLE_FIX {
 #define OID_802_11_BW						0x1903
 #define OID_GET_CHAN_LIST					0x0998
 #define OID_GET_WIRELESS_BAND				0x09B4
+#define OID_GET_CHANNEL_LIST					0x09C0
 #define OID_802_11_SECURITY_TYPE                0x093e
 #define RT_OID_802_11_PHY_MODE				0x050C
 #define GET_MAC_TABLE_STRUCT_FLAG_RAW_SSID	0x1

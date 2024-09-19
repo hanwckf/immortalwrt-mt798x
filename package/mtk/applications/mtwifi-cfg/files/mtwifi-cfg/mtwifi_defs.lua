@@ -49,6 +49,7 @@ mtwifi_defs.vif_cfgs = {
     ["RTSThreshold"] = "2347",
     ["HT_AMSDU"] = "1",
     ["HT_AutoBA"] = "1",
+    ["HT_BAWinSize"] = "256",
     ["HT_GI"] = "1",
     ["HT_LDPC"] = "1",
     ["HT_OpMode"] = "0",

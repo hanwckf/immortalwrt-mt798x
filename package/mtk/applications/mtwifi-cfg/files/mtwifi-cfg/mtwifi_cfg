@@ -149,6 +149,16 @@ function vif_is_apcli(vif, dev)
     end
 end
 
+function is_ax_mode(cfg)
+    if not cfg.config.htmode then
+        return false
+    end
+    if string.sub(cfg.config.htmode,1,2) == "HE" then
+        return true
+    end
+    return false
+end
+
 function vif_count(cfg)
     local vif_num = 0
     local ap_num = 0
@@ -382,21 +392,20 @@ function mtwifi_cfg_setup(argv)
     end
 
     local WirelessMode
-    local ax_feature = false
 
     if cfg.config.band == "2g" then
-        if string.sub(cfg.config.htmode,1,2) == "HE" then
+        WirelessMode = 9 -- PHY_11BGN_MIXED
+        if is_ax_mode(cfg) then
             WirelessMode = 16 -- PHY_11AX_24G
-            ax_feature = true
-        else
-            WirelessMode = 9 -- PHY_11BGN_MIXED
         end
     elseif cfg.config.band == "5g" then
-        if string.sub(cfg.config.htmode,1,2) == "HE" then
+        WirelessMode = 15 -- PHY_11VHT_N_MIXED
+        if is_ax_mode(cfg) then
             WirelessMode = 17 -- PHY_11AX_5G
-            ax_feature = true
-        else
-            WirelessMode = 15 -- PHY_11VHT_N_MIXED
+        end
+    elseif cfg.config.band == "6g" then
+        if is_ax_mode(cfg) then
+            WirelessMode = 18 -- PHY_11AX_6G
         end
     end
 
@@ -471,7 +480,7 @@ function mtwifi_cfg_setup(argv)
         dats.CountryCode = cfg.config.country
         if cfg.config.band == "2g" then
             dats.CountryRegion = defs.countryRegions[cfg.config.country][1]
-        elseif cfg.config.band == "5g" then
+        elseif cfg.config.band == "5g" or cfg.config.band == "6g" then
             dats.CountryRegionABand = defs.countryRegions[cfg.config.country][2]
         end
     end
@@ -506,7 +515,7 @@ function mtwifi_cfg_setup(argv)
         dats.ITxBfEn = 0
     end
 
-    if ax_feature and cfg.config.twt then
+    if is_ax_mode(cfg) and cfg.config.twt then
         dats.TWTSupport = cfg.config.twt
     else
         dats.TWTSupport = 0
@@ -561,6 +570,12 @@ function mtwifi_cfg_setup(argv)
             set_dat(dats, apidx, "FragThreshold",v.config.frag)
             set_dat(dats, apidx, "DtimPeriod",v.config.dtim_period)
             set_dat(dats, apidx, "WirelessMode", WirelessMode)
+
+            if is_ax_mode(cfg) then
+                set_dat(dats, apidx, "HT_BAWinSize", 256)
+            else
+                set_dat(dats, apidx, "HT_BAWinSize", 64)
+            end
 
             if v.config.macfilter then
                 if v.config.macfilter == "allow" then

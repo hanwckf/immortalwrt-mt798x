@@ -51,7 +51,7 @@ function show_devs()
 end
 
 function get_dev_prop(dev, prop)
-    if l1dat.devname_ridx[dev] then
+    if l1dat.devname_ridx[dev] and l1dat.devname_ridx[dev][prop] then
         print(l1dat.devname_ridx[dev][prop])
     end
 end
