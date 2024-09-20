@@ -784,7 +784,7 @@ TARGET_DEVICES += routerich_ax3000
 define Device/zhao_7981-r128-dsa
   DEVICE_VENDOR := ZHAO
   DEVICE_MODEL := 7981 R128-DSA
-  DEVICE_DTS := mt7981-spim-nand-7981r128
+  DEVICE_DTS := mt7981-spim-nand-7981r128-dsa
   DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
   DEVICE_PACKAGES := $(MT7981_USB_PKGS) 
   SUPPORTED_DEVICES := mediatek,zhao-7981r128-d
@@ -802,7 +802,7 @@ TARGET_DEVICES += zhao_7981-r128-dsa
 define Device/zhao_7981-r128-gsw
   DEVICE_VENDOR := ZHAO
   DEVICE_MODEL := 7981 R128-GSW
-  DEVICE_DTS := mt7981-spim-snand-7981r128-gsw
+  DEVICE_DTS := mt7981-spim-nand-7981r128-gsw
   DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
   DEVICE_PACKAGES := $(MT7981_USB_PKGS) 
   SUPPORTED_DEVICES := mediatek,zhao-7981r128-g
