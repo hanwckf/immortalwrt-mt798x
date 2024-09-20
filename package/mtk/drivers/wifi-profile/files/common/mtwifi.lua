@@ -222,6 +222,11 @@ function mtwifi_up(devname)
     mtwifi_iwpriv_hook(devname)
 
     os.execute(" rm -rf /tmp/mtk/wifi/mtwifi*.need_reload")
+
+    -- for ax7800 project, close the ra0.
+    if string.find(dev.profile_path, "ax7800") then
+        os.execute("ifconfig ra0 down")
+    end
 end
 
 function mtwifi_down(devname)
