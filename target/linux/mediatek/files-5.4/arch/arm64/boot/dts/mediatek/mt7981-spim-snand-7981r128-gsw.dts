@@ -18,14 +18,17 @@
 				earlycon=uart8250,mmio32,0x11002000";
 	};
 
+	memory {
+		reg = <0 0x40000000 0 0x20000000>;
+	};
 
 	gpio-keys {
-			compatible = "gpio-keys";
-				reset {
-					label = "reset";
-					linux,code = <KEY_RESTART>;
-					gpios = <&pio 1 GPIO_ACTIVE_LOW>;
-				};
+		compatible = "gpio-keys";
+		reset {
+			label = "reset";
+			linux,code = <KEY_RESTART>;
+			gpios = <&pio 1 GPIO_ACTIVE_LOW>;
+		};
 	};
 	
 	leds {
@@ -70,7 +73,7 @@
 		#size-cells = <0>;
 	};
 	
-	i2c_sfp:i2c-gpio-0 {
+	i2c_sfp1: i2c-gpio-0 {
 		compatible = "i2c-gpio";
 		sda-gpios = <&pio 9 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
 		scl-gpios = <&pio 10 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
@@ -79,11 +82,11 @@
 		#size-cells = <0>;
 	};
 
-	sfp1:sfp-wan {
+	sfp1: sfp-wan {
 		compatible = "sff,sfp";
-		i2c-bus = <&i2c_sfp>;
+		i2c-bus = <&i2c_sfp1>;
 		los-gpios = <&pio 3 GPIO_ACTIVE_HIGH>;
-		mod-def0-gpios = <&pio 35 GPIO_ACTIVE_HIGH>;
+		mod-def0-gpios = <&pio 35 GPIO_ACTIVE_LOW>;
 		tx-disable-gpios = <&pio 12 GPIO_ACTIVE_HIGH>;
 		tx-fault-gpios = <&pio 34 GPIO_ACTIVE_HIGH>;
 		maximum-power-milliwatt = <3000>;
@@ -132,7 +135,7 @@
 				reg = <0x0100000 0x0080000>;
 			};
 
-			partition@180000 {
+			factory:partition@180000 {
 				label = "Factory";
 				reg = <0x180000 0x0200000>;
 			};
@@ -148,6 +151,12 @@
 			};
 		};
 	};
+};
+
+&afe {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pcm_pins>;
+	status = "okay";
 };
 
 &uart0 {
@@ -350,7 +359,8 @@
 };
 
 &xhci {
-	vusb33-supply = <&reg_3p3v>;
- 	vbus-supply = <&usb_vbus>;
- 	status = "okay";
+	mediatek,u3p-dis-msk = <0x0>;
+	phys = <&u2port0 PHY_TYPE_USB2>,
+	       <&u3port0 PHY_TYPE_USB3>;
+	status = "okay";
 };

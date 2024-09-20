@@ -3,69 +3,61 @@
 / {
 	model = "7981R128";
 	compatible = "mediatek,zhao-7981r128-d";
-	
-	aliases {
-		led-boot = &POWER;
-		led-failsafe = &POWER;
-		led-running = &POWER;
-		led-upgrade = &POWER;
-	};		
-	
-	
-	
 	chosen {
 		bootargs = "console=ttyS0,115200n1 loglevel=8  \
 				earlycon=uart8250,mmio32,0x11002000";
 	};
 
 	memory {
-		reg = <0 0x40000000 0 0x20000000>;
+		// fpga ddr2: 128MB*2
+		reg = <0 0x40000000 0 0x10000000>;
 	};
 
+
+	leds {
+		compatible = "gpio-leds";
+
+		SFP{
+			label = "SFP";
+			gpios = <&pio 4 1>;
+			default-state = "off";
+		};
+
+		WIFI5G{
+			label = "WIFI5G";
+			gpios = <&pio 5 1>;
+			default-state = "off";
+		};
+
+		WIFI2G{
+			label = "WIFI2G";
+			gpios = <&pio 6 1>;
+			default-state = "off";
+		};
+
+		LAN{
+			label = "LAN";
+			gpios = <&pio 8 1>;
+			default-state = "off";
+		};
+
+		POWER{
+			label = "POWER";
+			gpios = <&pio 13 1>;
+			default-state = "on";
+		};
+		
+	};
 	gpio-keys {
 		compatible = "gpio-keys";
+
 		reset {
 			label = "reset";
 			linux,code = <KEY_RESTART>;
 			gpios = <&pio 1 GPIO_ACTIVE_LOW>;
 		};
 	};
-	
-	leds {
-		compatible = "gpio-leds";
 
-		SFP: sfp {
-			label = "SFP";
-			gpios = <&pio 4 GPIO_ACTIVE_LOW>;
-			default-state = "off";
-		};
-
-		WIFI5G: wifi5g {
-			label = "WIFI5G";
-			gpios = <&pio 5 GPIO_ACTIVE_LOW>;
-			default-state = "off";
-		};
-
-		WIFI2G: wifi2g {
-			label = "WIFI2G";
-			gpios = <&pio 6 GPIO_ACTIVE_LOW>;
-			default-state = "off";
-		};		
-
-		LAN: lan {
-			label = "LAN";
-			gpios = <&pio 8 GPIO_ACTIVE_LOW>;
-			default-state = "off";
-		};
-		
-		POWER: power {
-			label = "POWER";
-			gpios = <&pio 13 GPIO_ACTIVE_LOW>;
-			default-state = "on";
-		};		
-		
-	};
-	
 	i2c_sfp1: i2c-gpio-0 {
 		compatible = "i2c-gpio";
 		sda-gpios = <&pio 9 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
@@ -84,25 +76,7 @@
 		tx-fault-gpios = <&pio 34 GPIO_ACTIVE_HIGH>;
 		maximum-power-milliwatt = <3000>;
 	};
-	
-	reg_3p3v: regulator-3p3v {
-		compatible = "regulator-fixed";
-		regulator-name = "fixed-3.3V";
-		regulator-min-microvolt = <3300000>;
-		regulator-max-microvolt = <3300000>;
-		regulator-boot-on;
-		regulator-always-on;
-	};
-	
-	usb_vbus: regulator-usb-vbus {
-		compatible = "regulator-fixed";
-		regulator-name = "usb_vbus";
-		regulator-min-microvolt = <5000000>;
-		regulator-max-microvolt = <5000000>;
-		enable-active-high;
-		regulator-boot-on;
-	};
-		
+
 	nmbm_spim_nand {
 		compatible = "generic,nmbm";
 
@@ -175,14 +149,13 @@
                 };
         };
 
-        gmac1: mac@1 {
-		compatible = "mediatek,eth-mac";
-		reg = <1>;
-		phy-mode = "2500base-x";
-		managed = "in-band-status";
-		sfp = <&sfp1>;
-	};
-        
+		gmac1: mac@1 {
+			compatible = "mediatek,eth-mac";
+			reg = <1>;
+			phy-mode = "2500base-x";
+			managed = "in-band-status";
+			sfp = <&sfp1>;
+		};
 
         mdio: mdio-bus {
                 #address-cells = <1>;
@@ -197,10 +170,11 @@
 			phy-mode = "2500base-x";
 		};
 
-                switch@0 {
+		switch@0 {
                         compatible = "mediatek,mt7531";
                         reg = <31>;
                         reset-gpios = <&pio 39 0>;
+
                         ports {
                                 #address-cells = <1>;
                                 #size-cells = <0>;
@@ -210,14 +184,13 @@
                                         label = "lan1";
                                 };
 
+								port@5 {
+									reg = <5>;
+									label = "lan2";
+									phy-mode = "2500base-x";
+									phy-handle = <&phy5>;
+								};
 
-                                port@5 {
-					reg = <5>;
-					label = "lan2";
-					phy-mode = "2500base-x";
-					phy-handle = <&phy5>;
- 				};
- 				
                                 port@6 {
                                         reg = <6>;
                                         label = "cpu";
@@ -250,34 +223,10 @@
 		#address-cells = <1>;
 		#size-cells = <1>;
 		compatible = "spi-nand";
-		spi-cal-enable;
-		spi-cal-mode = "read-data";
-		spi-cal-datalen = <7>;
-		spi-cal-data = /bits/ 8 <0x53 0x50 0x49 0x4E 0x41 0x4E 0x44>;
-		spi-cal-addrlen = <5>;
-		spi-cal-addr = /bits/ 32 <0x0 0x0 0x0 0x0 0x0>;
 		reg = <0>;
 		spi-max-frequency = <52000000>;
-		spi-tx-bus-width = <4>;
-		spi-rx-bus-width = <4>;
-	};
-};
-
-&spi1 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&spic_pins>;
-	status = "disabled";
-
-	slb9670: slb9670@0 {
-		compatible = "infineon,slb9670";
-		reg = <0>; /* CE0 */
-		#address-cells = <1>;
-		#size-cells = <0>;
-		spi-cal-enable;
-		spi-cal-mode = "read-data";
-		spi-cal-datalen = <2>;
-		spi-cal-data = /bits/ 8 <0x00 0x1b>;
-		spi-max-frequency = <20000000>;
+		spi-tx-buswidth = <4>;
+		spi-rx-buswidth = <4>;
 	};
 };
 
