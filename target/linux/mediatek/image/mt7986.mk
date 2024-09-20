@@ -545,7 +545,7 @@ define Device/zyxel_ex5700
     UBINIZE_OPTS := -E 5
     BLOCKSIZE := 256k
     PAGESIZE := 4096
-    IMAGE_SIZE := 65536k
+    IMAGE_SIZE := 485888k
     KERNEL_IN_UBI := 1
     IMAGES += factory.bin
     IMAGE/factory.bin := append-ubi | check-size $$$$(IMAGE_SIZE)
