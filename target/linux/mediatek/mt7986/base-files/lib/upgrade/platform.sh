@@ -150,6 +150,7 @@ platform_do_upgrade() {
 	netcore,n60 |\
 	ruijie,rg-x60-pro* |\
 	tplink,tl-xdr608* |\
+	zyxel,ex5700 |\
 	*snand*)
 		nand_do_upgrade "$1"
 		;;
@@ -186,6 +187,7 @@ platform_check_image() {
 	jdcloud,re-cp-03 |\
 	tplink,tl-xdr608* |\
 	ccc,ddd |\
+	zyxel,ex5700 |\
 	*emmc*)
 		# tar magic `ustar`
 		magic="$(dd if="$1" bs=1 skip=257 count=5 2>/dev/null)"

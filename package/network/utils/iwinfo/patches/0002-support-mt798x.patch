@@ -6,7 +6,7 @@
  
 +ifneq ($(filter mtk,$(IWINFO_BACKENDS)),)
 +	IWINFO_CFLAGS  += -DUSE_MTK
-+	IWINFO_LIB_OBJ += iwinfo_mtk.o iwinfo_mtk_rate.o
++	IWINFO_LIB_OBJ += iwinfo_mtk.o iwinfo_mtk_rate.o iwinfo_mtk_l1util.o
 +endif
 +
  ifneq ($(filter nl80211,$(IWINFO_BACKENDS)),)
@@ -141,9 +141,11 @@
  	luaL_register(L, NULL, R_common);
 --- a/devices.txt
 +++ b/devices.txt
-@@ -197,6 +197,7 @@
+@@ -196,7 +196,9 @@
+ 0x14c3 0x7650 0x14c3 0x7650    0      0  "MediaTek" "MT7610E"
  0x14c3 0x7662 0x14c3 0x7662    0      0  "MediaTek" "MT76x2E"
  0x14c3 0x7915 0x14c3 0x7915    0      0  "MediaTek" "MT7915E"
++0x14c3 0x7916 0x14c3 0x7916    0      0  "MediaTek" "MT7916"
  0x14c3 0x7986 0x14c3 0x7986    0      0  "MediaTek" "MT7986"
 +0x14c3 0x7981 0x14c3 0x7981    0      0  "MediaTek" "MT7981"
  0x14e4 0xaa52 0x14e4 0xaa52    0      0  "Broadcom" "BCM43602"

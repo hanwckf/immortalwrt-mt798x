@@ -740,6 +740,7 @@ setup_model()
 	ruijie,rg-x60-pro* |\
 	jdcloud,re-cp-03 |\
 	tplink,tl-xdr608* |\
+	zyxel,ex5700 |\
 	*7986*)
 		MT7986_whnat $num_of_wifi $usbnet
 		;;

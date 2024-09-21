@@ -26,19 +26,32 @@ function show_usage()
 end
 
 function show_devs()
+    local devs = {}
     local ret = ""
-    for k, _ in pairs(l1dat.devname_ridx) do
-        if #ret > 0 then
-            ret = ret .. " " .. k
-        else
-            ret = k
+
+    for k, v in pairs(l1dat.devname_ridx) do
+        -- skip MT7986-2.4G for ax7800 project
+        if not(string.find(v.profile_path, "ax7800") and 
+        v.INDEX == "MT7986" and v.subidx == 1) then
+            table.insert(devs, k)
         end
     end
+
+    table.sort(devs)
+
+    for _,v in ipairs(devs) do
+        if #ret > 0 then
+            ret = ret .. " " .. v
+        else
+            ret = v
+        end
+    end
+
     print(ret)
 end
 
 function get_dev_prop(dev, prop)
-    if l1dat.devname_ridx[dev] then
+    if l1dat.devname_ridx[dev] and l1dat.devname_ridx[dev][prop] then
         print(l1dat.devname_ridx[dev][prop])
     end
 end

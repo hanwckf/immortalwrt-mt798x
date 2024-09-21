@@ -148,7 +148,7 @@ function l1dat_parser.load_l1_profile(path)
                            end
                      end
                  })
-    local nixio = require("nixio")
+    --local nixio = require("nixio")
     local chipset_num = {}
     local dir = io.popen("ls /etc/wireless/")
     if not dir then return end
@@ -167,9 +167,9 @@ function l1dat_parser.load_l1_profile(path)
                 k1, k2 = string.match(k, "INDEX(%d+)_(.+)")
                 if k1 then
                     k1 = tonumber(k1) + 1
-                    if devs[k1][k2] then
-                        nixio.syslog("warning", "skip repeated key"..line)
-                    end
+                    --if devs[k1][k2] then
+                    --    nixio.syslog("warning", "skip repeated key"..line)
+                    --end
                     devs[k1][k2] = v or ""
                 else
                     k1 = string.match(k, "INDEX(%d+)")

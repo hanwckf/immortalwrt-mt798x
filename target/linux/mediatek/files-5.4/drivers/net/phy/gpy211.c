@@ -4,10 +4,6 @@
 #include <linux/of.h>
 #include <linux/phy.h>
 #include <linux/delay.h>
-#include <net/sock.h>
-#include <linux/netlink.h>
-#include <linux/skbuff.h>
-#include <linux/proc_fs.h>
 #include <linux/workqueue.h>
 #include <linux/interrupt.h>
 #include <linux/sched.h>
@@ -18,23 +14,6 @@ struct t_phydev {
 	struct phy_device *phydev;
 	struct delayed_work dw;
 };
-
-#define SUPPORT_ESMD_EVENT 1
-
-#if defined(SUPPORT_ESMD_EVENT)
-#define MAX_PAYLOAD_LEN 64
-#define NETLINK_MONITOR 30
-static ssize_t user_pid_write_proc(struct file *file, const char *buffer, size_t count, loff_t *data);
-void kerSysRecvFrmMonitorTask(struct sk_buff *skb);
-static void kerSysInitMonitorSocket(void);
-static void kerSysCleanupMonitorSocket(void);
-void kerSysSendtoMonitorTask(int msgType, char *msgData, int msgDataLen);
-static struct sock *g_monitor_nl_sk;
-static int g_monitor_nl_pid = 0;
-static int kmonitor_proc_is_init = 0;
-struct proc_dir_entry *kmonitor_proc_dir = NULL;
-struct proc_dir_entry *kmonitor_proc_user_pid = NULL;
-#endif
 
 #define PHY_MIISTAT 0x18
 
@@ -52,133 +31,12 @@ void gpy211_status_timer(struct work_struct *t);
 // Starder Magament Registers
 #define MDIO_MMD_STD              0x0
 #define VSPEC1_NBT_DS_CTRL        0xA
-	#define DOWNSHIFT_THR_MASK    GENMASK(6, 2)
-	#define DOWNSHIFT_EN          BIT(1)
+#define DOWNSHIFT_THR_MASK    GENMASK(6, 2)
+#define DOWNSHIFT_EN          BIT(1)
 
 #define DEFAULT_INTEL_GPY211_PHYID1_VALUE	0x67c9
 
 #define MAXLINEAR_MAX_LED_INDEX 4
-
-#if defined(SUPPORT_ESMD_EVENT)
-static ssize_t user_pid_write_proc(struct file *file, const char *buffer, size_t count, loff_t *data)
-{
-	char val_string[5];
-	uint user_pid;
-
-	if (count > sizeof(val_string))
-	{
-		return -EINVAL;
-	}
-
-	if (copy_from_user(val_string, buffer, count))
-	{
-		return -EFAULT;
-	}
-	val_string[count] = '\0';
-
-	sscanf(val_string, "%d", &user_pid) ;
-
-	g_monitor_nl_pid = user_pid;
-	printk(KERN_INFO "set user_pid flag to %d\n", g_monitor_nl_pid);
-
-	return count;
-}
-
-static const struct file_operations kmonitor_proc_fops =
-{
-	.read = NULL,
-	.write = user_pid_write_proc,
-};
-
-void kerSysRecvFrmMonitorTask(struct sk_buff *skb)
-{
-	/*process the message here*/
-	printk(KERN_WARNING "unexpected skb received at %s \n",__FUNCTION__);
-	kfree_skb(skb);
-	return;
-}
-
-void kerSysInitMonitorSocket(void)
-{
-	struct netlink_kernel_cfg cfg = {0};
-
-	cfg.input = kerSysRecvFrmMonitorTask;
-	cfg.groups = 0,
-	cfg.cb_mutex = NULL;
-
-	g_monitor_nl_sk = netlink_kernel_create(&init_net, NETLINK_MONITOR, &cfg);
-
-	if(!g_monitor_nl_sk)
-	{
-		printk(KERN_ERR "Failed to create a netlink socket for monitor\n");
-		return;
-	}
-
-}
-
-void kerSysCleanupMonitorSocket(void)
-{
-	g_monitor_nl_pid = 0 ;
-	sock_release(g_monitor_nl_sk->sk_socket);
-}
-
-void kerSysSendtoMonitorTask(int msgType, char *msgData, int msgDataLen)
-{
-	struct sk_buff *skb =  NULL;
-	struct nlmsghdr *nl_msgHdr = NULL;
-	unsigned int nl_msgLen;
-
-	if(!g_monitor_nl_pid)
-	{
-		printk(KERN_INFO "message received before monitor task is initialized %s \n",__FUNCTION__);
-		return;
-	}
-
-	if(msgData && (msgDataLen > MAX_PAYLOAD_LEN))
-	{
-		printk(KERN_ERR "invalid message len in %s",__FUNCTION__);
-		return;
-	}
-
-	nl_msgLen = NLMSG_SPACE(msgDataLen);
-
-	/*Alloc skb ,this check helps to call the fucntion from interrupt context */
-
-	if(in_atomic())
-	{
-		skb = alloc_skb(nl_msgLen, GFP_ATOMIC);
-	}
-	else
-	{
-		skb = alloc_skb(nl_msgLen, GFP_KERNEL);
-	}
-
-	if(!skb)
-	{
-		printk(KERN_ERR "failed to alloc skb in %s",__FUNCTION__);
-		return;
-	}
-
-	nl_msgHdr = (struct nlmsghdr *)skb->data;
-	nl_msgHdr->nlmsg_type = msgType;
-	nl_msgHdr->nlmsg_pid = 0;/*from kernel */
-	nl_msgHdr->nlmsg_len = nl_msgLen;
-	nl_msgHdr->nlmsg_flags = 0;
-
-	if(msgData)
-	{
-		memcpy(NLMSG_DATA(nl_msgHdr), msgData, msgDataLen);
-	}
-
-	//   NETLINK_CB(skb).pid = 0; /*from kernel */
-
-	skb->len = nl_msgLen;
-
-	netlink_unicast(g_monitor_nl_sk, skb, g_monitor_nl_pid, MSG_DONTWAIT);
-
-	return;
-}
-#endif
 
 static int gpy211_phy_config_init(struct phy_device *phydev)
 {
@@ -235,18 +93,6 @@ int gpy211_phy_probe(struct phy_device *phydev)
 	//enable downshift and set training counter threshold to 3
 	phy_write_mmd(phydev, MDIO_MMD_VEND1, VSPEC1_NBT_DS_CTRL, buf | FIELD_PREP(DOWNSHIFT_THR_MASK, 0x3) | DOWNSHIFT_EN);
 
-#if defined(SUPPORT_ESMD_EVENT)
-	if(!kmonitor_proc_is_init)
-	{
-		kmonitor_proc_dir = proc_mkdir("kmonitor", NULL);
-		if(kmonitor_proc_dir)
-			kmonitor_proc_user_pid = proc_create("user_pid", 0644, kmonitor_proc_dir, &kmonitor_proc_fops);
-
-		kerSysInitMonitorSocket();
-		kmonitor_proc_is_init = 1;
-	}
-#endif
-
 	return 0;
 }
 
@@ -285,12 +131,9 @@ static int gpy_read_status(struct phy_device *phydev)
 	int old_link = phydev->link;
 	const char *speed;
 	const char *duplex;
-	const char *interface;
+
 	phydev_dbg(phydev, "### line[%d] addr[%d] link[%d] phyid[0x%x]\n", __LINE__, phydev->mdio.addr, phydev->link, phydev->phy_id);
 	struct device_node *of_node = phydev->mdio.dev.of_node;
-#if defined(SUPPORT_ESMD_EVENT)
-	char temp[64] = "\0";
-#endif
 
 	// int ret = phydev->mdio.bus->read(phydev->mdio.bus, phydev->mdio.addr, PHY_MIISTAT);
 	int ret = phy_read_mmd(phydev, MDIO_MMD_STD, PHY_MIISTAT);
@@ -320,29 +163,14 @@ static int gpy_read_status(struct phy_device *phydev)
 				break;
 		}
 
-		of_property_read_string(of_node, "ifname", &interface);
-
 		phydev_dbg(phydev, "### line[%d] addr[%d] old[%d] newlink[%d] \n", __LINE__, phydev->mdio.addr, old_link, phydev->link);
 
 		if(old_link != phydev->link)
 		{
 			if(phydev->link)
-			{
-				phydev_info(phydev, "###phy_addr[%d] [%s] link up speed[%s]\n", phydev->mdio.addr, interface, speed);
-#if defined(SUPPORT_ESMD_EVENT)
-				sprintf(temp, "%s:up:%s:%s", interface, speed, duplex);
-#endif
-			}
+				phydev_info(phydev, "###phy_addr[%d] link up speed[%s]\n", phydev->mdio.addr, speed);
 			else
-			{
-				phydev_info(phydev, "###phy_addr[%d] [%s] link down \n", phydev->mdio.addr, interface);
-#if defined(SUPPORT_ESMD_EVENT)
-				sprintf(temp, "%s:down", interface);
-#endif
-			}
-#if defined(SUPPORT_ESMD_EVENT)
-			kerSysSendtoMonitorTask(0, temp, sizeof(temp));
-#endif
+				phydev_info(phydev, "###phy_addr[%d] link down \n", phydev->mdio.addr);
 		}
 	}
 
