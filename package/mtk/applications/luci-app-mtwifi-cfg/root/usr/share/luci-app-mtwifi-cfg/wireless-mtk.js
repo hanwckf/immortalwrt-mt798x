@@ -579,14 +579,11 @@ var CBIWifiFrequencyValue = form.Value.extend({
 	},
 
 	write: function(section_id, value) {
-		uci.set('wireless', section_id, 'htmode', value[0] || null);
-
-		if (this.useBandOption)
-			uci.set('wireless', section_id, 'band', value[1]);
-		else
-			uci.set('wireless', section_id, 'hwmode', (value[1] == '2g') ? '11g' : '11a');
-
-		uci.set('wireless', section_id, 'channel', value[2]);
+		if (value[0] && value[1] && value[2])
+		{
+			uci.set('wireless', section_id, 'htmode', value[0]);
+			uci.set('wireless', section_id, 'channel', value[2]);
+		}
 	}
 });
 
@@ -1027,13 +1024,10 @@ return view.extend({
 					o.wifiNetwork = radioNet;
 
 					if (!isDisabled) {
-						if (band == '2g') {
-							o = ss.taboption('advanced', form.Flag, 'noscan', _('Force 40MHz mode'), _('Always use 40MHz channels even if the secondary channel overlaps. Using this option does not comply with IEEE 802.11n-2009!'));
-							o.depends({'_freq': 'HE40', '!contains': true});
-							o.depends({'_freq': 'HT40', '!contains': true});
-							o.default = o.disabled;
-							o.rmempty = false;
-						}
+						o = ss.taboption('advanced', form.Flag, 'noscan', _('Force 40MHz mode'), _('Always use 40MHz channels even if the secondary channel overlaps. Using this option does not comply with IEEE 802.11n-2009!'));
+						o.depends({'_freq': '2g', '!contains': true});
+						o.default = o.disabled;
+						o.rmempty = false;
 
 						o = ss.taboption('advanced', form.Flag, 'mu_beamformer', _('MU-MIMO'));
 						add_dep_he_feature(o);
