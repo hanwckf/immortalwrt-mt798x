@@ -1,0 +1,10 @@
+--- a/gettext-tools/src/locating-rule.c
++++ b/gettext-tools/src/locating-rule.c
+@@ -47,6 +47,7 @@
+ #include <libxml/parser.h>
+ #include <libxml/uri.h>
+ #include "xalloc.h"
++#include <stdlib.h>
+ 
+ #define _(str) gettext (str)
+ 
