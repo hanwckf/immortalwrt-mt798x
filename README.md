@@ -37,7 +37,7 @@ To build your own firmware you need a GNU/Linux, BSD or MacOSX system (case sens
       </details>
     - Method 2:
       ```bash
-      sudo bash -c 'bash <(curl -s https://build-scripts.immortalwrt.eu.org/init_build_environment.sh)'
+      sudo bash -c 'bash <(curl -sL https://build-scripts.immortalwrt.eu.org/init_build_environment.sh)'
       ```
 
   Note:
