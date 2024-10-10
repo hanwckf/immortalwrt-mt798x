@@ -1,0 +1,62 @@
+--- a/cli.c
++++ b/cli.c
+@@ -94,6 +94,12 @@ static const char *
+ 		return "100baseT";
+ 	case 1000:
+ 		return "1000baseT";
++	case 2500:
++		return "2500baseT";
++	case 5000:
++		return "5000baseT";
++	case 10000:
++		return "10000baseT";
+ 	default:
+ 		break;
+ 	}
+@@ -139,6 +145,9 @@ static void
+ 				link->rx_flow ? "rxflow " : "",
+ 				link->eee & SWLIB_LINK_FLAG_EEE_100BASET ? "eee100 " : "",
+ 				link->eee & SWLIB_LINK_FLAG_EEE_1000BASET ? "eee1000 " : "",
++				link->eee & SWLIB_LINK_FLAG_EEE_2500BASET ? "eee2500 " : "",
++				link->eee & SWLIB_LINK_FLAG_EEE_5000BASET ? "eee5000 " : "",
++				link->eee & SWLIB_LINK_FLAG_EEE_10000BASET ? "eee10000 " : "",
+ 				link->aneg ? "auto" : "");
+ 		else
+ 			printf("port:%d link:down", val->port_vlan);
+--- a/swlib.c
++++ b/swlib.c
+@@ -59,6 +59,9 @@ static struct nla_policy
+ 	[SWITCH_LINK_SPEED] = { .type = NLA_U32 },
+ 	[SWITCH_LINK_FLAG_EEE_100BASET] = { .type = NLA_FLAG },
+ 	[SWITCH_LINK_FLAG_EEE_1000BASET] = { .type = NLA_FLAG },
++	[SWITCH_LINK_FLAG_EEE_2500BASET] = { .type = NLA_FLAG },
++	[SWITCH_LINK_FLAG_EEE_5000BASET] = { .type = NLA_FLAG },
++	[SWITCH_LINK_FLAG_EEE_10000BASET] = { .type = NLA_FLAG },
+ };
+ 
+ static inline void *
+@@ -241,6 +244,12 @@ static int
+ 		link->eee |= SWLIB_LINK_FLAG_EEE_100BASET;
+ 	if (tb[SWITCH_LINK_FLAG_EEE_1000BASET])
+ 		link->eee |= SWLIB_LINK_FLAG_EEE_1000BASET;
++	if (tb[SWITCH_LINK_FLAG_EEE_2500BASET])
++		link->eee |= SWLIB_LINK_FLAG_EEE_2500BASET;
++	if (tb[SWITCH_LINK_FLAG_EEE_5000BASET])
++		link->eee |= SWLIB_LINK_FLAG_EEE_5000BASET;
++	if (tb[SWITCH_LINK_FLAG_EEE_10000BASET])
++		link->eee |= SWLIB_LINK_FLAG_EEE_10000BASET;
+ 
+ out:
+ 	return err;
+--- a/swlib.h
++++ b/swlib.h
+@@ -108,6 +108,9 @@ enum swlib_link_flags {
+ enum swlib_link_flags {
+ 	SWLIB_LINK_FLAG_EEE_100BASET = (1 << 0),
+ 	SWLIB_LINK_FLAG_EEE_1000BASET = (1 << 1),
++	SWLIB_LINK_FLAG_EEE_2500BASET = (1 << 2),
++	SWLIB_LINK_FLAG_EEE_5000BASET = (1 << 3),
++	SWLIB_LINK_FLAG_EEE_10000BASET = (1 << 4),
+ };
+ 
+ struct switch_dev;
