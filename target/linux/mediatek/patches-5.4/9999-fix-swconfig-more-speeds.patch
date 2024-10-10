@@ -1,0 +1,546 @@
+--- a/drivers/net/phy/swconfig.c
++++ b/drivers/net/phy/swconfig.c
+@@ -138,11 +138,60 @@ swconfig_set_link(struct switch_dev *dev, const struct switch_attr *attr,
+ 	return dev->ops->set_port_link(dev, val->port_vlan, val->value.link);
+ }
+ 
++static int
++swconfig_set_reg(struct switch_dev *dev, const struct switch_attr *attr, struct switch_val *val)
++{
++	if (val->port_vlan < 0)
++		return -EINVAL;
++
++	if (!dev->ops->set_reg_val)
++		return -EOPNOTSUPP;
++
++	return dev->ops->set_reg_val(dev, val->port_vlan, val->value.i);
++}
++
++static int
++swconfig_get_reg(struct switch_dev *dev, const struct switch_attr *attr, struct switch_val *val)
++{
++	if (val->port_vlan < 0)
++		return -EINVAL;
++
++	if (!dev->ops->get_reg_val)
++		return -EOPNOTSUPP;
++
++	return dev->ops->get_reg_val(dev, val->port_vlan, &val->value.i);
++}
++
++static const char *
++swconfig_speed_str(enum switch_port_speed speed)
++{
++	switch (speed) {
++	case SWITCH_PORT_SPEED_10:
++		return "10baseT";
++	case SWITCH_PORT_SPEED_100:
++		return "100baseT";
++	case SWITCH_PORT_SPEED_1000:
++		return "1000baseT";
++	case SWITCH_PORT_SPEED_2500:
++		return "2500baseT";
++	case SWITCH_PORT_SPEED_5000:
++		return "5000baseT";
++	case SWITCH_PORT_SPEED_10000:
++		return "10000baseT";
++	default:
++		break;
++	}
++
++	return "unknown";
++}
++
+ static int
+ swconfig_get_link(struct switch_dev *dev, const struct switch_attr *attr,
+ 			struct switch_val *val)
+ {
+-	struct switch_port_link *link = val->value.link;
++	struct switch_port_link link;
++	int len;
++	int ret;
+ 
+ 	if (val->port_vlan >= dev->ports)
+ 		return -EINVAL;
+@@ -150,8 +199,30 @@ swconfig_get_link(struct switch_dev *dev, const struct switch_attr *attr,
+ 	if (!dev->ops->get_port_link)
+ 		return -EOPNOTSUPP;
+ 
+-	memset(link, 0, sizeof(*link));
+-	return dev->ops->get_port_link(dev, val->port_vlan, link);
++	memset(&link, 0, sizeof(link));
++	ret = dev->ops->get_port_link(dev, val->port_vlan, &link);
++	if (ret)
++		return ret;
++
++	memset(dev->buf, 0, sizeof(dev->buf));
++
++	if (link.link)
++		len = snprintf(dev->buf, sizeof(dev->buf),
++			       "port:%d link:up speed:%s %s-duplex %s%s%s",
++			       val->port_vlan,
++			       swconfig_speed_str(link.speed),
++			       link.duplex ? "full" : "half",
++			       link.tx_flow ? "txflow " : "",
++			       link.rx_flow ?	"rxflow " : "",
++			       link.aneg ? "auto" : "");
++	else
++		len = snprintf(dev->buf, sizeof(dev->buf), "port:%d link:down",
++			       val->port_vlan);
++
++	val->value.s = dev->buf;
++	val->len = len;
++
++	return 0;
+ }
+ 
+ static int
+@@ -190,6 +261,10 @@ enum port_defaults {
+ 	PORT_LINK,
+ };
+ 
++enum reg_defaults {
++	REG_VAL,
++};
++
+ static struct switch_attr default_global[] = {
+ 	[GLOBAL_APPLY] = {
+ 		.type = SWITCH_TYPE_NOVAL,
+@@ -214,7 +289,7 @@ static struct switch_attr default_port[] = {
+ 		.get = swconfig_get_pvid,
+ 	},
+ 	[PORT_LINK] = {
+-		.type = SWITCH_TYPE_LINK,
++		.type = SWITCH_TYPE_STRING,
+ 		.name = "link",
+ 		.description = "Get port link information",
+ 		.set = swconfig_set_link,
+@@ -232,6 +307,16 @@ static struct switch_attr default_vlan[] = {
+ 	},
+ };
+ 
++static struct switch_attr default_reg[] = {
++	[REG_VAL] = {
++		.type = SWITCH_TYPE_INT,
++		.name = "val",
++		.description = "read/write value of switch register(debug use only)",
++		.set = swconfig_set_reg,
++		.get = swconfig_get_reg,
++	}
++};
++
+ static const struct switch_attr *
+ swconfig_find_attr_by_name(const struct switch_attrlist *alist,
+ 				const char *name)
+@@ -252,6 +337,7 @@ static void swconfig_defaults_init(struct switch_dev *dev)
+ 	dev->def_global = 0;
+ 	dev->def_vlan = 0;
+ 	dev->def_port = 0;
++	dev->def_reg = 0;
+ 
+ 	if (ops->get_vlan_ports || ops->set_vlan_ports)
+ 		set_bit(VLAN_PORTS, &dev->def_vlan);
+@@ -259,6 +345,9 @@ static void swconfig_defaults_init(struct switch_dev *dev)
+ 	if (ops->get_port_pvid || ops->set_port_pvid)
+ 		set_bit(PORT_PVID, &dev->def_port);
+ 
++	if (ops->get_reg_val || ops->set_reg_val)
++		set_bit(REG_VAL, &dev->def_reg);
++
+ 	if (ops->get_port_link &&
+ 	    !swconfig_find_attr_by_name(&ops->attr_port, "link"))
+ 		set_bit(PORT_LINK, &dev->def_port);
+@@ -279,6 +368,7 @@ static const struct nla_policy switch_policy[SWITCH_ATTR_MAX+1] = {
+ 	[SWITCH_ATTR_OP_VALUE_INT] = { .type = NLA_U32 },
+ 	[SWITCH_ATTR_OP_VALUE_STR] = { .type = NLA_NUL_STRING },
+ 	[SWITCH_ATTR_OP_VALUE_PORTS] = { .type = NLA_NESTED },
++	[SWITCH_ATTR_OP_VALUE_EXT] = { .type = NLA_NESTED },
+ 	[SWITCH_ATTR_TYPE] = { .type = NLA_U32 },
+ };
+ 
+@@ -293,6 +383,12 @@ static struct nla_policy link_policy[SWITCH_LINK_ATTR_MAX] = {
+ 	[SWITCH_LINK_SPEED] = { .type = NLA_U32 },
+ };
+ 
++static const struct nla_policy ext_policy[SWITCH_EXT_ATTR_MAX+1] = {
++	[SWITCH_EXT_NAME] = { .type = NLA_NUL_STRING },
++	[SWITCH_EXT_VALUE] = { .type = NLA_NUL_STRING },
++};
++
++
+ static inline void
+ swconfig_lock(void)
+ {
+@@ -324,11 +420,11 @@ swconfig_get_dev(struct genl_info *info)
+ 		dev = p;
+ 		break;
+ 	}
++	swconfig_unlock();
+ 	if (dev)
+ 		mutex_lock(&dev->sw_mutex);
+ 	else
+ 		pr_debug("device %d not found\n", id);
+-	swconfig_unlock();
+ done:
+ 	return dev;
+ }
+@@ -452,6 +548,12 @@ swconfig_list_attrs(struct sk_buff *skb, struct genl_info *info)
+ 		def_active = &dev->def_port;
+ 		n_def = ARRAY_SIZE(default_port);
+ 		break;
++	case SWITCH_CMD_LIST_REG:
++		alist = &dev->ops->attr_reg;
++		def_list = default_reg;
++		def_active = &dev->def_reg;
++		n_def = ARRAY_SIZE(default_reg);
++		break;
+ 	default:
+ 		WARN_ON(1);
+ 		goto out;
+@@ -542,6 +644,18 @@ swconfig_lookup_attr(struct switch_dev *dev, struct genl_info *info,
+ 		if (val->port_vlan >= dev->ports)
+ 			goto done;
+ 		break;
++	case SWITCH_CMD_SET_REG:
++	case SWITCH_CMD_GET_REG:
++		alist = &dev->ops->attr_reg;
++		def_list = default_reg;
++		def_active = &dev->def_reg;
++		n_def = ARRAY_SIZE(default_reg);
++		if (!info->attrs[SWITCH_ATTR_OP_REG])
++			goto done;
++		val->port_vlan = nla_get_u32(info->attrs[SWITCH_ATTR_OP_REG]);
++		if (val->port_vlan < 0)
++			goto done;
++		break;
+ 	default:
+ 		WARN_ON(1);
+ 		goto done;
+@@ -623,12 +737,54 @@ swconfig_parse_link(struct sk_buff *msg, struct nlattr *nla,
+ 	return 0;
+ }
+ 
++static int
++swconfig_parse_ext(struct sk_buff *msg, struct nlattr *head,
++		struct switch_val *val, int max)
++{
++	struct nlattr *nla;
++	struct switch_ext *switch_ext_p, *switch_ext_tmp;
++	int rem;
++
++	val->len = 0;
++	switch_ext_p = val->value.ext_val;
++	nla_for_each_nested(nla, head, rem) {
++		struct nlattr *tb[SWITCH_EXT_ATTR_MAX+1];
++
++		switch_ext_tmp = kzalloc(sizeof(struct switch_ext), GFP_KERNEL);
++		if (!switch_ext_tmp)
++			return -ENOMEM;
++
++		if (nla_parse_nested(tb, SWITCH_EXT_ATTR_MAX, nla,
++				ext_policy, NULL))
++			return -EINVAL;
++
++		if (!tb[SWITCH_EXT_NAME])
++			return -EINVAL;
++		switch_ext_tmp->option_name = nla_data(tb[SWITCH_EXT_NAME]);
++
++		if (!tb[SWITCH_EXT_VALUE])
++			return -EINVAL;
++		switch_ext_tmp->option_value = nla_data(tb[SWITCH_EXT_VALUE]);
++
++		if(!switch_ext_p)
++			val->value.ext_val = switch_ext_tmp;
++		else
++			switch_ext_p->next = switch_ext_tmp;
++		switch_ext_p=switch_ext_tmp;
++
++		val->len++;
++	}
++
++	return 0;
++}
++
+ static int
+ swconfig_set_attr(struct sk_buff *skb, struct genl_info *info)
+ {
+ 	const struct switch_attr *attr;
+ 	struct switch_dev *dev;
+ 	struct switch_val val;
++	struct switch_ext *switch_ext_p;
+ 	int err = -EINVAL;
+ 
+ 	if (!capable(CAP_NET_ADMIN))
+@@ -691,12 +847,38 @@ swconfig_set_attr(struct sk_buff *skb, struct genl_info *info)
+ 			err = 0;
+ 		}
+ 		break;
++	case SWITCH_TYPE_EXT:
++		if (info->attrs[SWITCH_ATTR_OP_VALUE_EXT]) {
++			err = swconfig_parse_ext(skb,
++				info->attrs[SWITCH_ATTR_OP_VALUE_EXT], &val, dev->ports);
++			if (err < 0)
++				goto error;
++		} else {
++			val.len = 0;
++			err = 0;
++		}
++		break;
++
+ 	default:
+ 		goto error;
+ 	}
+ 
+ 	err = attr->set(dev, attr, &val);
++
+ error:
++	/* free memory if necessary */
++	if(attr) {
++		switch(attr->type) {
++		case SWITCH_TYPE_EXT:
++			switch_ext_p = val.value.ext_val;
++			while(switch_ext_p) {
++				struct switch_ext *ext_value_p = switch_ext_p;
++				switch_ext_p = switch_ext_p->next;
++				kfree(ext_value_p);
++			}
++		}
++	}
++
+ 	swconfig_put_dev(dev);
+ 	return err;
+ }
+@@ -999,6 +1181,11 @@ static struct genl_ops swconfig_ops[] = {
+ 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
+ 		.doit = swconfig_list_attrs,
+ 	},
++	{
++		.cmd = SWITCH_CMD_LIST_REG,
++		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
++		.doit = swconfig_list_attrs,
++	},
+ 	{
+ 		.cmd = SWITCH_CMD_LIST_PORT,
+ 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
+@@ -1009,6 +1208,11 @@ static struct genl_ops swconfig_ops[] = {
+ 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
+ 		.doit = swconfig_get_attr,
+ 	},
++	{
++		.cmd = SWITCH_CMD_GET_REG,
++		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
++		.doit = swconfig_get_attr,
++	},
+ 	{
+ 		.cmd = SWITCH_CMD_GET_VLAN,
+ 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
+@@ -1019,6 +1219,11 @@ static struct genl_ops swconfig_ops[] = {
+ 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
+ 		.doit = swconfig_get_attr,
+ 	},
++	{
++		.cmd = SWITCH_CMD_SET_REG,
++		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
++		.doit = swconfig_set_attr,
++	},
+ 	{
+ 		.cmd = SWITCH_CMD_SET_GLOBAL,
+ 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
+--- a/drivers/net/phy/swconfig_leds.c
++++ b/drivers/net/phy/swconfig_leds.c
+@@ -24,10 +24,16 @@
+ #define SWCONFIG_LED_PORT_SPEED_10	0x02	/* 10 Mbps */
+ #define SWCONFIG_LED_PORT_SPEED_100	0x04	/* 100 Mbps */
+ #define SWCONFIG_LED_PORT_SPEED_1000	0x08	/* 1000 Mbps */
++#define SWCONFIG_LED_PORT_SPEED_2500	0x10	/* 2500 Mbps */
++#define SWCONFIG_LED_PORT_SPEED_5000	0x20	/* 5000 Mbps */
++#define SWCONFIG_LED_PORT_SPEED_10000	0x40	/* 10000 Mbps */
+ #define SWCONFIG_LED_PORT_SPEED_ALL	(SWCONFIG_LED_PORT_SPEED_NA | \
+ 					 SWCONFIG_LED_PORT_SPEED_10 | \
+ 					 SWCONFIG_LED_PORT_SPEED_100 | \
+-					 SWCONFIG_LED_PORT_SPEED_1000)
++					 SWCONFIG_LED_PORT_SPEED_1000 | \
++					 SWCONFIG_LED_PORT_SPEED_2500 | \
++					 SWCONFIG_LED_PORT_SPEED_5000 | \
++					 SWCONFIG_LED_PORT_SPEED_10000)
+ 
+ #define SWCONFIG_LED_MODE_LINK		0x01
+ #define SWCONFIG_LED_MODE_TX		0x02
+@@ -478,6 +484,18 @@ swconfig_led_work_func(struct work_struct *work)
+ 					sw_trig->link_speed[i] =
+ 						SWCONFIG_LED_PORT_SPEED_1000;
+ 					break;
++				case SWITCH_PORT_SPEED_2500:
++					sw_trig->link_speed[i] =
++						SWCONFIG_LED_PORT_SPEED_2500;
++					break;
++				case SWITCH_PORT_SPEED_5000:
++					sw_trig->link_speed[i] =
++						SWCONFIG_LED_PORT_SPEED_5000;
++					break;
++				case SWITCH_PORT_SPEED_10000:
++					sw_trig->link_speed[i] =
++						SWCONFIG_LED_PORT_SPEED_10000;
++					break;
+ 				}
+ 			}
+ 		}
+--- a/include/linux/switch.h
++++ b/include/linux/switch.h
+@@ -45,6 +45,9 @@ enum switch_port_speed {
+ 	SWITCH_PORT_SPEED_10 = 10,
+ 	SWITCH_PORT_SPEED_100 = 100,
+ 	SWITCH_PORT_SPEED_1000 = 1000,
++	SWITCH_PORT_SPEED_2500 = 2500,
++	SWITCH_PORT_SPEED_5000 = 5000,
++	SWITCH_PORT_SPEED_10000 = 10000
+ };
+ 
+ struct switch_port_link {
+@@ -83,6 +86,10 @@ struct switch_port_stats {
+  */
+ struct switch_dev_ops {
+ 	struct switch_attrlist attr_global, attr_port, attr_vlan;
++	struct switch_attrlist attr_reg;
++
++	int (*get_reg_val)(struct switch_dev *dev, int reg, int *val);
++	int (*set_reg_val)(struct switch_dev *dev, int reg, int val);
+ 
+ 	int (*get_vlan_ports)(struct switch_dev *dev, struct switch_val *val);
+ 	int (*set_vlan_ports)(struct switch_dev *dev, struct switch_val *val);
+@@ -123,6 +130,7 @@ struct switch_dev {
+ 	unsigned int id;
+ 	struct list_head dev_list;
+ 	unsigned long def_global, def_port, def_vlan;
++	unsigned long def_reg;
+ 
+ 	struct mutex sw_mutex;
+ 	struct switch_port *portbuf;
+@@ -146,6 +154,12 @@ struct switch_portmap {
+ 	const char *s;
+ };
+ 
++struct switch_ext {
++	const char *option_name;
++	const char *option_value;
++	struct switch_ext *next;
++};
++
+ struct switch_val {
+ 	const struct switch_attr *attr;
+ 	unsigned int port_vlan;
+@@ -155,6 +169,7 @@ struct switch_val {
+ 		u32 i;
+ 		struct switch_port *ports;
+ 		struct switch_port_link *link;
++		struct switch_ext *ext_val;
+ 	} value;
+ };
+ 
+--- a/include/uapi/linux/switch.h
++++ b/include/uapi/linux/switch.h
+@@ -47,13 +47,17 @@ enum {
+ 	SWITCH_ATTR_OP_NAME,
+ 	SWITCH_ATTR_OP_PORT,
+ 	SWITCH_ATTR_OP_VLAN,
++	SWITCH_ATTR_OP_REG,
+ 	SWITCH_ATTR_OP_VALUE_INT,
+ 	SWITCH_ATTR_OP_VALUE_STR,
+ 	SWITCH_ATTR_OP_VALUE_PORTS,
+ 	SWITCH_ATTR_OP_VALUE_LINK,
++	SWITCH_ATTR_OP_VALUE_EXT,
+ 	SWITCH_ATTR_OP_DESCRIPTION,
+ 	/* port lists */
+ 	SWITCH_ATTR_PORT,
++	/* switch_ext attribute */
++	SWITCH_ATTR_EXT,
+ 	SWITCH_ATTR_MAX
+ };
+ 
+@@ -78,7 +82,10 @@ enum {
+ 	SWITCH_CMD_SET_PORT,
+ 	SWITCH_CMD_LIST_VLAN,
+ 	SWITCH_CMD_GET_VLAN,
+-	SWITCH_CMD_SET_VLAN
++	SWITCH_CMD_SET_VLAN,
++	SWITCH_CMD_LIST_REG,
++	SWITCH_CMD_GET_REG,
++	SWITCH_CMD_SET_REG,
+ };
+ 
+ /* data types */
+@@ -88,6 +95,7 @@ enum switch_val_type {
+ 	SWITCH_TYPE_STRING,
+ 	SWITCH_TYPE_PORTS,
+ 	SWITCH_TYPE_LINK,
++	SWITCH_TYPE_EXT,
+ 	SWITCH_TYPE_NOVAL,
+ };
+ 
+@@ -110,9 +118,20 @@ enum {
+ 	SWITCH_LINK_SPEED,
+ 	SWITCH_LINK_FLAG_EEE_100BASET,
+ 	SWITCH_LINK_FLAG_EEE_1000BASET,
++	SWITCH_LINK_FLAG_EEE_2500BASET,
++	SWITCH_LINK_FLAG_EEE_5000BASET,
++	SWITCH_LINK_FLAG_EEE_10000BASET,
+ 	SWITCH_LINK_ATTR_MAX,
+ };
+ 
++/* switch_ext nested attributes */
++enum {
++	SWITCH_EXT_UNSPEC,
++	SWITCH_EXT_NAME,
++	SWITCH_EXT_VALUE,
++	SWITCH_EXT_ATTR_MAX
++};
++
+ #define SWITCH_ATTR_DEFAULTS_OFFSET	0x1000
+ 
+ 
+--- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
++++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+@@ -550,7 +550,8 @@ static void mtk_validate(struct
+ 	case PHY_INTERFACE_MODE_2500BASEX:
+ 		phylink_set(mask, 1000baseX_Full);
+ 		phylink_set(mask, 2500baseX_Full);
+-		break;
++		phylink_set(mask, 2500baseT_Full);
++		/* fall through; */
+ 	case PHY_INTERFACE_MODE_GMII:
+ 	case PHY_INTERFACE_MODE_RGMII:
+ 	case PHY_INTERFACE_MODE_RGMII_ID:
+--- a/drivers/net/phy/mtk/mt753x/mt753x_swconfig.c
++++ b/drivers/net/phy/mtk/mt753x/mt753x_swconfig.c
+@@ -265,8 +265,8 @@ static int mt753x_get_port_link(struct
+ 		link->speed = SWITCH_PORT_SPEED_1000;
+ 		break;
+ 	case MAC_SPD_2500:
+-		/* TODO: swconfig has no support for 2500 now */
+-		link->speed = SWITCH_PORT_SPEED_UNKNOWN;
++		/* TODO: fix swconfig support for 2500 */
++		link->speed = SWITCH_PORT_SPEED_2500;
+ 		break;
+ 	}
+ 
+--- a/drivers/net/phy/mtk/mt753x/mt7531.c
++++ b/drivers/net/phy/mtk/mt753x/mt7531.c
+@@ -471,7 +471,9 @@ static int mt7531_mac_port_setup(
+ 			 */
+ 			speed = port_cfg->speed;
+ 			if (port_cfg->speed == MAC_SPD_2500)
+-				speed = MAC_SPD_1000;
++				speed = MAC_SPD_2500;
++			else
++				speed = MAC_SPD_1000;
+ 
+ 			pmcr |= FORCE_MODE_LNK | FORCE_LINK |
+ 				FORCE_MODE_SPD | FORCE_MODE_DPX |
+@@ -491,6 +493,7 @@ static int mt7531_mac_port_setup(
+ 		mt7531_set_port_rgmii(gsw, port);
+ 		break;
+ 	case PHY_INTERFACE_MODE_SGMII:
++	case PHY_INTERFACE_MODE_2500BASEX:
+ 		if (port_cfg->force_link)
+ 			mt7531_set_port_sgmii_force_mode(gsw, port, port_cfg);
+ 		else
