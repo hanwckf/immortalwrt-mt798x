@@ -243,6 +243,7 @@ MeshEncrypType=
 MeshId=
 MeshWEPKEY=
 MeshWPAKEY=
+MLREnable=0
 MuMimoDlEnable=1
 MuMimoUlEnable=1
 MuOfdmaDlEnable=1
