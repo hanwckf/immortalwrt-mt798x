@@ -1,0 +1,71 @@
+--- a/mt_wifi/embedded/ap/ap_cfg.c
++++ b/mt_wifi/embedded/ap/ap_cfg.c
+@@ -11880,6 +11880,39 @@ INT RTMPAPQueryInformation(
+ 			os_free_mem(chn_list);
+ 			break;
+ 		}
++	case OID_GET_CHANNEL_LIST:
++		{
++			int i = 0;
++			UCHAR BandIdx = 0;
++			CHANNEL_CTRL *pChCtrl = NULL;
++			struct wifi_dev *wdev = NULL;
++			struct channel_list_basic *chn_list;
++
++			wdev = get_wdev_by_ioctl_idx_and_iftype(pAd, pObj->ioctl_if, pObj->ioctl_if_type);
++
++			if (wdev == NULL)
++				break;
++
++			os_alloc_mem(pAd, (UCHAR **)&chn_list, sizeof(struct channel_list_basic));
++			if (chn_list == NULL)
++				break;
++			NdisZeroMemory(chn_list, sizeof(struct channel_list_basic));
++
++			BandIdx = HcGetBandByWdev(wdev);
++			pChCtrl = hc_get_channel_ctrl(pAd->hdev_ctrl, BandIdx);
++
++			for (i = 0; i < pChCtrl->ChListNum && i < MAX_NUM_OF_CHANNELS; i++) {
++				chn_list->ChList[i].channel_idx = i;
++				chn_list->ChList[i].channel = pChCtrl->ChList[i].Channel;
++			}
++			chn_list->ChListNum = pChCtrl->ChListNum;
++
++			wrq->u.data.length = sizeof(struct channel_list_basic);
++			Status = copy_to_user(wrq->u.data.pointer, chn_list, wrq->u.data.length);
++			os_free_mem(chn_list);
++
++			break;
++		}
+ #ifdef MAP_6E_SUPPORT
+ 	case OID_GET_OP_CLASS:
+ 		{
+--- a/mt_wifi/embedded/include/oid.h
++++ b/mt_wifi/embedded/include/oid.h
+@@ -1223,6 +1223,17 @@ typedef struct GNU_PACKED _channel_info
+ struct msg_channel_list {
+ 	CHANNEL_INFO CHANNELLIST[60];
+ };
++
++typedef struct _channel_info_basic {
++	UINT8 channel;
++	UINT8 channel_idx;
++} CHANNEL_INFO_BASIC, *PCHANNEL_INFO_BASIC;
++
++struct channel_list_basic {
++	CHANNEL_INFO_BASIC ChList[MAX_NUM_OF_CHANNELS];
++	UINT8 ChListNum;
++};
++
+ typedef struct GNU_PACKED offchannel_param {
+ 	UCHAR channel[MAX_AWAY_CHANNEL];
+ 	UCHAR scan_type[MAX_AWAY_CHANNEL];
+@@ -2565,6 +2576,8 @@ enum vendor_ie_subcmd_oid {
+ #define OID_SET_AFC_CONFIG						0x09BE
+ #endif /* CONFIG_6G_AFC_SUPPORT */
+ 
++#define OID_GET_CHANNEL_LIST					0x09C0
++
+ #ifdef ACS_CTCC_SUPPORT
+ #define OID_802_11_GET_ACS_CHANNEL_SCORE                0x2014
+ 

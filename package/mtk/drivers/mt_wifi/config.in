@@ -177,6 +177,77 @@ config MTK_MT_WIFI_PATH
 	default "mt_wifi"
 
 if MTK_MT_WIFI
+choice
+	prompt "MT_WIFI DRIVER VERSION"
+	default MTK_MT_WIFI_DRIVER_VERSION_7672
+
+	config MTK_MT_WIFI_DRIVER_VERSION_7661
+	bool "7.6.6.1"
+
+	config MTK_MT_WIFI_DRIVER_VERSION_7672
+	bool "7.6.7.2"
+endchoice
+
+choice
+	prompt "MT7981 custom WACPU firmware"
+	depends on MTK_MT_WIFI_DRIVER_VERSION_7661 && MTK_CHIP_MT7981
+
+	config MTK_MT_WIFI_MT7981_DEFAULT_FIRMWARE
+	bool "default firmware"
+
+	config MTK_MT_WIFI_MT7981_20230306
+	bool "mt7981-fw-20230306"
+
+	config MTK_MT_WIFI_MT7981_20230330
+	bool "mt7981-fw-20230330"
+
+	config MTK_MT_WIFI_MT7981_20230411
+	bool "mt7981-fw-20230411"
+
+	config MTK_MT_WIFI_MT7981_20230717
+	bool "mt7981-fw-20230717"
+
+	config MTK_MT_WIFI_MT7981_20231024
+	bool "mt7981-fw-20231024"
+endchoice
+
+choice
+	prompt "MT7986 custom WACPU firmware"
+	depends on MTK_MT_WIFI_DRIVER_VERSION_7661 && MTK_CHIP_MT7986
+
+	config MTK_MT_WIFI_MT7986_DEFAULT_FIRMWARE
+	bool "default firmware"
+
+	config MTK_MT_WIFI_MT7986_20221208
+	bool "mt7986-fw-20221208"
+
+	config MTK_MT_WIFI_MT7986_20230421
+	bool "mt7986-fw-20230421"
+
+	config MTK_MT_WIFI_MT7986_20230808
+	bool "mt7986-fw-20230808"
+
+	config MTK_MT_WIFI_MT7986_20231024
+	bool "mt7986-fw-20231024"
+endchoice
+
+config MTK_MT_WIFI_FIRMWARE_PATH
+	string
+	default mt7981-fw-20230306 if MTK_MT_WIFI_MT7981_20230306
+	default mt7981-fw-20230330 if MTK_MT_WIFI_MT7981_20230330
+	default mt7981-fw-20230411 if MTK_MT_WIFI_MT7981_20230411
+	default mt7981-fw-20230717 if MTK_MT_WIFI_MT7981_20230717
+	default mt7981-fw-20231024 if MTK_MT_WIFI_MT7981_20231024
+	default mt7986-fw-20221208 if MTK_MT_WIFI_MT7986_20221208
+	default mt7986-fw-20230421 if MTK_MT_WIFI_MT7986_20230421
+	default mt7986-fw-20230808 if MTK_MT_WIFI_MT7986_20230808
+	default mt7986-fw-20231024 if MTK_MT_WIFI_MT7986_20231024
+
+config MTK_FW_NEW_API_PATCH
+	bool
+	depends on MTK_MT_WIFI_DRIVER_VERSION_7661
+	default y if !(MTK_MT_WIFI_MT7981_DEFAULT_FIRMWARE || MTK_MT_WIFI_MT7986_DEFAULT_FIRMWARE)
+
 menu "WiFi Generic Feature Options"
 choice
 	prompt "EEPROM Type of 1st Card"
@@ -763,16 +834,6 @@ choice
 endchoice
 #### PA_LNA_Type choice END 
 
-config MTK_MT7981_NEW_FW
-       depends on MTK_CHIP_MT7981
-       bool "mt7981 new firmware"
-       default y
-
-config MTK_MT7986_NEW_FW
-       depends on MTK_CHIP_MT7986
-       bool "mt7986 new firmware"
-       default n
-
 config MTK_WIFI_FW_BIN_LOAD
        depends on MTK_CHIP_MT7986 || MTK_CHIP_MT7916 || MTK_CHIP_MT7981
        bool "load wifi fw with bin file"
@@ -1069,6 +1130,21 @@ config MTK_CUSTOMISED_HOSTAPD_SUPPORT
 	depends on MTK_MT_AP_SUPPORT
 	depends on MTK_CFG80211_SUPPORT
 	default n
+
+#HOSTAPD_MAP_SUPPORT
+config MTK_HOSTAPD_MAP_SUPPORT
+        bool "Hostapd MAP Support"
+        depends on MTK_MT_AP_SUPPORT
+        depends on MTK_CFG80211_SUPPORT
+        default n
+
+#HOSTAPD_WAPP_SUPPORT
+config MTK_HOSTAPD_WAPP_SUPPORT
+        bool "Hostapd WAPP Support"
+        depends on MTK_MT_AP_SUPPORT
+        depends on MTK_CFG80211_SUPPORT
+        default n
+
 #HOSTAPD_WPA3_SUPPORT
 config MTK_HOSTAPD_WPA3_SUPPORT
         bool "Hostapd WPA3 Support"
@@ -1210,6 +1286,12 @@ config MTK_WIFI_CSI_CN_INFO_SUPPORT
 
 config MTK_6G_AFC_SUPPORT
 	bool "6G Band AFC Support"
+	depends on MTK_WIFI_DRIVER
+	depends on MTK_MT_AP_SUPPORT
+	default n
+
+config MTK_DFS_SLAVE_SUPPORT
+	bool "DFS-Slave Support"
 	depends on MTK_WIFI_DRIVER
 	depends on MTK_MT_AP_SUPPORT
 	default n
