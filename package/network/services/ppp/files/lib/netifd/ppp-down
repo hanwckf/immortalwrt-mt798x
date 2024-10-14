@@ -11,3 +11,6 @@ proto_send_update "$PPP_IPPARAM"
 		[ -x "$SCRIPT" ] && "$SCRIPT" "$@"
 	done
 }
+
+# sleep 3s to wait wan_6 down
+sleep 3

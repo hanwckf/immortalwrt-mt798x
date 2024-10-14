@@ -1,0 +1,11 @@
+--- a/mt_wifi/embedded/mgmt/mgmt_vht.c
++++ b/mt_wifi/embedded/mgmt/mgmt_vht.c
+@@ -636,7 +636,7 @@ INT vht_mode_adjust(RTMP_ADAPTER *pAd, M
+ 				} else {
+ 					/* can not know peer capability,
+ 					use the bw from support opclass as maximum capability. */
+-					if ((bw_from_opclass != NULL) && ((*bw_from_opclass) < BW_80))
++					if ((bw_from_opclass != NULL) && ((*bw_from_opclass) == BW_40))
+ 						pEntry->MaxHTPhyMode.field.BW = BW_40;
+ 					else {
+ 						pEntry->MaxHTPhyMode.field.BW = BW_80;

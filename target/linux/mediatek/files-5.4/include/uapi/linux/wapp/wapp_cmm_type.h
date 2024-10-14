@@ -76,6 +76,10 @@
 #define WMODE_CAP_N(_x)                        (((_x) & (WMODE_GN | WMODE_AN)) != 0)
 #define WMODE_CAP_AC(_x)               (((_x) & (WMODE_AC)) != 0)
 #define WMODE_CAP_AX(_x)	((_x) & (WMODE_AX_24G | WMODE_AX_5G | WMODE_AX_6G))
+#ifdef MTK_HOSTAPD_SUPPORT
+#define WMODE_CAP_BE(_x) \
+((_x) & (WMODE_BE_24G | WMODE_BE_5G | WMODE_BE_6G))
+#endif
 #define WMODE_CAP(_x, _mode)   (((_x) & (_mode)) != 0)
 
 #define MAX_SUPPORT_INF_NUM 17 * MAX_NUM_OF_RADIO /* 16MBSS+1APCLI */
@@ -83,10 +87,16 @@
 #define MAX_PROFILE_CNT 4
 #define PER_EVENT_LIST_MAX_NUM 		5
 #define	DAEMON_NEIGHBOR_REPORT_MAX_NUM 128
-#define VERSION_WAPP_CMM "v3.0.1.2"
+#define VERSION_WAPP_CMM "v3.0.2.0"
 #ifdef MAP_R3_WF6
 #define MAX_TID 4
 #endif
+
+/* If this value is passed during map set channel
+ * then no need to parse that argument
+ */
+#define SET_CH_ARG_NOT_REQ 255
+
 typedef enum {
 	WAPP_STA_INVALID,
 	WAPP_STA_DISCONNECTED,
@@ -138,6 +148,14 @@ typedef enum {
 	WAPP_APCLI_DISASSOCIATED = 0,
 	WAPP_APCLI_ASSOCIATED,
 } WAPP_APCLI_ASSOC_STATE;
+
+enum WAPP_WSC_STATUS {
+	WAPP_WSC_STATUS_OFF = 0,
+	WAPP_WSC_STATUS_IDLE = 1,
+	WAPP_WSC_STATUS_FAIL = 2,
+	WAPP_WSC_STATUS_START = 3,
+	WAPP_WSC_STATUS_CONFIGURED = 34,
+};
 
 typedef enum {
 	WAPP_DEV_QUERY_RSP = 1,
@@ -206,6 +224,15 @@ typedef enum {
 	WAPP_SELF_SRG_BITMAP_EVENT,
 	WAPP_UPLINK_TRAFFIC_EVENT,
 	WAPP_CONFIG_WPS_EVENT,
+	WAPP_STA_MODE_RPT_EVENT,
+	WAPP_WSC_STATUS_START_NOTIF,
+	WAPP_WSC_STATUS_FAIL_NOTIF,
+	WAPP_WSC_STATUS_CONFIGURED_NOTIF,
+	WAPP_CONFIG_NR_EVENT,
+	WAPP_COSR_FOUND_COAP,
+	WAPP_COSR_ACTION_FRAME_RECEIVED,
+	WAPP_COSR_STA_RSSI_CHANGE,
+	WAPP_COSR_COAP_UPDATE,
 } WAPP_EVENT_ID;
 
 typedef enum {
@@ -277,6 +304,16 @@ typedef struct GNU_PACKED _wapp_dev_info {
 	uintptr_t	adpt_id;
 	u8 dev_active;
 } wapp_dev_info;
+
+#ifdef MTK_HOSTAPD_SUPPORT
+struct GNU_PACKED wdev_eht_cap {
+	u8      tx_stream;
+	u8      rx_stream;
+	u8      eht_ch_width;
+	u8      ccfs0;
+	u8      ccfs1;
+};
+#endif
 
 typedef struct GNU_PACKED _wdev_ht_cap {
 	u8	tx_stream;
@@ -482,7 +519,7 @@ typedef struct GNU_PACKED _wdev_chn_info {
 	u8		ch_list_num;
 	u8		non_op_chn_num;
 	u16		dl_mcs;
-	struct chnList ch_list[32];
+	struct chnList ch_list[MAX_NUM_OF_CHANNELS + 1];
 	u8		non_op_ch_list[32];
 	u8		AutoChannelSkipListNum;
 	u8		AutoChannelSkipList[MAX_NUM_OF_CHANNELS + 1];
@@ -726,10 +763,15 @@ struct GNU_PACKED cce_vendor_ie
 };
 
 #define MAX_CCE_CHANNEL 128
+#define MAX_RNR_CHANNEL 30
 
 struct GNU_PACKED cce_vendor_ie_result {
 	u8 num;
 	u8 cce_ch[MAX_CCE_CHANNEL];//channel list, on which beacon includes cce ie
+#ifdef MAP_R3_6E_SUPPORT
+	u8 rnr_6e_num;
+	u8 rnr_6e_ch[MAX_RNR_CHANNEL];
+#endif
 };
 #endif
 
@@ -756,6 +798,9 @@ struct GNU_PACKED scan_bss_info {
 #endif
 #ifdef MAP_6E_SUPPORT
 	struct map_rnr rnr_6e;
+#endif
+#ifdef MTK_HOSTAPD_SUPPORT
+	struct wdev_eht_cap eht_cap;
 #endif
 };
 struct GNU_PACKED wapp_scan_info {
@@ -791,7 +836,7 @@ struct GNU_PACKED band_status_change {
 typedef struct GNU_PACKED _NDIS_802_11_SSID {
 	u32 SsidLength;	/* length of SSID field below, in bytes; */
 	/* this can be zero. */
-	char Ssid[MAX_LEN_OF_SSID];	/* SSID information field */
+	char Ssid[MAX_LEN_OF_SSID + 1];	/* SSID information field */
 } NDIS_802_11_SSID, *PNDIS_802_11_SSID;
 struct GNU_PACKED nop_channel_list_s
 {
@@ -895,6 +940,33 @@ struct GNU_PACKED pmk_req {
 	size_t ssidlen;
 };
 #endif /*DPP_SUPPORT*/
+
+struct GNU_PACKED bss_color {
+	u8 wdev_id;
+	u8 action;
+	u8 bss_color_val;
+};
+
+struct GNU_PACKED mnt_sta {
+	u32 ifindex;
+	u8 sta_mac[MAC_ADDR_LEN];
+	u8 sta_id;
+};
+
+struct GNU_PACKED mnt_max_pkt {
+	u32 ifindex;
+	u32 pkt_number;
+};
+
+struct GNU_PACKED map_ch {
+	u32 ifindex;
+	u8 ch_num;
+#ifdef MAP_R2
+	u8 cac_req;
+	u8 map_dev_role;
+#endif /* MAP_R2 */
+};
+
 #ifdef MAP_R3
 struct GNU_PACKED wapp_sta_info {
         u8 src[MAC_ADDR_LEN];
@@ -938,72 +1010,46 @@ struct GNU_PACKED wapp_mesh_sr_topology {
 	unsigned char ssid[MAX_LEN_OF_SSID + 1];
 };
 
-typedef union GNU_PACKED _wapp_event_data {
-	wapp_dev_info dev_info;
-	wdev_ht_cap ht_cap;
-	wdev_vht_cap vht_cap;
-	wdev_misc_cap misc_cap;
-	wapp_client_info cli_info;
-	wdev_chn_info chn_list;
-	wdev_op_class_info op_class;
-	wdev_bss_info bss_info;
-	wdev_ap_metric ap_metrics;
-	wdev_ap_config ap_conf;
-	wdev_tx_power tx_pwr;
-	wdev_steer_sta str_sta;
-	wapp_probe_info probe_info;
-	wapp_bcn_rpt_info bcn_rpt_info;
-	wapp_bssload_info bssload_info;
-	wapp_bssload_crossing_info bssload_crossing_info;
-	wapp_mnt_info mnt_info;
-	wapp_bss_state_info bss_state_info;
-	wapp_ch_change_info ch_change_info;
-	wapp_txpower_change_info txpwr_change_info;
-	wapp_apcli_association_info apcli_association_info;
-	wapp_bhsta_info bhsta_info;
-	wapp_csa_info csa_info;
-	wapp_sta_cnnct_rej_info sta_cnnct_rej_info;
-	u8 ch_util;
-	struct wapp_scan_info scan_info;
-	struct wapp_wsc_scan_info wsc_scan_info;
-	u32 a4_missing_entry_ip;
-	struct radar_notif_s radar_notif;
-#ifdef WPS_UNCONFIG_FEATURE_SUPPORT
-	struct wapp_wps_config_info wps_conf_info;
-#endif
-        wapp_cac_info cac_info;
-#ifdef MAP_R2
-	wdev_extended_ap_metric ext_ap_metrics;
-	wdev_radio_metric radio_metrics;
-#endif
-#ifdef DPP_SUPPORT
-	u32 wapp_dpp_frame_id_no;
-	struct wapp_dpp_action_frame frame;
-	struct wapp_dpp_frm_tx_status tx_status;
-#ifdef DPP_R2_SUPPORT
-	struct cce_vendor_ie_result cce_ie_result;
-#endif
-#endif /*DPP_SUPPORT*/
-	unsigned char cac_enable;
-#ifdef WIFI_MD_COEX_SUPPORT
-	struct unsafe_channel_notif_s unsafe_ch_notif;
-	struct band_status_change band_status;
-#endif
-#ifdef MAP_R3
-	struct wapp_sta_info sta_info;
-        struct wapp_uri_info uri_info;
-#endif /* MAP_R3 */
-#ifdef QOS_R1
-	u8 *qos_frm;
-#endif
-	u8	ifname[IFNAMSIZ];
-#ifdef MAP_R3
-	struct wapp_mesh_sr_info mesh_sr_info;
-#endif /* MAP_R3 */
-} wapp_event_data;
-struct GNU_PACKED _wapp_event2_data {
-	wapp_client_info cli_info;
+#ifdef COSR_SUPPORT
+struct GNU_PACKED cosr_apinfo_data {
+	u16 tag;
+	u16 length;
+	u8  apId;
+	u8  CoorAPStatus;
+	u8  aCoorAPBSSID[MAC_ADDR_LEN];
+	u8  Rssi;
+	u8  Rsv[3];
 };
+
+struct GNU_PACKED cosr_stainfo_data {
+	u32	ifindex;
+	u16 length;
+	u16 wcid;
+	u8 sta_mac[MAC_ADDR_LEN];
+	u8 MLDid;
+	int Pldiff[3];
+	u8 Candstaid;
+	u8 u180211ksupport;
+	u8 status;
+	u8 Rsv[3];
+};
+
+struct GNU_PACKED cosr_info_set {
+	struct cosr_stainfo_data sta_info;
+	struct cosr_apinfo_data  ap_info;
+};
+
+struct GNU_PACKED wapp_cosr_action_frame {
+	u8 target_bssid[MAC_ADDR_LEN];
+	u8 sta_mac[MAC_ADDR_LEN];
+	u32 wapp_cosr_frame_id_no;
+	u32 chan;
+	u32 frm_len;
+	u8 frm[0];
+};
+
+#endif
+
 typedef struct GNU_PACKED _wapp_req_data {
 	u32	ifindex;
 	u8 mac_addr[MAC_ADDR_LEN];
@@ -1026,18 +1072,7 @@ struct GNU_PACKED wapp_req {
 	wapp_req_data data;
 };
 
-struct GNU_PACKED wapp_event {
-	u8 len;
-	u8 event_id;
-	u32 ifindex;
-	wapp_event_data data;
-};
-struct GNU_PACKED wapp_event2 {
-	u8 len;
-	u8 event_id;
-	u32 ifindex;
-	struct _wapp_event2_data data;
-};
+
 typedef struct GNU_PACKED _tbtt_info_set {
 	u8 NrAPTbttOffset;
 	u32 ShortBssid;
@@ -1083,6 +1118,84 @@ typedef struct GNU_PACKED neighbor_report_msg {
 	DAEMON_EVENT_NR_LIST evt_nr_list;
 } DAEMON_NR_MSG, *P_DAEMON_NR_MSG;
 
+typedef union GNU_PACKED _wapp_event_data {
+	wapp_dev_info dev_info;
+	wdev_ht_cap ht_cap;
+	wdev_vht_cap vht_cap;
+	wdev_misc_cap misc_cap;
+	wapp_client_info cli_info;
+	wdev_chn_info chn_list;
+	wdev_op_class_info op_class;
+	wdev_bss_info bss_info;
+	wdev_ap_metric ap_metrics;
+	wdev_ap_config ap_conf;
+	wdev_tx_power tx_pwr;
+	wdev_steer_sta str_sta;
+	wapp_probe_info probe_info;
+	wapp_bcn_rpt_info bcn_rpt_info;
+	wapp_bssload_info bssload_info;
+	wapp_bssload_crossing_info bssload_crossing_info;
+	wapp_mnt_info mnt_info;
+	wapp_bss_state_info bss_state_info;
+	wapp_ch_change_info ch_change_info;
+	wapp_txpower_change_info txpwr_change_info;
+	wapp_apcli_association_info apcli_association_info;
+	wapp_bhsta_info bhsta_info;
+	wapp_csa_info csa_info;
+	wapp_sta_cnnct_rej_info sta_cnnct_rej_info;
+	u8 ch_util;
+	struct wapp_scan_info scan_info;
+	struct wapp_wsc_scan_info wsc_scan_info;
+	u32 a4_missing_entry_ip;
+	struct radar_notif_s radar_notif;
+#ifdef WPS_UNCONFIG_FEATURE_SUPPORT
+	struct wapp_wps_config_info wps_conf_info;
+#endif
+	wapp_cac_info cac_info;
+#ifdef MAP_R2
+	wdev_extended_ap_metric ext_ap_metrics;
+	wdev_radio_metric radio_metrics;
+#endif
+#ifdef DPP_SUPPORT
+	u32 wapp_dpp_frame_id_no;
+	struct wapp_dpp_action_frame frame;
+	struct wapp_dpp_frm_tx_status tx_status;
+#ifdef DPP_R2_SUPPORT
+	struct cce_vendor_ie_result cce_ie_result;
+#endif
+#endif /*DPP_SUPPORT*/
+	unsigned char cac_enable;
+#ifdef WIFI_MD_COEX_SUPPORT
+	struct unsafe_channel_notif_s unsafe_ch_notif;
+	struct band_status_change band_status;
+#endif
+#ifdef MAP_R3
+	struct wapp_sta_info sta_info;
+	struct wapp_uri_info uri_info;
+#endif /* MAP_R3 */
+#ifdef QOS_R1
+	u8 *qos_frm;
+#endif
+	u8	ifname[IFNAMSIZ];
+#ifdef MAP_R3
+	struct wapp_mesh_sr_info mesh_sr_info;
+#endif /* MAP_R3 */
+	DAEMON_EVENT_NR_LIST NeighborRepList;
+#ifdef COSR_SUPPORT
+	struct wapp_cosr_action_frame cosr_frame;
+	u32 wapp_cosr_frame_id_no;
+#endif /* COSR_SUPPORT */
+#ifdef MTK_HOSTAPD_SUPPORT
+	u8 eht_ch_change;
+#endif
+} wapp_event_data;
+
+struct GNU_PACKED wapp_event {
+	u8 len;
+	u8 event_id;
+	u32 ifindex;
+	wapp_event_data data;
+};
 
 /* for coverting wireless mode to string  */
 enum WIFI_MODE {
@@ -1096,7 +1209,14 @@ enum WIFI_MODE {
 	WMODE_AX_24G = 1 << 6,
 	WMODE_AX_5G = 1 << 7,
 	WMODE_AX_6G = 1 << 8,
+#ifdef MTK_HOSTAPD_SUPPORT
+	WMODE_BE_24G = 1 << 9,
+	WMODE_BE_5G = 1 << 10,
+	WMODE_BE_6G = 1 << 11,
+	WMODE_COMP = 12, /* total types of supported wireless mode, add this value once yow add new type */
+#else
 	WMODE_COMP = 9, /* total types of supported wireless mode, add this value once yow add new type */
+#endif
 };
 typedef union GNU_PACKED _RRM_BSSID_INFO
 {

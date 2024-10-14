@@ -1,0 +1,19 @@
+diff --git a/iwlib.c b/iwlib.c
+index 0afa8c1e..0a9d7259 100644
+--- a/iwlib.c
++++ b/iwlib.c
+@@ -707,12 +707,13 @@ iw_get_basic_config(int			skfd,
+ 
+   /* Get ESSID */
+   wrq.u.essid.pointer = (caddr_t) info->essid;
+-  wrq.u.essid.length = IW_ESSID_MAX_SIZE + 1;
++  wrq.u.essid.length = IW_ESSID_MAX_SIZE;
+   wrq.u.essid.flags = 0;
+   if(iw_get_ext(skfd, ifname, SIOCGIWESSID, &wrq) >= 0)
+     {
+       info->has_essid = 1;
+       info->essid_on = wrq.u.data.flags;
++      info->essid[IW_ESSID_MAX_SIZE] = '\0';
+     }
+ 
+   /* Get operation mode */
