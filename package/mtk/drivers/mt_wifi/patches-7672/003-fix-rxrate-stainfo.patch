@@ -1,5 +1,7 @@
---- a/mt_wifi/embedded/common/cmm_info.c
-+++ b/mt_wifi/embedded/common/cmm_info.c
+Index: mt_wifi/mt_wifi/embedded/common/cmm_info.c
+===================================================================
+--- mt_wifi.orig/mt_wifi/embedded/common/cmm_info.c
++++ mt_wifi/mt_wifi/embedded/common/cmm_info.c
 @@ -7164,6 +7164,35 @@ USHORT RTMPGetLastTxRate(PRTMP_ADAPTER p
  	return lastTxRate.word;
  }
@@ -44,10 +46,14 @@
  
  	if (pMacTab == NULL) {
  		MTWF_DBG(pAd, DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_ERROR, "Allocate memory fail!!!\n");
-@@ -7207,10 +7237,15 @@ VOID RTMPIoctlGetMacTableStaInfo(
- 			pDst->AvgRssi1 = pEntry->RssiSample.AvgRssi[1];
- 			pDst->AvgRssi2 = pEntry->RssiSample.AvgRssi[2];
- 			pDst->AvgRssi3 = pEntry->RssiSample.AvgRssi[3];
+@@ -7203,14 +7233,15 @@ VOID RTMPIoctlGetMacTableStaInfo(
+ 			pDst->MimoPs = pEntry->MmpsMode;
+ #endif /* DOT11_N_SUPPORT */
+ 			/* Fill in RSSI per entry*/
+-			pDst->AvgRssi0 = pEntry->RssiSample.AvgRssi[0];
+-			pDst->AvgRssi1 = pEntry->RssiSample.AvgRssi[1];
+-			pDst->AvgRssi2 = pEntry->RssiSample.AvgRssi[2];
+-			pDst->AvgRssi3 = pEntry->RssiSample.AvgRssi[3];
 +			rtmp_get_rssi(pAd, pEntry->wcid, rssi, 4);
 +			pDst->AvgRssi0 = rssi[0];
 +			pDst->AvgRssi1 = rssi[1];
