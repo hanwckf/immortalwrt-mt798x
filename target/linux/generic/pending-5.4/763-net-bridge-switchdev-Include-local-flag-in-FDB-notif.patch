@@ -35,8 +35,8 @@ Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
 @@ -109,6 +109,7 @@ br_switchdev_fdb_notify(const struct net
  		.addr = fdb->key.addr.addr,
  		.vid = fdb->key.vlan_id,
- 		.added_by_user = fdb->added_by_user,
-+		.local = fdb->is_local,
+ 		.added_by_user = test_bit(BR_FDB_ADDED_BY_USER, &fdb->flags),
++		.local = test_bit(BR_FDB_LOCAL, &fdb->flags),
  		.offloaded = fdb->offloaded,
  	};
  
