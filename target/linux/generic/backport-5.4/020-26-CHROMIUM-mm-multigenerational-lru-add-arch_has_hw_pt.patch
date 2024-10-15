@@ -31,19 +31,19 @@ Commit-Queue: Yu Zhao <yuzhao@chromium.org>
 
 --- a/arch/arm64/include/asm/cpucaps.h
 +++ b/arch/arm64/include/asm/cpucaps.h
-@@ -57,7 +57,8 @@
- #define ARM64_WORKAROUND_1542419		47
+@@ -58,7 +58,8 @@
  #define ARM64_SPECTRE_BHB			48
  #define ARM64_WORKAROUND_1742098		49
-+#define ARM64_HW_AF				50
+ #define ARM64_WORKAROUND_SPECULATIVE_SSBS	50
++#define ARM64_HW_AF				51
  
--#define ARM64_NCAPS				50
-+#define ARM64_NCAPS				51
+-#define ARM64_NCAPS				51
++#define ARM64_NCAPS				52
  
  #endif /* __ASM_CPUCAPS_H */
 --- a/arch/arm64/include/asm/cpufeature.h
 +++ b/arch/arm64/include/asm/cpufeature.h
-@@ -643,6 +643,12 @@ static inline bool system_has_prio_mask_
+@@ -666,6 +666,12 @@ static inline bool system_has_prio_mask_
  	       system_uses_irq_prio_masking();
  }
  
@@ -66,7 +66,7 @@ Commit-Queue: Yu Zhao <yuzhao@chromium.org>
  #include <linux/mmdebug.h>
  #include <linux/mm_types.h>
  #include <linux/sched.h>
-@@ -848,6 +849,12 @@ static inline pmd_t pmdp_establish(struc
+@@ -854,6 +855,12 @@ static inline pmd_t pmdp_establish(struc
  
  extern int kern_addr_valid(unsigned long addr);
  
@@ -81,7 +81,7 @@ Commit-Queue: Yu Zhao <yuzhao@chromium.org>
  /*
 --- a/arch/arm64/kernel/cpufeature.c
 +++ b/arch/arm64/kernel/cpufeature.c
-@@ -1484,6 +1484,16 @@ static const struct arm64_cpu_capabiliti
+@@ -1541,6 +1541,16 @@ static const struct arm64_cpu_capabiliti
  		.matches = has_hw_dbm,
  		.cpu_enable = cpu_enable_hw_dbm,
  	},

@@ -5,7 +5,7 @@ include $(TOPDIR)/rules.mk
 ARCH:=arm
 BOARD:=mediatek
 BOARDNAME:=MediaTek Ralink ARM
-SUBTARGETS:=mt7622 mt7623 mt7629 mt7986 mt7981
+SUBTARGETS:=mt7986 mt7981
 FEATURES:=squashfs nand emmc ramdisk fpu
 
 KERNEL_PATCHVER:=5.4
