@@ -282,7 +282,7 @@ int nf_hnat_netdevice_event(struct notifier_block *unused, unsigned long event,
 
 	switch (event) {
 	case NETDEV_UP:
-		if (!hnat_priv->guest_en && dev->name) {
+		if (!hnat_priv->guest_en) {
 			if (!strcmp(dev->name, "ra1") || !strcmp(dev->name, "rax1"))
 				break;
 		}
@@ -1998,7 +1998,7 @@ void mtk_ppe_dev_register_hook(struct net_device *dev)
 	int i, number = 0;
 	struct extdev_entry *ext_entry;
 
-	if (!hnat_priv->guest_en && dev->name) {
+	if (!hnat_priv->guest_en) {
 		if (!strcmp(dev->name, "ra1") || !strcmp(dev->name, "rax1"))
 			return;
 	}
