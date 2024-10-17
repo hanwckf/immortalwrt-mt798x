@@ -99,6 +99,14 @@ mediatek_setup_interfaces()
 	ruijie,rg-x30e*)
 		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3" wan
 		;;
+	mediatek,zhao-7981r128-d)
+		ucidef_set_interfaces_lan_wan "lan1 lan2" eth1
+		;;
+	mediatek,zhao-7981r128-g)
+		ucidef_set_interfaces_lan_wan "eth0" "eth1"
+		ucidef_add_switch "switch0" \
+			"1:lan:1" "5:lan:2" "6u@eth0"
+		;;			
 	*)
 		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 lan4" eth1
 		;;
@@ -290,6 +298,11 @@ mediatek_setup_macs()
 		local wifi_mac=$(mtd_get_mac_binary Factory 0x4)
 		lan_mac=$(macaddr_add $wifi_mac -1)
 		wan_mac=$(macaddr_add $wifi_mac -2)
+		;;
+	mediatek,zhao-7981r128*)
+		lan_mac=$(mtd_get_mac_binary $part_name 0x04)
+		wan_mac=$(macaddr_add $lan_mac 1)
+		label_mac=$lan_mac
 		;;
 	*)
 		wan_mac=$(mtd_get_mac_binary $part_name $wan_mac_offset)

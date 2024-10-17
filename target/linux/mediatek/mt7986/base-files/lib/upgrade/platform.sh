@@ -156,6 +156,7 @@ platform_do_upgrade() {
 		;;
 	bananapi,bpi-r3mini-emmc |\
 	glinet,gl-mt6000 |\
+	ccc,ddd |\
 	jdcloud,re-cp-03 |\
 	*emmc*)
  		CI_KERNPART="kernel"
@@ -185,6 +186,7 @@ platform_check_image() {
 	glinet,gl-mt6000 |\
 	jdcloud,re-cp-03 |\
 	tplink,tl-xdr608* |\
+	ccc,ddd |\
 	zyxel,ex5700 |\
 	*emmc*)
 		# tar magic `ustar`

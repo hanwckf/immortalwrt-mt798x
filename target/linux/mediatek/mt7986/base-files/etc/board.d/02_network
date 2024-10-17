@@ -102,7 +102,13 @@ mediatek_setup_macs()
 			local b1mac="$(macaddr_setbit_la $b0mac)"
 			echo "MacAddress=$b1mac" >> ${b1dat}
 		fi
- 		;;
+ 		;;    
+	ccc,ddd)
+		wan_mac=$(mmc_get_mac_binary factory 0x24)
+		lan_mac=$(macaddr_add "$wan_mac" 2)
+		wlan5g_mac=$(macaddr_add $(mmc_get_mac_binary factory 0x4) 1)
+		label_mac=$wan_mac
+		;;
  	tplink,tl-xdr6086|\
  	tplink,tl-xdr6088)
 		lan_mac=$(mtd_get_mac_binary config 0x1c)
