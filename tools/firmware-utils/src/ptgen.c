@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * ptgen - partition table generator
  * Copyright (C) 2006 by Felix Fietkau <nbd@nbd.name>
@@ -7,22 +8,9 @@
  *
  * UUID/GUID definition stolen from kernel/include/uapi/linux/uuid.h
  * Copyright (C) 2010, Intel Corp. Huang Ying <ying.huang@intel.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+#include <byteswap.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <string.h>
@@ -52,6 +40,8 @@
 #define swap(a, b) \
 	do { typeof(a) __tmp = (a); (a) = (b); (b) = __tmp; } while (0)
 
+#define BIT(_x)		(1UL << (_x))
+
 typedef struct {
 	uint8_t b[16];
 } guid_t;
@@ -80,10 +70,27 @@ typedef struct {
 	GUID_INIT( 0x21686148, 0x6449, 0x6E6F, \
 			0x74, 0x4E, 0x65, 0x65, 0x64, 0x45, 0x46, 0x49)
 
+#define GUID_PARTITION_CHROME_OS_KERNEL \
+	GUID_INIT( 0xFE3A2A5D, 0x4F32, 0x41A7, \
+			0xB7, 0x25, 0xAC, 0xCC, 0x32, 0x85, 0xA3, 0x09)
+
+#define GUID_PARTITION_LINUX_FIT_GUID \
+	GUID_INIT( 0xcae9be83, 0xb15f, 0x49cc, \
+			0x86, 0x3f, 0x08, 0x1b, 0x74, 0x4a, 0x2d, 0x93)
+
+#define GUID_PARTITION_LINUX_FS_GUID \
+	GUID_INIT( 0x0fc63daf, 0x8483, 0x4772, \
+			0x8e, 0x79, 0x3d, 0x69, 0xd8, 0x47, 0x7d, 0xe4)
+
 #define GPT_HEADER_SIZE         92
 #define GPT_ENTRY_SIZE          128
 #define GPT_ENTRY_MAX           128
 #define GPT_ENTRY_NAME_SIZE     72
+#define GPT_SIZE		GPT_ENTRY_SIZE * GPT_ENTRY_MAX / DISK_SECTOR_SIZE
+
+#define GPT_ATTR_PLAT_REQUIRED  BIT(0)
+#define GPT_ATTR_EFI_IGNORE     BIT(1)
+#define GPT_ATTR_LEGACY_BOOT    BIT(2)
 
 #define GPT_HEADER_SECTOR       1
 #define GPT_FIRST_ENTRY_SECTOR  2
@@ -106,9 +113,16 @@ struct pte {
 };
 
 struct partinfo {
+	unsigned long actual_start;
 	unsigned long start;
 	unsigned long size;
 	int type;
+	int hybrid;
+	char *name;
+	short int required;
+	bool has_guid;
+	guid_t guid;
+	uint64_t gattr;  /* GPT partition attributes */
 };
 
 /* GPT Partition table header */
@@ -248,6 +262,23 @@ static inline int guid_parse(char *buf, guid_t *guid)
 	return 0;
 }
 
+/*
+ * Map GPT partition types to partition GUIDs.
+ * NB: not all GPT partition types have an equivalent MBR type.
+ */
+static inline bool parse_gpt_parttype(const char *type, struct partinfo *part)
+{
+	if (!strcmp(type, "cros_kernel")) {
+		part->has_guid = true;
+		part->guid = GUID_PARTITION_CHROME_OS_KERNEL;
+		/* Default attributes: bootable kernel. */
+		part->gattr = (1ULL << 48) |  /* priority=1 */
+			      (1ULL << 56);  /* success=1 */
+		return true;
+	}
+	return false;
+}
+
 /* init an utf-16 string from utf-8 string */
 static inline void init_utf16(char *str, uint16_t *buf, unsigned bufsize)
 {
@@ -352,7 +383,7 @@ fail:
 /* check the partition sizes and write the guid partition table */
 static int gen_gptable(uint32_t signature, guid_t guid, unsigned nr)
 {
-	struct pte pte;
+	struct pte pte[MBR_ENTRY_MAX];
 	struct gpth gpth = {
 		.signature = cpu_to_le64(GPT_SIGNATURE),
 		.revision = cpu_to_le32(GPT_REVISION),
@@ -365,10 +396,12 @@ static int gen_gptable(uint32_t signature, guid_t guid, unsigned nr)
 		.entry_size = cpu_to_le32(GPT_ENTRY_SIZE),
 	};
 	struct gpte  gpte[GPT_ENTRY_MAX];
-	uint64_t start, end, sect = 0;
+	uint64_t start, end;
+	uint64_t sect = GPT_SIZE + GPT_FIRST_ENTRY_SECTOR;
 	int fd, ret = -1;
-	unsigned i;
+	unsigned i, pmbr = 1;
 
+	memset(pte, 0, sizeof(struct pte) * MBR_ENTRY_MAX);
 	memset(gpte, 0, GPT_ENTRY_SIZE * GPT_ENTRY_MAX);
 	for (i = 0; i < nr; i++) {
 		if (!parts[i].size) {
@@ -377,7 +410,7 @@ static int gen_gptable(uint32_t signature, guid_t guid, unsigned nr)
 			fprintf(stderr, "Invalid size in partition %d!\n", i);
 			return ret;
 		}
-		start = sect + sectors;
+		start = sect;
 		if (parts[i].start != 0) {
 			if (parts[i].start * 2 < start) {
 				fprintf(stderr, "Invalid start %ld for partition %d!\n",
@@ -388,20 +421,34 @@ static int gen_gptable(uint32_t signature, guid_t guid, unsigned nr)
 		} else if (kb_align != 0) {
 			start = round_to_kb(start);
 		}
+		parts[i].actual_start = start;
 		gpte[i].start = cpu_to_le64(start);
 
 		sect = start + parts[i].size * 2;
-		if (kb_align == 0)
-			sect = round_to_cyl(sect);
 		gpte[i].end = cpu_to_le64(sect -1);
 		gpte[i].guid = guid;
 		gpte[i].guid.b[sizeof(guid_t) -1] += i + 1;
-		if (parts[i].type == 0xEF || (i + 1) == (unsigned)active) {
-			gpte[i].type = GUID_PARTITION_SYSTEM;
-			init_utf16("EFI System Partition", (uint16_t *)gpte[i].name, GPT_ENTRY_NAME_SIZE / sizeof(uint16_t));
-		} else {
-			gpte[i].type = GUID_PARTITION_BASIC_DATA;
+		gpte[i].type = parts[i].guid;
+
+		if (parts[i].hybrid && pmbr < MBR_ENTRY_MAX) {
+			pte[pmbr].active = ((i + 1) == active) ? 0x80 : 0;
+			pte[pmbr].type = parts[i].type;
+			pte[pmbr].start = cpu_to_le32(start);
+			pte[pmbr].length = cpu_to_le32(sect - start);
+			to_chs(start, pte[1].chs_start);
+			to_chs(sect - 1, pte[1].chs_end);
+			pmbr++;
 		}
+		gpte[i].attr = parts[i].gattr;
+
+		if (parts[i].name)
+			init_utf16(parts[i].name, (uint16_t *)gpte[i].name, GPT_ENTRY_NAME_SIZE / sizeof(uint16_t));
+
+		if ((i + 1) == (unsigned)active)
+			gpte[i].attr |= GPT_ATTR_LEGACY_BOOT;
+
+		if (parts[i].required)
+			gpte[i].attr |= GPT_ATTR_PLAT_REQUIRED;
 
 		if (verbose)
 			fprintf(stderr, "Partition %d: start=%" PRIu64 ", end=%" PRIu64 ", size=%"  PRIu64 "\n",
@@ -412,21 +459,23 @@ static int gen_gptable(uint32_t signature, guid_t guid, unsigned nr)
 		printf("%" PRIu64 "\n", (sect - start) * DISK_SECTOR_SIZE);
 	}
 
-	gpte[GPT_ENTRY_MAX - 1].start = cpu_to_le64(GPT_FIRST_ENTRY_SECTOR + GPT_ENTRY_SIZE * GPT_ENTRY_MAX / DISK_SECTOR_SIZE);
-	gpte[GPT_ENTRY_MAX - 1].end = cpu_to_le64((kb_align ? round_to_kb(sectors) : (unsigned long)sectors) - 1);
-	gpte[GPT_ENTRY_MAX - 1].type = GUID_PARTITION_BIOS_BOOT;
-	gpte[GPT_ENTRY_MAX - 1].guid = guid;
-	gpte[GPT_ENTRY_MAX - 1].guid.b[sizeof(guid_t) -1] += GPT_ENTRY_MAX;
+	if (parts[0].actual_start > GPT_FIRST_ENTRY_SECTOR + GPT_SIZE) {
+		gpte[GPT_ENTRY_MAX - 1].start = cpu_to_le64(GPT_FIRST_ENTRY_SECTOR + GPT_SIZE);
+		gpte[GPT_ENTRY_MAX - 1].end = cpu_to_le64(parts[0].actual_start - 1);
+		gpte[GPT_ENTRY_MAX - 1].type = GUID_PARTITION_BIOS_BOOT;
+		gpte[GPT_ENTRY_MAX - 1].guid = guid;
+		gpte[GPT_ENTRY_MAX - 1].guid.b[sizeof(guid_t) -1] += GPT_ENTRY_MAX;
+	}
 
-	end = sect + sectors - 1;
+	end = sect + GPT_SIZE;
 
-	pte.type = 0xEE;
-	pte.start = cpu_to_le32(GPT_HEADER_SECTOR);
-	pte.length = cpu_to_le32(end);
-	to_chs(GPT_HEADER_SECTOR, pte.chs_start);
-	to_chs(end, pte.chs_end);
+	pte[0].type = 0xEE;
+	pte[0].start = cpu_to_le32(GPT_HEADER_SECTOR);
+	pte[0].length = cpu_to_le32(end - GPT_HEADER_SECTOR);
+	to_chs(GPT_HEADER_SECTOR, pte[0].chs_start);
+	to_chs(end, pte[0].chs_end);
 
-	gpth.last_usable = cpu_to_le64(end - GPT_ENTRY_SIZE * GPT_ENTRY_MAX / DISK_SECTOR_SIZE - 1);
+	gpth.last_usable = cpu_to_le64(end - GPT_SIZE - 1);
 	gpth.alternate = cpu_to_le64(end);
 	gpth.entry_crc32 = cpu_to_le32(gpt_crc32(gpte, GPT_ENTRY_SIZE * GPT_ENTRY_MAX));
 	gpth.crc32 = cpu_to_le32(gpt_crc32((char *)&gpth, GPT_HEADER_SIZE));
@@ -443,7 +492,7 @@ static int gen_gptable(uint32_t signature, guid_t guid, unsigned nr)
 	}
 
 	lseek(fd, MBR_PARTITION_ENTRY_OFFSET, SEEK_SET);
-	if (write(fd, &pte, sizeof(struct pte)) != sizeof(struct pte)) {
+	if (write(fd, pte, sizeof(struct pte) * MBR_ENTRY_MAX) != sizeof(struct pte) * MBR_ENTRY_MAX) {
 		fputs("write failed.\n", stderr);
 		goto fail;
 	}
@@ -498,8 +547,31 @@ fail:
 
 static void usage(char *prog)
 {
-	fprintf(stderr, "Usage: %s [-v] [-n] [-g] -h <heads> -s <sectors> -o <outputfile> [-a 0..4] [-l <align kB>] [-G <guid>] [[-t <type>] -p <size>[@<start>]...] \n", prog);
+	fprintf(stderr, "Usage: %s [-v] [-n] [-g] -h <heads> -s <sectors> -o <outputfile>\n"
+			"          [-a 0..4] [-l <align kB>] [-G <guid>]\n"
+			"          [[-t <type> | -T <GPT part type>] [-r] [-N <name>] -p <size>[@<start>]...] \n", prog);
 	exit(EXIT_FAILURE);
+}
+
+static guid_t type_to_guid_and_name(unsigned char type, char **name)
+{
+	guid_t guid = GUID_PARTITION_BASIC_DATA;
+
+	switch (type) {
+		case 0xef:
+			if(*name == NULL)
+				*name = "EFI System Partition";
+			guid = GUID_PARTITION_SYSTEM;
+			break;
+		case 0x83:
+			guid = GUID_PARTITION_LINUX_FS_GUID;
+			break;
+		case 0x2e:
+			guid = GUID_PARTITION_LINUX_FIT_GUID;
+			break;
+	}
+
+	return guid;
 }
 
 int main (int argc, char **argv)
@@ -508,11 +580,13 @@ int main (int argc, char **argv)
 	char *p;
 	int ch;
 	int part = 0;
+	char *name = NULL;
+	unsigned short int hybrid = 0, required = 0;
 	uint32_t signature = 0x5452574F; /* 'OWRT' */
 	guid_t guid = GUID_INIT( signature, 0x2211, 0x4433, \
 			0x55, 0x66, 0x77, 0x88, 0x99, 0xAA, 0xBB, 0x00);
 
-	while ((ch = getopt(argc, argv, "h:s:p:a:t:o:vngl:S:G:")) != -1) {
+	while ((ch = getopt(argc, argv, "h:s:p:a:t:T:o:vnHN:gl:rS:G:")) != -1) {
 		switch (ch) {
 		case 'o':
 			filename = optarg;
@@ -525,6 +599,9 @@ int main (int argc, char **argv)
 			break;
 		case 'g':
 			use_guid_partition_table = 1;
+			break;
+		case 'H':
+			hybrid = 1;
 			break;
 		case 'h':
 			heads = (int)strtoul(optarg, NULL, 0);
@@ -542,9 +619,28 @@ int main (int argc, char **argv)
 				*(p++) = 0;
 				parts[part].start = to_kbytes(p);
 			}
+			if (!parts[part].has_guid)
+				parts[part].guid = type_to_guid_and_name(type, &name);
+
 			parts[part].size = to_kbytes(optarg);
+			parts[part].required = required;
+			parts[part].name = name;
+			parts[part].hybrid = hybrid;
 			fprintf(stderr, "part %ld %ld\n", parts[part].start, parts[part].size);
 			parts[part++].type = type;
+			/*
+			 * reset 'name','required' and 'hybrid'
+			 * 'type' is deliberately inherited from the previous delcaration
+			 */
+			name = NULL;
+			required = 0;
+			hybrid = 0;
+			break;
+		case 'N':
+			name = optarg;
+			break;
+		case 'r':
+			required = 1;
 			break;
 		case 't':
 			type = (char)strtoul(optarg, NULL, 16);
@@ -560,6 +656,14 @@ int main (int argc, char **argv)
 		case 'S':
 			signature = strtoul(optarg, NULL, 0);
 			break;
+		case 'T':
+			if (!parse_gpt_parttype(optarg, &parts[part])) {
+				fprintf(stderr,
+					"Invalid GPT partition type \"%s\"\n",
+					optarg);
+				exit(EXIT_FAILURE);
+			}
+			break;
 		case 'G':
 			if (guid_parse(optarg, &guid)) {
 				fputs("Invalid guid string\n", stderr);
@@ -572,11 +676,14 @@ int main (int argc, char **argv)
 		}
 	}
 	argc -= optind;
-	if (argc || (heads <= 0) || (sectors <= 0) || !filename)
+	if (argc || (!use_guid_partition_table && ((heads <= 0) || (sectors <= 0))) || !filename)
 		usage(argv[0]);
 
-	if (use_guid_partition_table)
+	if (use_guid_partition_table) {
+		heads = 254;
+		sectors = 63;
 		return gen_gptable(signature, guid, part) ? EXIT_FAILURE : EXIT_SUCCESS;
+	}
 
 	return gen_ptable(signature, part) ? EXIT_FAILURE : EXIT_SUCCESS;
 }

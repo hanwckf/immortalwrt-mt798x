@@ -32,6 +32,9 @@ mediatek_setup_interfaces()
 	bananapi,bpi-r3mini*)
 		ucidef_set_interfaces_lan_wan "eth0" "eth1"
 		;;
+	bananapi,bpi-r3*)
+		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 lan4 lan5" "lan0 eth1"
+		;;
 	netcore,n60 |\
 	ruijie,rg-x60-pro*)
 		ucidef_set_interfaces_lan_wan "lan0 lan1 lan2 lan3" eth1
@@ -122,6 +125,10 @@ mediatek_setup_macs()
 		wan_mac=$(mtd_get_mac_ascii Bdata ethaddr_wan)
 		lan_mac=$(mtd_get_mac_ascii Bdata ethaddr)
 		;;
+	bananapi,bpi-r3*)
+		wan_mac=$(macaddr_add $(cat /sys/class/net/eth0/address) 1)
+		lan_mac=$(macaddr_add "$wan_mac" 1)
+		;;		
 	*)
 		lan_mac=$(mtd_get_mac_binary "Factory" "0x2A")
 		wan_mac=$(mtd_get_mac_binary "Factory" "0x24")
