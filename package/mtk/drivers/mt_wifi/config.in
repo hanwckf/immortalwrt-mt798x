@@ -179,13 +179,13 @@ config MTK_MT_WIFI_PATH
 if MTK_MT_WIFI
 choice
 	prompt "MT_WIFI DRIVER VERSION"
-	default MTK_MT_WIFI_DRIVER_VERSION_7672
+	default MTK_MT_WIFI_DRIVER_VERSION_7673
 
 	config MTK_MT_WIFI_DRIVER_VERSION_7661
 	bool "7.6.6.1"
 
-	config MTK_MT_WIFI_DRIVER_VERSION_7672
-	bool "7.6.7.2"
+	config MTK_MT_WIFI_DRIVER_VERSION_7673
+	bool "7.6.7.3"
 endchoice
 
 choice

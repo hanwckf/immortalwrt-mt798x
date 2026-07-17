@@ -22,7 +22,7 @@ if not l1dat then
 end
 
 function show_usage()
-    print("Usage: l1util list | get <dev> <prop> | idx2if <idx> | if2zone <ifname> | if2dat <ifname> | zone2if <zone> | if2dbdcidx <ifname>")
+    print("Usage: l1util list | dump | get <dev> <prop> | idx2if <idx> | if2zone <ifname> | if2dat <ifname> | zone2if <zone> | if2dbdcidx <ifname>")
 end
 
 function show_devs()
@@ -32,7 +32,7 @@ function show_devs()
     for k, v in pairs(l1dat.devname_ridx) do
         -- skip MT7986-2.4G for ax7800 project
         if not(string.find(v.profile_path, "ax7800") and 
-        v.INDEX == "MT7986" and v.subidx == 1) then
+          v.INDEX == "MT7986" and v.subidx == 1) then
             table.insert(devs, k)
         end
     end
@@ -50,6 +50,11 @@ function show_devs()
     print(ret)
 end
 
+function dump_l1dat()
+    local inspect = require "inspect"
+    print(inspect.inspect(l1dat))
+end
+
 function get_dev_prop(dev, prop)
     if l1dat.devname_ridx[dev] and l1dat.devname_ridx[dev][prop] then
         print(l1dat.devname_ridx[dev][prop])
@@ -61,6 +66,10 @@ local action = {
         show_devs()
     end,
 
+    ["dump"] = function()
+        dump_l1dat()
+    end,
+
     ["get"] = function(dev, prop)
         get_dev_prop(dev, prop)
     end,
@@ -69,7 +78,7 @@ local action = {
         if not ifname then return end
 
         local zone = l1parser.l1_ifname_to_zone(ifname) or ""
-        print(zone);
+        print(zone)
     end,
 
     ["if2dat"] = function(ifname)
