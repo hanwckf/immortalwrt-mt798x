@@ -456,7 +456,7 @@ define Device/jdcloud_re-cp-03
   DEVICE_DTS := mt7986a-jdcloud-re-cp-03
   DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
   SUPPORTED_DEVICES := jdcloud,re-cp-03
-  DEVICE_PACKAGES := blkid blockdev fdisk f2fsck mkf2fs losetup \
+  DEVICE_PACKAGES := blkid blockdev fdisk f2fsck f2fs-tools mkf2fs losetup \
 	kmod-mmc kmod-nls-cp437 kmod-nls-iso8859-1
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
 endef
