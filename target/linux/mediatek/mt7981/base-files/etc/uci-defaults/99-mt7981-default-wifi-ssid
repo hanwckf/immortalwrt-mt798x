@@ -1,0 +1,68 @@
+#!/bin/sh
+
+. /lib/functions.sh
+
+board="$(board_name)"
+
+set_ssid_by_ifname() {
+	local section="$1"
+	local wanted_ifname="$2"
+	local ssid="$3"
+	local device phy
+
+	config_get device "$section" device
+	[ -n "$device" ] || return 0
+	config_get phy "$device" phy
+	[ "$phy" = "$wanted_ifname" ] || return 0
+
+	uci_set wireless "$section" ssid "$ssid"
+	SSID_UPDATED=$((SSID_UPDATED + 1))
+}
+
+case "$board" in
+hilink,rm65|hilink_rm65)
+	echo "[RM65] Initializing board defaults..."
+
+	# Keep the RM65 management address board-specific. A target-wide
+	# /etc/config/network would incorrectly affect every MT7981 device.
+	uci_set network lan ipaddr '192.168.16.254'
+	uci_commit network
+
+	FACTORY_MTD="$(grep -i '"Factory"' /proc/mtd | cut -d: -f1)"
+	if [ -z "$FACTORY_MTD" ]; then
+		echo "[RM65] ERROR: Factory partition not found in /proc/mtd"
+		exit 0
+	fi
+
+	FACTORY="/dev/${FACTORY_MTD}"
+	if [ ! -e "$FACTORY" ]; then
+		echo "[RM65] ERROR: Factory device ${FACTORY} does not exist"
+		exit 0
+	fi
+
+	mac_suffix="$(hexdump -v -s 0x8 -n 2 -e '2/1 "%02X"' "$FACTORY" 2>/dev/null)"
+	if [ -z "$mac_suffix" ]; then
+		echo "[RM65] ERROR: Failed to read SSID suffix from ${FACTORY}"
+		exit 0
+	fi
+
+	echo "[RM65] SSID suffix detected: ${mac_suffix}"
+
+	NEW_SSID_2G="HLK_AX3000_2G_${mac_suffix}"
+	NEW_SSID_5G="HLK_AX3000_5G_${mac_suffix}"
+
+	SSID_UPDATED=0
+	config_load wireless
+	config_foreach set_ssid_by_ifname wifi-iface 'ra0' "$NEW_SSID_2G"
+	config_foreach set_ssid_by_ifname wifi-iface 'rax0' "$NEW_SSID_5G"
+	if [ "$SSID_UPDATED" -ne 2 ]; then
+		echo "[RM65] ERROR: Expected 2 wireless interfaces, updated ${SSID_UPDATED}"
+		exit 0
+	fi
+	uci_commit wireless
+
+	echo "[RM65] SSID updated to ${NEW_SSID_2G} and ${NEW_SSID_5G} successfully."
+	;;
+esac
+
+exit 0

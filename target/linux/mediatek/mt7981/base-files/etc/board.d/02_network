@@ -106,6 +106,9 @@ mediatek_setup_interfaces()
 	ruijie,rg-x30e*)
 		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3" wan
 		;;
+	hilink,rm65)
+		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 lan4 lan5" eth1
+		;;
 	*)
 		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 lan4" eth1
 		;;
