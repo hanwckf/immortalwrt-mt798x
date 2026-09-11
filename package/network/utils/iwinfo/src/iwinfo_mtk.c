@@ -509,7 +509,7 @@ static int mtk_get_scanlist(const char *dev, char *buf, int *len)
 
 	while (1) {
 		memset(data, 0, data_len);
-		if (mtk_get_scanlist_dump(ifname, index, data, sizeof(data))) {
+		if (mtk_get_scanlist_dump(ifname, index, data, data_len)) {
 			free(data);
 			return -1;
 		}
@@ -606,7 +606,12 @@ static int mtk_get_scanlist(const char *dev, char *buf, int *len)
 				mac + 0, mac + 1, mac + 2, mac + 3, mac + 4, mac + 5);
 
 			sscanf(pos + offsets[SCAN_DATA_SSID_LEN], "%d", &ssid_len);
+			if (ssid_len < 0)
+				ssid_len = 0;
+			if (ssid_len > IWINFO_ESSID_MAX_SIZE)
+				ssid_len = IWINFO_ESSID_MAX_SIZE;
 			memcpy(e->ssid, pos + offsets[SCAN_DATA_SSID], ssid_len);
+			e->ssid[ssid_len] = '\0';
 
 			*len += sizeof(struct iwinfo_scanlist_entry);
 			e++;
