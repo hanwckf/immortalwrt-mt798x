@@ -760,6 +760,15 @@ define Device/newland_nl-wr9103
 endef
 TARGET_DEVICES += newland_nl-wr9103
 
+define Device/nradio_wt9106
+  DEVICE_VENDOR := NRADIO
+  DEVICE_MODEL := WT9106
+  DEVICE_DTS := mt7981-nradio-wt9106
+  DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
+  SUPPORTED_DEVICES := mediatek,mt7981-spim-nor-rfb
+endef
+TARGET_DEVICES += nradio_wt9106
+
 define Device/nradio_wt9103
   DEVICE_VENDOR := NRADIO
   DEVICE_MODEL := WT9103
