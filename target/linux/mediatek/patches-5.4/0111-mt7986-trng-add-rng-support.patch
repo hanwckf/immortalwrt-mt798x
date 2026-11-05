@@ -33,7 +33,7 @@ index e649be5a5..496adb0a0 100644
  }
  
  static int mtk_rng_read(struct hwrng *rng, void *buf, size_t max, bool wait)
-@@ -181,6 +181,7 @@ static UNIVERSAL_DEV_PM_OPS(mtk_rng_pm_ops, mtk_rng_runtime_suspend,
+@@ -186,6 +186,7 @@ static UNIVERSAL_DEV_PM_OPS(mtk_rng_pm_ops, mtk_rng_runtime_suspend,
  #endif	/* CONFIG_PM */
  
  static const struct of_device_id mtk_rng_match[] = {
