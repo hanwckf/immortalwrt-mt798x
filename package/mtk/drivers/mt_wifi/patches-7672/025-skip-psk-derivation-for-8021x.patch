@@ -1,0 +1,10 @@
+--- a/mt_wifi/embedded/ap/ap_sec.c
++++ b/mt_wifi/embedded/ap/ap_sec.c
+@@ -419,2 +419,5 @@ INT ap_key_table_init(
+-		/* Calculate PMK */
+-		SetWPAPSKKey(pAd, pSecConfig->PSK, strlen(pSecConfig->PSK), (PUCHAR) pMbss->Ssid, pMbss->SsidLen, pSecConfig->PMK);
++		/* Only PSK AKMs derive a PMK from WPAPSK.  WPA-Enterprise
++		 * receives a per-station PMK asynchronously from 8021xd. */
++		if (IS_AKM_PSK(pSecConfig->AKMMap))
++			SetWPAPSKKey(pAd, pSecConfig->PSK, strlen(pSecConfig->PSK),
++				(PUCHAR) pMbss->Ssid, pMbss->SsidLen, pSecConfig->PMK);

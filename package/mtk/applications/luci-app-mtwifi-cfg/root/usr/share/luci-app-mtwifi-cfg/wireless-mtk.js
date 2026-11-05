@@ -1583,6 +1583,9 @@ return view.extend({
 						crypto_modes.push(['psk2', 'WPA2-PSK', 35]);
 						crypto_modes.push(['psk', 'WPA-PSK', 12]);
 						if (ifmode == 'ap') {
+							// mtwifi-cfg maps this UCI mode to AuthMode=WPA2,
+							// EncrypType=AES and the RADIUS profile fields for 8021xd.
+							crypto_modes.push(['wpa2', 'WPA2-Enterprise (802.1X/AES)', 34]);
 							crypto_modes.push(['psk-mixed', 'WPA-PSK/WPA2-PSK Mixed Mode', 22]);
 							crypto_modes.push(['sae-mixed', 'WPA2-PSK/WPA3-SAE Mixed Mode', 36]);
 						}

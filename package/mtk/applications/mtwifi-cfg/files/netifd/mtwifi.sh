@@ -16,11 +16,13 @@ MTWIFI_CFG_IFNAME_KEY="mtwifi_ifname"
 drv_mtwifi_init_device_config() {
 	config_add_int txpower beacon_int
 	config_add_boolean mu_beamformer dbdc_main whnat
-	config_add_string country twt
+	config_add_string country twt 'own_ip_addr:host'
 }
 
 drv_mtwifi_init_iface_config() {
 	config_add_string 'ssid:string' macfilter bssid kicklow assocthres
+	config_add_string 'auth_server:host' auth_secret
+	config_add_int auth_port
 	config_add_boolean wmm hidden isolate ieee80211k
 	config_add_int wpa_group_rekey frag rts dtim_period
 	config_add_array 'maclist:list(macaddr)'
@@ -117,6 +119,12 @@ drv_mtwifi_setup() {
 	for_each_interface sta mtwifi_vif_sta_config
 
 	wireless_set_up
+
+	# EAPifname is br-lan. Start 8021xd only after netifd has registered
+	# all AP VIFs, otherwise the authenticator misses initial EAPOL frames.
+	if json_dump | grep -Eq '"encryption"[[:space:]]*:[[:space:]]*"wpa(2|3)?"'; then
+		/sbin/mtwifi_cfg 8021xd "$dev"
+	fi
 
 	lock -u $LOCK_FILE
 }

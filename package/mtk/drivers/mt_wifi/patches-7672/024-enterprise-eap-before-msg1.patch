@@ -1,0 +1,26 @@
+--- a/mt_wifi/embedded/security/cmm_wpa.c
++++ b/mt_wifi/embedded/security/cmm_wpa.c
+@@ -7397,17 +7397,21 @@ static VOID WpaEAPOLStartAction(
+
+ 	if ((tr_entry->PortSecured == WPA_802_1X_PORT_NOT_SECURED)
+ 		&& (pSecConfig->Handshake.WpaState < AS_PTKSTART)
++#ifdef DOT1X_SUPPORT
++		/* Enterprise obtains its PMK asynchronously from 8021xd. */
++		&& !IS_IEEE8021X(pSecConfig)
++#endif /* DOT1X_SUPPORT */
+ 		&& (IS_AKM_PSK(pSecConfig->AKMMap)
+ 			|| (IS_AKM_WPA2(pSecConfig->AKMMap) && (is_pmkid_cache_in_sec_config(pSecConfig)))
+ 			|| (IS_AKM_WPA3_192BIT(pSecConfig->AKMMap) && (is_pmkid_cache_in_sec_config(pSecConfig)))
+ 			|| (IS_AKM_OWE(pSecConfig->AKMMap) && (is_pmkid_cache_in_sec_config(pSecConfig))))) {
+ 		pEntry->PrivacyFilter = Ndis802_11PrivFilter8021xWEP;
+ 		NdisZeroMemory(pSecConfig->Handshake.ReplayCounter, LEN_KEY_DESC_REPLAY);
+ 		pSecConfig->Handshake.MsgRetryCounter = 0;
+ 		WPABuildPairMsg1(pAd, &pEntry->SecConfig, pEntry);
+ 	}
+ #ifdef DOT1X_SUPPORT
+-	else if  (IS_AKM_1X(pSecConfig->AKMMap)) {
++	else if (IS_AKM_1X(pSecConfig->AKMMap) || IS_IEEE8021X(pSecConfig)) {
+-		MTWF_DBG(pAd, DBG_CAT_SEC, DBG_SUBCAT_ALL, DBG_LVL_ERROR, ("Enqueue EAPoL-Start-1X for sta("MACSTR")\n", MAC2STR(pEntry->Addr)));
++		MTWF_DBG(pAd, DBG_CAT_SEC, DBG_SUBCAT_ALL, DBG_LVL_ERROR, "Enqueue EAPoL-Start-1X for sta("MACSTR")\n", MAC2STR(pEntry->Addr));
+ 		DOT1X_EapTriggerAction(pAd, pEntry);
+ 	}

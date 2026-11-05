@@ -193,6 +193,17 @@ function __apcli_auto_connect(ifname)
     __exec_iwpriv_cmd(ifname, "ApCliAutoConnect", "3")
 end
 
+function mtwifi_8021xd_update(dev)
+    if not dev or not dev.main_ifname then return end
+
+    local pidfile = "/var/run/8021xd_"..dev.main_ifname..".pid"
+    if utils.exists(pidfile) then
+        os.execute("kill -9 $(cat "..pidfile..") 2>/dev/null")
+        os.remove(pidfile)
+    end
+
+end
+
 function mtwifi_up(devname, cfg, restore_vifs, is_dbdc)
     nixio.syslog("info", "mtwifi-cfg: start "..devname)
     local dev = l1dat.devname_ridx[devname]
@@ -247,6 +258,8 @@ function mtwifi_down(devname, cfg)
     local reset_vifs = {}
 
     if not dev then return end
+
+    mtwifi_8021xd_update(dev)
 
     for _,vif in ipairs(string.split(utils.read_pipe("ls /sys/class/net"), "\n")) do
         if (vif_status(vif) == "up" and vif_in_dev(vif, dev)) then
@@ -364,6 +377,17 @@ function mtwifi_cfg_setup(argv)
         return
     end
     local dats_orig = load_profile(profile)
+
+    -- 8021xd binds its RADIUS socket using own_ip_addr. The vendor DAT
+    -- default (192.168.1.1) is wrong when the LAN subnet is customized.
+    local lan_ip = utils.trim(utils.read_pipe(
+        "ip -4 -o addr show dev br-lan 2>/dev/null | awk '{print $4}' | cut -d/ -f1"
+    ))
+    if cfg.config.own_ip_addr and #cfg.config.own_ip_addr > 0 then
+        dats.own_ip_addr = cfg.config.own_ip_addr
+    elseif lan_ip and #lan_ip > 0 then
+        dats.own_ip_addr = lan_ip
+    end
 
     local vif_num, bssid_num, apcli_num = vif_count(cfg)
 
@@ -604,6 +628,19 @@ function mtwifi_cfg_setup(argv)
             set_dat(dats, apidx, "AuthMode", authmode)
             set_dat(dats, apidx, "EncrypType", defs.enc2dat[v.config.encryption][2])
 
+            -- MTK 8021xd reads RADIUS parameters from the generated DAT
+            -- profile. LuCI/netifd use auth_server/auth_port/auth_secret.
+            if authmode == "WPA" or authmode == "WPA2" or authmode == "WPA3" then
+                set_dat(dats, apidx, "RADIUS_Server", v.config.auth_server or "")
+                set_dat(dats, apidx, "RADIUS_Port", v.config.auth_port or "1812")
+                set_idx_dat(dats, apidx, "RADIUS_Key", v.config.auth_secret or "")
+                -- Enterprise AKM is selected by AuthMode=WPA/WPA2/WPA3.
+                -- Keep the vendor IEEE8021X profile flag at its default so
+                -- the driver enters its WPA-Enterprise EAPOL path rather
+                -- than mixing it with the legacy 802.1X state machine.
+                set_dat(dats, apidx, "IEEE8021X", 0)
+            end
+
             if authmode == "OWE" or authmode == "WPA3PSK" then
                 set_dat(dats, apidx, "PMFMFPC", 1)
                 set_dat(dats, apidx, "PMFMFPR", 1)
@@ -612,6 +649,10 @@ function mtwifi_cfg_setup(argv)
                 set_dat(dats, apidx, "PMFMFPC", 1)
                 set_dat(dats, apidx, "PMFMFPR", 0)
                 set_dat(dats, apidx, "PMFSHA256", 0)
+            elseif authmode == "WPA3" then
+                set_dat(dats, apidx, "PMFMFPC", 1)
+                set_dat(dats, apidx, "PMFMFPR", 1)
+                set_dat(dats, apidx, "PMFSHA256", 1)
             end
 
             if not (authmode == "OPEN" or authmode == "OWE") then
@@ -716,6 +757,18 @@ local action = {
         if #argv > 0 then
             mtwifi_cfg_setup(argv)
         end
+    end,
+    ["8021xd"] = function(devname)
+        local dev = l1dat.devname_ridx[devname]
+        if not dev then return end
+        local pidfile = "/var/run/8021xd_"..dev.main_ifname..".pid"
+        if utils.exists(pidfile) then
+            os.execute("kill -9 $(cat "..pidfile..") 2>/dev/null")
+            os.remove(pidfile)
+        end
+        nixio.syslog("info", "mtwifi-cfg: start 8021xd after bridge setup on "..dev.main_ifname)
+        os.execute("/usr/bin/8021xd -p "..dev.ext_ifname.." -i "..dev.main_ifname..
+            " >/tmp/8021xd_"..dev.main_ifname..".log 2>&1 & sleep 1; pidof 8021xd > "..pidfile)
     end
 }
 

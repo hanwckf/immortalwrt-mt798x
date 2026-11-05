@@ -105,6 +105,10 @@ mtwifi_defs.enc2dat = {
     ["none"] = {"OPEN", "NONE"},
     ["sae"] = {"WPA3PSK", "AES"},
     ["sae-mixed"] = {"WPA2PSKWPA3PSK", "AES"},
+    -- WPA Enterprise modes handled by MTK 8021xd.
+    ["wpa"] = {"WPA", "AES"},
+    ["wpa2"] = {"WPA2", "AES"},
+    ["wpa3"] = {"WPA3", "AES"},
     ["psk2+tkip+ccmp"] = {"WPA2PSK", "TKIPAES"},
     ["psk2+tkip+aes"] = {"WPA2PSK", "TKIPAES"},
     ["psk2+tkip"] = {"WPA2PSK", "TKIP"},
