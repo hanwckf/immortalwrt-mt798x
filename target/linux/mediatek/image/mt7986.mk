@@ -403,7 +403,7 @@ define Device/BPI-R3MINI-NAND
   DEVICE_DTS := mt7986a-bananapi-bpi-r3mini-nand
   DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
   DEVICE_PACKAGES := $(MT7986_USB_PKGS) $(MT7986_WWAN_PKGS) \
-        kmod-phy-air-en8811h bpir3_mini-properties pciutils
+        kmod-phy-airoha-en8811h bpir3_mini-properties pciutils
   SUPPORTED_DEVICES := bananapi,bpi-r3mini
   UBINIZE_OPTS := -E 5
   BLOCKSIZE := 128k
@@ -423,7 +423,7 @@ define Device/BPI-R3MINI-NAND-110M
   DEVICE_DTS := mt7986a-bananapi-bpi-r3mini-nand-110m
   DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
   DEVICE_PACKAGES := $(MT7986_USB_PKGS) $(MT7986_WWAN_PKGS) \
-        kmod-phy-air-en8811h bpir3_mini-properties pciutils
+        kmod-phy-airoha-en8811h bpir3_mini-properties pciutils
   SUPPORTED_DEVICES := bananapi,bpi-r3mini
   UBINIZE_OPTS := -E 5
   BLOCKSIZE := 128k
@@ -443,7 +443,7 @@ define Device/BPI-R3MINI-EMMC
   DEVICE_DTS := mt7986a-bananapi-bpi-r3mini-emmc
   DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
   DEVICE_PACKAGES := $(MT7986_USB_PKGS) $(MT7986_WWAN_PKGS) \
-        kmod-phy-air-en8811h bpir3_mini-properties pciutils \
+        kmod-phy-airoha-en8811h bpir3_mini-properties pciutils \
         f2fsck losetup mkf2fs f2fs-tools kmod-fs-f2fs kmod-mmc
   SUPPORTED_DEVICES := bananapi,bpi-r3mini-emmc
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
