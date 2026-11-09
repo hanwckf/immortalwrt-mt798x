@@ -214,6 +214,7 @@ platform_do_upgrade() {
 	*nokia,ea0326gmp* |\
 	*newland,nl-wr8103* |\
 	newland,nl-wr9103 |\
+	hilink,rm65|\
 	*snand*)
 		nand_do_upgrade "$1"
 		;;
@@ -271,7 +272,8 @@ platform_check_image() {
 	nradio,wt9103 |\
 	*snand* |\
 	*emmc* |\
-	routerich,ax3000)
+	routerich,ax3000|\
+	hilink,rm65)
 		# tar magic `ustar`
 		magic="$(dd if="$1" bs=1 skip=257 count=5 2>/dev/null)"
 

@@ -809,3 +809,20 @@ define Device/routerich_ax3000
   DEVICE_PACKAGES := $(MT7981_USB_PKGS)
 endef
 TARGET_DEVICES += routerich_ax3000
+
+define Device/hilink_rm65
+  DEVICE_VENDOR := HiLink
+  DEVICE_MODEL := RM65
+  DEVICE_DTS := mt7981-hilink-rm65
+  DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
+  SUPPORTED_DEVICES := hilink,rm65
+  UBINIZE_OPTS := -E 5
+  BLOCKSIZE := 128k
+  PAGESIZE := 2048
+  IMAGE_SIZE := 65536k
+  KERNEL_IN_UBI := 1
+  IMAGES += factory.bin
+  IMAGE/factory.bin := append-ubi | check-size $$$$(IMAGE_SIZE)
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+endef
+TARGET_DEVICES += hilink_rm65

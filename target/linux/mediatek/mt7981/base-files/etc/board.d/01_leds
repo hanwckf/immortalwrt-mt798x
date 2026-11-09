@@ -71,6 +71,10 @@ routerich,ax3000)
 	ucidef_set_led_default "green" "GREEN" "green:status" "0"
 	ucidef_set_led_default "blue" "BLUE" "blue:status" "1"
 	;;
+hilink,rm65)
+	ucidef_set_led_netdev "wan_recv" "WAN RX" "rm65:green:wan_recv" "wan" "rx"
+	ucidef_set_led_netdev "wan_send" "WAN TX" "rm65:green:wan_send" "wan" "tx"
+	;;
 esac
 
 board_config_flush
