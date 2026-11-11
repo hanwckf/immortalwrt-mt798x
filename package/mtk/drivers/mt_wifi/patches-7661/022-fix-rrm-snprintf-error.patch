@@ -1,0 +1,17 @@
+--- a/mt_wifi/embedded/common/rrm.c	2025-04-08 12:54:09.000000000 +0800
++++ b/mt_wifi/embedded/common/rrm.c	2026-01-22 21:50:27.508920117 +0800
+@@ -833,13 +833,12 @@
+ 	} else {
+ 		if (RRM_PeerNeighborReqSanity(pAd, Elem->Msg, Elem->MsgLen, &DialogToken, &pSsid, &SsidLen)) {
+ 			MTWF_DBG(pAd, DBG_CAT_PROTO, CATPROTO_RRM, DBG_LVL_INFO, "DialogToken=%x\n", DialogToken);
+-			ret = snprintf(ssidbuf, sizeof(ssidbuf), "%s", pSsid);
++			ret = snprintf(ssidbuf, sizeof(ssidbuf), "%.*s", SsidLen, pSsid);
+ 			if (os_snprintf_error(sizeof(ssidbuf), ret)) {
+ 				MTWF_DBG(pAd, DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+ 					"snprintf error!\n");
+ 				return;
+ 			}
+-			ssidbuf[SsidLen] = '\0';
+ 			MTWF_DBG(pAd, DBG_CAT_PROTO, CATPROTO_RRM, DBG_LVL_INFO, "pSsid=%s\n", ssidbuf);
+ 			MTWF_DBG(pAd, DBG_CAT_PROTO, CATPROTO_RRM, DBG_LVL_INFO, "SsidLen=%d\n", SsidLen);
+ 			RRM_EnqueueNeighborRep(pAd, pEntry, DialogToken, pSsid, SsidLen);
